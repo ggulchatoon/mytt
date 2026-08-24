@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>mytt 주간 타임테이블</title>
+  <style>
+    :root {
+      --primary: #1D3557;       /* 딥 네이비 */
+      --primary-light: #EBF2FA; /* 아이스 블루 */
+      --accent: #457B9D;        /* 미드나잇 스틸 블루 */
+      --accent-warm: #E63946;   /* 칠리 코랄 */
+      --text: #1B263B;          /* 잉크 네이비 */
+      --text-sub: #415A77;      /* 슬레이트 블루 */
+      --border: #D0DBE5;        /* 소프트 보더 */
+      --bg: #F4F6F9;            /* 배경 */
+      --card-bg: #FFFFFF;
+      --done-bg: #E8F5E9;       /* 완료 시 소프트 그린 */
+      --done-border: #81C784;   /* 완료 테두리 */
+      --done-text: #2E7D32;     /* 완료 텍스트 */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
+      color: var(--text);
+      background-color: var(--bg);
+      padding: 12px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 상단 프로그레스 및 주차 정보 */
+    .week-status-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .week-info {
+      font-weight: 700;
+      font-size: 0.9em;
+      color: var(--primary);
+    }
+
+    .progress-badge {
+      font-size: 0.85em;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    /* 상단 탭 전환 */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+      background-color: var(--bg);
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 0;
+      border: 1.5px solid var(--primary);
+      background: var(--card-bg);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(29, 53, 87, 0.2);
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* 요일별 카드 */
+    .day-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+
+    .day-header {
+      padding: 14px 16px;
+      background: var(--primary-light);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.02em;
+    }
+
+    .day-header::-webkit-details-marker {
+      display: none;
+    }
+
+    .day-header .tag {
+      font-size: 0.78em;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: #FFFFFF;
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+
+    .day-content {
+      padding: 6px 12px 12px 12px;
+    }
+
+    /* 일정 테이블 및 클릭 인터랙션 */
+    .time-table-2col {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .task-row {
+      cursor: pointer;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+      border-bottom: 1px dashed var(--border);
+      border-radius: 6px;
+    }
+
+    .task-row td {
+      padding: 10px 6px;
+      vertical-align: top;
+    }
+
+    /* 완료 인터랙션 스타일 */
+    .task-row.is-done {
+      background-color: var(--done-bg) !important;
+    }
+
+    .task-row.is-done .task-desc {
+      text-decoration: line-through;
+      color: var(--done-text);
+    }
+
+    .task-row.is-done .badge {
+      background: var(--done-border) !important;
+      color: #FFFFFF !important;
+    }
+
+    .task-row.is-done .badge::before {
+      content: "✓ ";
+    }
+
+    .task-row.is-done .sub-note,
+    .task-row.is-done .buffer-box {
+      opacity: 0.5;
+    }
+
+    .td-time {
+      width: 32%;
+      font-size: 0.82em;
+      font-weight: 700;
+      color: var(--text-sub);
+      line-height: 1.3;
+    }
+
+    .td-time .badge {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 3px;
+      font-size: 0.9em;
+      transition: all 0.2s ease;
+    }
+
+    .td-task {
+      width: 68%;
+      padding-left: 6px !important;
+      position: relative;
+    }
+
+    .task-desc {
+      font-size: 0.92em;
+      font-weight: 700;
+      color: var(--text);
+      transition: color 0.2s ease;
+    }
+
+    .sub-note {
+      font-size: 0.82em;
+      color: var(--text-sub);
+      margin-top: 4px;
+      line-height: 1.4;
+      background: var(--bg);
+      padding: 5px 8px;
+      border-radius: 4px;
+    }
+
+    .buffer-box {
+      margin-top: 5px;
+      padding: 5px 8px;
+      background: #FDF0ED;
+      border-left: 3px solid var(--accent-warm);
+      border-radius: 4px;
+      font-size: 0.8em;
+      color: #9C2A2A;
+    }
+
+    /* 단발성 임시 일정 태그 및 삭제 버튼 */
+    .badge-temp {
+      background: var(--accent-warm) !important;
+    }
+
+    .del-btn {
+      float: right;
+      border: none;
+      background: none;
+      color: #999;
+      font-size: 1.1em;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .del-btn:hover {
+      color: var(--accent-warm);
+    }
+
+    /* 일정 추가 버튼 UI */
+    .add-task-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px;
+      border: 1.5px dashed var(--border);
+      background: #FAFCFE;
+      color: var(--accent);
+      border-radius: 6px;
+      font-size: 0.85em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-task-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--accent);
+    }
+
+    /* 전체 시간표 그리드 */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .grid-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .grid-card-title {
+      font-size: 0.88em;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 1.5px solid var(--primary-light);
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+
+    .common-routine-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+
+    .common-title {
+      font-size: 0.88em;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 상단 주차 및 달성률 정보 -->
+  <div class="week-status-bar">
+    <div class="week-info" id="current-week-txt">이번 주 실행 현황</div>
+    <div class="progress-badge" id="progress-indicator">0% 완료</div>
+  </div>
+
+  <!-- 뷰 전환 탭 -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchView('view-daily')">📅 요일별 시간표</button>
+    <button class="tab-btn" onclick="switchView('view-all')">📊 전체 한눈에 보기</button>
+  </div>
+
+  <!-- [버전 1] 요일별 2열 세로 시간표 -->
+  <div id="view-daily" class="view-section active">
+
+    <!-- 월요일 -->
+    <details class="day-card" open>
+      <summary class="day-header">
+        <span>월요일 (한해지도 집중 드로잉)</span>
+        <span class="tag">주간회의 / 편집</span>
+      </summary>
+      <div class="day-content">
+        <table class="time-table-2col" id="table-mon">
+          <tr class="task-row" data-id="mon-1" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">10:00-12:00</span><br>오전 기획</td>
+            <td class="td-task">
+              <div class="task-desc">[고정] 친구와 주간회의</div>
+              <div class="sub-note">주간 목표 설정, 지표 점검 및 역할 배분 확인</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="mon-2" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">12:00-14:00</span><br>점심·전환</td>
+            <td class="td-task">
+              <div class="task-desc">12~13시 식사/설거지 ➔ 13~14시 택배/인스타/세팅</div>
+              <div class="sub-note">• 13:30 인스타 소통은 20분 타이머 엄수</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="mon-3" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">14:00-19:00</span><br>🔥 딥워크</td>
+            <td class="td-task">
+              <div class="task-desc">[한해지도] 메인 일러스트 집중 드로잉 (5h)</div>
+              <div class="sub-note">• 18:45 내일 첫 5분에 손댈 선화 살짝 남기고 저장</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="mon-4" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">20:00-23:00</span><br>야간 일정</td>
+            <td class="td-task">
+              <div class="task-desc">유튜브 컷편집</div>
+              <div class="buffer-box">⚡ <b>완충 룰:</b> 수면 패턴 유지를 위해 23:00에 무조건 화면 셧다운</div>
+            </td>
+          </tr>
+        </table>
+        <button class="add-task-btn" onclick="promptAddTask('mon')">＋ 이번 주 단발 일정 추가</button>
+      </div>
+    </details>
+
+    <!-- 화요일 -->
+    <details class="day-card">
+      <summary class="day-header">
+        <span>화요일 (꿀차툰 선화 & 광고 기획)</span>
+        <span class="tag">서울 외출 후보</span>
+      </summary>
+      <div class="day-content">
+        <table class="time-table-2col" id="table-tue">
+          <tr class="task-row" data-id="tue-1" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">10:00-12:00</span><br>오전 기획</td>
+            <td class="td-task">
+              <div class="task-desc">메일/일정확인 (30m) ➔ [광고툰] 기획/스크립트 (1.5h)</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="tue-2" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">12:00-14:00</span><br>점심·전환</td>
+            <td class="td-task">
+              <div class="task-desc">12~13시 식사/설거지 ➔ 13~14시 택배/인스타/세팅</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="tue-3" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">14:00-19:00</span><br>🔥 딥워크</td>
+            <td class="td-task">
+              <div class="task-desc">[꿀차툰] 일상툰 콘티 & 선화 드로잉 (5h)</div>
+              <div class="buffer-box">⚡ <b>완충 룰:</b> 서울 미팅(17시 출발) 발생 시 17:00 조기 마감</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="tue-4" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">20:00 이후</span><br>야간 일정</td>
+            <td class="td-task">
+              <div class="task-desc">서울 약속/미팅 OR 유튜브 보충 편집</div>
+            </td>
+          </tr>
+        </table>
+        <button class="add-task-btn" onclick="promptAddTask('tue')">＋ 이번 주 단발 일정 추가</button>
+      </div>
+    </details>
+
+    <!-- 수요일 -->
+    <details class="day-card">
+      <summary class="day-header">
+        <span>수요일 (한해지도 채색 & 심리모임)</span>
+        <span class="tag">격주 농구 🏀</span>
+      </summary>
+      <div class="day-content">
+        <table class="time-table-2col" id="table-wed">
+          <tr class="task-row" data-id="wed-1" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">10:00-12:00</span><br>오전 기획</td>
+            <td class="td-task">
+              <div class="task-desc">메일/일정확인 (30m) ➔ [신규캐시] 심리모임 기획 (1.5h)</div>
+              <div class="sub-note">걱정안냥 워크북 기반 4~6인 파일럿 커리큘럼 뼈대</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="wed-2" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">12:00-14:00</span><br>점심·전환</td>
+            <td class="td-task">
+              <div class="task-desc">12~13시 식사/설거지 ➔ 13~14시 택배/인스타/세팅</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="wed-3" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">14:00-19:00</span><br>🔥 딥워크</td>
+            <td class="td-task">
+              <div class="task-desc">[한해지도] 지도 채색 & 스티커/봉투 규격 작업 (5h)</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="wed-4" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">20:00-24:00</span><br>야간 일정</td>
+            <td class="td-task">
+              <div class="task-desc">[격주 A] 농구학원 (21~24시) OR [격주 B] 유튜브 편집</div>
+              <div class="buffer-box">⚡ <b>완충 룰:</b> 농구 날은 19시 식사 후 21시 전까지 완전 휴식</div>
+            </td>
+          </tr>
+        </table>
+        <button class="add-task-btn" onclick="promptAddTask('wed')">＋ 이번 주 단발 일정 추가</button>
+      </div>
+    </details>
+
+    <!-- 목요일 -->
+    <details class="day-card">
+      <summary class="day-header">
+        <span>목요일 (꿀차툰 마감 & 깨굴 미팅)</span>
+        <span class="tag">깨굴 회의 🎬</span>
+      </summary>
+      <div class="day-content">
+        <table class="time-table-2col" id="table-thu">
+          <tr class="task-row" data-id="thu-1" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">10:00-12:00</span><br>오전 기획</td>
+            <td class="td-task">
+              <div class="task-desc">메일/일정확인 (30m) ➔ [광고툰] 그림 콘티 제작 (1.5h)</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="thu-2" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">12:00-14:00</span><br>점심·전환</td>
+            <td class="td-task">
+              <div class="task-desc">12~13시 식사/설거지 ➔ 13~14시 택배/인스타/세팅</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="thu-3" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">14:00-18:00</span><br>🔥 딥워크</td>
+            <td class="td-task">
+              <div class="task-desc">[꿀차툰] 채색 마감 & 업로드 (4h)</div>
+              <div class="sub-note">• 18:00 칼퇴 후 깨굴 미팅 합류</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="thu-4" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">18:00-21:00</span><br>저녁·야간</td>
+            <td class="td-task">
+              <div class="task-desc">[고정] 깨굴 회의 (저녁식사 + 숏폼/기획 + 촬영)</div>
+            </td>
+          </tr>
+        </table>
+        <button class="add-task-btn" onclick="promptAddTask('thu')">＋ 이번 주 단발 일정 추가</button>
+      </div>
+    </details>
+
+    <!-- 금요일 -->
+    <details class="day-card">
+      <summary class="day-header">
+        <span>금요일 (한해지도 발주 검수 & 마감)</span>
+        <span class="tag">고정 농구 🏀</span>
+      </summary>
+      <div class="day-content">
+        <table class="time-table-2col" id="table-fri">
+          <tr class="task-row" data-id="fri-1" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">10:00-12:00</span><br>오전 기획</td>
+            <td class="td-task">
+              <div class="task-desc">메일/일정 (30m) ➔ 신청폼 세팅 & 주간 행정/정산 (1.5h)</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="fri-2" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">12:00-14:00</span><br>점심·전환</td>
+            <td class="td-task">
+              <div class="task-desc">12~13시 식사/설거지 ➔ 13~14시 택배/인스타/세팅</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="fri-3" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">14:00-19:00</span><br>🔥 딥워크</td>
+            <td class="td-task">
+              <div class="task-desc">[한해지도] 최종 발주 패키징 검수 & 잔여 작업 마감 (5h)</div>
+            </td>
+          </tr>
+          <tr class="task-row" data-id="fri-4" onclick="toggleTask(this)">
+            <td class="td-time"><span class="badge">21:00-24:00</span><br>야간 일정</td>
+            <td class="td-task">
+              <div class="task-desc">[21:00 ~ 24:00] 농구학원 🏀</div>
+            </td>
+          </tr>
+        </table>
+        <button class="add-task-btn" onclick="promptAddTask('fri')">＋ 이번 주 단발 일정 추가</button>
+      </div>
+    </details>
+
+  </div>
+
+  <!-- [버전 2] 전체 한눈에 보기 -->
+  <div id="view-all" class="view-section">
+    <div class="common-routine-card">
+      <div class="common-title">🌊 매일 공통 루틴</div>
+      <div style="font-size: 0.88em; line-height: 1.6;">
+        • <b>10:00 - 11:30</b> : 주간회의 or 도서관 출근<br>
+        • <b>12:00 - 13:00</b> : 점심 식사 및 설거지 / 주방 정리<br>
+        • <b>13:00 - 14:00</b> : 택배 업무 ➔ 인스타 소통(20분 컷) ➔ 딥워크 세팅<br>
+        • <b>18:45 - 19:00</b> : 내일 첫 5분에 끝낼 트리거 남기고 퇴근
+      </div>
+    </div>
+
+    <div style="font-weight: 700; color: var(--primary); margin: 12px 0 6px 2px; font-size: 0.95em;">
+      📍 오전 블록 (10:00 - 12:00) : 메일(30m) + 기획
+    </div>
+    <div class="grid-2col">
+      <div class="grid-card">
+        <div class="grid-card-title">월요일</div>
+        <div style="font-size:0.85em; font-weight:600;">[고정] 친구 주간회의</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-title">화요일</div>
+        <div style="font-size:0.85em; font-weight:600;">광고툰 기획 (1.5h)</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-title">수요일</div>
+        <div style="font-size:0.85em; font-weight:600;">심리모임 기획 (1.5h)</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-title">목요일</div>
+        <div style="font-size:0.85em; font-weight:600;">광고 콘티 (1.5h)</div>
+      </div>
+      <div class="grid-card" style="grid-column: span 2;">
+        <div class="grid-card-title">금요일</div>
+        <div style="font-size:0.85em; font-weight:600;">신청폼 세팅 & 주간 행정/정산 마감 (1.5h)</div>
+      </div>
+    </div>
+
+    <div style="font-weight: 700; color: var(--primary); margin: 16px 0 6px 2px; font-size: 0.95em;">
+      🔥 오후 딥워크 (14:00 - 19:00) : 단일 작업 몰입
+    </div>
+    <div class="grid-2col">
+      <div class="grid-card">
+        <div class="grid-card-title">월 (지도 5h)</div>
+        <div style="font-size:0.85em; font-weight:600;">한해지도 일러스트</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-title">화 (툰 5h)</div>
+        <div style="font-size:0.85em; font-weight:600;">꿀차툰 선화/콘티</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-title">수 (지도 5h)</div>
+        <div style="font-size:0.85em; font-weight:600;">한해지도 채색</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-title">목 (툰 4h)</div>
+        <div style="font-size:0.85em; font-weight:600;">꿀차툰 마감/업로드</div>
+      </div>
+      <div class="grid-card" style="grid-column: span 2;">
+        <div class="grid-card-title">금 (지도/마감 5h)</div>
+        <div style="font-size:0.85em; font-weight:600;">한해지도 최종 패키징 검수 & 주간 마감</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 1. 현재 ISO 주차(Year-Week) 계산 함수
+  function getYearAndWeek(d = new Date()) {
+    const target = new Date(d.valueOf());
+    const dayNr = (d.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    const weekNumber = 1 + Math.ceil((firstThursday - target) / 604800000);
+    return `${target.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
+  }
+
+  const currentWeekKey = getYearAndWeek();
+
+  // 2. 주간 자동 갱신 검사
+  function checkWeeklyReset() {
+    const savedWeek = localStorage.getItem('mytt_current_week');
+    if (savedWeek !== currentWeekKey) {
+      // 새 주차가 시작되었으므로 지난주 완료 기록 및 임시 일정 초기화
+      localStorage.setItem('mytt_current_week', currentWeekKey);
+      localStorage.setItem('mytt_completed_tasks', JSON.stringify([]));
+      localStorage.setItem('mytt_custom_tasks', JSON.stringify([]));
+    }
+  }
+
+  // 3. 상태 관리 변수
+  let completedTasks = [];
+  let customTasks = [];
+
+  function loadStorageData() {
+    try {
+      completedTasks = JSON.parse(localStorage.getItem('mytt_completed_tasks')) || [];
+      customTasks = JSON.parse(localStorage.getItem('mytt_custom_tasks')) || [];
+    } catch(e) {
+      completedTasks = [];
+      customTasks = [];
+    }
+  }
+
+  function saveStorageData() {
+    localStorage.setItem('mytt_completed_tasks', JSON.stringify(completedTasks));
+    localStorage.setItem('mytt_custom_tasks', JSON.stringify(customTasks));
+  }
+
+  // 4. 완료 상태 토글 함수
+  function toggleTask(element) {
+    const taskId = element.getAttribute('data-id');
+    const isDone = element.classList.toggle('is-done');
+    
+    if (isDone) {
+      if (!completedTasks.includes(taskId)) completedTasks.push(taskId);
+    } else {
+      completedTasks = completedTasks.filter(id => id !== taskId);
+    }
+    saveStorageData();
+    updateProgress();
+  }
+
+  // 5. 단발성 일정 추가 함수
+  function promptAddTask(dayCode) {
+    const time = prompt("시간대를 입력하세요 (예: 15:00-16:30):", "15:00-16:00");
+    if (!time) return;
+    const desc = prompt("할 일을 입력하세요 (예: 거래처 긴급 미팅):");
+    if (!desc) return;
+
+    const newId = `custom-${Date.now()}`;
+    const newTask = { id: newId, day: dayCode, time: time, desc: desc };
+    
+    customTasks.push(newTask);
+    saveStorageData();
+    renderCustomTask(newTask);
+    updateProgress();
+  }
+
+  // 6. 단발성 일정 렌더링
+  function renderCustomTask(task) {
+    const table = document.getElementById(`table-${task.day}`);
+    if (!table) return;
+
+    const tr = document.createElement('tr');
+    tr.className = 'task-row';
+    tr.setAttribute('data-id', task.id);
+    if (completedTasks.includes(task.id)) {
+      tr.classList.add('is-done');
+    }
+    tr.onclick = function() { toggleTask(this); };
+
+    tr.innerHTML = `
+      <td class="td-time"><span class="badge badge-temp">${task.time}</span><br>⚡ 이번주</td>
+      <td class="td-task">
+        <button class="del-btn" onclick="deleteCustomTask(event, '${task.id}')" title="삭제">✕</button>
+        <div class="task-desc">${task.desc}</div>
+      </td>
+    `;
+    table.appendChild(tr);
+  }
+
+  // 7. 단발성 일정 삭제
+  function deleteCustomTask(event, taskId) {
+    event.stopPropagation();
+    if (!confirm('이 일정을 삭제할까요?')) return;
+
+    customTasks = customTasks.filter(t => t.id !== taskId);
+    completedTasks = completedTasks.filter(id => id !== taskId);
+    saveStorageData();
+
+    const targetRow = document.querySelector(`[data-id="${taskId}"]`);
+    if (targetRow) targetRow.remove();
+    updateProgress();
+  }
+
+  // 8. 진행률(%) 계산 및 UI 업데이트
+  function updateProgress() {
+    const totalRows = document.querySelectorAll('.task-row').length;
+    const doneRows = document.querySelectorAll('.task-row.is-done').length;
+    const percent = totalRows > 0 ? Math.round((doneRows / totalRows) * 100) : 0;
+    
+    document.getElementById('progress-indicator').innerText = `${percent}% 완료 (${doneRows}/${totalRows})`;
+    document.getElementById('current-week-txt').innerText = `📅 ${currentWeekKey} 주간 현황`;
+  }
+
+  // 9. 초기 렌더링 및 복원
+  function initApp() {
+    checkWeeklyReset();
+    loadStorageData();
+
+    // 임시 일정 렌더링
+    customTasks.forEach(task => renderCustomTask(task));
+
+    // 기본 루틴 일정의 완료 체크 복원
+    document.querySelectorAll('.task-row').forEach(row => {
+      const id = row.getAttribute('data-id');
+      if (completedTasks.includes(id)) {
+        row.classList.add('is-done');
+      }
+    });
+
+    updateProgress();
+  }
+
+  // 탭 전환 함수
+  function switchView(viewId) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (viewId === 'view-daily') {
+      buttons[0].classList.add('active');
+    } else {
+      buttons[1].classList.add('active');
+    }
+  }
+
+  // 앱 실행
+  initApp();
+</script>
+
+</body>
+</html>
