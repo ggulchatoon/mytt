@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>Morning Bakery</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Gowun+Dodum&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#FDF7EE;
+  --paper:#FEFAF5;
+  --border:#DFC9A8;
+  --brown:#5C3D2E;
+  --lt-brown:#9B7355;
+  --amber:#C07A38;
+  --amber-lt:#DFA96E;
+  --green:#6B9470;
+  --red:#B05040;
+  --shadow:rgba(140,90,50,0.09);
+  --r:18px;
+  --gap:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  height:100%;
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse at 8% 0%,rgba(230,200,155,0.22) 0%,transparent 48%),
+    radial-gradient(ellipse at 94% 98%,rgba(190,215,190,0.14) 0%,transparent 48%);
+  font-family:'Gaegu',cursive;
+  font-size:17px;
+  color:var(--brown);
+  overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+#app{
+  display:flex;flex-direction:column;
+  height:100dvh;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  max-width:430px;margin:0 auto;
+}
+
+/* ── Header ── */
+header{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 20px;
+  background:var(--paper);
+  border-bottom:1.5px solid var(--border);
+  box-shadow:0 2px 14px var(--shadow);
+  flex-shrink:0;
+}
+.logo{
+  font-family:'Gaegu',cursive;font-size:22px;font-weight:700;
+  color:var(--amber);letter-spacing:.3px;
+}
+.logo-icon{width:22px;height:22px;color:var(--amber);}
+
+/* ── Content / Tabs ── */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.tab-panel{
+  display:none;padding:16px 15px 20px;
+  min-height:100%;
+  box-sizing:border-box;
+}
+.tab-panel.active{
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── Nav bar ── */
+nav{
+  display:flex;
+  border-top:1.5px solid var(--border);
+  background:var(--paper);
+  flex-shrink:0;
+  position:relative;
+  z-index:50;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 0 8px;
+  background:none;border:none;cursor:pointer;
+  font-family:'Gaegu',cursive;font-size:13px;font-weight:700;
+  color:var(--lt-brown);
+  user-select:none;
+  -webkit-user-select:none;
+}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;}
+.nav-btn.active{color:var(--amber);}
+
+/* ── Card ── */
+.card{
+  background:var(--paper);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:18px;
+  box-shadow:0 4px 18px var(--shadow);margin-bottom:var(--gap);
+}
+.card-label{
+  font-family:'Gaegu',cursive;font-size:16px;font-weight:700;
+  color:var(--lt-brown);margin-bottom:10px;
+}
+
+/* ── Buttons ── */
+.btn{
+  width:100%;padding:15px;border:none;border-radius:14px;
+  cursor:pointer;
+  font-family:'Gaegu',cursive;font-size:19px;font-weight:700;
+  transition:transform .13s,opacity .13s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.45;cursor:default;transform:none;}
+.btn-amber{background:var(--amber);color:#fff;box-shadow:0 3px 12px rgba(192,122,56,.30);}
+.btn-green{background:var(--green);color:#fff;box-shadow:0 3px 12px rgba(107,148,112,.28);}
+.btn-ghost{background:var(--bg);color:var(--lt-brown);border:1.5px solid var(--border);}
+.btn-danger{background:var(--bg);color:var(--red);border:1.5px solid #E0C0B8;}
+
+/* ── Clock ── */
+.clock-block{
+  text-align:center;padding:26px 20px 20px;
+  background:var(--paper);border:1.5px solid var(--border);
+  border-radius:var(--r);box-shadow:0 4px 18px var(--shadow);margin-bottom:var(--gap);
+}
+.clock-date{font-size:13px;color:var(--lt-brown);margin-bottom:5px;}
+#clock{
+  font-family:'Gaegu',cursive;font-size:62px;font-weight:700;
+  color:var(--brown);line-height:1;letter-spacing:-1px;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.clock-colon{
+  display:inline-block;margin:0 2px;
+  transition:opacity 0.25s ease-in-out;
+}
+.clock-colon.dim{
+  opacity:0.2;
+}
+.clock-diff{font-size:13px;color:var(--lt-brown);margin-top:7px;min-height:18px;}
+
+/* ── Target display card ── */
+.target-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--paper);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:14px 18px;
+  box-shadow:0 4px 18px var(--shadow);margin-bottom:var(--gap);
+}
+.target-row-left{display:flex;flex-direction:column;gap:2px;}
+.target-row-lbl{font-size:12px;color:var(--lt-brown);}
+.target-row-time{
+  font-family:'Gaegu',cursive;font-size:32px;font-weight:700;color:var(--brown);line-height:1.1;
+}
+.target-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.alarm-sub-lbl{font-size:12px;color:var(--lt-brown);}
+
+/* ── Toggle ── */
+.toggle{position:relative;width:50px;height:26px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-track{
+  position:absolute;inset:0;background:var(--border);
+  border-radius:99px;transition:background .25s;cursor:pointer;
+}
+.toggle-track::before{
+  content:'';position:absolute;top:3px;left:3px;
+  width:20px;height:20px;border-radius:50%;background:#fff;
+  transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.toggle input:checked+.toggle-track{background:var(--amber);}
+.toggle input:checked+.toggle-track::before{transform:translateX(24px);}
+
+/* ── Bread stack (베이커리 화면 비율에 맞게 확장) ── */
+.bread-section{
+  flex:1;
+  display:flex;flex-direction:column;
+  background:var(--paper);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;
+  box-shadow:0 4px 18px var(--shadow);
+  min-height:140px;
+}
+.bread-section-lbl{font-size:12px;color:var(--lt-brown);margin-bottom:12px;}
+#breadStack{
+  flex:1;
+  display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;
+  min-height:80px;
+}
+.b-img{
+  width:52px;height:52px;object-fit:contain;
+  mix-blend-mode:multiply;
+  animation:bPop .35s cubic-bezier(.34,1.56,.64,1) both;
+  flex-shrink:0;
+}
+.b-img.baking{animation:bBake .65s ease forwards;}
+@keyframes bPop{from{opacity:0;transform:scale(.3) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes bBake{0%{opacity:1;transform:scale(1);}50%{transform:scale(1.35);filter:brightness(1.5);}100%{opacity:0;transform:scale(.4) translateY(-18px);}}
+.bread-count-lbl{font-family:'Gaegu',cursive;font-size:14px;color:var(--amber);margin-top:8px;}
+
+/* ── Coupon 2~3줄 도장 그리드 (4칸 + 3칸) ── */
+.coupon-card{
+  flex:1;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+}
+
+/* ── 상태 배지 (탭1 상태 머신) ── */
+.bakery-status-badge{
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:14px;padding:14px 18px;margin-bottom:var(--gap);
+  border:1.5px solid var(--border);
+  box-shadow:0 3px 12px var(--shadow);
+}
+.bakery-status-badge.state-close{
+  background:rgba(245,245,250,0.85);border-color:#CCC5BC;
+}
+.bakery-status-badge.state-open{
+  background:rgba(253,240,220,0.88);border-color:var(--amber-lt);
+}
+.bakery-status-badge.state-done{
+  background:rgba(235,248,235,0.88);border-color:var(--green);
+}
+.badge-left{display:flex;flex-direction:column;gap:3px;}
+.badge-pill{
+  display:inline-block;font-family:'Gaegu',cursive;font-weight:700;font-size:11px;
+  letter-spacing:.8px;padding:2px 9px;border-radius:99px;margin-bottom:2px;
+}
+.badge-pill.pill-close{background:#E8E4DE;color:#7B7060;}
+.badge-pill.pill-open{background:var(--amber);color:#fff;}
+.badge-pill.pill-done{background:var(--green);color:#fff;}
+.badge-main{font-family:'Gaegu',cursive;font-size:15px;font-weight:700;color:var(--brown);line-height:1.3;}
+.badge-sub{font-size:12px;color:var(--lt-brown);}
+.badge-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.badge-done-mark{font-size:22px;}
+
+/* ── 상태1: 마감 안내 메시지 ── */
+.close-msg-area{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:24px 20px;
+  background:var(--paper);border:1.5px solid var(--border);
+  border-radius:var(--r);box-shadow:0 4px 18px var(--shadow);
+}
+.close-msg-icon{
+  width:44px;height:44px;color:var(--lt-brown);opacity:0.75;
+  stroke:currentColor;fill:none;margin-bottom:4px;
+}
+.close-msg-main{font-family:'Gaegu',cursive;font-size:19px;font-weight:700;color:var(--brown);text-align:center;line-height:1.5;}
+.close-msg-sub{font-size:14px;color:var(--lt-brown);text-align:center;line-height:1.5;}
+
+/* ── 상태3: 기상 완료 영역 ── */
+.done-area{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:20px 16px;
+  background:var(--paper);border:1.5px solid var(--border);
+  border-radius:var(--r);box-shadow:0 4px 18px var(--shadow);
+}
+.done-coffee-img{
+  width:96px;height:102px;object-fit:contain;
+  mix-blend-mode:multiply;
+  animation:bPop .45s cubic-bezier(.34,1.56,.64,1) both;
+}
+.done-breads-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.done-breads-row img{width:46px;height:46px;object-fit:contain;mix-blend-mode:multiply;}
+.done-msg-main{font-family:'Gaegu',cursive;font-size:18px;font-weight:700;color:var(--green);text-align:center;}
+.done-msg-sub{font-size:14px;color:var(--lt-brown);text-align:center;}
+.btn-reset-day{
+  margin-top:6px;padding:8px 18px;
+  background:transparent;border:1px solid var(--border);
+  border-radius:20px;cursor:pointer;
+  font-family:'Gaegu',cursive;font-size:14px;font-weight:700;
+  color:var(--lt-brown);transition:all .15s;
+}
+.btn-reset-day:hover{
+  background:rgba(223,201,168,0.2);color:var(--brown);border-color:var(--lt-brown);
+}
+
+/* ── 자연스럽게 이어지는 이번 주 빵 트레일 ── */
+.week-bread-trail{
+  display:flex;flex-wrap:wrap;align-items:center;
+  gap:12px 14px;
+  padding:14px 4px;
+  min-height:180px;
+}
+.day-bread-group{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 12px 6px 8px;
+  background:rgba(223,201,168,0.18);
+  border-radius:24px;
+  transition:all .2s ease;
+}
+.day-bread-group.is-today{
+  background:rgba(192,122,56,0.12);
+}
+.day-bread-group.not-yet{
+  opacity:0.42;
+  background:transparent;
+}
+.day-tag{
+  font-family:'Gaegu',cursive;font-size:18px;font-weight:700;
+  color:var(--lt-brown);
+  padding:2px 6px;
+  display:flex;align-items:center;gap:2px;
+}
+.day-bread-group.is-today .day-tag{
+  color:var(--amber);
+}
+.bread-item-list{
+  display:inline-flex;align-items:center;gap:6px;
+}
+.flow-b-img{
+  width:56px;height:56px;
+  object-fit:contain;
+  mix-blend-mode:multiply;
+  filter:drop-shadow(0 2px 5px rgba(92,61,46,0.12));
+  animation:flowPop .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+.day-bread-group.not-yet .flow-b-img{
+  filter:grayscale(1) opacity(0.45);
+}
+@keyframes flowPop{
+  from{opacity:0;transform:scale(0.4) rotate(-8deg);}
+  to{opacity:1;transform:scale(1) rotate(0deg);}
+}
+
+.coupon-summary{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:14px;
+}
+.coupon-num{font-family:'Gaegu',cursive;font-size:38px;font-weight:700;color:var(--amber);line-height:1;}
+.coupon-cap{font-size:16px;color:var(--lt-brown);line-height:1.5;}
+
+/* ── Stats chart ── */
+.week-chart{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:5px;align-items:flex-end;
+  height:110px;margin-bottom:8px;
+}
+.chart-col{display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
+.chart-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;}
+.chart-bar{
+  width:100%;border-radius:5px 5px 0 0;
+  background:var(--border);min-height:4px;
+}
+.chart-bar.earned{background:var(--amber);}
+.chart-bar.is-today{background:var(--amber-lt);}
+.chart-day{font-size:10px;color:var(--lt-brown);}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.stat-mini{
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:14px;padding:13px;
+}
+.stat-mini-lbl{font-size:11px;color:var(--lt-brown);margin-bottom:3px;}
+.stat-mini-val{font-family:'Gaegu',cursive;font-size:24px;font-weight:700;color:var(--brown);}
+
+/* ── Settings ── */
+.setting-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);font-size:15px;
+}
+.setting-item:last-of-type{border-bottom:none;}
+input[type="time"]{
+  font-family:'Gaegu',cursive;font-size:24px;font-weight:700;
+  color:var(--brown);background:var(--bg);
+  border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 14px;outline:none;width:100%;
+  transition:border-color .2s;
+}
+input[type="time"]:focus{border-color:var(--amber);}
+
+/* ── Section title ── */
+.s-title{
+  font-family:'Gaegu',cursive;font-size:15px;font-weight:400;
+  color:var(--lt-brown);margin-bottom:8px;margin-top:2px;
+}
+
+/* ── Alarm overlay ── */
+#alarmOverlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(253,247,238,.97);
+  z-index:100;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;padding:36px 24px;
+}
+#alarmOverlay.show{display:flex;}
+.ov-img-wrap{
+  width:110px;height:110px;display:flex;align-items:center;justify-content:center;
+  animation:breathe 1.6s ease-in-out infinite alternate;
+}
+.ov-img-wrap img{
+  width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;
+}
+@keyframes breathe{
+  from{transform:scale(.92) rotate(-4deg);}
+  to{transform:scale(1.08) rotate(4deg);}
+}
+.ov-title{font-family:'Gaegu',cursive;font-size:27px;font-weight:700;color:var(--brown);text-align:center;}
+.ov-sub{font-size:15px;color:var(--lt-brown);text-align:center;line-height:1.4;}
+.ov-stack{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:36px;}
+.ov-stack img{width:36px;height:36px;object-fit:contain;mix-blend-mode:multiply;}
+
+.ov-bread-warning{
+  font-family:'Gaegu',cursive;font-size:16px;font-weight:700;
+  color:var(--amber);text-align:center;margin-top:2px;margin-bottom:2px;
+}
+
+/* 커피 마시러 갈래요 (주인공 버튼) */
+.btn-coffee-hero{
+  width:100%;max-width:320px;padding:16px 20px;
+  background:var(--green);color:#fff;
+  border:none;border-radius:18px;cursor:pointer;
+  font-family:'Gaegu',cursive;font-size:20px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 16px rgba(107,148,112,0.35);
+  transition:transform .12s,box-shadow .12s;
+  animation:heroPulse 2.2s infinite ease-in-out;
+}
+.btn-coffee-hero:active{transform:scale(0.97);}
+@keyframes heroPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.02);box-shadow:0 6px 22px rgba(107,148,112,0.48);}
+}
+
+.snooze-action-title{
+  font-size:13px;color:var(--lt-brown);text-align:center;margin-top:4px;margin-bottom:-6px;
+}
+.snooze-sel{display:flex;gap:8px;width:100%;max-width:320px;}
+.s-chip{
+  flex:1;padding:10px 4px;
+  background:var(--paper);border:1px solid var(--border);
+  border-radius:12px;cursor:pointer;
+  font-family:'Gaegu',cursive;font-size:15px;font-weight:700;color:var(--lt-brown);text-align:center;
+  transition:transform .12s,background .12s,color .12s;
+}
+.s-chip:active{transform:scale(.96);background:rgba(192,122,56,.1);color:var(--amber);}
+
+.coffee-icon{
+  width:22px;height:22px;stroke:currentColor;fill:none;flex-shrink:0;
+}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;
+  bottom:calc(env(safe-area-inset-bottom) + 70px);
+  left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--brown);color:#FDF7EE;
+  font-family:'Gaegu',cursive;font-size:17px;font-weight:700;
+  padding:11px 22px;border-radius:99px;
+  white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;z-index:200;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Header -->
+<header>
+  <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 17c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+    <rect x="2" y="17" width="20" height="4" rx="2"/>
+  </svg>
+  <span class="logo">Morning Bakery</span>
+</header>
+
+<div id="content">
+
+  <!-- ════ TAB 1: 베이커리 ════ -->
+  <div id="panel-bakery" class="tab-panel active">
+
+    <!-- 현재 시각 -->
+    <div class="clock-block">
+      <div class="clock-date" id="clockDate"></div>
+      <div id="clock">--:--</div>
+      <div class="clock-diff" id="clockDiff"></div>
+    </div>
+
+    <!-- 상태 배지 (syncBakeryState가 교체) -->
+    <div class="bakery-status-badge state-close" id="bakeryStatusBadge">
+      <div class="badge-left">
+        <span class="badge-pill pill-close" id="badgePill">CLOSE</span>
+        <span class="badge-main" id="badgeMain">베이커리 영업 종료</span>
+        <span class="badge-sub" id="badgeSub"></span>
+      </div>
+      <div class="badge-right">
+        <span class="alarm-sub-lbl">알람</span>
+        <label class="toggle">
+          <input type="checkbox" id="alarmToggle"/>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 상태1: 마감 메시지 (기상 전) -->
+    <div class="close-msg-area" id="stateMsgClose">
+      <svg class="close-msg-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <div class="close-msg-main">오늘 하루도 수고 많았어요</div>
+      <div class="close-msg-sub">내일도 향긋한 빵 냄새로 시작해요</div>
+    </div>
+
+    <!-- 상태2: 빵 굽는 중 (스누즈 중) -->
+    <div class="bread-section" id="stateMsgOpen" style="display:none">
+      <div class="bread-section-lbl" id="breadSectionLbl">스누즈할 때마다 오늘의 빵이 구워져요</div>
+      <div id="breadStack"></div>
+      <div class="bread-count-lbl" id="breadCountLbl"></div>
+    </div>
+
+    <!-- 상태3: 기상 완료 -->
+    <div class="done-area" id="stateMsgDone" style="display:none">
+      <img class="done-coffee-img" src="breads/coffee.png" alt="커피"/>
+      <div class="done-breads-row" id="doneBreadRow"></div>
+      <div class="done-msg-main" id="doneMsgMain"></div>
+      <div class="done-msg-sub">기분 좋은 하루 보내세요</div>
+      <button type="button" class="btn-reset-day" id="btnResetToday">오늘 기록 리셋하기</button>
+    </div>
+
+  </div>
+
+  <!-- ════ TAB 2: 쿠폰북 ════ -->
+  <div id="panel-coupon" class="tab-panel">
+    <div class="card coupon-card">
+      <div>
+        <div class="card-label">이번 주 빵 모음</div>
+        <div class="week-bread-trail" id="weekBreadTrail"></div>
+      </div>
+      <div class="coupon-summary">
+        <div>
+          <div class="coupon-cap">이번 주 구워낸 빵</div>
+        </div>
+        <div class="coupon-num"><span id="totalBakedBreads">0</span>개</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ TAB 3: 통계·설정 ════ -->
+  <div id="panel-stats" class="tab-panel">
+
+    <p class="s-title">목표 기상 시각</p>
+    <div class="card">
+      <div class="card-label">매일 몇 시에 일어나고 싶나요? <span id="currentTargetDisplay" style="color:var(--amber);font-weight:700;margin-left:6px;"></span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="time" id="targetTime" value="06:30" style="flex:1;"/>
+        <button type="button" id="btnSaveTarget" class="btn btn-amber" style="width:auto;padding:10px 18px;font-size:16px;white-space:nowrap;">저장</button>
+      </div>
+    </div>
+
+    <p class="s-title">이번 주 기록</p>
+    <div class="card">
+      <div class="week-chart" id="weekChart"></div>
+      <div class="stat-grid" id="statGrid"></div>
+    </div>
+
+    <p class="s-title" style="margin-top:14px;">설정</p>
+    <div class="card">
+      <div class="setting-item">
+        <span>진동 피드백</span>
+        <label class="toggle">
+          <input type="checkbox" id="vibrationToggle" checked/>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="setting-item" style="font-size:12px;color:var(--lt-brown);border:none;padding-top:6px;">
+        iOS는 진동을 지원하지 않아요
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- Nav -->
+<nav>
+  <button class="nav-btn active" data-panel="bakery" onclick="switchTab('bakery')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 17c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+      <rect x="2" y="17" width="20" height="4" rx="2"/>
+    </svg>
+    베이커리
+  </button>
+  <button class="nav-btn" data-panel="coupon" onclick="switchTab('coupon')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="6" width="20" height="12" rx="2"/>
+      <path d="M8 6v2M8 16v2M16 6v2M16 16v2"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
+    쿠폰북
+  </button>
+  <button class="nav-btn" data-panel="stats" onclick="switchTab('stats')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="20" x2="20" y2="20"/>
+      <rect x="5" y="12" width="4" height="8" rx="1"/>
+      <rect x="10" y="7" width="4" height="13" rx="1"/>
+      <rect x="15" y="3" width="4" height="17" rx="1"/>
+    </svg>
+    통계·설정
+  </button>
+</nav>
+
+</div><!-- /app -->
+
+<!-- ════ Alarm Overlay ════ -->
+<div id="alarmOverlay">
+  <div class="ov-img-wrap" id="ovImgWrap">
+    <img id="ovBreadImg" src="breads/bread_mon.png" alt="오늘의 빵"/>
+  </div>
+  <div class="ov-title" id="ovTitle">빵이 다 구워졌어요!</div>
+  <div class="ov-sub">오늘의 빵 — <span id="ovBreadName">크루아상</span></div>
+  <div class="ov-stack" id="ovStack"></div>
+  <div class="ov-bread-warning" id="ovWarning">갓 구운 빵 냄새 솔솔</div>
+
+  <!-- 커피 마시러 갈래요 (주인공 메인 버튼) -->
+  <button class="btn-coffee-hero" id="ovCoffee">
+    <svg class="coffee-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8h1a4 4 0 010 8h-1"/>
+      <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+      <line x1="6" y1="1" x2="6" y2="4"/>
+      <line x1="10" y1="1" x2="10" y2="4"/>
+      <line x1="14" y1="1" x2="14" y2="4"/>
+    </svg>
+    커피 마시러 갈래요
+  </button>
+
+  <!-- 조금 더 눈붙이고 싶다면 (서브 스누즈 옵션) -->
+  <div class="snooze-action-title">조금 더 눈붙이고 싶다면</div>
+  <div class="snooze-sel">
+    <button class="s-chip" data-min="5">5분만 더</button>
+    <button class="s-chip" data-min="10">10분만 더</button>
+    <button class="s-chip" data-min="15">15분만 더</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── 요일별 빵 데이터 (0=일 ~ 6=토) ──
+const BREADS = [
+  { name:'하트 파이', img:'breads/bread_sun.png' },    // 0: 일
+  { name:'크루아상',   img:'breads/bread_mon.png' },    // 1: 월
+  { name:'참깨 베이글', img:'breads/bread_tue.png' },    // 2: 화
+  { name:'바나나 토스트', img:'breads/bread_wed.png' }, // 3: 수
+  { name:'멜론빵',     img:'breads/bread_thu.png' },    // 4: 목
+  { name:'바게트',     img:'breads/bread_fri.png' },    // 5: 금
+  { name:'깜빠뉴',     img:'breads/bread_sat.png' }     // 6: 토
+];
+
+const DAY_KO = ['일','월','화','수','목','금','토'];
+const DAY_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function todayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function getWeekDates(){
+  const d=new Date(),day=d.getDay();
+  const mon=new Date(d);mon.setDate(d.getDate()-((day+6)%7));
+  return Array.from({length:7},(_,i)=>{
+    const cur=new Date(mon);cur.setDate(mon.getDate()+i);
+    return{
+      key:`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`,
+      dayIdx:cur.getDay(),date:cur.getDate()
+    };
+  });
+}
+
+const STORE='morning_bakery_v1';
+function loadData(){try{return JSON.parse(localStorage.getItem(STORE))||{};}catch{return{};}}
+function saveData(d){localStorage.setItem(STORE,JSON.stringify(d));}
+function todayRec(){
+  const d=loadData(),k=todayKey();
+  if(!d[k])d[k]={earned:false,breadCount:0,snoozeCount:0,wakeTime:null,targetTime:null};
+  return d[k];
+}
+function saveTodayRec(rec){
+  const d=loadData();d[todayKey()]=rec;
+  const cut=new Date();cut.setDate(cut.getDate()-30);
+  Object.keys(d).forEach(k=>{if(new Date(k)<cut)delete d[k];});
+  saveData(d);
+}
+function getSettings(){try{return JSON.parse(localStorage.getItem('mb_cfg'))||{vibration:true};}catch{return{vibration:true};}}
+function saveSettings(s){localStorage.setItem('mb_cfg',JSON.stringify(s));}
+function getSavedTarget(){return localStorage.getItem('mb_target')||'06:30';}
+function saveTarget(v){localStorage.setItem('mb_target',v);}
+
+// ── Audio (외부 음원 없이 Web Audio 비프음) ──
+let audioCtx=null,alarmPlaying=false,alarmRepeatId=null,beepTimeoutIds=[];
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playBeep(f,dur,vol){
+  try{
+    const ctx=getCtx(),osc=ctx.createOscillator(),g=ctx.createGain();
+    osc.connect(g);g.connect(ctx.destination);
+    osc.frequency.value=f;osc.type='sine';
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    osc.start();osc.stop(ctx.currentTime+dur+0.05);
+  }catch{}
+}
+function playAlarmLoop(){
+  if(!alarmPlaying)return;
+  beepTimeoutIds.forEach(id=>clearTimeout(id));
+  beepTimeoutIds=[];
+  [523,659,784,659,784,1047].forEach((f,i)=>{
+    const tid=setTimeout(()=>{if(alarmPlaying)playBeep(f,.24,.36);},i*220);
+    beepTimeoutIds.push(tid);
+  });
+  alarmRepeatId=setTimeout(playAlarmLoop,2850);
+}
+function startAlarm(){
+  if(alarmPlaying)return;
+  alarmPlaying=true;
+  try{getCtx().resume();}catch{}
+  playAlarmLoop();
+}
+function stopAlarm(){
+  alarmPlaying=false;
+  clearTimeout(alarmRepeatId);
+  beepTimeoutIds.forEach(id=>clearTimeout(id));
+  beepTimeoutIds=[];
+  if(audioCtx && audioCtx.state==='running'){
+    try{audioCtx.suspend();}catch{}
+  }
+}
+function vibrate(p){const s=getSettings();if(s.vibration&&'vibrate'in navigator)navigator.vibrate(p);}
+
+// ── Toast ──
+let toastT=null;
+function showToast(msg,dur){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),dur||2500);
+}
+
+// ── App State Variables ──
+let breadCount = 0;
+let alarmFired = false;
+let alarmTimer = null;
+let nextAlarmTimeStr = null;
+let _lastStateMin = -1;
+
+// ── Clock ──
+function updateClock(){
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0');
+  const isDim = (now.getSeconds() % 2 === 1) ? ' dim' : '';
+  document.getElementById('clock').innerHTML = `${h}<span class="clock-colon${isDim}">:</span>${m}`;
+  document.getElementById('clockDate').textContent=`${now.getMonth()+1}월 ${now.getDate()}일 (${DAY_KO[now.getDay()]})`;
+  const tv=getSavedTarget();
+  const diffEl=document.getElementById('clockDiff');
+  if(tv){
+    const[th,tm]=tv.split(':').map(Number);
+    const diff=(th*60+tm)-(now.getHours()*60+now.getMinutes());
+    const rec = todayRec();
+    if(rec.earned){
+      diffEl.textContent = '오늘 기상 완료';
+    } else if(breadCount > 0 || nextAlarmTimeStr !== null){
+      diffEl.textContent = diff <= 0 ? `목표에서 ${Math.abs(diff)}분 지남` : `다음 알람까지 ${diff}분`;
+    } else if(diff > 0){
+      diffEl.textContent = `목표까지 ${diff}분`;
+    } else if(diff === 0){
+      diffEl.textContent = '지금이에요!';
+    } else {
+      const tomorrowDiff = 24*60 + diff;
+      const tH = Math.floor(tomorrowDiff / 60);
+      const tM = tomorrowDiff % 60;
+      diffEl.textContent = `내일 목표까지 ${tH}시간 ${tM}분`;
+    }
+  }
+  // 분이 바뀔 때마다 베이커리 상태 갱신
+  const curMin=now.getHours()*60+now.getMinutes();
+  if(curMin!==_lastStateMin){_lastStateMin=curMin;updateBakeryState();}
+}
+
+// ── Alarm check ──
+function checkAlarm(){
+  // 이미 기상 완료했거나 알람 꺼져있으면 발화 금지
+  if(todayRec().earned) return;
+  if(!document.getElementById('alarmToggle').checked)return;
+  const tv=getSavedTarget();if(!tv)return;
+  const now=new Date(),[th,tm]=tv.split(':').map(Number);
+  if(now.getHours()===th&&now.getMinutes()===tm&&now.getSeconds()<30&&!alarmFired){
+    alarmFired=true;startAlarm();vibrate([300,150,300,150,300]);showOverlay();
+  }
+}
+
+// ── Bread stack (요일별 실제 빵 이미지) ──
+function createBreadImgEl(size){
+  const img=document.createElement('img');
+  img.className='b-img';
+  img.src=BREADS[new Date().getDay()].img;
+  img.alt='구워진 빵';
+  if(size){img.style.width=`${size}px`;img.style.height=`${size}px`;}
+  return img;
+}
+
+// ── 빵 개수에 따른 동적 반응 문구 ──
+const BREAD_MSGS = [
+  "조금 더 잘 때마다 오늘의 빵이 늘어나요",
+  "아이쿠, 오늘의 빵이 더 구워지고 있어요!",
+  "헤헤 빵이 점점 더 쌓이고 있답니다...",
+  "얼른 일어나 같이 커피 마시러 가요!"
+];
+
+function getBreadMsg(count){
+  if(count <= 0) return BREAD_MSGS[0];
+  return BREAD_MSGS[(count - 1) % BREAD_MSGS.length];
+}
+
+function updateBreadSectionLabel(){
+  const lbl = document.getElementById('breadSectionLbl');
+  if(lbl) lbl.textContent = getBreadMsg(breadCount);
+}
+
+// ── 상태 머신: 탭1 베이커리 3대 상태 ──
+function updateBakeryState(){
+  const rec = todayRec();
+  const tv = getSavedTarget();
+  const now = new Date();
+  const [th, tm] = (tv||'06:30').split(':').map(Number);
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  const targetMin = th*60 + tm;
+
+  const badge   = document.getElementById('bakeryStatusBadge');
+  const pill    = document.getElementById('badgePill');
+  const main    = document.getElementById('badgeMain');
+  const sub     = document.getElementById('badgeSub');
+  const stClose = document.getElementById('stateMsgClose');
+  const stOpen  = document.getElementById('stateMsgOpen');
+  const stDone  = document.getElementById('stateMsgDone');
+
+  function show(el){el.style.display='flex';}
+  function hide(el){el.style.display='none';}
+
+  // 저녁 8시(20:00 = 1200분) 이후는 내일 아침 준비 모드 (상태 1: CLOSE)
+  const isNightClose = nowMin >= 1200;
+
+  if(isNightClose){
+    // ──── 저녁 8시 이후: 베이커리 마감 모드 ────
+    badge.className='bakery-status-badge state-close';
+    pill.className='badge-pill pill-close';
+    pill.textContent='CLOSE';
+    main.textContent='베이커리 영업 종료';
+    sub.textContent = `목표 기상 시각 ${tv}`;
+    show(stClose); hide(stOpen); hide(stDone);
+
+  } else if(rec.earned){
+    // ──── 상태 3: 기상 완료 (아침~오후 8시 전) ────
+    badge.className='bakery-status-badge state-done';
+    pill.className='badge-pill pill-done';
+    pill.textContent='OPEN';
+    main.textContent='갓 구운 빵 냄새 가득, 오픈했어요';
+    const wt = rec.wakeTime || '?';
+    sub.textContent = `오늘 ${wt} 기상 완료 ✔ (목표 ${tv})`;
+    hide(stClose); hide(stOpen); show(stDone);
+
+    // 완료 영역 빵 이미지 채우기
+    const row = document.getElementById('doneBreadRow');
+    if(row){
+      row.innerHTML='';
+      const bInfo = BREADS[now.getDay()];
+      const cnt = Math.max(1, rec.breadCount||1);
+      for(let i=0;i<Math.min(cnt,10);i++){
+        const img=document.createElement('img');
+        img.src=bInfo.img; img.alt=bInfo.name;
+        row.appendChild(img);
+      }
+    }
+    const dmain = document.getElementById('doneMsgMain');
+    if(dmain){
+      const bname = BREADS[now.getDay()].name;
+      const cnt = Math.max(1, rec.breadCount||1);
+      dmain.textContent = `오늘 ${bname} ${cnt}개 굽기 성공`;
+    }
+
+  } else if(breadCount > 0 || nextAlarmTimeStr !== null){
+    // ──── 상태 2: 알람 발화 후 스누즈 중 (빵 굽는 중) ────
+    badge.className='bakery-status-badge state-open';
+    pill.className='badge-pill pill-open';
+    pill.textContent='OPEN';
+    main.textContent='갓 구운 빵 냄새 가득, 오픈했어요';
+    const diff = Math.max(0, nowMin - targetMin);
+    if(nextAlarmTimeStr){
+      sub.textContent = diff===0 ? `목표 ${tv} · 다음 알람 ${nextAlarmTimeStr}` : `오늘 목표(${tv})에서 ${diff}분 지남 · 다음 알람 ${nextAlarmTimeStr}`;
+    } else {
+      sub.textContent = diff===0 ? `목표 기상 시각(${tv})이에요!` : `오늘 목표(${tv})에서 ${diff}분이 지났어요`;
+    }
+    hide(stClose); show(stOpen); hide(stDone);
+
+    const lbl = document.getElementById('breadSectionLbl');
+    if(lbl && nextAlarmTimeStr){
+      lbl.textContent = `${nextAlarmTimeStr}에 알람이 다시 울려요`;
+    }
+
+  } else {
+    // ──── 상태 1: 기상 전 / 리셋 후 / 마감 대기 ────
+    badge.className='bakery-status-badge state-close';
+    pill.className='badge-pill pill-close';
+    pill.textContent='CLOSE';
+    main.textContent='베이커리 영업 종료';
+    sub.textContent = `목표 기상 시각 ${tv}`;
+    show(stClose); hide(stOpen); hide(stDone);
+  }
+}
+
+function addBreadToStack(){
+  const st=document.getElementById('breadStack');
+  if(st.querySelectorAll('.b-img').length<14)st.appendChild(createBreadImgEl(52));
+  const lbl=document.getElementById('breadCountLbl');
+  const bname=BREADS[new Date().getDay()].name;
+  lbl.textContent=breadCount>0?`${bname} ${breadCount}개 구워짐`:'';
+  updateBreadSectionLabel();
+}
+
+function bakeBreadAnimation(cb){
+  const st=document.getElementById('breadStack');
+  const items=st.querySelectorAll('.b-img');
+  if(!items.length){cb&&cb();return;}
+  let done=0;
+  items.forEach(el=>{
+    el.classList.add('baking');
+    setTimeout(()=>{
+      done++;
+      if(done===items.length){
+        st.innerHTML='';
+        document.getElementById('breadCountLbl').textContent='';
+        updateBreadSectionLabel();
+        cb&&cb();
+      }
+    },700);
+  });
+}
+
+// ── Overlay ──
+function showOverlay(){
+  const todayBread=BREADS[new Date().getDay()];
+  document.getElementById('ovBreadName').textContent=todayBread.name;
+  document.getElementById('ovBreadImg').src=todayBread.img;
+  
+  // 첫 알람 vs N번째 빵 타이틀
+  const titleEl=document.getElementById('ovTitle');
+  if(titleEl){
+    if(breadCount <= 0){
+      titleEl.textContent = '빵이 다 구워졌어요!';
+    } else {
+      titleEl.textContent = `${breadCount + 1}번째 빵이 구워졌어요!`;
+    }
+  }
+
+  // 빵 타요 경고 멘트 (초간결 4단 콤보)
+  const warnEl=document.getElementById('ovWarning');
+  if(warnEl){
+    if(breadCount <= 0){
+      warnEl.textContent = '갓 구운 빵 냄새 솔솔';
+    } else if(breadCount === 1){
+      warnEl.textContent = '지금 먹어야 제일 맛있어요!';
+    } else if(breadCount === 2){
+      warnEl.textContent = '앗, 빵이 너무 노릇해져요!';
+    } else {
+      warnEl.textContent = '이러다 빵 타요! 얼른 출동';
+    }
+  }
+
+  const ovSt=document.getElementById('ovStack');ovSt.innerHTML='';
+  for(let i=0;i<Math.min(breadCount,15);i++){
+    const im=document.createElement('img');
+    im.src=todayBread.img;
+    ovSt.appendChild(im);
+  }
+  document.getElementById('alarmOverlay').classList.add('show');
+}
+function hideOverlay(){
+  const ov = document.getElementById('alarmOverlay');
+  if(ov) ov.classList.remove('show');
+}
+
+// ── 5분 / 10분 / 15분 즉시 스누즈 세팅 ──
+function doInstantSnooze(minutes){
+  stopAlarm();
+  hideOverlay();
+  breadCount++;
+  addBreadToStack();
+  const rec=todayRec();
+  rec.breadCount=breadCount;rec.snoozeCount=(rec.snoozeCount||0)+1;
+  saveTodayRec(rec);
+
+  // 다음 알람 예정 시각 계산 (HH:MM)
+  const nextDate = new Date(Date.now() + minutes * 60 * 1000);
+  const nh = String(nextDate.getHours()).padStart(2, '0');
+  const nm = String(nextDate.getMinutes()).padStart(2, '0');
+  nextAlarmTimeStr = `${nh}:${nm}`;
+
+  showToast(`빵 굽는 중... ${nextAlarmTimeStr}에 알람이 다시 울려요`);
+  _lastStateMin = -1;
+  updateBakeryState();
+
+  clearTimeout(alarmTimer);
+  alarmTimer=setTimeout(()=>{
+    nextAlarmTimeStr = null;
+    alarmFired=true;
+    startAlarm();
+    vibrate([200,100,200]);
+    showOverlay();
+  },minutes*60*1000);
+}
+
+// ── 커피 마시러 갈래요 ──
+function doCoffee(){
+  // 1. 소리 및 오버레이 즉각 정지
+  stopAlarm();
+  hideOverlay();
+
+  // 2. 타이머 완벽 정리 및 재발화 방지 플래그 고정
+  clearTimeout(alarmTimer);
+  alarmTimer = null;
+  alarmFired = true; // 오늘 알람은 완료됨 (재발화 차단)
+  nextAlarmTimeStr = null;
+
+  // 3. 오늘 기록 저장
+  const rec=todayRec();
+  if(!rec.earned){
+    rec.earned=true;
+    rec.breadCount=breadCount;
+    const n=new Date();
+    rec.wakeTime=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+    rec.targetTime=getSavedTarget();
+    saveTodayRec(rec);
+  }
+  vibrate([100,60,200]);
+  bakeBreadAnimation(()=>{});
+  showToast('쿠폰 스탬프 적립! 커피 맛있게 드세요', 3200);
+
+  renderCoupon();
+  _lastStateMin=-1;
+  updateBakeryState(); // 즉시 상태3 전환
+}
+
+// ── 이번 주 빵 모음 (자연스럽게 이어지는 트레일 방식) ──
+function renderCoupon(){
+  const data=loadData(),wd=getWeekDates(),today=todayKey();
+  const container=document.getElementById('weekBreadTrail');
+  if(!container)return;
+  container.innerHTML='';
+  let totalBaked=0;
+
+  wd.forEach(({key,dayIdx,date})=>{
+    const rec=data[key]||{};
+    const earned=rec.earned;
+    const isToday=key===today;
+    const bInfo=BREADS[dayIdx];
+    const bCount=earned ? Math.max(1, rec.breadCount||0) : 0;
+    if(bCount>0) totalBaked += bCount;
+
+    const group=document.createElement('div');
+    group.className='day-bread-group' + (isToday ? ' is-today' : '') + (!earned ? ' not-yet' : '');
+
+    const tag=document.createElement('div');
+    tag.className='day-tag';
+    tag.textContent=`${DAY_KO[dayIdx]}(${date})`;
+    group.appendChild(tag);
+
+    const list=document.createElement('div');
+    list.className='bread-item-list';
+
+    if(earned){
+      for(let i=0;i<bCount;i++){
+        const img=document.createElement('img');
+        img.src=bInfo.img;
+        img.alt=bInfo.name;
+        img.className='flow-b-img';
+        list.appendChild(img);
+      }
+    } else {
+      const img=document.createElement('img');
+      img.src=bInfo.img;
+      img.alt=bInfo.name;
+      img.className='flow-b-img';
+      list.appendChild(img);
+    }
+
+    group.appendChild(list);
+    container.appendChild(group);
+  });
+
+  const totalEl=document.getElementById('totalBakedBreads');
+  if(totalEl) totalEl.textContent=totalBaked;
+}
+
+// ── Stats render ──
+function renderStats(){
+  const data=loadData(),wd=getWeekDates(),today=todayKey();
+  const chart=document.getElementById('weekChart');chart.innerHTML='';
+  
+  let attendanceCount=0; // 1) 이번 주 출석
+  let targetAchievedDays=0; // 2) 목표 달성일 (기상시간 <= 목표시간)
+  let totalBreadsBaked=0; // 3) 구워진 빵 총 개수
+  let targetStreak=0; // 4) 목표 연속 달성일
+  
+  const maxS=Math.max(1,...wd.map(({key})=>Math.max(1, (data[key]||{}).breadCount||0)));
+
+  wd.forEach(({key,dayIdx,date})=>{
+    const rec=data[key]||{};
+    const earned=rec.earned,isToday=key===today;
+    const bCount=earned ? Math.max(1, rec.breadCount||0) : 0;
+    
+    // 막대 그래프: 구워진 빵 개수 기준 높이
+    const barH=maxS>0?Math.max(6,Math.round((bCount/maxS)*82)):6;
+    const col=document.createElement('div');col.className='chart-col';
+    const bw=document.createElement('div');bw.className='chart-bar-wrap';
+    const bar=document.createElement('div');
+    bar.className='chart-bar'+(earned?' earned':isToday?' is-today':'');
+    bar.style.height=`${barH}px`;
+    bw.appendChild(bar);col.appendChild(bw);
+    const dl=document.createElement('div');dl.className='chart-day';dl.textContent=DAY_KO[dayIdx];col.appendChild(dl);
+    chart.appendChild(col);
+
+    if(earned){
+      attendanceCount++;
+      totalBreadsBaked += bCount;
+      
+      // 목표 달성 여부 확인 (실제 기상시간 <= 목표 기상시간)
+      if(typeof rec.wakeTime === 'string' && typeof rec.targetTime === 'string'){
+        const [wh, wm] = rec.wakeTime.split(':').map(Number);
+        const [th, tm] = rec.targetTime.split(':').map(Number);
+        if((wh * 60 + wm) <= (th * 60 + tm)){
+          targetAchievedDays++;
+        }
+      } else {
+        targetAchievedDays++;
+      }
+    }
+  });
+
+  // 목표 연속 달성일 계산 (최신 날짜부터 역순)
+  const rev=[...wd].reverse();
+  for(const{key}of rev){
+    const rec=data[key]||{};
+    if(rec.earned){
+      if(typeof rec.wakeTime === 'string' && typeof rec.targetTime === 'string'){
+        const [wh, wm] = rec.wakeTime.split(':').map(Number);
+        const [th, tm] = rec.targetTime.split(':').map(Number);
+        if((wh * 60 + wm) <= (th * 60 + tm)) targetStreak++;
+        else break;
+      } else {
+        targetStreak++;
+      }
+    } else {
+      if(key < today) break; // 지난 날짜에 안 일어났으면 스트릭 종료
+    }
+  }
+
+  const sg=document.getElementById('statGrid');sg.innerHTML=`
+    <div class="stat-mini"><div class="stat-mini-lbl">이번 주 출석</div><div class="stat-mini-val">${attendanceCount}일</div></div>
+    <div class="stat-mini"><div class="stat-mini-lbl">목표 달성일</div><div class="stat-mini-val">${targetAchievedDays}일</div></div>
+    <div class="stat-mini"><div class="stat-mini-lbl">구워진 빵</div><div class="stat-mini-val">${totalBreadsBaked}개</div></div>
+    <div class="stat-mini"><div class="stat-mini-lbl">목표 연속 달성</div><div class="stat-mini-val">${targetStreak}일</div></div>
+  `;
+}
+
+// ── Settings sync ──
+function syncUI(){
+  const tv=getSavedTarget();
+  const inp = document.getElementById('targetTime');
+  if(inp) inp.value = tv;
+  const disp = document.getElementById('targetDisplayTime');
+  if(disp) disp.textContent = tv;
+  const curDisp = document.getElementById('currentTargetDisplay');
+  if(curDisp) curDisp.textContent = `(현재 설정: ${tv})`;
+  document.getElementById('vibrationToggle').checked=getSettings().vibration;
+}
+
+// ── 목표 시간 적용 및 저장 ──
+function applyNewTarget(v){
+  if(!v) return;
+  saveTarget(v);
+
+  const rec = todayRec();
+  rec.targetTime = v;
+
+  // 알람/목표시간을 새로 설정하면 항상 새 알람 대기 상태(상태 1: CLOSE)로 준비
+  rec.earned = false;
+  rec.wakeTime = null;
+  rec.breadCount = 0;
+  rec.snoozeCount = 0;
+  breadCount = 0;
+
+  const bStack = document.getElementById('breadStack');
+  if(bStack) bStack.innerHTML = '';
+  const dRow = document.getElementById('doneBreadRow');
+  if(dRow) dRow.innerHTML = '';
+  const bLbl = document.getElementById('breadCountLbl');
+  if(bLbl) bLbl.textContent = '';
+
+  document.getElementById('alarmToggle').checked = true;
+  alarmFired = false;
+  clearTimeout(alarmTimer);
+  alarmTimer = null;
+  nextAlarmTimeStr = null;
+
+  saveTodayRec(rec);
+
+  _lastStateMin = -1;
+  syncUI();
+  updateClock();
+  updateBakeryState(); // 목표 변경 시 배지 및 상태1 즉시 갱신
+  renderCoupon();
+  showToast(`목표 기상 시각이 ${v}로 저장되었어요!`);
+}
+
+// ── Event bindings ──
+const targetInput = document.getElementById('targetTime');
+
+// 입력창에서 시간 변경 시 즉시 자동 저장
+if(targetInput){
+  targetInput.addEventListener('change', (e)=>{
+    const val = e.target.value;
+    if(val){
+      applyNewTarget(val);
+    }
+  });
+}
+
+// 목표 시간 저장 버튼 클릭 시
+const btnSave = document.getElementById('btnSaveTarget');
+if(btnSave){
+  btnSave.addEventListener('click',()=>{
+    const val = targetInput ? targetInput.value : '';
+    if(val){
+      applyNewTarget(val);
+    }
+    switchTab('bakery'); // 베이커리 탭으로 전환하여 즉시 확인
+  });
+}
+
+document.getElementById('alarmToggle').addEventListener('change',()=>{
+  const on=document.getElementById('alarmToggle').checked;
+  try{getCtx().resume();}catch{}
+  alarmFired=false;
+  if(!on){clearTimeout(alarmTimer);stopAlarm();hideOverlay();}
+});
+document.getElementById('vibrationToggle').addEventListener('change',()=>{
+  const s=getSettings();s.vibration=document.getElementById('vibrationToggle').checked;saveSettings(s);
+});
+
+// 5분 / 10분 / 15분 즉시 스누즈 버튼들
+document.querySelectorAll('.s-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    const min=parseInt(chip.dataset.min);
+    doInstantSnooze(min);
+  });
+});
+
+// 커피 마시러 갈래요
+document.getElementById('ovCoffee').addEventListener('click',doCoffee);
+
+// 오늘 기록 리셋하기 (완전한 백지 초기화)
+const btnReset = document.getElementById('btnResetToday');
+if(btnReset){
+  btnReset.addEventListener('click',()=>{
+    const rec = todayRec();
+    rec.earned = false;
+    rec.wakeTime = null;
+    rec.targetTime = null;
+    rec.breadCount = 0;
+    rec.snoozeCount = 0;
+    saveTodayRec(rec);
+
+    breadCount = 0;
+    const bStack = document.getElementById('breadStack');
+    if(bStack) bStack.innerHTML = '';
+    const dRow = document.getElementById('doneBreadRow');
+    if(dRow) dRow.innerHTML = '';
+    const bLbl = document.getElementById('breadCountLbl');
+    if(bLbl) bLbl.textContent = '';
+
+    document.getElementById('alarmToggle').checked = true;
+    alarmFired = false;
+    clearTimeout(alarmTimer);
+    alarmTimer = null;
+    nextAlarmTimeStr = null;
+
+    updateBreadSectionLabel();
+    _lastStateMin = -1;
+    updateClock();
+    updateBakeryState();
+    renderCoupon();
+    showToast('오늘 기록을 깨끗하게 리셋했어요. 다시 시작해요!');
+  });
+}
+
+// ── Tab nav switcher ──
+function switchTab(panel){
+  try{
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.panel === panel);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p=>{
+      p.classList.remove('active');
+    });
+    const target = document.getElementById(`panel-${panel}`);
+    if(target) target.classList.add('active');
+
+    if(panel === 'coupon'){
+      try{ renderCoupon(); }catch(e){ console.error('renderCoupon error:', e); }
+    }
+    if(panel === 'stats'){
+      try{ renderStats(); syncUI(); }catch(e){ console.error('renderStats error:', e); }
+    }
+  }catch(err){
+    console.error('switchTab error:', err);
+  }
+}
+window.switchTab = switchTab;
+
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',(e)=>{
+    e.preventDefault();
+    const panel=btn.dataset.panel;
+    if(panel) switchTab(panel);
+  });
+});
+
+// ── Init ──
+(function init(){
+  const rec=todayRec();
+  breadCount=rec.breadCount||0;
+
+  syncUI();
+  renderCoupon();
+
+  // 빵 스택은 상태2(스누즈 중)에만 보이는 영역에 복원
+  for(let i=0;i<Math.min(breadCount,14);i++){
+    const st = document.getElementById('breadStack');
+    if(st) st.appendChild(createBreadImgEl(52));
+  }
+  if(breadCount>0){
+    const bname=BREADS[new Date().getDay()].name;
+    const bLbl = document.getElementById('breadCountLbl');
+    if(bLbl) bLbl.textContent=`${bname} ${breadCount}개 구워짐`;
+  }
+  updateBreadSectionLabel();
+  updateBakeryState(); // 초기 상태 결정
+
+  updateClock();
+  setInterval(updateClock,1000);
+  setInterval(checkAlarm,1000);
+})();
+</script>
+</body>
+</html>
