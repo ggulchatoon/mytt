@@ -4,6 +4,21 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1.0,user-scalable=no"/>
 <title>Work Receipt</title>
+
+<!-- 홈 화면 추가 시 앱처럼 전체화면(주소창 숨김)으로 열리게 설정 -->
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="영수증타이머"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#EAE6DF"/>
+
+<!-- 앱 아이콘 (영수증 이모지 SVG) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FAF9F5'/><text y='68' x='50' font-size='60' text-anchor='middle'>🧾</text></svg>"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='78' font-size='80'>🧾</text></svg>"/>
+
+<!-- PWA Manifest 인라인 (안드로이드/크롬 전체화면 지원) -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Work%20Receipt%22%2C%22short_name%22%3A%22%EC%98%81%EC%88%98%EC%66%9D%ED%83%80%EC%9D%B4%EB%A8%B8%22%2C%22start_url%22%3A%22work_receipt.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23EAE6DF%22%2C%22theme_color%22%3A%22%23EAE6DF%22%7D"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=VT323&display=swap" rel="stylesheet"/>
