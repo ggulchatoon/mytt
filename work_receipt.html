@@ -174,10 +174,16 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  cursor: pointer;
+}
+.item-card:hover {
+  background: #FCFAF7;
+  border-color: var(--ink-sub);
 }
 .item-card.measuring {
   border: 1.5px solid var(--ink-main);
   background: #F4EFE6;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
 }
 
 .item-main-row {
@@ -213,7 +219,7 @@ html, body {
 }
 @keyframes pulseClock {
   0% { transform: scale(1); }
-  50% { transform: scale(1.15); stroke-width: 2.2; }
+  50% { transform: scale(1.22); stroke-width: 2.2; }
   100% { transform: scale(1); }
 }
 
@@ -228,6 +234,7 @@ html, body {
   color: var(--ink-main);
   outline: none;
   padding: 2px 0;
+  cursor: text;
 }
 .item-name-input::placeholder {
   color: var(--ink-light);
@@ -253,11 +260,17 @@ html, body {
 /* 시간 표시 */
 .item-time-display {
   font-family: 'Courier Prime', monospace;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
-  min-width: 58px;
+  min-width: 62px;
   text-align: right;
   flex-shrink: 0;
+  color: var(--ink-sub);
+  letter-spacing: -0.2px;
+  transition: color 0.15s ease;
+}
+.item-card.measuring .item-time-display {
+  color: var(--ink-main);
 }
 
 /* ── 오늘의 할 일 추가 버튼 (+ ITEM) ── */
@@ -625,12 +638,22 @@ function renderList() {
     const isMeasuring = (activeId === task.id);
     const card = document.createElement('div');
     card.className = 'item-card' + (isMeasuring ? ' measuring' : '');
+    card.title = isMeasuring ? '클릭하여 측정 일시정지' : '클릭하여 측정 시작';
+
+    // 카드 본체 클릭 시 바로 타이머 측정 토글
+    card.onclick = (e) => {
+      // 텍스트 인풋, 세부항목 토글 버튼, 체크박스 등 내부 인터랙션 요소 클릭 시에는 타이머 토글 방지
+      if (e.target.closest('input') || e.target.closest('.subtask-toggle-btn') || e.target.closest('.subtask-chk')) {
+        return;
+      }
+      toggleTimer(task.id);
+    };
 
     // 메인 로우
     const mainRow = document.createElement('div');
     mainRow.className = 'item-main-row';
 
-    // 시계 아이콘 버튼 (측정 시작/정지)
+    // 시계 아이콘 버튼 (측정 시작/정지 & 줌인아웃 펄스 유지)
     const clockBtn = document.createElement('button');
     clockBtn.type = 'button';
     clockBtn.className = 'clock-btn';
@@ -641,7 +664,10 @@ function renderList() {
         <polyline points="12 7 12 12 15 15"/>
       </svg>
     `;
-    clockBtn.onclick = () => toggleTimer(task.id);
+    clockBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleTimer(task.id);
+    };
 
     // 할 일 텍스트 인풋
     const nameInput = document.createElement('input');
@@ -649,6 +675,7 @@ function renderList() {
     nameInput.className = 'item-name-input';
     nameInput.placeholder = task.placeholder;
     nameInput.value = task.name;
+    nameInput.onclick = (e) => e.stopPropagation();
     nameInput.oninput = (e) => {
       task.name = e.target.value;
       saveTasks();
@@ -659,13 +686,14 @@ function renderList() {
     subBtn.type = 'button';
     subBtn.className = 'subtask-toggle-btn';
     subBtn.innerHTML = `세부 ${task.subtasksOpen ? '▲' : '▼'}`;
-    subBtn.onclick = () => {
+    subBtn.onclick = (e) => {
+      e.stopPropagation();
       task.subtasksOpen = !task.subtasksOpen;
       saveTasks();
       renderList();
     };
 
-    // 소요 시간
+    // 소요 시간 (각 카드 우측에 실시간으로 표시)
     const timeSpan = document.createElement('span');
     timeSpan.className = 'item-time-display';
     timeSpan.textContent = fmt(task.seconds);
