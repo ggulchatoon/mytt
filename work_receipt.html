@@ -280,30 +280,18 @@ html, body {
   color: var(--ink-main);
 }
 
-/* 세부 할 일 드롭다운 토글 버튼 */
+/* 세부 할 일 드롭다운 토글 버튼 (원래 미니멀 스타일) */
 .subtask-toggle-btn {
-  background: #F4EFE6;
-  border: 1px solid var(--ink-light);
-  border-radius: 4px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 10.5px;
+  background: transparent;
+  border: none;
+  font-size: 11px;
   color: var(--ink-sub);
   cursor: pointer;
-  padding: 2px 5px;
+  padding: 2px 4px;
   display: flex;
   align-items: center;
   gap: 2px;
   flex-shrink: 0;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-.subtask-toggle-btn:hover {
-  background: #E8E2D7;
-  color: var(--ink-main);
-}
-.item-card.measuring .subtask-toggle-btn {
-  background: #EAE3D6;
-  border-color: var(--ink-sub);
 }
 
 /* ── 오늘의 할 일 추가 버튼 (+ ITEM) ── */
