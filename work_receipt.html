@@ -415,21 +415,21 @@ html, body {
   margin-top: 2px;
 }
 
-/* ── 하단 컨트롤 버튼 바 (초기화 / 저장) ── */
+/* ── 하단 제어 버튼 바 (리셋 / 오늘 영수증 기록) ── */
 .actions-bar {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 8px;
   flex-shrink: 0;
 }
 .act-btn {
   flex: 1;
-  padding: 12px;
+  padding: 11px;
   border: 1.5px solid var(--ink-main);
   background: var(--receipt-bg);
   color: var(--ink-main);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -446,10 +446,240 @@ html, body {
   color: var(--receipt-bg);
 }
 
+/* ── 하단 끌올 핸들 (Weekly Archive Pull-up Indicator) ── */
+.pull-up-trigger {
+  margin-top: 6px;
+  padding: 6px 0;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink-sub);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pull-bar-indicator {
+  width: 38px;
+  height: 4px;
+  background: var(--ink-light);
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
+.pull-up-trigger:hover .pull-bar-indicator,
+.pull-up-trigger:active .pull-bar-indicator {
+  background: var(--ink-main);
+}
+.pull-up-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ── 주간 기록 바텀시트 (서랍형 피드) ── */
+.history-sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+  z-index: 1000;
+}
+.history-sheet-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.history-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 420px;
+  margin: 0 auto;
+  height: 82dvh;
+  background: var(--desk-bg);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -6px 30px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(102%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1001;
+  overflow: hidden;
+}
+.history-sheet.open {
+  transform: translateY(0);
+}
+
+.history-sheet-header {
+  padding: 12px 18px 10px;
+  background: var(--receipt-bg);
+  border-bottom: 1.5px solid var(--ink-main);
+  position: relative;
+  flex-shrink: 0;
+}
+.history-drag-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--ink-light);
+  border-radius: 2px;
+  margin: 0 auto 8px;
+  cursor: grab;
+}
+.history-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.history-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.history-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-main);
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.history-week-summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-sub);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--ink-light);
+}
+
+.history-feed-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 미니 영수증 피드 카드 */
+.feed-ticket {
+  background: var(--receipt-bg);
+  border: 1px solid var(--ink-main);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.feed-ticket::before {
+  content: '';
+  position: absolute;
+  top: -4px; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--desk-bg),
+    var(--desk-bg) 3px,
+    var(--receipt-bg) 3px,
+    var(--receipt-bg) 6px
+  );
+}
+.feed-ticket::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--receipt-bg),
+    var(--receipt-bg) 3px,
+    var(--desk-bg) 3px,
+    var(--desk-bg) 6px
+  );
+}
+
+.feed-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--ink-light);
+  padding-bottom: 5px;
+}
+.feed-ticket-date {
+  font-weight: 700;
+  font-size: 12px;
+}
+.feed-ticket-time {
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  font-size: 14px;
+}
+.feed-ticket-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+.feed-ticket-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--ink-main);
+}
+.feed-ticket-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+.feed-ticket-dur {
+  font-family: 'Courier Prime', monospace;
+  font-size: 11.5px;
+  color: var(--ink-sub);
+  flex-shrink: 0;
+}
+.feed-ticket-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+  border-top: 1px dotted var(--ink-light);
+}
+.feed-del-btn {
+  background: transparent;
+  border: none;
+  font-size: 10px;
+  color: var(--ink-light);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.feed-del-btn:hover {
+  color: #C2410C;
+}
+
+.empty-history-msg {
+  text-align: center;
+  color: var(--ink-sub);
+  font-size: 12px;
+  padding: 40px 20px;
+  line-height: 1.6;
+}
+
 /* 토스트 메시지 */
 #toast {
   position: fixed;
-  bottom: 20px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(16px);
   background: var(--ink-main);
@@ -536,16 +766,41 @@ html, body {
 
   </div>
 
-  <!-- 하단 제어 버튼 (초기화 / 이미지 저장) -->
+  <!-- 하단 제어 버튼 (리셋 / 오늘 영수증 기록) -->
   <div class="actions-bar">
     <button type="button" class="act-btn" id="btnReset">
-      <span>↺ 리셋</span>
+      <span>리셋</span>
     </button>
-    <button type="button" class="act-btn primary" id="btnSave">
-      <span>영수증 이미지 저장</span>
+    <button type="button" class="act-btn primary" id="btnArchiveToday">
+      <span>오늘 영수증 기록</span>
     </button>
   </div>
 
+  <!-- 하단 끌올 트리거 핸들 -->
+  <div class="pull-up-trigger" id="pullUpTrigger">
+    <div class="pull-bar-indicator"></div>
+    <div class="pull-up-label" id="pullUpLabel">주간 기록 피드 끌어올리기</div>
+  </div>
+
+</div>
+
+<!-- 주간 기록 서랍 (바텀시트) -->
+<div class="history-sheet-backdrop" id="historyBackdrop"></div>
+<div class="history-sheet" id="historySheet">
+  <div class="history-sheet-header" id="historyHeader">
+    <div class="history-drag-handle"></div>
+    <div class="history-header-top">
+      <span class="history-title">WEEKLY RECEIPT ARCHIVE</span>
+      <button type="button" class="history-close-btn" id="historyCloseBtn">&times;</button>
+    </div>
+    <div class="history-week-summary">
+      <span id="historyWeekRange">-</span>
+      <span id="historyWeekTotal">총 00:00:00 (0장)</span>
+    </div>
+  </div>
+  <div class="history-feed-list" id="historyFeedList">
+    <!-- 주간 영수증 피드 카드 동적 렌더링 -->
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -831,7 +1086,7 @@ function toggleTimer(id) {
     startTimer();
     const t = tasks.find(x => x.id === id);
     const name = t.name.trim() || t.placeholder.split('(')[0].trim();
-    showToast(`[${name}] 측정 시작 ⏱️`);
+    showToast(`[${name}] 측정 시작`);
   }
   renderList();
 }
@@ -883,26 +1138,199 @@ document.getElementById('btnReset').addEventListener('click', () => {
   }
 });
 
-// ── 영수증 이미지 저장 (html2canvas) ──
-document.getElementById('btnSave').addEventListener('click', () => {
-  pauseTimer();
-  showToast('영수증 이미지 인쇄 중... 📸');
+// ── 주간 영수증 아카이브 관리 (로컬스토리지) ──
+function getArchive() {
+  return JSON.parse(localStorage.getItem('mytt_receipt_archive')) || [];
+}
+function saveArchive(list) {
+  localStorage.setItem('mytt_receipt_archive', JSON.stringify(list));
+}
 
-  const sheet = document.getElementById('receiptSheet');
-  html2canvas(sheet, {
-    scale: 2.5,
-    backgroundColor: '#FAF9F5',
-    useCORS: true
-  }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = `작업영수증_${dYear}${dMonth}${dDate}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    showToast('영수증이 갤러리에 저장되었습니다! 🧾');
-  }).catch(() => {
-    showToast('저장 중 문제가 생겼습니다.');
-  });
+// 이번 주 월~일 범위 계산
+function getWeekRangeStr(d = new Date()) {
+  const current = new Date(d);
+  const day = current.getDay(); // 0: 일, 1: 월 ...
+  const diffToMon = current.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(current.setDate(diffToMon));
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+
+  const mStr = `${mon.getMonth() + 1}.${String(mon.getDate()).padStart(2, '0')}`;
+  const sStr = `${sun.getMonth() + 1}.${String(sun.getDate()).padStart(2, '0')}`;
+  return `${mStr} ~ ${sStr}`;
+}
+
+// 오늘 영수증을 주간 기록에 저장
+document.getElementById('btnArchiveToday').addEventListener('click', () => {
+  pauseTimer();
+  const totalSec = tasks.reduce((sum, item) => sum + item.seconds, 0);
+  if (totalSec === 0 && !tasks.some(t => t.name.trim())) {
+    showToast('기록할 작업 시간이나 내용이 없습니다.');
+    return;
+  }
+
+  const archive = getArchive();
+  const todayEntry = {
+    id: 'rcpt_' + Date.now(),
+    date: todayKey,
+    timestamp: Date.now(),
+    store: studioInput.value.trim() || '나만의 마감공방',
+    author: authorInput.value.trim() || '꿀차',
+    totalSeconds: totalSec,
+    tasks: tasks.filter(t => t.seconds > 0 || t.name.trim()).map(t => ({
+      name: t.name.trim() || t.placeholder.split('(')[0].trim(),
+      seconds: t.seconds,
+      subtasks: t.subtasks.filter(s => s.text.trim())
+    }))
+  };
+
+  archive.unshift(todayEntry); // 최신순 저장
+  saveArchive(archive);
+  updatePullUpBadge();
+  showToast('오늘의 영수증이 주간 기록에 저장되었습니다.');
 });
+
+// 하단 끌올 뱃지 및 주간 피드 렌더링
+function updatePullUpBadge() {
+  const archive = getArchive();
+  const label = document.getElementById('pullUpLabel');
+  if (archive.length > 0) {
+    label.textContent = `주간 기록 피드 끌어올리기 (${archive.length}장)`;
+  } else {
+    label.textContent = '주간 기록 피드 끌어올리기';
+  }
+}
+
+function renderHistoryFeed() {
+  const archive = getArchive();
+  const container = document.getElementById('historyFeedList');
+  container.innerHTML = '';
+
+  const weekRangeStr = getWeekRangeStr();
+  document.getElementById('historyWeekRange').textContent = `이번 주 (${weekRangeStr})`;
+
+  const totalSecAll = archive.reduce((s, a) => s + (a.totalSeconds || 0), 0);
+  document.getElementById('historyWeekTotal').textContent = `총 ${fmt(totalSecAll)} (${archive.length}장)`;
+
+  if (archive.length === 0) {
+    container.innerHTML = `
+      <div class="empty-history-msg">
+        아직 보관된 영수증이 없습니다.<br/>
+        오늘 작업을 마치고 [오늘 영수증 기록] 버튼을 눌러보세요.
+      </div>
+    `;
+    return;
+  }
+
+  archive.forEach((entry, idx) => {
+    const card = document.createElement('div');
+    card.className = 'feed-ticket';
+
+    const header = document.createElement('div');
+    header.className = 'feed-ticket-header';
+    header.innerHTML = `
+      <span class="feed-ticket-date">${entry.date} · ${entry.store || ''}</span>
+      <span class="feed-ticket-time">${fmt(entry.totalSeconds)}</span>
+    `;
+
+    const tasksWrap = document.createElement('div');
+    tasksWrap.className = 'feed-ticket-tasks';
+    if (entry.tasks && entry.tasks.length > 0) {
+      entry.tasks.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'feed-ticket-row';
+        row.innerHTML = `
+          <span class="feed-ticket-name">• ${t.name}</span>
+          <span class="feed-ticket-dur">${fmtShort(t.seconds)}</span>
+        `;
+        tasksWrap.appendChild(row);
+      });
+    } else {
+      const row = document.createElement('div');
+      row.className = 'feed-ticket-row';
+      row.innerHTML = `<span class="feed-ticket-name">• 상세 내용 없음</span><span class="feed-ticket-dur">${fmtShort(entry.totalSeconds)}</span>`;
+      tasksWrap.appendChild(row);
+    }
+
+    const footer = document.createElement('div');
+    footer.className = 'feed-ticket-footer';
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'feed-del-btn';
+    delBtn.textContent = '삭제';
+    delBtn.onclick = () => {
+      if (confirm('이 영수증 기록을 삭제할까요?')) {
+        archive.splice(idx, 1);
+        saveArchive(archive);
+        renderHistoryFeed();
+        updatePullUpBadge();
+        showToast('기록이 삭제되었습니다.');
+      }
+    };
+    footer.appendChild(delBtn);
+
+    card.appendChild(header);
+    card.appendChild(tasksWrap);
+    card.appendChild(footer);
+    container.appendChild(card);
+  });
+}
+
+// ── 바텀시트 제스처 및 열기/닫기 인터랙션 ──
+const historySheet = document.getElementById('historySheet');
+const historyBackdrop = document.getElementById('historyBackdrop');
+const pullUpTrigger = document.getElementById('pullUpTrigger');
+const historyCloseBtn = document.getElementById('historyCloseBtn');
+
+function openHistorySheet() {
+  renderHistoryFeed();
+  historySheet.classList.add('open');
+  historyBackdrop.classList.add('open');
+}
+
+function closeHistorySheet() {
+  historySheet.classList.remove('open');
+  historyBackdrop.classList.remove('open');
+}
+
+pullUpTrigger.addEventListener('click', openHistorySheet);
+historyBackdrop.addEventListener('click', closeHistorySheet);
+historyCloseBtn.addEventListener('click', closeHistorySheet);
+
+// 터치 스와이프 제스처 (끌올 & 끌내림)
+let touchStartY = 0;
+let touchEndY = 0;
+
+// 화면 하단 영역에서 위로 스와이프하면 열기
+document.addEventListener('touchstart', (e) => {
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  touchEndY = e.changedTouches[0].clientY;
+  const diffY = touchStartY - touchEndY;
+
+  // 바텀시트가 닫힌 상태에서 하단 쪽 터치 후 위로 60px 이상 끌어올렸을 때 열기
+  if (!historySheet.classList.contains('open')) {
+    if (diffY > 60 && touchStartY > window.innerHeight * 0.7) {
+      openHistorySheet();
+    }
+  }
+}, { passive: true });
+
+// 바텀시트 헤더에서 아래로 스와이프하면 닫기
+const historyHeader = document.getElementById('historyHeader');
+let sheetTouchStartY = 0;
+historyHeader.addEventListener('touchstart', (e) => {
+  sheetTouchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+historyHeader.addEventListener('touchend', (e) => {
+  const sheetTouchEndY = e.changedTouches[0].clientY;
+  if (sheetTouchEndY - sheetTouchStartY > 50) {
+    closeHistorySheet();
+  }
+}, { passive: true });
 
 // ── 토스트 ──
 let toastTimer = null;
@@ -915,6 +1343,7 @@ function showToast(msg) {
 }
 
 // 최초 실행
+updatePullUpBadge();
 renderList();
 </script>
 
