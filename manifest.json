@@ -7,8 +7,8 @@
   "theme_color": "#EAE6DF",
   "icons": [
     {
-      "src": "breads/bread_fri.png",
-      "sizes": "192x192",
+      "src": "receipt_icon.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
