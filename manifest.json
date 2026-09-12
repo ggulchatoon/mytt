@@ -1,0 +1,16 @@
+{
+  "name": "Work Receipt",
+  "short_name": "영수증타이머",
+  "start_url": "work_receipt.html",
+  "display": "standalone",
+  "background_color": "#EAE6DF",
+  "theme_color": "#EAE6DF",
+  "icons": [
+    {
+      "src": "breads/bread_fri.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
