@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="오늘의뽑기"/>
+  <title>오늘의 뽑기</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --paper: #F7F2E7;
+      --ink: #2B2520;
+      --red: #D94E34;
+      --yellow: #EBB338;
+      --teal: #4A7C72;
+      --cream: #FFF8ED;
+      --shadow: rgba(43,37,32,0.15);
+      
+      --ss-shimmer-1: #ff0080;
+      --ss-shimmer-2: #ff8c00;
+      --ss-shimmer-3: #40e0d0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      background-color: #e0e0e0;
+      font-family: 'Jua', sans-serif;
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* Noise overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    #app {
+      width: 100%;
+      max-width: 420px;
+      height: 100dvh;
+      background-color: var(--paper);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    /* Screens */
+    .screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 70px; /* nav bar space */
+      position: relative;
+    }
+    .screen.active { display: flex; }
+
+    /* Common Components */
+    h1, h2, h3 { text-align: center; margin: 15px 0; color: var(--ink); text-shadow: 2px 2px 0px var(--yellow); letter-spacing: 1px; }
+    
+    button {
+      font-family: inherit;
+      border: 3px solid var(--ink);
+      border-radius: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 2px 4px 0px var(--ink);
+      transition: transform 0.1s, box-shadow 0.1s;
+      background-color: var(--cream);
+      color: var(--ink);
+      padding: 10px 20px;
+    }
+    button:active {
+      transform: translateY(4px);
+      box-shadow: 0px 0px 0px var(--ink);
+    }
+    button:disabled {
+      background: repeating-linear-gradient(45deg, #ccc, #ccc 10px, #aaa 10px, #aaa 20px);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 2px 4px 0px var(--ink);
+      color: #666;
+    }
+
+    .retro-box {
+      border: 3px solid var(--ink);
+      border-radius: 12px;
+      background-color: var(--cream);
+      box-shadow: 3px 3px 0px var(--shadow);
+      padding: 15px;
+      margin: 10px 20px;
+    }
+
+    /* Navbar */
+    #navbar {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%;
+      height: 65px;
+      background-color: var(--yellow);
+      border-top: 4px solid var(--ink);
+      display: flex;
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      border-right: 2px solid var(--ink);
+      cursor: pointer;
+      background: transparent;
+      border-bottom: none; border-left: none; border-top: none;
+      border-radius: 0;
+      box-shadow: none;
+      transition: background-color 0.2s;
+    }
+    .nav-item:last-child { border-right: none; }
+    .nav-item.active { background-color: var(--red); color: white; text-shadow: 1px 1px 0px var(--ink); }
+    .nav-item:active { transform: none; box-shadow: none; }
+
+    /* Main Screen: Gacha */
+    .gacha-container {
+      position: relative;
+      height: 250px;
+      margin: 20px auto;
+      width: 200px;
+      perspective: 800px;
+    }
+    .gacha-dome {
+      position: absolute;
+      top: 0; left: 10px; width: 180px; height: 180px;
+      border: 5px solid var(--ink);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2) 60%, rgba(74,124,114,0.3));
+      overflow: hidden;
+      z-index: 2;
+      box-shadow: inset -10px -10px 20px rgba(0,0,0,0.1);
+    }
+    .gacha-base {
+      position: absolute;
+      bottom: 0; left: 0; width: 200px; height: 90px;
+      background-color: var(--red);
+      border: 4px solid var(--ink);
+      border-radius: 10px 10px 20px 20px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .gacha-slot {
+      width: 40px; height: 40px;
+      background-color: #111;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      margin-top: 15px;
+      position: relative;
+    }
+    
+    .ball {
+      position: absolute;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      text-align: center;
+      line-height: 1;
+      padding: 2px;
+      word-break: keep-all;
+      box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2);
+    }
+    
+    @keyframes float1 { 0% { transform: translate(20px, 100px) rotate(0deg); } 50% { transform: translate(50px, 40px) rotate(180deg); } 100% { transform: translate(120px, 110px) rotate(360deg); } }
+    @keyframes float2 { 0% { transform: translate(100px, 120px) rotate(0deg); } 50% { transform: translate(30px, 60px) rotate(-180deg); } 100% { transform: translate(80px, 30px) rotate(-360deg); } }
+    @keyframes float3 { 0% { transform: translate(40px, 50px) rotate(0deg); } 50% { transform: translate(110px, 90px) rotate(90deg); } 100% { transform: translate(60px, 130px) rotate(180deg); } }
+    
+    .gacha-shake .ball {
+      animation: shake 0.2s infinite alternate !important;
+    }
+    @keyframes shake { from { transform: translate(random(10,150)px, random(10,150)px); } to { transform: translate(random(10,150)px, random(10,150)px); } }
+
+    .gacha-prize {
+      position: absolute;
+      bottom: 25px; left: 80px;
+      z-index: 4;
+      display: none;
+      animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes popOut { 0% { transform: scale(0) translateY(0); } 50% { transform: scale(1.2) translateY(-20px); } 100% { transform: scale(1) translateY(0); } }
+
+    .pull-btn {
+      background-color: var(--yellow);
+      font-size: 1.5rem;
+      padding: 15px;
+      margin: 0 30px;
+      border-width: 4px;
+    }
+
+    /* Task List */
+    .task-manager { flex: 1; display: flex; flex-direction: column; }
+    .task-input-wrap { display: flex; gap: 10px; margin-bottom: 15px; }
+    #task-input { flex: 1; border: 3px solid var(--ink); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 1rem; background-color: var(--paper); }
+    #task-list { list-style: none; overflow-y: auto; flex: 1; max-height: 200px; }
+    .task-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 2px dashed var(--shadow); }
+    .task-item:last-child { border-bottom: none; }
+    .task-del { background: var(--red); color: white; border: 2px solid var(--ink); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; box-shadow: 1px 2px 0 var(--ink); }
+
+    /* Timer Screen */
+    #timer-display {
+      font-family: 'VT323', monospace;
+      font-size: 5rem;
+      text-align: center;
+      color: var(--ink);
+      text-shadow: 3px 3px 0 var(--yellow);
+      margin: 10px 0;
+    }
+    .time-btns { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .time-btns button { padding: 8px 15px; font-size: 1rem; }
+    .cheer-character { display: flex; justify-content: center; margin: 20px 0; height: 120px; animation: bounce 1s infinite alternate; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+    /* Reward Screen */
+    #reward-envelope {
+      width: 150px; height: 100px;
+      background-color: var(--red);
+      border: 4px solid var(--ink);
+      margin: 40px auto;
+      position: relative;
+      cursor: pointer;
+      display: flex; justify-content: center; align-items: center;
+      color: white; font-size: 1.5rem; text-shadow: 1px 1px 0 var(--ink);
+      border-radius: 5px;
+      box-shadow: 0 10px 0px rgba(0,0,0,0.2);
+    }
+    .shake-anim { animation: shakeEnv 0.5s infinite; }
+    @keyframes shakeEnv { 0% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
+    
+    #seal-showcase { display: none; text-align: center; flex-direction: column; align-items: center; }
+    .seal-card {
+      width: 220px; height: 300px;
+      background: white;
+      border: 4px solid var(--ink);
+      border-radius: 12px;
+      margin: 20px auto;
+      position: relative;
+      overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 5px 5px 0 var(--shadow);
+      padding: 15px;
+    }
+    .seal-svg-wrap { width: 140px; height: 140px; margin-bottom: 15px; }
+    .seal-rarity { font-size: 1.5rem; font-weight: bold; margin-bottom: 5px; padding: 2px 10px; border-radius: 20px; border: 2px solid var(--ink); }
+    .seal-task { font-size: 1.2rem; margin-bottom: 5px; color: var(--ink); }
+    .seal-date { font-size: 0.9rem; color: #666; font-family: 'VT323', monospace; }
+
+    /* Rarity Styles */
+    .rarity-Normal { background-color: #ddd; }
+    .rarity-Rare { background-color: var(--teal); color: white; }
+    .rarity-Epic { background-color: #9370DB; color: white; }
+    .rarity-SS {
+      background: linear-gradient(45deg, var(--ss-shimmer-1), var(--ss-shimmer-2), var(--ss-shimmer-3), var(--ss-shimmer-1));
+      background-size: 300% 300%;
+      color: white;
+      animation: shimmerBg 3s ease infinite;
+      text-shadow: 1px 1px 2px black;
+    }
+    
+    .card-SS {
+      position: relative;
+      border-color: gold;
+    }
+    .card-SS::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+      transform: rotate(45deg);
+      animation: shimmerCard 2.5s infinite;
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes shimmerBg { 0% {background-position: 0% 50%} 50% {background-position: 100% 50%} 100% {background-position: 0% 50%} }
+    @keyframes shimmerCard { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+
+    /* Album Screen */
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 10px 20px;
+    }
+    .album-slot {
+      aspect-ratio: 1;
+      border: 3px dashed #bbb;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255,255,255,0.5);
+      position: relative;
+    }
+    .album-slot.filled {
+      border: 3px solid var(--ink);
+      background-color: white;
+      box-shadow: 2px 2px 0 var(--shadow);
+    }
+    .album-slot.filled-SS {
+      border-color: gold;
+      background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+    }
+    .mini-seal { width: 80%; height: 80%; }
+    .album-summary { text-align: center; margin: 10px 0; font-size: 1.2rem; }
+
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Navbar -->
+  <nav id="navbar">
+    <button class="nav-item active" onclick="navTo('main')">🎰 오늘의 뽑기</button>
+    <button class="nav-item" onclick="navTo('album')">📚 씰 앨범</button>
+  </nav>
+
+  <!-- Screen: Main -->
+  <div id="screen-main" class="screen active">
+    <h1>오늘의 뽑기</h1>
+    
+    <div class="gacha-container">
+      <div class="gacha-dome" id="gacha-dome">
+        <!-- Balls will be injected here -->
+      </div>
+      <div class="gacha-base">
+        <div class="gacha-slot"></div>
+      </div>
+      <div class="gacha-prize ball" id="gacha-prize" style="background-color: var(--yellow);"></div>
+    </div>
+
+    <button id="btn-pull" class="pull-btn" onclick="pullGacha()">레버 당기기! 🎰</button>
+    <p id="pull-msg" style="text-align: center; font-size: 0.9rem; color: var(--red); margin-top: 5px; height: 1rem;"></p>
+
+    <div class="retro-box task-manager">
+      <h3>할 일 목록</h3>
+      <div class="task-input-wrap">
+        <input type="text" id="task-input" placeholder="새로운 할 일 입력..." maxlength="15">
+        <button onclick="addTask()">추가</button>
+      </div>
+      <ul id="task-list"></ul>
+    </div>
+  </div>
+
+  <!-- Screen: Timer -->
+  <div id="screen-timer" class="screen">
+    <h2>도전 퀘스트!</h2>
+    <div class="retro-box" style="text-align: center; background-color: var(--yellow);">
+      <h3 id="timer-task-name" style="margin:5px 0; font-size: 1.8rem;">설거지</h3>
+    </div>
+    
+    <div class="cheer-character" id="timer-cheer">
+      <!-- SVG injected here -->
+    </div>
+
+    <div class="time-btns">
+      <button onclick="startTimer(15)">15분</button>
+      <button onclick="startTimer(20)">20분</button>
+      <button onclick="startTimer(30)">30분</button>
+    </div>
+
+    <div id="timer-display">00:00</div>
+
+    <button onclick="completeTask()" style="margin: 20px 40px; background-color: var(--teal); color: white; padding: 15px; font-size: 1.3rem;">
+      양심선언: 완료! 👍
+    </button>
+  </div>
+
+  <!-- Screen: Reward -->
+  <div id="screen-reward" class="screen">
+    <h2>퀘스트 완료!</h2>
+    <p style="text-align: center; margin-top: 10px;">보상이 도착했습니다</p>
+
+    <div id="reward-envelope" onclick="openEnvelope()">
+      터치해서 열기
+    </div>
+
+    <div id="seal-showcase">
+      <div class="seal-card" id="seal-card">
+        <div class="seal-rarity" id="seal-rarity">Normal</div>
+        <div class="seal-svg-wrap" id="seal-svg-wrap"></div>
+        <div class="seal-task" id="seal-task-desc"></div>
+        <div class="seal-date" id="seal-date-desc"></div>
+      </div>
+      <button onclick="navTo('album')" style="margin-top: 20px; background-color: var(--yellow);">씰 앨범에 붙이기</button>
+    </div>
+  </div>
+
+  <!-- Screen: Album -->
+  <div id="screen-album" class="screen">
+    <h2 id="album-title">9월의 씰 모음</h2>
+    <div class="album-summary" id="album-summary">수집: 0개 / 30일</div>
+    
+    <div class="retro-box">
+      <div class="album-grid" id="album-grid">
+        <!-- Slots injected here -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // --- Data & State ---
+  const todayStr = new Date().toISOString().split('T')[0];
+  const currentMonth = new Date().getMonth() + 1;
+  const daysInMonth = new Date(new Date().getFullYear(), currentMonth, 0).getDate();
+  
+  let state = {
+    tasks: JSON.parse(localStorage.getItem('gacha_tasks') || '[]'),
+    stickers: JSON.parse(localStorage.getItem('gacha_stickers') || '[]'),
+    hasSpunToday: localStorage.getItem(`gacha_spun_${todayStr}`) === 'true',
+    currentTask: null,
+    timerInterval: null,
+    timeLeft: 0
+  };
+
+  // Init default tasks if empty
+  if (state.tasks.length === 0) {
+    state.tasks = [
+      { id: 't_1', text: '설거지', createdAt: todayStr },
+      { id: 't_2', text: '방 청소', createdAt: todayStr },
+      { id: 't_3', text: '화장실 청소', createdAt: todayStr },
+      { id: 't_4', text: '분리수거', createdAt: todayStr }
+    ];
+    saveTasks();
+  }
+
+  // --- Utility ---
+  function saveTasks() { localStorage.setItem('gacha_tasks', JSON.stringify(state.tasks)); }
+  function saveStickers() { localStorage.setItem('gacha_stickers', JSON.stringify(state.stickers)); }
+  function generateId() { return Math.random().toString(36).substr(2, 9); }
+  function rnd(max) { return Math.floor(Math.random() * max); }
+
+  // --- SVG Generator System ---
+  const colors = {
+    body: ['#FFF8ED', '#FFDAB9', '#D2B48C', '#FFFFFF'], // cream, peach, tan, white
+    spine: ['#5C4033', '#FF69B4', '#FFD700', '#87CEEB', 'url(#rainbow)'] // brown, pink, gold, sky, rainbow
+  };
+
+  function generateHedgehogSVG({ pose, bodyColor, spineColor, accessory, eyeStyle }, isMini = false) {
+    const bColor = colors.body[bodyColor];
+    const sColor = colors.spine[spineColor];
+    const stroke = \`stroke="var(--ink)" stroke-width="\${isMini? '10' : '6'}" stroke-linejoin="round"\`;
+    
+    let defs = sColor.includes('url') ? \`
+      <defs>
+        <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff0000"/>
+          <stop offset="25%" stop-color="#ffff00"/>
+          <stop offset="50%" stop-color="#00ff00"/>
+          <stop offset="75%" stop-color="#00ffff"/>
+          <stop offset="100%" stop-color="#ff00ff"/>
+        </linearGradient>
+      </defs>
+    \` : '';
+
+    // Base Spines
+    let spines = \`<path d="M 30,120 C 10,70 40,20 100,20 C 160,20 190,70 170,120 C 180,150 160,180 100,180 C 40,180 20,150 30,120 Z" fill="\${sColor}" \${stroke}/>
+                  <path d="M 20,90 L 0,80 L 30,60 L 15,40 L 50,30 L 60,0 L 90,20 L 110,0 L 130,20 L 160,0 L 160,30 L 190,40 L 170,60 L 200,80 L 180,100 L 210,130 L 170,140" fill="none" \${stroke}/>\`;
+    
+    // Body
+    let body = \`<ellipse cx="100" cy="110" rx="50" ry="60" fill="\${bColor}" \${stroke}/>\`;
+    
+    // Eyes
+    let eyes = '';
+    if (eyeStyle === 0) { // Pie eyes
+      eyes = \`<circle cx="85" cy="95" r="8" fill="var(--ink)"/><path d="M 85,87 A 8,8 0 0,1 93,95 L 85,95 Z" fill="white"/>
+              <circle cx="115" cy="95" r="8" fill="var(--ink)"/><path d="M 115,87 A 8,8 0 0,1 123,95 L 115,95 Z" fill="white"/>\`;
+    } else if (eyeStyle === 1) { // Wink
+      eyes = \`<circle cx="85" cy="95" r="8" fill="var(--ink)"/>
+              <path d="M 105,95 Q 115,85 125,95" fill="none" \${stroke} stroke-width="4"/>\`;
+    } else { // Star
+      eyes = \`<path d="M 85,85 L 88,92 L 95,92 L 90,97 L 92,104 L 85,100 L 78,104 L 80,97 L 75,92 L 82,92 Z" fill="var(--ink)"/>
+              <path d="M 115,85 L 118,92 L 125,92 L 120,97 L 122,104 L 115,100 L 108,104 L 110,97 L 105,92 L 112,92 Z" fill="var(--ink)"/>\`;
+    }
+
+    // Snout & Nose
+    let snout = \`<path d="M 90,115 Q 100,125 110,115" fill="none" \${stroke} stroke-width="3"/>
+                 <ellipse cx="100" cy="110" rx="10" ry="6" fill="var(--ink)"/>\`;
+
+    // Poses (Arms)
+    let arms = '';
+    if (pose === 0) { // One thumb up
+      arms = \`<path d="M 50,110 Q 30,130 40,150" fill="none" \${stroke}/>
+              <circle cx="40" cy="150" r="10" fill="\${bColor}" \${stroke}/>
+              <path d="M 150,110 Q 170,100 160,80" fill="none" \${stroke}/>
+              <circle cx="160" cy="80" r="12" fill="white" \${stroke}/>
+              <path d="M 160,65 L 165,75" fill="none" \${stroke}/> <!-- Thumb -->\`;
+    } else if (pose === 1) { // Double thumb up
+      arms = \`<path d="M 50,110 Q 30,100 40,80" fill="none" \${stroke}/>
+              <circle cx="40" cy="80" r="12" fill="white" \${stroke}/>
+              <path d="M 40,65 L 35,75" fill="none" \${stroke}/>
+              <path d="M 150,110 Q 170,100 160,80" fill="none" \${stroke}/>
+              <circle cx="160" cy="80" r="12" fill="white" \${stroke}/>
+              <path d="M 160,65 L 165,75" fill="none" \${stroke}/>\`;
+    } else { // Wave
+      arms = \`<path d="M 50,110 Q 20,90 30,60" fill="none" \${stroke}/>
+              <circle cx="30" cy="60" r="12" fill="\${bColor}" \${stroke}/>
+              <path d="M 150,110 Q 170,130 160,150" fill="none" \${stroke}/>
+              <circle cx="160" cy="150" r="10" fill="\${bColor}" \${stroke}/>\`;
+    }
+
+    // Accessory
+    let accSvg = '';
+    if (accessory === 1) { // Glove
+      accSvg = \`<path d="M 150,70 L 170,70 L 165,95 L 155,95 Z" fill="#ff6b6b" \${stroke}/>\`;
+    } else if (accessory === 2) { // Broom
+      accSvg = \`<line x1="30" y1="50" x2="10" y2="180" stroke="#8B4513" stroke-width="8" stroke-linecap="round"/>
+                <path d="M 5,160 L 25,160 L 30,190 L 0,190 Z" fill="#DAA520" \${stroke}/>\`;
+    } else if (accessory === 3) { // Crown
+      accSvg = \`<path d="M 80,40 L 90,20 L 100,35 L 110,20 L 120,40 Z" fill="gold" \${stroke}/>\`;
+    } else if (accessory === 4) { // Pipe
+      accSvg = \`<path d="M 110,115 L 140,120 L 145,110 L 150,110 L 145,125 L 135,125 Z" fill="#ddd" \${stroke}/>\`;
+    }
+
+    return \`<svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      \${defs}
+      \${spines}
+      \${body}
+      \${snout}
+      \${eyes}
+      \${arms}
+      \${accSvg}
+    </svg>\`;
+  }
+
+  // --- UI Navigation ---
+  function navTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(\`screen-\${screenId}\`).classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    if (screenId === 'main') renderTasks();
+    if (screenId === 'album') renderAlbum();
+  }
+
+  // --- Main Screen (Gacha & Tasks) ---
+  const ballColors = ['#D94E34', '#EBB338', '#4A7C72', '#fff'];
+  
+  function renderTasks() {
+    const list = document.getElementById('task-list');
+    list.innerHTML = '';
+    state.tasks.forEach(t => {
+      const li = document.createElement('li');
+      li.className = 'task-item';
+      li.innerHTML = \`<span>\${t.text}</span> <button class="task-del" onclick="deleteTask('\${t.id}')">X</button>\`;
+      list.appendChild(li);
+    });
+    updateGachaBalls();
+    updatePullButton();
+  }
+
+  function addTask() {
+    const input = document.getElementById('task-input');
+    const val = input.value.trim();
+    if (val && state.tasks.length < 15) {
+      state.tasks.push({ id: generateId(), text: val, createdAt: todayStr });
+      input.value = '';
+      saveTasks();
+      renderTasks();
+    }
+  }
+
+  function deleteTask(id) {
+    state.tasks = state.tasks.filter(t => t.id !== id);
+    saveTasks();
+    renderTasks();
+  }
+
+  function updateGachaBalls() {
+    const dome = document.getElementById('gacha-dome');
+    dome.innerHTML = '';
+    const numBalls = Math.min(state.tasks.length, 10);
+    
+    for(let i=0; i<numBalls; i++) {
+      const b = document.createElement('div');
+      b.className = 'ball';
+      b.style.backgroundColor = ballColors[i % ballColors.length];
+      b.style.animation = \`float\${(i%3)+1} \${3 + Math.random()*2}s linear infinite\`;
+      b.innerText = state.tasks[i].text.substring(0,3);
+      dome.appendChild(b);
+    }
+  }
+
+  function updatePullButton() {
+    const btn = document.getElementById('btn-pull');
+    const msg = document.getElementById('pull-msg');
+    if (state.hasSpunToday) {
+      btn.disabled = true;
+      btn.innerText = "내일 또 만나요!";
+      msg.innerText = "오늘은 이미 도전했어요!";
+    } else if (state.tasks.length === 0) {
+      btn.disabled = true;
+      msg.innerText = "할 일을 먼저 추가해주세요!";
+    } else {
+      btn.disabled = false;
+      btn.innerText = "레버 당기기! 🎰";
+      msg.innerText = "";
+    }
+  }
+
+  function pullGacha() {
+    if (state.hasSpunToday || state.tasks.length === 0) return;
+    
+    // Select task
+    const rIdx = rnd(state.tasks.length);
+    state.currentTask = state.tasks[rIdx];
+    
+    // Animation
+    document.querySelector('.gacha-container').classList.add('gacha-shake');
+    
+    setTimeout(() => {
+      document.querySelector('.gacha-container').classList.remove('gacha-shake');
+      const prize = document.getElementById('gacha-prize');
+      prize.style.display = 'flex';
+      prize.innerText = state.currentTask.text.substring(0,3);
+      
+      // Save state
+      state.hasSpunToday = true;
+      localStorage.setItem(\`gacha_spun_\${todayStr}\`, 'true');
+      updatePullButton();
+      
+      setTimeout(() => {
+        prize.style.display = 'none';
+        goToTimer();
+      }, 1500);
+    }, 1000);
+  }
+
+  // --- Timer Screen ---
+  function goToTimer() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-timer').classList.add('active');
+    
+    document.getElementById('timer-task-name').innerText = state.currentTask.text;
+    
+    // Cheering generic hedgehog
+    const cheerSvg = generateHedgehogSVG({ pose: 1, bodyColor: 0, spineColor: 0, accessory: 0, eyeStyle: 0 });
+    document.getElementById('timer-cheer').innerHTML = cheerSvg;
+    
+    resetTimerDisplay();
+  }
+
+  function startTimer(mins) {
+    clearInterval(state.timerInterval);
+    state.timeLeft = mins * 60;
+    updateTimerDisplay();
+    
+    state.timerInterval = setInterval(() => {
+      state.timeLeft--;
+      updateTimerDisplay();
+      if (state.timeLeft <= 0) {
+        clearInterval(state.timerInterval);
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(Math.max(0, state.timeLeft) / 60).toString().padStart(2, '0');
+    const s = (Math.max(0, state.timeLeft) % 60).toString().padStart(2, '0');
+    document.getElementById('timer-display').innerText = \`\${m}:\${s}\`;
+  }
+  
+  function resetTimerDisplay() {
+    clearInterval(state.timerInterval);
+    document.getElementById('timer-display').innerText = "00:00";
+  }
+
+  function completeTask() {
+    clearInterval(state.timerInterval);
+    goToReward();
+  }
+
+  // --- Reward Screen ---
+  function goToReward() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-reward').classList.add('active');
+    
+    document.getElementById('reward-envelope').style.display = 'flex';
+    document.getElementById('seal-showcase').style.display = 'none';
+    document.getElementById('reward-envelope').classList.remove('shake-anim');
+  }
+
+  function getRarity() {
+    const r = Math.random() * 100;
+    if (r < 2) return 'SS';      // 2%
+    if (r < 10) return 'Epic';   // 8%
+    if (r < 35) return 'Rare';   // 25%
+    return 'Normal';             // 65%
+  }
+
+  function openEnvelope() {
+    const env = document.getElementById('reward-envelope');
+    env.classList.add('shake-anim');
+    
+    setTimeout(() => {
+      env.style.display = 'none';
+      showSeal();
+    }, 800);
+  }
+
+  function showSeal() {
+    const rarity = getRarity();
+    
+    // Generate unique hedgehog params
+    let spColorIdx = rnd(4);
+    if (rarity === 'SS') spColorIdx = 4; // Force rainbow for SS
+
+    const hedgehogParams = {
+      pose: rnd(3),
+      bodyColor: rnd(4),
+      spineColor: spColorIdx,
+      accessory: rnd(5),
+      eyeStyle: rnd(3)
+    };
+
+    const newSticker = {
+      id: generateId(),
+      date: todayStr,
+      task: state.currentTask.text,
+      rarity: rarity,
+      hedgehog: hedgehogParams
+    };
+
+    state.stickers.push(newSticker);
+    saveStickers();
+
+    // Render Seal
+    const showcase = document.getElementById('seal-showcase');
+    const card = document.getElementById('seal-card');
+    const rarityLabel = document.getElementById('seal-rarity');
+    
+    card.className = \`seal-card card-\${rarity}\`;
+    rarityLabel.className = \`seal-rarity rarity-\${rarity}\`;
+    rarityLabel.innerText = rarity;
+    
+    document.getElementById('seal-svg-wrap').innerHTML = generateHedgehogSVG(hedgehogParams);
+    document.getElementById('seal-task-desc').innerText = \`[퀘스트: \${newSticker.task}] 달성\`;
+    document.getElementById('seal-date-desc').innerText = todayStr;
+
+    showcase.style.display = 'flex';
+  }
+
+  // --- Album Screen ---
+  function renderAlbum() {
+    document.getElementById('album-title').innerText = \`\${currentMonth}월의 씰 모음\`;
+    
+    const monthStickers = state.stickers.filter(s => s.date.startsWith(\`2026-\${String(currentMonth).padStart(2,'0')}\`));
+    document.getElementById('album-summary').innerText = \`수집: \${monthStickers.length}개 / \${daysInMonth}일\`;
+
+    const grid = document.getElementById('album-grid');
+    grid.innerHTML = '';
+
+    for (let i = 0; i < daysInMonth; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'album-slot';
+      
+      if (i < monthStickers.length) {
+        const s = monthStickers[i];
+        slot.classList.add('filled');
+        if(s.rarity === 'SS') slot.classList.add('filled-SS');
+        
+        slot.innerHTML = \`<div class="mini-seal">\${generateHedgehogSVG(s.hedgehog, true)}</div>\`;
+      }
+      grid.appendChild(slot);
+    }
+  }
+
+  // Init
+  renderTasks();
+
+</script>
+</body>
+</html>
