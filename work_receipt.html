@@ -766,13 +766,13 @@ html, body {
 
   </div>
 
-  <!-- 하단 제어 버튼 (리셋 / 오늘 영수증 기록) -->
+  <!-- 하단 제어 버튼 (리셋 / 오늘 결산 완료!) -->
   <div class="actions-bar">
     <button type="button" class="act-btn" id="btnReset">
       <span>리셋</span>
     </button>
     <button type="button" class="act-btn primary" id="btnArchiveToday">
-      <span>오늘 영수증 기록</span>
+      <span>오늘 결산 완료!</span>
     </button>
   </div>
 
@@ -1187,7 +1187,7 @@ document.getElementById('btnArchiveToday').addEventListener('click', () => {
   archive.unshift(todayEntry); // 최신순 저장
   saveArchive(archive);
   updatePullUpBadge();
-  showToast('오늘의 영수증이 주간 기록에 저장되었습니다.');
+  showToast('오늘의 시간 결산이 완료되었습니다.');
 });
 
 // 하단 끌올 뱃지 및 주간 피드 렌더링
@@ -1215,8 +1215,8 @@ function renderHistoryFeed() {
   if (archive.length === 0) {
     container.innerHTML = `
       <div class="empty-history-msg">
-        아직 보관된 영수증이 없습니다.<br/>
-        오늘 작업을 마치고 [오늘 영수증 기록] 버튼을 눌러보세요.
+        아직 보관된 결산 영수증이 없습니다.<br/>
+        오늘 작업을 마치고 [오늘 결산 완료!] 버튼을 눌러보세요.
       </div>
     `;
     return;
