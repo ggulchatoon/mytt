@@ -472,34 +472,51 @@
 
     /* Task Add Bar: Compact & 100% Mobile Safe */
     .task-input-card {
-      margin: 2px 14px 4px;
+      margin: 2px 12px 4px;
       padding: 8px 10px;
       flex-shrink: 0;
+      box-sizing: border-box;
     }
     .task-bar {
       display: flex;
+      align-items: center;
       gap: 6px;
+      width: 100%;
+      box-sizing: border-box;
     }
     #task-input {
-      flex: 1;
+      flex: 1 1 auto;
+      min-width: 0;
+      width: 0;
       border: 3px solid var(--ink);
       border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-      padding: 6px 12px;
+      padding: 6px 10px;
       font-family: 'Gaegu', cursive, sans-serif;
       font-size: 1.15rem;
       font-weight: 700;
       background-color: var(--cream);
       color: var(--ink);
       outline: none;
+      box-sizing: border-box;
     }
     #task-input:focus {
       background-color: #FFF;
       box-shadow: inset 2px 2px 0 var(--shadow);
     }
     #btn-add-task {
+      flex: 0 0 auto;
+      flex-shrink: 0;
+      white-space: nowrap;
       font-size: 1.15rem;
+      font-weight: 700;
       padding: 6px 14px;
-      border-width: 3px;
+      border: 3px solid var(--ink);
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      box-shadow: 2px 3px 0 var(--ink);
+      background-color: var(--teal);
+      color: #FFF;
+      box-sizing: border-box;
+      cursor: pointer;
     }
     .guide-caption {
       text-align: center;
