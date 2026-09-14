@@ -91,29 +91,33 @@
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-bottom: 72px;
+      padding-bottom: 60px;
       position: relative;
       z-index: 1;
     }
     .screen.active { display: flex; }
+    #screen-main {
+      justify-content: space-evenly;
+    }
 
     /* Cuphead Vintage Typography & Headings */
     .banner-title-wrap {
       text-align: center;
-      margin: 12px 14px 6px;
+      margin: 8px 12px 2px;
+      flex-shrink: 0;
     }
     .vintage-banner {
       display: inline-block;
       background-color: var(--yellow);
       color: var(--ink);
-      border: 3.5px solid var(--ink);
-      padding: 6px 24px;
+      border: 3px solid var(--ink);
+      padding: 4px 18px;
       border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-      box-shadow: 3px 4px 0 var(--ink);
+      box-shadow: 2.5px 3.5px 0 var(--ink);
       transform: rotate(-1deg);
     }
     .vintage-banner h1 {
-      font-size: 1.85rem;
+      font-size: 1.5rem;
       letter-spacing: 0.5px;
       line-height: 1.1;
       text-shadow: 1.5px 1.5px 0 rgba(255,255,255,0.6);
@@ -193,9 +197,9 @@
     #navbar {
       position: absolute;
       bottom: 0; left: 0; width: 100%;
-      height: 64px;
+      height: 56px;
       background-color: var(--yellow);
-      border-top: 4px solid var(--ink);
+      border-top: 3.5px solid var(--ink);
       display: flex;
       z-index: 100;
     }
@@ -205,10 +209,10 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 2px;
-      font-size: 1.15rem;
+      gap: 1px;
+      font-size: 1.05rem;
       font-weight: 700;
-      border-right: 3px solid var(--ink);
+      border-right: 2.5px solid var(--ink);
       cursor: pointer;
       background: transparent;
       border-bottom: none; border-left: none; border-top: none;
@@ -226,39 +230,40 @@
     }
     .nav-item:active { transform: none; box-shadow: none; }
     .nav-svg-icon {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       stroke: currentColor;
       fill: none;
     }
 
-    /* Gacha Machine: Precision Alignment (Dome on Top, Base strictly Below) */
+    /* Gacha Machine: Compact & Mobile Optimized */
     .gacha-stage {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 8px auto 6px;
-      width: 240px;
+      margin: 2px auto;
+      width: 200px;
       position: relative;
+      flex-shrink: 0;
     }
 
     /* Glass Dome */
     .gacha-dome {
-      width: 176px;
-      height: 176px;
-      border: 5px solid var(--ink);
+      width: 146px;
+      height: 146px;
+      border: 4.5px solid var(--ink);
       border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.3) 45%, rgba(63,117,109,0.2) 80%, rgba(38,30,25,0.25) 100%);
       position: relative;
       overflow: hidden;
-      box-shadow: inset -8px -10px 18px rgba(0,0,0,0.18), 3px 4px 0 rgba(38,30,25,0.2);
+      box-shadow: inset -6px -8px 14px rgba(0,0,0,0.18), 2.5px 3.5px 0 rgba(38,30,25,0.2);
       z-index: 2;
     }
     /* Dome highlight reflection */
     .gacha-dome::after {
       content: '';
       position: absolute;
-      top: 14px; left: 24px; width: 36px; height: 18px;
+      top: 10px; left: 18px; width: 28px; height: 14px;
       border-radius: 50%;
       background: rgba(255,255,255,0.75);
       transform: rotate(-35deg);
@@ -267,49 +272,49 @@
 
     /* Ring Collar (Secures Dome to Base) */
     .gacha-collar {
-      width: 144px;
-      height: 14px;
+      width: 122px;
+      height: 11px;
       background-color: var(--yellow);
-      border: 3.5px solid var(--ink);
-      border-radius: 6px;
-      margin-top: -6px;
+      border: 3px solid var(--ink);
+      border-radius: 5px;
+      margin-top: -5px;
       z-index: 3;
-      box-shadow: 0 3px 0 var(--ink);
+      box-shadow: 0 2.5px 0 var(--ink);
     }
 
     /* Machine Base (Cuphead vintage red body) */
     .gacha-base {
-      width: 190px;
-      height: 98px;
+      width: 160px;
+      height: 76px;
       background-color: var(--red);
-      border: 4px solid var(--ink);
-      border-radius: 14px 14px 24px 24px / 8px 8px 18px 18px;
-      margin-top: -4px;
+      border: 3.5px solid var(--ink);
+      border-radius: 12px 12px 20px 20px / 8px 8px 16px 16px;
+      margin-top: -3px;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
       z-index: 1;
-      box-shadow: 4px 5px 0 var(--ink);
-      background-image: repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(38,30,25,0.06) 18px, rgba(38,30,25,0.06) 36px);
+      box-shadow: 3.5px 4px 0 var(--ink);
+      background-image: repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(38,30,25,0.06) 14px, rgba(38,30,25,0.06) 28px);
     }
 
     /* Crank / Turn Dial on Base */
     .gacha-crank {
       position: absolute;
-      top: 12px;
-      right: 14px;
-      width: 26px;
-      height: 26px;
-      border: 3px solid var(--ink);
+      top: 9px;
+      right: 12px;
+      width: 22px;
+      height: 22px;
+      border: 2.5px solid var(--ink);
       border-radius: 50%;
       background: var(--yellow);
-      box-shadow: 1.5px 2px 0 var(--ink);
+      box-shadow: 1.5px 1.5px 0 var(--ink);
     }
     .gacha-crank::after {
       content: '';
       position: absolute;
-      top: 4px; left: 10px; width: 4px; height: 14px;
+      top: 3px; left: 8px; width: 3.5px; height: 12px;
       background: var(--ink);
       border-radius: 2px;
       transform: rotate(35deg);
@@ -318,11 +323,11 @@
     /* Coin Slot plate decoration */
     .gacha-plate {
       position: absolute;
-      top: 12px;
-      left: 16px;
-      width: 22px;
-      height: 26px;
-      border: 2.5px solid var(--ink);
+      top: 9px;
+      left: 14px;
+      width: 18px;
+      height: 22px;
+      border: 2px solid var(--ink);
       border-radius: 4px;
       background: var(--cream);
       display: flex;
@@ -331,25 +336,25 @@
     }
     .gacha-plate::after {
       content: '';
-      width: 3px; height: 14px;
+      width: 2.5px; height: 11px;
       background: var(--ink);
     }
 
-    /* Ball Dispense Portal / Slot (Fixed below dome) */
+    /* Ball Dispense Portal / Slot */
     .gacha-slot {
-      width: 54px;
-      height: 48px;
+      width: 46px;
+      height: 40px;
       background-color: #1A130F;
-      border: 3.5px solid var(--ink);
-      border-radius: 20px 20px 8px 8px;
-      margin-top: 24px;
+      border: 3px solid var(--ink);
+      border-radius: 16px 16px 6px 6px;
+      margin-top: 17px;
       position: relative;
       overflow: hidden;
-      box-shadow: inset 0 6px 8px rgba(0,0,0,0.7);
+      box-shadow: inset 0 5px 6px rgba(0,0,0,0.7);
     }
     .gacha-slot-flap {
       position: absolute;
-      top: 0; left: 0; right: 0; height: 16px;
+      top: 0; left: 0; right: 0; height: 13px;
       background-color: #352B24;
       border-bottom: 2px solid var(--ink);
     }
@@ -357,66 +362,66 @@
     /* Floating Balls inside Dome */
     .ball {
       position: absolute;
-      width: 42px;
-      height: 42px;
+      width: 35px;
+      height: 35px;
       border-radius: 50%;
-      border: 2.5px solid var(--ink);
+      border: 2px solid var(--ink);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 0.95rem;
+      font-size: 0.82rem;
       font-weight: 700;
       text-align: center;
       line-height: 1.05;
       padding: 2px;
       word-break: keep-all;
-      box-shadow: inset -3px -3px 5px rgba(0,0,0,0.25), 1px 2px 0 rgba(0,0,0,0.1);
+      box-shadow: inset -2.5px -2.5px 4px rgba(0,0,0,0.25), 1px 1.5px 0 rgba(0,0,0,0.1);
       cursor: grab;
       touch-action: none;
     }
     .ball:active { cursor: grabbing; }
 
     @keyframes float1 {
-      0% { transform: translate(16px, 95px) rotate(0deg); }
-      50% { transform: translate(45px, 35px) rotate(180deg); }
-      100% { transform: translate(115px, 105px) rotate(360deg); }
+      0% { transform: translate(12px, 78px) rotate(0deg); }
+      50% { transform: translate(35px, 26px) rotate(180deg); }
+      100% { transform: translate(94px, 86px) rotate(360deg); }
     }
     @keyframes float2 {
-      0% { transform: translate(95px, 110px) rotate(0deg); }
-      50% { transform: translate(25px, 55px) rotate(-180deg); }
-      100% { transform: translate(75px, 25px) rotate(-360deg); }
+      0% { transform: translate(78px, 90px) rotate(0deg); }
+      50% { transform: translate(18px, 42px) rotate(-180deg); }
+      100% { transform: translate(60px, 18px) rotate(-360deg); }
     }
     @keyframes float3 {
-      0% { transform: translate(35px, 45px) rotate(0deg); }
-      50% { transform: translate(105px, 80px) rotate(90deg); }
-      100% { transform: translate(55px, 120px) rotate(180deg); }
+      0% { transform: translate(26px, 34px) rotate(0deg); }
+      50% { transform: translate(86px, 64px) rotate(90deg); }
+      100% { transform: translate(44px, 98px) rotate(180deg); }
     }
 
     .gacha-shake .ball {
       animation: ballRumble 0.12s infinite alternate !important;
     }
     @keyframes ballRumble {
-      0% { transform: translate(10px, 20px) rotate(15deg); }
-      50% { transform: translate(100px, 75px) rotate(-15deg); }
-      100% { transform: translate(50px, 110px) rotate(25deg); }
+      0% { transform: translate(8px, 16px) rotate(15deg); }
+      50% { transform: translate(84px, 60px) rotate(-15deg); }
+      100% { transform: translate(40px, 90px) rotate(25deg); }
     }
 
     /* Prize Ball Ejection (Emerges accurately from Slot) */
     .gacha-prize {
       position: absolute;
-      top: 228px;
-      left: 98px;
-      width: 44px;
-      height: 44px;
+      top: 182px;
+      left: 81px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      border: 3.5px solid var(--ink);
+      border: 3px solid var(--ink);
       z-index: 10;
       display: none;
       justify-content: center;
       align-items: center;
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      box-shadow: 2px 4px 0 var(--ink);
+      box-shadow: 2px 3px 0 var(--ink);
     }
     .gacha-prize.popping {
       display: flex;
@@ -432,39 +437,41 @@
     /* Pull Lever Button */
     .pull-btn-wrap {
       text-align: center;
-      margin: 6px 0 10px;
+      margin: 2px 0 4px;
+      flex-shrink: 0;
     }
     .pull-btn {
-      font-size: 1.55rem;
-      padding: 10px 36px;
+      font-size: 1.35rem;
+      padding: 7px 28px;
       background-color: var(--yellow);
-      border-width: 4px;
-      box-shadow: 4px 5px 0 var(--ink);
+      border-width: 3.5px;
+      box-shadow: 3.5px 4px 0 var(--ink);
     }
     #pull-msg {
       text-align: center;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       color: var(--red);
-      height: 1.4rem;
-      margin-top: 4px;
+      height: 1.1rem;
+      margin-top: 2px;
     }
 
-    /* Task Add Bar (List below REMOVED as requested!) */
+    /* Task Add Bar: Compact & 100% Mobile Safe */
     .task-input-card {
-      margin: 4px 16px 10px;
-      padding: 12px;
+      margin: 2px 14px 4px;
+      padding: 8px 10px;
+      flex-shrink: 0;
     }
     .task-bar {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
     #task-input {
       flex: 1;
-      border: 3.5px solid var(--ink);
+      border: 3px solid var(--ink);
       border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-      padding: 8px 14px;
+      padding: 6px 12px;
       font-family: 'Gaegu', cursive, sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
       background-color: var(--cream);
       color: var(--ink);
@@ -474,12 +481,37 @@
       background-color: #FFF;
       box-shadow: inset 2px 2px 0 var(--shadow);
     }
+    #btn-add-task {
+      font-size: 1.15rem;
+      padding: 6px 14px;
+      border-width: 3px;
+    }
     .guide-caption {
       text-align: center;
-      font-size: 1.05rem;
+      font-size: 0.92rem;
       color: rgba(38,30,25,0.7);
-      margin-top: 8px;
-      line-height: 1.25;
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+
+    /* Extra Small Screen Adaptations (< 640px height) */
+    @media (max-height: 640px) {
+      .banner-title-wrap { margin: 4px 10px 0; }
+      .vintage-banner { padding: 3px 14px; }
+      .vintage-banner h1 { font-size: 1.35rem; }
+      .gacha-stage { margin: 1px auto; }
+      .gacha-dome { width: 128px; height: 128px; border-width: 4px; }
+      .gacha-collar { width: 106px; height: 9px; margin-top: -4px; }
+      .gacha-base { width: 140px; height: 66px; margin-top: -3px; }
+      .gacha-slot { width: 40px; height: 34px; margin-top: 14px; }
+      .ball { width: 30px; height: 30px; font-size: 0.75rem; }
+      .pull-btn { font-size: 1.2rem; padding: 5px 22px; }
+      .task-input-card { padding: 6px 8px; margin: 1px 10px 2px; }
+      #task-input { font-size: 1.05rem; padding: 4px 8px; }
+      #btn-add-task { font-size: 1.05rem; padding: 4px 10px; }
+      .guide-caption { font-size: 0.85rem; margin-top: 2px; }
+      #navbar { height: 48px; }
+      .screen { padding-bottom: 52px; }
     }
 
     /* Trash Drop Zone (Revealed during ball drag) */
@@ -871,7 +903,7 @@
         <input type="text" id="task-input" placeholder="새로운 할 일 적기..." maxlength="12">
         <button type="button" id="btn-add-task" class="retro-btn btn-teal" onclick="addTask()">추가</button>
       </div>
-      <p class="guide-caption">공을 밖으로 끌어당기면 휴지통이 나타나요!<br>공을 살짝 탭해서 바로 삭제할 수도 있어요.</p>
+      <p class="guide-caption">공을 끌어당겨 휴지통에 버리거나, 탭해서 바로 삭제!</p>
     </div>
   </div>
 
@@ -1218,7 +1250,7 @@
 
         // Create Dragging Ghost Element
         dragClone = ballEl.cloneNode(true);
-        dragClone.style.cssText = 'position:fixed;width:46px;height:46px;opacity:0.85;z-index:9998;pointer-events:none;border-radius:50%;animation:none;box-shadow:0 6px 12px rgba(0,0,0,0.3);';
+        dragClone.style.cssText = 'position:fixed;width:38px;height:38px;opacity:0.85;z-index:9998;pointer-events:none;border-radius:50%;animation:none;box-shadow:0 5px 10px rgba(0,0,0,0.3);';
         document.body.appendChild(dragClone);
 
         trashZone.classList.add('show-trash');
@@ -1227,8 +1259,8 @@
       if (movedPastThreshold) {
         if (e.cancelable) e.preventDefault();
         if (dragClone) {
-          dragClone.style.left = (clientX - 23) + 'px';
-          dragClone.style.top = (clientY - 23) + 'px';
+          dragClone.style.left = (clientX - 19) + 'px';
+          dragClone.style.top = (clientY - 19) + 'px';
         }
 
         var trashRect = trashZone.getBoundingClientRect();
