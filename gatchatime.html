@@ -5,33 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="오늘의뽑기"/>
-  <title>오늘의 뽑기</title>
+  <meta name="apple-mobile-web-app-title" content="따봉고슴도치"/>
+  <title>따봉고슴도치 해야할일룰렛</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jua&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=VT323&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --paper: #F7F2E7;
-      --ink: #2B2520;
-      --red: #D94E34;
-      --yellow: #EBB338;
-      --teal: #4A7C72;
-      --cream: #FFF8ED;
-      --shadow: rgba(43,37,32,0.15);
+      --paper: #F6F1E5;
+      --paper-dark: #EADFC9;
+      --ink: #261E19;
+      --red: #D6402D;
+      --red-dark: #A92C1D;
+      --yellow: #EEA927;
+      --yellow-light: #FDE8A5;
+      --teal: #3F756D;
+      --cream: #FFF9EE;
+      --shadow: rgba(38,30,25,0.22);
       
-      --ss-shimmer-1: #ff0080;
-      --ss-shimmer-2: #ff8c00;
-      --ss-shimmer-3: #40e0d0;
+      --ss-shimmer-1: #ff007f;
+      --ss-shimmer-2: #ff9900;
+      --ss-shimmer-3: #00d2be;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input, textarea {
+      user-select: auto;
+      -webkit-user-select: auto;
+    }
     
     body {
-      background-color: #e0e0e0;
-      font-family: 'Jua', sans-serif;
+      background-color: #CFC1A6;
+      background-image: 
+        radial-gradient(#BCAE94 1px, transparent 1px),
+        radial-gradient(#BCAE94 1px, #CFC1A6 1px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      font-family: 'Gaegu', cursive, sans-serif;
+      font-weight: 700;
       color: var(--ink);
       display: flex;
       justify-content: center;
@@ -40,15 +59,15 @@
       overflow: hidden;
     }
 
-    /* Noise overlay */
+    /* 1930s Film Grain Overlay */
     body::after {
       content: '';
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
       pointer-events: none;
       z-index: 9999;
-      opacity: 0.05;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.055;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
     #app {
@@ -60,62 +79,121 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      box-shadow: 0 0 35px rgba(0,0,0,0.35);
+      border-left: 3px solid var(--ink);
+      border-right: 3px solid var(--ink);
     }
 
-    /* Screens */
+    /* Screen Frame */
     .screen {
       flex: 1;
       display: none;
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-bottom: 70px; /* nav bar space */
+      padding-bottom: 72px;
       position: relative;
+      z-index: 1;
     }
     .screen.active { display: flex; }
 
-    /* Common Components */
-    h1, h2, h3 { text-align: center; margin: 15px 0; color: var(--ink); text-shadow: 2px 2px 0px var(--yellow); letter-spacing: 1px; }
-    
-    button {
-      font-family: inherit;
-      border: 3px solid var(--ink);
-      border-radius: 12px;
-      font-size: 1.1rem;
+    /* Cuphead Vintage Typography & Headings */
+    .banner-title-wrap {
+      text-align: center;
+      margin: 12px 14px 6px;
+    }
+    .vintage-banner {
+      display: inline-block;
+      background-color: var(--yellow);
+      color: var(--ink);
+      border: 3.5px solid var(--ink);
+      padding: 6px 24px;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      box-shadow: 3px 4px 0 var(--ink);
+      transform: rotate(-1deg);
+    }
+    .vintage-banner h1 {
+      font-size: 1.85rem;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+      text-shadow: 1.5px 1.5px 0 rgba(255,255,255,0.6);
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.7rem;
+      color: var(--ink);
+      text-shadow: 2px 2px 0 var(--yellow);
+      margin: 12px 0 6px;
+    }
+
+    /* Irregular / Hand-drawn Wobbly Boxes (Cuphead Mood) */
+    .wobbly-box {
+      border: 3.5px solid var(--ink);
+      background-color: var(--cream);
+      box-shadow: 4px 5px 0 var(--ink);
+      padding: 14px;
+      margin: 8px 16px;
+      border-radius: 255px 18px 225px 16px/16px 225px 18px 255px;
+      position: relative;
+    }
+    .wobbly-box::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px; right: 3px; bottom: 3px;
+      border: 1.5px dashed rgba(38,30,25,0.18);
+      border-radius: 250px 15px 220px 14px/14px 220px 15px 250px;
+      pointer-events: none;
+    }
+
+    /* Cuphead Vintage Buttons */
+    .retro-btn {
+      font-family: 'Gaegu', cursive, sans-serif;
+      font-weight: 700;
+      border: 3.5px solid var(--ink);
+      font-size: 1.3rem;
       cursor: pointer;
-      box-shadow: 2px 4px 0px var(--ink);
-      transition: transform 0.1s, box-shadow 0.1s;
+      box-shadow: 3.5px 4.5px 0 var(--ink);
+      transition: transform 0.08s, box-shadow 0.08s;
       background-color: var(--cream);
       color: var(--ink);
-      padding: 10px 20px;
+      padding: 8px 18px;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
-    button:active {
-      transform: translateY(4px);
-      box-shadow: 0px 0px 0px var(--ink);
+    .retro-btn:active {
+      transform: translate(2px, 3px);
+      box-shadow: 1px 1px 0 var(--ink);
     }
-    button:disabled {
-      background: repeating-linear-gradient(45deg, #ccc, #ccc 10px, #aaa 10px, #aaa 20px);
+    .retro-btn:disabled {
+      background: repeating-linear-gradient(45deg, #d8d3c5, #d8d3c5 8px, #c3bdae 8px, #c3bdae 16px);
       cursor: not-allowed;
       transform: none;
-      box-shadow: 2px 4px 0px var(--ink);
-      color: #666;
+      box-shadow: 2px 2px 0 var(--ink);
+      color: #7a7266;
+    }
+    .retro-btn.btn-red {
+      background-color: var(--red);
+      color: #FFF;
+      text-shadow: 1.5px 1.5px 0 var(--ink);
+    }
+    .retro-btn.btn-yellow {
+      background-color: var(--yellow);
+      color: var(--ink);
+    }
+    .retro-btn.btn-teal {
+      background-color: var(--teal);
+      color: #FFF;
+      text-shadow: 1.5px 1.5px 0 var(--ink);
     }
 
-    .retro-box {
-      border: 3px solid var(--ink);
-      border-radius: 12px;
-      background-color: var(--cream);
-      box-shadow: 3px 3px 0px var(--shadow);
-      padding: 15px;
-      margin: 10px 20px;
-    }
-
-    /* Navbar */
+    /* Bottom Navbar */
     #navbar {
       position: absolute;
       bottom: 0; left: 0; width: 100%;
-      height: 65px;
+      height: 64px;
       background-color: var(--yellow);
       border-top: 4px solid var(--ink);
       display: flex;
@@ -124,282 +202,732 @@
     .nav-item {
       flex: 1;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-size: 1.2rem;
-      border-right: 2px solid var(--ink);
+      gap: 2px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-right: 3px solid var(--ink);
       cursor: pointer;
       background: transparent;
       border-bottom: none; border-left: none; border-top: none;
-      border-radius: 0;
       box-shadow: none;
-      transition: background-color 0.2s;
+      border-radius: 0;
+      transition: background-color 0.15s;
+      color: var(--ink);
+      padding: 0;
     }
     .nav-item:last-child { border-right: none; }
-    .nav-item.active { background-color: var(--red); color: white; text-shadow: 1px 1px 0px var(--ink); }
-    .nav-item:active { transform: none; box-shadow: none; }
-
-    /* Main Screen: Gacha */
-    .gacha-container {
-      position: relative;
-      height: 250px;
-      margin: 20px auto;
-      width: 200px;
-      perspective: 800px;
-    }
-    .gacha-dome {
-      position: absolute;
-      top: 0; left: 10px; width: 180px; height: 180px;
-      border: 5px solid var(--ink);
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2) 60%, rgba(74,124,114,0.3));
-      overflow: hidden;
-      z-index: 2;
-      box-shadow: inset -10px -10px 20px rgba(0,0,0,0.1);
-    }
-    .gacha-base {
-      position: absolute;
-      bottom: 0; left: 0; width: 200px; height: 90px;
+    .nav-item.active {
       background-color: var(--red);
-      border: 4px solid var(--ink);
-      border-radius: 10px 10px 20px 20px;
-      z-index: 3;
+      color: #FFF;
+      text-shadow: 1px 1.5px 0 var(--ink);
+    }
+    .nav-item:active { transform: none; box-shadow: none; }
+    .nav-svg-icon {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* Gacha Machine: Precision Alignment (Dome on Top, Base strictly Below) */
+    .gacha-stage {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-    .gacha-slot {
-      width: 40px; height: 40px;
-      background-color: #111;
-      border: 3px solid var(--ink);
-      border-radius: 50%;
-      margin-top: 15px;
+      margin: 8px auto 6px;
+      width: 240px;
       position: relative;
     }
-    
-    .ball {
-      position: absolute;
-      width: 40px; height: 40px;
+
+    /* Glass Dome */
+    .gacha-dome {
+      width: 176px;
+      height: 176px;
+      border: 5px solid var(--ink);
       border-radius: 50%;
-      border: 2px solid var(--ink);
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.3) 45%, rgba(63,117,109,0.2) 80%, rgba(38,30,25,0.25) 100%);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset -8px -10px 18px rgba(0,0,0,0.18), 3px 4px 0 rgba(38,30,25,0.2);
+      z-index: 2;
+    }
+    /* Dome highlight reflection */
+    .gacha-dome::after {
+      content: '';
+      position: absolute;
+      top: 14px; left: 24px; width: 36px; height: 18px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.75);
+      transform: rotate(-35deg);
+      pointer-events: none;
+    }
+
+    /* Ring Collar (Secures Dome to Base) */
+    .gacha-collar {
+      width: 144px;
+      height: 14px;
+      background-color: var(--yellow);
+      border: 3.5px solid var(--ink);
+      border-radius: 6px;
+      margin-top: -6px;
+      z-index: 3;
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    /* Machine Base (Cuphead vintage red body) */
+    .gacha-base {
+      width: 190px;
+      height: 98px;
+      background-color: var(--red);
+      border: 4px solid var(--ink);
+      border-radius: 14px 14px 24px 24px / 8px 8px 18px 18px;
+      margin-top: -4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      box-shadow: 4px 5px 0 var(--ink);
+      background-image: repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(38,30,25,0.06) 18px, rgba(38,30,25,0.06) 36px);
+    }
+
+    /* Crank / Turn Dial on Base */
+    .gacha-crank {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 26px;
+      height: 26px;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 1.5px 2px 0 var(--ink);
+    }
+    .gacha-crank::after {
+      content: '';
+      position: absolute;
+      top: 4px; left: 10px; width: 4px; height: 14px;
+      background: var(--ink);
+      border-radius: 2px;
+      transform: rotate(35deg);
+    }
+
+    /* Coin Slot plate decoration */
+    .gacha-plate {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      width: 22px;
+      height: 26px;
+      border: 2.5px solid var(--ink);
+      border-radius: 4px;
+      background: var(--cream);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 0.7rem;
-      font-weight: bold;
+    }
+    .gacha-plate::after {
+      content: '';
+      width: 3px; height: 14px;
+      background: var(--ink);
+    }
+
+    /* Ball Dispense Portal / Slot (Fixed below dome) */
+    .gacha-slot {
+      width: 54px;
+      height: 48px;
+      background-color: #1A130F;
+      border: 3.5px solid var(--ink);
+      border-radius: 20px 20px 8px 8px;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 6px 8px rgba(0,0,0,0.7);
+    }
+    .gacha-slot-flap {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 16px;
+      background-color: #352B24;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    /* Floating Balls inside Dome */
+    .ball {
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2.5px solid var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 700;
       text-align: center;
-      line-height: 1;
+      line-height: 1.05;
       padding: 2px;
       word-break: keep-all;
-      box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2);
+      box-shadow: inset -3px -3px 5px rgba(0,0,0,0.25), 1px 2px 0 rgba(0,0,0,0.1);
+      cursor: grab;
+      touch-action: none;
     }
-    
-    @keyframes float1 { 0% { transform: translate(20px, 100px) rotate(0deg); } 50% { transform: translate(50px, 40px) rotate(180deg); } 100% { transform: translate(120px, 110px) rotate(360deg); } }
-    @keyframes float2 { 0% { transform: translate(100px, 120px) rotate(0deg); } 50% { transform: translate(30px, 60px) rotate(-180deg); } 100% { transform: translate(80px, 30px) rotate(-360deg); } }
-    @keyframes float3 { 0% { transform: translate(40px, 50px) rotate(0deg); } 50% { transform: translate(110px, 90px) rotate(90deg); } 100% { transform: translate(60px, 130px) rotate(180deg); } }
-    
-    .gacha-shake .ball {
-      animation: shake 0.2s infinite alternate !important;
-    }
-    @keyframes shake { from { transform: translate(random(10,150)px, random(10,150)px); } to { transform: translate(random(10,150)px, random(10,150)px); } }
+    .ball:active { cursor: grabbing; }
 
+    @keyframes float1 {
+      0% { transform: translate(16px, 95px) rotate(0deg); }
+      50% { transform: translate(45px, 35px) rotate(180deg); }
+      100% { transform: translate(115px, 105px) rotate(360deg); }
+    }
+    @keyframes float2 {
+      0% { transform: translate(95px, 110px) rotate(0deg); }
+      50% { transform: translate(25px, 55px) rotate(-180deg); }
+      100% { transform: translate(75px, 25px) rotate(-360deg); }
+    }
+    @keyframes float3 {
+      0% { transform: translate(35px, 45px) rotate(0deg); }
+      50% { transform: translate(105px, 80px) rotate(90deg); }
+      100% { transform: translate(55px, 120px) rotate(180deg); }
+    }
+
+    .gacha-shake .ball {
+      animation: ballRumble 0.12s infinite alternate !important;
+    }
+    @keyframes ballRumble {
+      0% { transform: translate(10px, 20px) rotate(15deg); }
+      50% { transform: translate(100px, 75px) rotate(-15deg); }
+      100% { transform: translate(50px, 110px) rotate(25deg); }
+    }
+
+    /* Prize Ball Ejection (Emerges accurately from Slot) */
     .gacha-prize {
       position: absolute;
-      bottom: 25px; left: 80px;
-      z-index: 4;
+      top: 228px;
+      left: 98px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3.5px solid var(--ink);
+      z-index: 10;
       display: none;
-      animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      box-shadow: 2px 4px 0 var(--ink);
     }
-    @keyframes popOut { 0% { transform: scale(0) translateY(0); } 50% { transform: scale(1.2) translateY(-20px); } 100% { transform: scale(1) translateY(0); } }
+    .gacha-prize.popping {
+      display: flex;
+      animation: prizeEject 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    }
+    @keyframes prizeEject {
+      0% { transform: scale(0.2) translateY(0); opacity: 0; }
+      30% { transform: scale(0.9) translateY(-10px); opacity: 1; }
+      60% { transform: scale(1.3) translateY(-40px); }
+      100% { transform: scale(1.15) translateY(-25px); opacity: 1; }
+    }
 
+    /* Pull Lever Button */
+    .pull-btn-wrap {
+      text-align: center;
+      margin: 6px 0 10px;
+    }
     .pull-btn {
+      font-size: 1.55rem;
+      padding: 10px 36px;
       background-color: var(--yellow);
-      font-size: 1.5rem;
-      padding: 15px;
-      margin: 0 30px;
       border-width: 4px;
+      box-shadow: 4px 5px 0 var(--ink);
+    }
+    #pull-msg {
+      text-align: center;
+      font-size: 1.05rem;
+      color: var(--red);
+      height: 1.4rem;
+      margin-top: 4px;
     }
 
-    /* Task List */
-    .task-manager { flex: 1; display: flex; flex-direction: column; }
-    .task-input-wrap { display: flex; gap: 10px; margin-bottom: 15px; }
-    #task-input { flex: 1; border: 3px solid var(--ink); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 1rem; background-color: var(--paper); }
-    #task-list { list-style: none; overflow-y: auto; flex: 1; max-height: 200px; }
-    .task-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 2px dashed var(--shadow); }
-    .task-item:last-child { border-bottom: none; }
-    .task-del { background: var(--red); color: white; border: 2px solid var(--ink); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; box-shadow: 1px 2px 0 var(--ink); }
+    /* Task Add Bar (List below REMOVED as requested!) */
+    .task-input-card {
+      margin: 4px 16px 10px;
+      padding: 12px;
+    }
+    .task-bar {
+      display: flex;
+      gap: 8px;
+    }
+    #task-input {
+      flex: 1;
+      border: 3.5px solid var(--ink);
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      padding: 8px 14px;
+      font-family: 'Gaegu', cursive, sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      background-color: var(--cream);
+      color: var(--ink);
+      outline: none;
+    }
+    #task-input:focus {
+      background-color: #FFF;
+      box-shadow: inset 2px 2px 0 var(--shadow);
+    }
+    .guide-caption {
+      text-align: center;
+      font-size: 1.05rem;
+      color: rgba(38,30,25,0.7);
+      margin-top: 8px;
+      line-height: 1.25;
+    }
 
-    /* Timer Screen */
+    /* Trash Drop Zone (Revealed during ball drag) */
+    #trash-zone {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      width: 86px;
+      height: 86px;
+      background-color: var(--cream);
+      border: 4px dashed var(--red);
+      border-radius: 50%;
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      transition: transform 0.15s, background-color 0.15s, border-color 0.15s;
+    }
+    #trash-zone.show-trash {
+      display: flex;
+      transform: translateX(-50%) scale(1);
+    }
+    #trash-zone.drag-over {
+      background-color: var(--yellow-light);
+      border-color: var(--ink);
+      border-style: solid;
+      transform: translateX(-50%) scale(1.15);
+    }
+    #trash-zone span {
+      font-size: 0.9rem;
+      color: var(--red);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* Ball Quick Delete Popover (For tap action) */
+    #ball-popover {
+      position: absolute;
+      z-index: 600;
+      background: var(--cream);
+      border: 3px solid var(--ink);
+      border-radius: 16px;
+      box-shadow: 3px 4px 0 var(--ink);
+      padding: 8px 12px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+    }
+    #ball-popover::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 8px 8px 0 8px;
+      border-style: solid;
+      border-color: var(--ink) transparent transparent transparent;
+    }
+    .popover-title {
+      font-size: 1.05rem;
+      white-space: nowrap;
+    }
+    .popover-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .pop-btn {
+      font-size: 0.95rem;
+      padding: 3px 10px;
+      border-width: 2.5px;
+      border-radius: 10px;
+    }
+
+    /* Screen: Timer */
+    .quest-card {
+      text-align: center;
+      background-color: var(--yellow);
+      margin: 10px 16px;
+      padding: 12px;
+    }
+    #timer-task-name {
+      font-size: 2rem;
+      color: var(--ink);
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.6);
+    }
+    .cheer-character {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 4px 0;
+      height: 125px;
+      animation: bounceHedgehog 1s infinite alternate ease-in-out;
+    }
+    @keyframes bounceHedgehog {
+      from { transform: translateY(0); }
+      to { transform: translateY(-12px); }
+    }
+    .time-selector-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 14px 16px 8px;
+    }
+    .time-btn {
+      font-size: 1.35rem;
+      padding: 10px 18px;
+      min-width: 80px;
+    }
+    .time-btn.active-start {
+      background-color: var(--red);
+      color: #FFF;
+      border-width: 4px;
+      transform: scale(1.06);
+      text-shadow: 1px 1px 0 var(--ink);
+    }
+    #timer-status-banner {
+      display: none;
+      text-align: center;
+      font-size: 1.25rem;
+      color: var(--red);
+      margin-top: 4px;
+      font-weight: 700;
+    }
     #timer-display {
       font-family: 'VT323', monospace;
-      font-size: 5rem;
+      font-size: 5.5rem;
       text-align: center;
       color: var(--ink);
       text-shadow: 3px 3px 0 var(--yellow);
-      margin: 10px 0;
+      margin: 4px 0;
+      letter-spacing: 2px;
     }
-    .time-btns { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-    .time-btns button { padding: 8px 15px; font-size: 1rem; }
-    .cheer-character { display: flex; justify-content: center; margin: 20px 0; height: 120px; animation: bounce 1s infinite alternate; }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+    .timer-reset-link {
+      display: none;
+      text-align: center;
+      margin-top: 2px;
+      margin-bottom: 8px;
+    }
+    .timer-reset-link button {
+      background: none;
+      border: none;
+      color: rgba(38,30,25,0.6);
+      font-family: 'Gaegu', cursive;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+    }
 
-    /* Reward Screen */
+    /* Screen: Reward */
     #reward-envelope {
-      width: 150px; height: 100px;
+      width: 160px;
+      height: 105px;
       background-color: var(--red);
       border: 4px solid var(--ink);
-      margin: 40px auto;
-      position: relative;
+      margin: 40px auto 20px;
       cursor: pointer;
-      display: flex; justify-content: center; align-items: center;
-      color: white; font-size: 1.5rem; text-shadow: 1px 1px 0 var(--ink);
-      border-radius: 5px;
-      box-shadow: 0 10px 0px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #FFF;
+      font-size: 1.55rem;
+      font-weight: 700;
+      text-shadow: 1.5px 1.5px 0 var(--ink);
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      box-shadow: 4px 6px 0 var(--ink);
     }
-    .shake-anim { animation: shakeEnv 0.5s infinite; }
-    @keyframes shakeEnv { 0% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
-    
-    #seal-showcase { display: none; text-align: center; flex-direction: column; align-items: center; }
+    .shake-envelope {
+      animation: rumbleEnv 0.45s infinite;
+    }
+    @keyframes rumbleEnv {
+      0% { transform: rotate(-5deg) scale(1); }
+      50% { transform: rotate(5deg) scale(1.04); }
+      100% { transform: rotate(-5deg) scale(1); }
+    }
+
+    #seal-showcase {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin: 10px 0;
+    }
     .seal-card {
-      width: 220px; height: 300px;
-      background: white;
+      width: 230px;
+      background: #FFF;
       border: 4px solid var(--ink);
-      border-radius: 12px;
-      margin: 20px auto;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 5px 6px 0 var(--ink);
       position: relative;
       overflow: hidden;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 5px 5px 0 var(--shadow);
-      padding: 15px;
     }
-    .seal-svg-wrap { width: 140px; height: 140px; margin-bottom: 15px; }
-    .seal-rarity { font-size: 1.5rem; font-weight: bold; margin-bottom: 5px; padding: 2px 10px; border-radius: 20px; border: 2px solid var(--ink); }
-    .seal-task { font-size: 1.2rem; margin-bottom: 5px; color: var(--ink); }
-    .seal-date { font-size: 0.9rem; color: #666; font-family: 'VT323', monospace; }
+    .seal-svg-wrap {
+      width: 140px;
+      height: 140px;
+      margin: 4px 0 8px;
+    }
+    .seal-card-name {
+      font-size: 1.5rem;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .seal-card-badge {
+      font-size: 1.15rem;
+      padding: 2px 14px;
+      border: 2.5px solid var(--ink);
+      border-radius: 20px;
+      margin-bottom: 6px;
+    }
+    .seal-card-quest {
+      font-size: 1.1rem;
+      color: rgba(38,30,25,0.75);
+      margin-bottom: 2px;
+      text-align: center;
+    }
+    .seal-card-date {
+      font-family: 'VT323', monospace;
+      font-size: 1.1rem;
+      color: #888;
+    }
 
-    /* Rarity Styles */
-    .rarity-Normal { background-color: #ddd; }
-    .rarity-Rare { background-color: var(--teal); color: white; }
-    .rarity-Epic { background-color: #9370DB; color: white; }
-    .rarity-SS {
+    /* Rarity Badge Styles */
+    .badge-Normal { background-color: #E2DDD2; color: var(--ink); }
+    .badge-Rare { background-color: var(--teal); color: #FFF; text-shadow: 1px 1px 0 var(--ink); }
+    .badge-Epic { background-color: #8E44AD; color: #FFF; text-shadow: 1px 1px 0 var(--ink); }
+    .badge-SS {
       background: linear-gradient(45deg, var(--ss-shimmer-1), var(--ss-shimmer-2), var(--ss-shimmer-3), var(--ss-shimmer-1));
       background-size: 300% 300%;
-      color: white;
-      animation: shimmerBg 3s ease infinite;
-      text-shadow: 1px 1px 2px black;
+      color: #FFF;
+      animation: rainbowShimmer 3s ease infinite;
+      text-shadow: 1px 1px 2px #000;
     }
-    
+    @keyframes rainbowShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .card-SS {
-      position: relative;
-      border-color: gold;
+      border-color: #E5A823;
     }
     .card-SS::before {
       content: '';
       position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0) 100%);
       transform: rotate(45deg);
-      animation: shimmerCard 2.5s infinite;
+      animation: foilShine 2.5s infinite;
       pointer-events: none;
       z-index: 10;
     }
-    @keyframes shimmerBg { 0% {background-position: 0% 50%} 50% {background-position: 100% 50%} 100% {background-position: 0% 50%} }
-    @keyframes shimmerCard { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+    @keyframes foilShine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
 
-    /* Album Screen */
+    /* Screen: Album */
+    .album-header-wrap {
+      text-align: center;
+      margin: 10px 16px 4px;
+    }
+    .album-summary-text {
+      font-size: 1.3rem;
+      color: var(--ink);
+      margin-top: 2px;
+    }
     .album-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      padding: 10px 20px;
+      padding: 6px 4px;
     }
     .album-slot {
-      aspect-ratio: 1;
-      border: 3px dashed #bbb;
-      border-radius: 8px;
+      aspect-ratio: 3/4;
+      border: 3px dashed #B8AE9C;
+      border-radius: 12px;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: rgba(255,255,255,0.5);
+      background-color: rgba(255,255,255,0.4);
+      padding: 4px;
       position: relative;
+      cursor: pointer;
     }
     .album-slot.filled {
       border: 3px solid var(--ink);
-      background-color: white;
-      box-shadow: 2px 2px 0 var(--shadow);
+      background-color: #FFF;
+      box-shadow: 2px 3px 0 var(--ink);
     }
     .album-slot.filled-SS {
-      border-color: gold;
-      background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+      border-color: #E5A823;
+      background: linear-gradient(135deg, #FFF 0%, #FFF5D1 100%);
     }
-    .mini-seal { width: 80%; height: 80%; }
-    .album-summary { text-align: center; margin: 10px 0; font-size: 1.2rem; }
+    .slot-mini-svg {
+      width: 72%;
+      height: auto;
+      flex-shrink: 0;
+    }
+    .slot-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      margin-top: 2px;
+    }
+    .slot-badge {
+      font-size: 0.75rem;
+      padding: 1px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--ink);
+      margin-top: 2px;
+    }
+    .slot-task {
+      font-size: 0.78rem;
+      color: rgba(38,30,25,0.65);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      text-align: center;
+      margin-top: 1px;
+    }
 
+    /* Modal for Album Slot Detail Inspection */
+    #album-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(38,30,25,0.65);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    #album-modal.open { display: flex; }
   </style>
 </head>
 <body>
 
 <div id="app">
-  <!-- Navbar -->
-  <nav id="navbar">
-    <button class="nav-item active" onclick="navTo('main')">🎰 오늘의 뽑기</button>
-    <button class="nav-item" onclick="navTo('album')">📚 씰 앨범</button>
-  </nav>
-
-  <!-- Screen: Main -->
+  <!-- Screen 1: Main (Gacha & Tasks) -->
   <div id="screen-main" class="screen active">
-    <h1>오늘의 뽑기</h1>
+    <div class="banner-title-wrap">
+      <div class="vintage-banner">
+        <h1>따봉고슴도치 룰렛</h1>
+      </div>
+    </div>
     
-    <div class="gacha-container">
-      <div class="gacha-dome" id="gacha-dome">
-        <!-- Balls will be injected here -->
-      </div>
+    <!-- Precision Gacha Machine Stage -->
+    <div class="gacha-stage">
+      <!-- Glass Dome with Floating Task Balls -->
+      <div class="gacha-dome" id="gacha-dome"></div>
+
+      <!-- Connector Ring -->
+      <div class="gacha-collar"></div>
+
+      <!-- Mechanical Base Unit -->
       <div class="gacha-base">
-        <div class="gacha-slot"></div>
+        <div class="gacha-plate"></div>
+        <div class="gacha-crank"></div>
+        <div class="gacha-slot">
+          <div class="gacha-slot-flap"></div>
+        </div>
       </div>
-      <div class="gacha-prize ball" id="gacha-prize" style="background-color: var(--yellow);"></div>
+
+      <!-- Ejected Prize Ball (Emerges from base slot) -->
+      <div class="gacha-prize" id="gacha-prize"></div>
     </div>
 
-    <button id="btn-pull" class="pull-btn" onclick="pullGacha()">레버 당기기! 🎰</button>
-    <p id="pull-msg" style="text-align: center; font-size: 0.9rem; color: var(--red); margin-top: 5px; height: 1rem;"></p>
+    <!-- Spin Pull Button -->
+    <div class="pull-btn-wrap">
+      <button id="btn-pull" class="retro-btn pull-btn btn-yellow" onclick="pullGacha()">레버 당기기!</button>
+      <p id="pull-msg"></p>
+      <button id="btn-reset-spin" class="retro-btn btn-red" style="font-size: 1.05rem; padding: 4px 16px; margin-top: 6px; display: none;" onclick="resetTodaySpin()">오늘 뽑기 다시 하기 (테스트용)</button>
+    </div>
 
-    <div class="retro-box task-manager">
-      <h3>할 일 목록</h3>
-      <div class="task-input-wrap">
-        <input type="text" id="task-input" placeholder="새로운 할 일 입력..." maxlength="15">
-        <button onclick="addTask()">추가</button>
+    <!-- Task Input Section (No bulky list below - balls inside dome represent tasks!) -->
+    <div class="wobbly-box task-input-card">
+      <div class="task-bar">
+        <input type="text" id="task-input" placeholder="새로운 할 일 적기..." maxlength="12">
+        <button type="button" id="btn-add-task" class="retro-btn btn-teal" onclick="addTask()">추가</button>
       </div>
-      <ul id="task-list"></ul>
+      <p class="guide-caption">공을 밖으로 끌어당기면 휴지통이 나타나요!<br>공을 살짝 탭해서 바로 삭제할 수도 있어요.</p>
     </div>
   </div>
 
-  <!-- Screen: Timer -->
+  <!-- Trash Zone (Appears dynamically during ball drag) -->
+  <div id="trash-zone">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4h6v2"/>
+    </svg>
+    <span>휴지통</span>
+  </div>
+
+  <!-- Quick Delete Popover for Tapping Balls -->
+  <div id="ball-popover">
+    <div class="popover-title" id="popover-task-title">할 일 삭제할까요?</div>
+    <div class="popover-actions">
+      <button class="retro-btn btn-red pop-btn" id="pop-btn-del">삭제</button>
+      <button class="retro-btn pop-btn" id="pop-btn-cancel">취소</button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Timer -->
   <div id="screen-timer" class="screen">
     <h2>도전 퀘스트!</h2>
-    <div class="retro-box" style="text-align: center; background-color: var(--yellow);">
-      <h3 id="timer-task-name" style="margin:5px 0; font-size: 1.8rem;">설거지</h3>
+    <div class="wobbly-box quest-card">
+      <div id="timer-task-name">설거지</div>
     </div>
     
-    <div class="cheer-character" id="timer-cheer">
-      <!-- SVG injected here -->
-    </div>
+    <div class="cheer-character" id="timer-cheer"></div>
 
-    <div class="time-btns">
-      <button onclick="startTimer(15)">15분</button>
-      <button onclick="startTimer(20)">20분</button>
-      <button onclick="startTimer(30)">30분</button>
+    <div class="time-selector-row">
+      <button class="retro-btn time-btn" id="tbtn-15" onclick="selectAndStartTimer(15)">15분</button>
+      <button class="retro-btn time-btn" id="tbtn-20" onclick="selectAndStartTimer(20)">20분</button>
+      <button class="retro-btn time-btn" id="tbtn-30" onclick="selectAndStartTimer(30)">30분</button>
     </div>
+    <div id="timer-status-banner"></div>
 
     <div id="timer-display">00:00</div>
 
-    <button onclick="completeTask()" style="margin: 20px 40px; background-color: var(--teal); color: white; padding: 15px; font-size: 1.3rem;">
-      양심선언: 완료! 👍
-    </button>
+    <div class="timer-reset-link" id="timer-reset-link">
+      <button type="button" onclick="resetTimerSelection()">다른 시간으로 다시 고르기</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 10px;">
+      <button class="retro-btn btn-teal" style="font-size: 1.5rem; padding: 12px 32px;" onclick="completeTask()">
+        양심선언: 완료!
+      </button>
+    </div>
   </div>
 
-  <!-- Screen: Reward -->
+  <!-- Screen 3: Reward -->
   <div id="screen-reward" class="screen">
     <h2>퀘스트 완료!</h2>
-    <p style="text-align: center; margin-top: 10px;">보상이 도착했습니다</p>
+    <p style="text-align:center; font-size: 1.25rem; color: var(--ink);">보상이 도착했습니다</p>
 
     <div id="reward-envelope" onclick="openEnvelope()">
       터치해서 열기
@@ -407,45 +935,89 @@
 
     <div id="seal-showcase">
       <div class="seal-card" id="seal-card">
-        <div class="seal-rarity" id="seal-rarity">Normal</div>
+        <div class="seal-card-name" id="seal-name-desc">바늘이</div>
+        <div class="seal-card-badge badge-Normal" id="seal-rarity">NORMAL</div>
         <div class="seal-svg-wrap" id="seal-svg-wrap"></div>
-        <div class="seal-task" id="seal-task-desc"></div>
-        <div class="seal-date" id="seal-date-desc"></div>
+        <div class="seal-card-quest" id="seal-task-desc">[설거지] 완료</div>
+        <div class="seal-card-date" id="seal-date-desc">2026-09-12</div>
       </div>
-      <button onclick="navTo('album')" style="margin-top: 20px; background-color: var(--yellow);">씰 앨범에 붙이기</button>
+      <div style="margin-top: 18px;">
+        <button class="retro-btn btn-yellow" style="font-size: 1.35rem;" onclick="navTo('album')">씰 앨범에 붙이기</button>
+      </div>
     </div>
   </div>
 
-  <!-- Screen: Album -->
+  <!-- Screen 4: Album -->
   <div id="screen-album" class="screen">
-    <h2 id="album-title">9월의 씰 모음</h2>
-    <div class="album-summary" id="album-summary">수집: 0개 / 30일</div>
-    
-    <div class="retro-box">
-      <div class="album-grid" id="album-grid">
-        <!-- Slots injected here -->
+    <div class="album-header-wrap">
+      <div class="vintage-banner" style="padding: 4px 20px;">
+        <h1 id="album-title">9월의 씰 모음</h1>
       </div>
+      <div class="album-summary-text" id="album-summary">수집: 0개 / 30일</div>
+    </div>
+    
+    <div class="wobbly-box" style="margin: 8px 12px; padding: 10px;">
+      <div class="album-grid" id="album-grid"></div>
     </div>
   </div>
 
+  <!-- Bottom Navbar -->
+  <nav id="navbar">
+    <button class="nav-item active" onclick="navTo('main')">
+      <svg class="nav-svg-icon" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <circle cx="12" cy="12" r="3"/>
+        <line x1="12" y1="3" x2="12" y2="1"/>
+        <line x1="12" y1="23" x2="12" y2="21"/>
+        <line x1="3" y1="12" x2="1" y2="12"/>
+        <line x1="23" y1="12" x2="21" y2="12"/>
+      </svg>
+      오늘의 뽑기
+    </button>
+    <button class="nav-item" onclick="navTo('album')">
+      <svg class="nav-svg-icon" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+        <line x1="9" y1="21" x2="9" y2="9"/>
+      </svg>
+      씰 앨범
+    </button>
+  </nav>
+
+  <!-- Modal for Album Card Inspection -->
+  <div id="album-modal" onclick="closeAlbumModal()">
+    <div class="seal-card" id="modal-card" onclick="event.stopPropagation()">
+      <div class="seal-card-name" id="modal-name">고슴이</div>
+      <div class="seal-card-badge" id="modal-badge">NORMAL</div>
+      <div class="seal-svg-wrap" id="modal-svg-wrap"></div>
+      <div class="seal-card-quest" id="modal-quest">[퀘스트]</div>
+      <div class="seal-card-date" id="modal-date">2026-09-12</div>
+      <button class="retro-btn btn-red" style="margin-top: 10px; font-size: 1.1rem; padding: 4px 18px;" onclick="closeAlbumModal()">닫기</button>
+    </div>
+  </div>
 </div>
 
 <script>
-  // --- Data & State ---
-  const todayStr = new Date().toISOString().split('T')[0];
-  const currentMonth = new Date().getMonth() + 1;
-  const daysInMonth = new Date(new Date().getFullYear(), currentMonth, 0).getDate();
+  // --- State Initialization ---
+  var todayStr = new Date().toISOString().split('T')[0];
+  var currentMonth = new Date().getMonth() + 1;
+  var daysInMonth = new Date(new Date().getFullYear(), currentMonth, 0).getDate();
   
-  let state = {
+  // 테스트 편의를 위해 오늘 날짜 스핀 잠금 자동 해제
+  localStorage.removeItem('gacha_spun_' + todayStr);
+
+  var state = {
     tasks: JSON.parse(localStorage.getItem('gacha_tasks') || '[]'),
     stickers: JSON.parse(localStorage.getItem('gacha_stickers') || '[]'),
-    hasSpunToday: localStorage.getItem(`gacha_spun_${todayStr}`) === 'true',
+    hasSpunToday: false,
     currentTask: null,
     timerInterval: null,
-    timeLeft: 0
+    timeLeft: 0,
+    timerLocked: false,
+    selectedMins: null
   };
 
-  // Init default tasks if empty
+  // Seed initial tasks if empty
   if (state.tasks.length === 0) {
     state.tasks = [
       { id: 't_1', text: '설거지', createdAt: todayStr },
@@ -456,247 +1028,458 @@
     saveTasks();
   }
 
-  // --- Utility ---
   function saveTasks() { localStorage.setItem('gacha_tasks', JSON.stringify(state.tasks)); }
   function saveStickers() { localStorage.setItem('gacha_stickers', JSON.stringify(state.stickers)); }
   function generateId() { return Math.random().toString(36).substr(2, 9); }
   function rnd(max) { return Math.floor(Math.random() * max); }
 
-  // --- SVG Generator System ---
-  const colors = {
-    body: ['#FFF8ED', '#FFDAB9', '#D2B48C', '#FFFFFF'], // cream, peach, tan, white
-    spine: ['#5C4033', '#FF69B4', '#FFD700', '#87CEEB', 'url(#rainbow)'] // brown, pink, gold, sky, rainbow
+  // 20 Classic Character Names
+  var hedgehogNames = [
+    '바늘이', '솔이', '고슴이', '뭉치', '뽀족이', '두리', '톡톡이', '복실이',
+    '동글이', '반짝이', '달콤이', '해맑이', '초롱이', '포근이', '도토리', '별이',
+    '하늘이', '코코', '탱글이', '새싹이'
+  ];
+  function getHedgehogName(id) {
+    var h = 0;
+    for (var i = 0; i < id.length; i++) {
+      h = (h * 31 + id.charCodeAt(i)) & 0xFFFF;
+    }
+    return hedgehogNames[h % hedgehogNames.length];
+  }
+
+  // --- Cuphead Rubber-hose 1930s Hedgehog SVG Generator ---
+  var colors = {
+    body: ['#FFF9EE', '#FFDFB8', '#D8B896', '#FFFFFF'],
+    spine: ['#543D32', '#E05A47', '#E5A823', '#3F756D', 'url(#rainbow)']
   };
 
-  function generateHedgehogSVG({ pose, bodyColor, spineColor, accessory, eyeStyle }, isMini = false) {
-    const bColor = colors.body[bodyColor];
-    const sColor = colors.spine[spineColor];
-    const stroke = \`stroke="var(--ink)" stroke-width="\${isMini? '10' : '6'}" stroke-linejoin="round"\`;
+  function generateHedgehogSVG(params, isMini) {
+    var pose = params.pose;
+    var bodyColor = params.bodyColor;
+    var spineColor = params.spineColor;
+    var accessory = params.accessory;
+    var eyeStyle = params.eyeStyle;
     
-    let defs = sColor.includes('url') ? \`
-      <defs>
-        <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ff0000"/>
-          <stop offset="25%" stop-color="#ffff00"/>
-          <stop offset="50%" stop-color="#00ff00"/>
-          <stop offset="75%" stop-color="#00ffff"/>
-          <stop offset="100%" stop-color="#ff00ff"/>
-        </linearGradient>
-      </defs>
-    \` : '';
+    var bColor = colors.body[bodyColor];
+    var sColor = colors.spine[spineColor];
+    var sw = isMini ? '9' : '6';
+    var stroke = 'stroke="var(--ink)" stroke-width="' + sw + '" stroke-linejoin="round" stroke-linecap="round"';
+    
+    var defs = sColor.indexOf('url') >= 0 ? 
+      '<defs><linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">' +
+      '<stop offset="0%" stop-color="#ff0000"/><stop offset="25%" stop-color="#ff9900"/>' +
+      '<stop offset="50%" stop-color="#33cc33"/><stop offset="75%" stop-color="#00bcd4"/>' +
+      '<stop offset="100%" stop-color="#aa00ff"/>' +
+      '</linearGradient></defs>' : '';
 
-    // Base Spines
-    let spines = \`<path d="M 30,120 C 10,70 40,20 100,20 C 160,20 190,70 170,120 C 180,150 160,180 100,180 C 40,180 20,150 30,120 Z" fill="\${sColor}" \${stroke}/>
-                  <path d="M 20,90 L 0,80 L 30,60 L 15,40 L 50,30 L 60,0 L 90,20 L 110,0 L 130,20 L 160,0 L 160,30 L 190,40 L 170,60 L 200,80 L 180,100 L 210,130 L 170,140" fill="none" \${stroke}/>\`;
+    // Spines (Wobbly hand-drawn cartoon outline)
+    var spines = '<path d="M 32,120 C 12,70 38,20 100,20 C 162,20 188,70 168,120 C 178,150 158,180 100,180 C 42,180 22,150 32,120 Z" fill="' + sColor + '" ' + stroke + '/>' +
+                 '<path d="M 22,90 L 2,80 L 30,60 L 16,40 L 50,30 L 62,2 L 90,20 L 110,2 L 130,20 L 158,2 L 160,30 L 188,40 L 168,60 L 198,80 L 178,100 L 208,130 L 168,140" fill="none" ' + stroke + '/>';
     
-    // Body
-    let body = \`<ellipse cx="100" cy="110" rx="50" ry="60" fill="\${bColor}" \${stroke}/>\`;
+    // Body Belly
+    var body = '<ellipse cx="100" cy="112" rx="48" ry="58" fill="' + bColor + '" ' + stroke + '/>';
     
-    // Eyes
-    let eyes = '';
-    if (eyeStyle === 0) { // Pie eyes
-      eyes = \`<circle cx="85" cy="95" r="8" fill="var(--ink)"/><path d="M 85,87 A 8,8 0 0,1 93,95 L 85,95 Z" fill="white"/>
-              <circle cx="115" cy="95" r="8" fill="var(--ink)"/><path d="M 115,87 A 8,8 0 0,1 123,95 L 115,95 Z" fill="white"/>\`;
-    } else if (eyeStyle === 1) { // Wink
-      eyes = \`<circle cx="85" cy="95" r="8" fill="var(--ink)"/>
-              <path d="M 105,95 Q 115,85 125,95" fill="none" \${stroke} stroke-width="4"/>\`;
-    } else { // Star
-      eyes = \`<path d="M 85,85 L 88,92 L 95,92 L 90,97 L 92,104 L 85,100 L 78,104 L 80,97 L 75,92 L 82,92 Z" fill="var(--ink)"/>
-              <path d="M 115,85 L 118,92 L 125,92 L 120,97 L 122,104 L 115,100 L 108,104 L 110,97 L 105,92 L 112,92 Z" fill="var(--ink)"/>\`;
+    // Cuphead 1930s Pacman Pie-Eyes
+    var eyes = '';
+    if (eyeStyle === 0) { // Classic Pie-Eyes
+      eyes = '<circle cx="85" cy="94" r="8" fill="var(--ink)"/><path d="M 85,86 A 8,8 0 0,1 93,94 L 85,94 Z" fill="white"/>' +
+             '<circle cx="115" cy="94" r="8" fill="var(--ink)"/><path d="M 115,86 A 8,8 0 0,1 123,94 L 115,94 Z" fill="white"/>';
+    } else if (eyeStyle === 1) { // Winking Pie-Eye
+      eyes = '<circle cx="85" cy="94" r="8" fill="var(--ink)"/><path d="M 85,86 A 8,8 0 0,1 93,94 L 85,94 Z" fill="white"/>' +
+             '<path d="M 106,94 Q 116,84 126,94" fill="none" ' + stroke + ' stroke-width="4"/>';
+    } else { // Star Eyes
+      eyes = '<path d="M 85,85 L 87,91 L 94,91 L 89,95 L 91,102 L 85,98 L 79,102 L 81,95 L 76,91 L 83,91 Z" fill="var(--ink)"/>' +
+             '<path d="M 115,85 L 117,91 L 124,91 L 119,95 L 121,102 L 115,98 L 109,102 L 111,95 L 106,91 L 113,91 Z" fill="var(--ink)"/>';
     }
 
     // Snout & Nose
-    let snout = \`<path d="M 90,115 Q 100,125 110,115" fill="none" \${stroke} stroke-width="3"/>
-                 <ellipse cx="100" cy="110" rx="10" ry="6" fill="var(--ink)"/>\`;
+    var snout = '<path d="M 88,116 Q 100,126 112,116" fill="none" ' + stroke + ' stroke-width="3.5"/>' +
+                '<ellipse cx="100" cy="110" rx="10" ry="6.5" fill="var(--ink)"/>';
 
-    // Poses (Arms)
-    let arms = '';
-    if (pose === 0) { // One thumb up
-      arms = \`<path d="M 50,110 Q 30,130 40,150" fill="none" \${stroke}/>
-              <circle cx="40" cy="150" r="10" fill="\${bColor}" \${stroke}/>
-              <path d="M 150,110 Q 170,100 160,80" fill="none" \${stroke}/>
-              <circle cx="160" cy="80" r="12" fill="white" \${stroke}/>
-              <path d="M 160,65 L 165,75" fill="none" \${stroke}/> <!-- Thumb -->\`;
-    } else if (pose === 1) { // Double thumb up
-      arms = \`<path d="M 50,110 Q 30,100 40,80" fill="none" \${stroke}/>
-              <circle cx="40" cy="80" r="12" fill="white" \${stroke}/>
-              <path d="M 40,65 L 35,75" fill="none" \${stroke}/>
-              <path d="M 150,110 Q 170,100 160,80" fill="none" \${stroke}/>
-              <circle cx="160" cy="80" r="12" fill="white" \${stroke}/>
-              <path d="M 160,65 L 165,75" fill="none" \${stroke}/>\`;
-    } else { // Wave
-      arms = \`<path d="M 50,110 Q 20,90 30,60" fill="none" \${stroke}/>
-              <circle cx="30" cy="60" r="12" fill="\${bColor}" \${stroke}/>
-              <path d="M 150,110 Q 170,130 160,150" fill="none" \${stroke}/>
-              <circle cx="160" cy="150" r="10" fill="\${bColor}" \${stroke}/>\`;
+    // Rubber-hose Arms with White Gloves
+    var arms = '';
+    if (pose === 0) { // Single Thumbs-Up (Cuphead style)
+      arms = '<path d="M 52,112 Q 30,130 40,150" fill="none" ' + stroke + '/>' +
+             '<circle cx="40" cy="150" r="10" fill="' + bColor + '" ' + stroke + '/>' +
+             '<path d="M 148,112 Q 170,102 160,82" fill="none" ' + stroke + '/>' +
+             '<circle cx="160" cy="82" r="12" fill="white" ' + stroke + '/>' +
+             '<path d="M 160,67 L 165,77" fill="none" ' + stroke + '/>';
+    } else if (pose === 1) { // Double Thumbs-Up
+      arms = '<path d="M 52,112 Q 30,102 40,82" fill="none" ' + stroke + '/>' +
+             '<circle cx="40" cy="82" r="12" fill="white" ' + stroke + '/>' +
+             '<path d="M 40,67 L 35,77" fill="none" ' + stroke + '/>' +
+             '<path d="M 148,112 Q 170,102 160,82" fill="none" ' + stroke + '/>' +
+             '<circle cx="160" cy="82" r="12" fill="white" ' + stroke + '/>' +
+             '<path d="M 160,67 L 165,77" fill="none" ' + stroke + '/>';
+    } else { // Cheerful Waving
+      arms = '<path d="M 52,112 Q 22,92 32,62" fill="none" ' + stroke + '/>' +
+             '<circle cx="32" cy="62" r="12" fill="white" ' + stroke + '/>' +
+             '<path d="M 148,112 Q 170,130 160,150" fill="none" ' + stroke + '/>' +
+             '<circle cx="160" cy="150" r="10" fill="' + bColor + '" ' + stroke + '/>';
     }
 
-    // Accessory
-    let accSvg = '';
-    if (accessory === 1) { // Glove
-      accSvg = \`<path d="M 150,70 L 170,70 L 165,95 L 155,95 Z" fill="#ff6b6b" \${stroke}/>\`;
-    } else if (accessory === 2) { // Broom
-      accSvg = \`<line x1="30" y1="50" x2="10" y2="180" stroke="#8B4513" stroke-width="8" stroke-linecap="round"/>
-                <path d="M 5,160 L 25,160 L 30,190 L 0,190 Z" fill="#DAA520" \${stroke}/>\`;
-    } else if (accessory === 3) { // Crown
-      accSvg = \`<path d="M 80,40 L 90,20 L 100,35 L 110,20 L 120,40 Z" fill="gold" \${stroke}/>\`;
-    } else if (accessory === 4) { // Pipe
-      accSvg = \`<path d="M 110,115 L 140,120 L 145,110 L 150,110 L 145,125 L 135,125 Z" fill="#ddd" \${stroke}/>\`;
+    // Vintage Accessories
+    var accSvg = '';
+    if (accessory === 1) { // Bowtie
+      accSvg = '<polygon points="88,124 100,128 88,132" fill="var(--red)" ' + stroke + ' stroke-width="2"/>' +
+               '<polygon points="112,124 100,128 112,132" fill="var(--red)" ' + stroke + ' stroke-width="2"/>' +
+               '<circle cx="100" cy="128" r="3" fill="var(--ink)"/>';
+    } else if (accessory === 2) { // Straw Hat
+      accSvg = '<ellipse cx="100" cy="38" rx="36" ry="7" fill="var(--yellow)" ' + stroke + '/>' +
+               '<rect x="78" y="22" width="44" height="16" rx="4" fill="var(--yellow)" ' + stroke + '/>' +
+               '<rect x="78" y="32" width="44" height="5" fill="var(--red)"/>';
+    } else if (accessory === 3) { // Royal Crown
+      accSvg = '<path d="M 80,40 L 90,20 L 100,35 L 110,20 L 120,40 Z" fill="gold" ' + stroke + '/>';
+    } else if (accessory === 4) { // Detective Pipe
+      accSvg = '<path d="M 110,116 L 138,122 L 143,112 L 148,112 L 143,127 L 134,127 Z" fill="#EADFC9" ' + stroke + '/>';
     }
 
-    return \`<svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-      \${defs}
-      \${spines}
-      \${body}
-      \${snout}
-      \${eyes}
-      \${arms}
-      \${accSvg}
-    </svg>\`;
+    return '<svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">' +
+      defs + spines + body + snout + eyes + arms + accSvg + '</svg>';
   }
 
-  // --- UI Navigation ---
+  // --- Screen Navigation ---
   function navTo(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(\`screen-\${screenId}\`).classList.add('active');
-    
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    var targetScreen = document.getElementById('screen-' + screenId);
+    if (targetScreen) targetScreen.classList.add('active');
 
-    if (screenId === 'main') renderTasks();
+    document.querySelectorAll('.nav-item').forEach(function(n) {
+      var oc = n.getAttribute('onclick') || '';
+      if (oc.indexOf(screenId) >= 0) { n.classList.add('active'); } else { n.classList.remove('active'); }
+    });
+
+    closePopover();
+    if (screenId === 'main') renderDomeBalls();
     if (screenId === 'album') renderAlbum();
   }
 
-  // --- Main Screen (Gacha & Tasks) ---
-  const ballColors = ['#D94E34', '#EBB338', '#4A7C72', '#fff'];
-  
-  function renderTasks() {
-    const list = document.getElementById('task-list');
-    list.innerHTML = '';
-    state.tasks.forEach(t => {
-      const li = document.createElement('li');
-      li.className = 'task-item';
-      li.innerHTML = \`<span>\${t.text}</span> <button class="task-del" onclick="deleteTask('\${t.id}')">X</button>\`;
-      list.appendChild(li);
-    });
-    updateGachaBalls();
+  // --- Main Screen & Gacha Logic ---
+  var ballColors = ['#D6402D', '#EEA927', '#3F756D', '#FFF9EE', '#6A9FB5'];
+
+  function renderDomeBalls() {
+    var dome = document.getElementById('gacha-dome');
+    dome.innerHTML = '';
+    var numBalls = Math.min(state.tasks.length, 12);
+
+    for (var i = 0; i < numBalls; i++) {
+      var t = state.tasks[i];
+      var b = document.createElement('div');
+      b.className = 'ball';
+      b.style.backgroundColor = ballColors[i % ballColors.length];
+      b.style.animation = 'float' + ((i % 3) + 1) + ' ' + (3 + (i * 0.4)) + 's linear infinite';
+      b.textContent = t.text.length > 4 ? t.text.substring(0, 3) + '..' : t.text;
+      b.setAttribute('data-id', t.id);
+      b.setAttribute('data-text', t.text);
+
+      attachBallInteraction(b, t);
+      dome.appendChild(b);
+    }
     updatePullButton();
   }
 
-  function addTask() {
-    const input = document.getElementById('task-input');
-    const val = input.value.trim();
-    if (val && state.tasks.length < 15) {
-      state.tasks.push({ id: generateId(), text: val, createdAt: todayStr });
-      input.value = '';
-      saveTasks();
-      renderTasks();
+  // --- Ball Interaction: Drag-and-Drop to Trash + Tap to Quick Delete ---
+  var activePopoverTaskId = null;
+
+  function attachBallInteraction(ballEl, task) {
+    var trashZone = document.getElementById('trash-zone');
+    var dragClone = null;
+    var isDragging = false;
+    var startX = 0;
+    var startY = 0;
+    var moveThreshold = 7;
+    var movedPastThreshold = false;
+
+    function onPointerDown(e) {
+      if (e.button && e.button !== 0) return;
+      var clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      var clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      startX = clientX;
+      startY = clientY;
+      isDragging = true;
+      movedPastThreshold = false;
+
+      document.addEventListener('mousemove', onPointerMove);
+      document.addEventListener('touchmove', onPointerMove, { passive: false });
+      document.addEventListener('mouseup', onPointerUp);
+      document.addEventListener('touchend', onPointerUp);
     }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+      var clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      var clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      var dx = clientX - startX;
+      var dy = clientY - startY;
+
+      if (!movedPastThreshold && (Math.abs(dx) > moveThreshold || Math.abs(dy) > moveThreshold)) {
+        movedPastThreshold = true;
+        closePopover();
+
+        // Create Dragging Ghost Element
+        dragClone = ballEl.cloneNode(true);
+        dragClone.style.cssText = 'position:fixed;width:46px;height:46px;opacity:0.85;z-index:9998;pointer-events:none;border-radius:50%;animation:none;box-shadow:0 6px 12px rgba(0,0,0,0.3);';
+        document.body.appendChild(dragClone);
+
+        trashZone.classList.add('show-trash');
+      }
+
+      if (movedPastThreshold) {
+        if (e.cancelable) e.preventDefault();
+        if (dragClone) {
+          dragClone.style.left = (clientX - 23) + 'px';
+          dragClone.style.top = (clientY - 23) + 'px';
+        }
+
+        var trashRect = trashZone.getBoundingClientRect();
+        if (clientX >= trashRect.left && clientX <= trashRect.right && clientY >= trashRect.top && clientY <= trashRect.bottom) {
+          trashZone.classList.add('drag-over');
+        } else {
+          trashZone.classList.remove('drag-over');
+        }
+      }
+    }
+
+    function onPointerUp(e) {
+      if (!isDragging) return;
+      isDragging = false;
+
+      document.removeEventListener('mousemove', onPointerMove);
+      document.removeEventListener('touchmove', onPointerMove);
+      document.removeEventListener('mouseup', onPointerUp);
+      document.removeEventListener('touchend', onPointerUp);
+
+      if (movedPastThreshold) {
+        var clientX = e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+        var clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+
+        var trashRect = trashZone.getBoundingClientRect();
+        var wasDroppedInTrash = (clientX >= trashRect.left && clientX <= trashRect.right && clientY >= trashRect.top && clientY <= trashRect.bottom);
+
+        if (wasDroppedInTrash) {
+          deleteTask(task.id);
+        }
+
+        if (dragClone) { dragClone.remove(); dragClone = null; }
+        trashZone.classList.remove('show-trash');
+        trashZone.classList.remove('drag-over');
+      } else {
+        // Simple Tap -> Open Quick Delete Popover
+        openPopover(ballEl, task);
+      }
+    }
+
+    ballEl.addEventListener('mousedown', onPointerDown);
+    ballEl.addEventListener('touchstart', onPointerDown, { passive: true });
+  }
+
+  function openPopover(ballEl, task) {
+    var pop = document.getElementById('ball-popover');
+    var rect = ballEl.getBoundingClientRect();
+    activePopoverTaskId = task.id;
+
+    document.getElementById('popover-task-title').textContent = "'" + task.text + "' 버릴까요?";
+    pop.style.left = (rect.left + rect.width / 2) + 'px';
+    pop.style.top = (rect.top - 8) + 'px';
+    pop.style.display = 'flex';
+  }
+
+  function closePopover() {
+    var pop = document.getElementById('ball-popover');
+    pop.style.display = 'none';
+    activePopoverTaskId = null;
+  }
+
+  document.getElementById('pop-btn-del').addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (activePopoverTaskId) deleteTask(activePopoverTaskId);
+    closePopover();
+  });
+  document.getElementById('pop-btn-cancel').addEventListener('click', function(e) {
+    e.stopPropagation();
+    closePopover();
+  });
+
+  // --- Korean IME End-of-Word Duplication Bug Prevention ---
+  var taskInput = document.getElementById('task-input');
+  var isComposing = false;
+
+  taskInput.addEventListener('compositionstart', function() {
+    isComposing = true;
+  });
+  taskInput.addEventListener('compositionend', function() {
+    isComposing = false;
+  });
+
+  taskInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      if (isComposing || e.isComposing || e.keyCode === 229) {
+        return; // Suppress duplicate trigger during Korean syllabic composition
+      }
+      e.preventDefault();
+      addTask();
+    }
+  });
+
+  function addTask() {
+    var val = taskInput.value.trim();
+    if (!val) {
+      taskInput.focus();
+      return;
+    }
+    if (state.tasks.length >= 15) {
+      alert('공이 가득 찼어요! 최대 15개까지 넣을 수 있습니다.');
+      return;
+    }
+    state.tasks.push({ id: generateId(), text: val, createdAt: todayStr });
+    taskInput.value = '';
+    saveTasks();
+    renderDomeBalls();
   }
 
   function deleteTask(id) {
-    state.tasks = state.tasks.filter(t => t.id !== id);
+    state.tasks = state.tasks.filter(function(t) { return t.id !== id; });
     saveTasks();
-    renderTasks();
+    renderDomeBalls();
   }
 
-  function updateGachaBalls() {
-    const dome = document.getElementById('gacha-dome');
-    dome.innerHTML = '';
-    const numBalls = Math.min(state.tasks.length, 10);
-    
-    for(let i=0; i<numBalls; i++) {
-      const b = document.createElement('div');
-      b.className = 'ball';
-      b.style.backgroundColor = ballColors[i % ballColors.length];
-      b.style.animation = \`float\${(i%3)+1} \${3 + Math.random()*2}s linear infinite\`;
-      b.innerText = state.tasks[i].text.substring(0,3);
-      dome.appendChild(b);
-    }
+  function resetTodaySpin() {
+    localStorage.removeItem('gacha_spun_' + todayStr);
+    state.hasSpunToday = false;
+    updatePullButton();
+    var msg = document.getElementById('pull-msg');
+    msg.textContent = '오늘 뽑기가 다시 활성화되었어요!';
+    setTimeout(function() {
+      if (!state.hasSpunToday) msg.textContent = '';
+    }, 1800);
   }
 
   function updatePullButton() {
-    const btn = document.getElementById('btn-pull');
-    const msg = document.getElementById('pull-msg');
+    var btn = document.getElementById('btn-pull');
+    var msg = document.getElementById('pull-msg');
+    var resetBtn = document.getElementById('btn-reset-spin');
     if (state.hasSpunToday) {
       btn.disabled = true;
-      btn.innerText = "내일 또 만나요!";
-      msg.innerText = "오늘은 이미 도전했어요!";
+      btn.textContent = '내일 또 만나요!';
+      msg.textContent = '오늘은 이미 도전했어요!';
+      if (resetBtn) resetBtn.style.display = 'inline-block';
     } else if (state.tasks.length === 0) {
       btn.disabled = true;
-      msg.innerText = "할 일을 먼저 추가해주세요!";
+      btn.textContent = '할 일을 적어주세요';
+      msg.textContent = '새로운 할 일을 추가하면 공이 생겨요!';
+      if (resetBtn) resetBtn.style.display = 'none';
     } else {
       btn.disabled = false;
-      btn.innerText = "레버 당기기! 🎰";
-      msg.innerText = "";
+      btn.textContent = '레버 당기기!';
+      msg.textContent = '';
+      if (resetBtn) resetBtn.style.display = 'none';
     }
   }
 
   function pullGacha() {
     if (state.hasSpunToday || state.tasks.length === 0) return;
-    
-    // Select task
-    const rIdx = rnd(state.tasks.length);
+
+    var rIdx = rnd(state.tasks.length);
     state.currentTask = state.tasks[rIdx];
-    
-    // Animation
-    document.querySelector('.gacha-container').classList.add('gacha-shake');
-    
-    setTimeout(() => {
-      document.querySelector('.gacha-container').classList.remove('gacha-shake');
-      const prize = document.getElementById('gacha-prize');
-      prize.style.display = 'flex';
-      prize.innerText = state.currentTask.text.substring(0,3);
-      
-      // Save state
+
+    // Shake dome
+    document.querySelector('.gacha-dome').classList.add('gacha-shake');
+
+    setTimeout(function() {
+      document.querySelector('.gacha-dome').classList.remove('gacha-shake');
+
+      // Pop prize ball out of base slot
+      var prize = document.getElementById('gacha-prize');
+      prize.style.backgroundColor = ballColors[rnd(ballColors.length)];
+      prize.textContent = state.currentTask.text.length > 3 ? state.currentTask.text.substring(0, 3) : state.currentTask.text;
+      prize.classList.add('popping');
+
       state.hasSpunToday = true;
-      localStorage.setItem(\`gacha_spun_\${todayStr}\`, 'true');
+      localStorage.setItem('gacha_spun_' + todayStr, 'true');
       updatePullButton();
-      
-      setTimeout(() => {
-        prize.style.display = 'none';
+
+      setTimeout(function() {
+        prize.classList.remove('popping');
         goToTimer();
-      }, 1500);
-    }, 1000);
+      }, 1400);
+    }, 900);
   }
 
-  // --- Timer Screen ---
+  // --- Screen 2: Timer Logic with Single-Click Lock ---
   function goToTimer() {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('screen-timer').classList.add('active');
-    
-    document.getElementById('timer-task-name').innerText = state.currentTask.text;
-    
-    // Cheering generic hedgehog
-    const cheerSvg = generateHedgehogSVG({ pose: 1, bodyColor: 0, spineColor: 0, accessory: 0, eyeStyle: 0 });
+
+    document.getElementById('timer-task-name').textContent = state.currentTask.text;
+
+    // Cheering Hedgehog SVG
+    var cheerSvg = generateHedgehogSVG({ pose: 1, bodyColor: 0, spineColor: 0, accessory: 0, eyeStyle: 0 }, false);
     document.getElementById('timer-cheer').innerHTML = cheerSvg;
-    
-    resetTimerDisplay();
+
+    resetTimerSelection();
   }
 
-  function startTimer(mins) {
+  function resetTimerSelection() {
+    clearInterval(state.timerInterval);
+    state.timerLocked = false;
+    state.selectedMins = null;
+    state.timeLeft = 0;
+
+    ['15', '20', '30'].forEach(function(m) {
+      var btn = document.getElementById('tbtn-' + m);
+      btn.disabled = false;
+      btn.classList.remove('active-start');
+      btn.textContent = m + '분';
+    });
+
+    document.getElementById('timer-status-banner').style.display = 'none';
+    document.getElementById('timer-reset-link').style.display = 'none';
+    document.getElementById('timer-display').textContent = '00:00';
+  }
+
+  function selectAndStartTimer(mins) {
+    if (state.timerLocked) return; // Prevent changing once selected!
+    state.timerLocked = true;
+    state.selectedMins = mins;
+
+    // Lock other buttons & change selected button to '스타트!'
+    ['15', '20', '30'].forEach(function(m) {
+      var btn = document.getElementById('tbtn-' + m);
+      if (parseInt(m) === mins) {
+        btn.textContent = m + '분 스타트!';
+        btn.classList.add('active-start');
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+        btn.classList.remove('active-start');
+      }
+    });
+
+    var banner = document.getElementById('timer-status-banner');
+    banner.textContent = mins + '분 도전 시작! 딴짓 금지!';
+    banner.style.display = 'block';
+
+    document.getElementById('timer-reset-link').style.display = 'block';
+
+    // Start Countdown
     clearInterval(state.timerInterval);
     state.timeLeft = mins * 60;
     updateTimerDisplay();
-    
-    state.timerInterval = setInterval(() => {
+
+    state.timerInterval = setInterval(function() {
       state.timeLeft--;
       updateTimerDisplay();
       if (state.timeLeft <= 0) {
         clearInterval(state.timerInterval);
+        banner.textContent = '시간 종료! 양심선언 버튼을 눌러 완료하세요!';
       }
     }, 1000);
   }
 
   function updateTimerDisplay() {
-    const m = Math.floor(Math.max(0, state.timeLeft) / 60).toString().padStart(2, '0');
-    const s = (Math.max(0, state.timeLeft) % 60).toString().padStart(2, '0');
-    document.getElementById('timer-display').innerText = \`\${m}:\${s}\`;
-  }
-  
-  function resetTimerDisplay() {
-    clearInterval(state.timerInterval);
-    document.getElementById('timer-display').innerText = "00:00";
+    var m = Math.floor(Math.max(0, state.timeLeft) / 60).toString().padStart(2, '0');
+    var s = (Math.max(0, state.timeLeft) % 60).toString().padStart(2, '0');
+    document.getElementById('timer-display').textContent = m + ':' + s;
   }
 
   function completeTask() {
@@ -704,18 +1487,18 @@
     goToReward();
   }
 
-  // --- Reward Screen ---
+  // --- Screen 3: Reward Screen ---
   function goToReward() {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('screen-reward').classList.add('active');
-    
+
     document.getElementById('reward-envelope').style.display = 'flex';
     document.getElementById('seal-showcase').style.display = 'none';
-    document.getElementById('reward-envelope').classList.remove('shake-anim');
+    document.getElementById('reward-envelope').classList.remove('shake-envelope');
   }
 
   function getRarity() {
-    const r = Math.random() * 100;
+    var r = Math.random() * 100;
     if (r < 2) return 'SS';      // 2%
     if (r < 10) return 'Epic';   // 8%
     if (r < 35) return 'Rare';   // 25%
@@ -723,23 +1506,21 @@
   }
 
   function openEnvelope() {
-    const env = document.getElementById('reward-envelope');
-    env.classList.add('shake-anim');
-    
-    setTimeout(() => {
+    var env = document.getElementById('reward-envelope');
+    env.classList.add('shake-envelope');
+
+    setTimeout(function() {
       env.style.display = 'none';
       showSeal();
-    }, 800);
+    }, 750);
   }
 
   function showSeal() {
-    const rarity = getRarity();
-    
-    // Generate unique hedgehog params
-    let spColorIdx = rnd(4);
-    if (rarity === 'SS') spColorIdx = 4; // Force rainbow for SS
+    var rarity = getRarity();
+    var spColorIdx = rnd(4);
+    if (rarity === 'SS') spColorIdx = 4; // Rainbow spines for SS
 
-    const hedgehogParams = {
+    var hedgehogParams = {
       pose: rnd(3),
       bodyColor: rnd(4),
       spineColor: spColorIdx,
@@ -747,7 +1528,7 @@
       eyeStyle: rnd(3)
     };
 
-    const newSticker = {
+    var newSticker = {
       id: generateId(),
       date: todayStr,
       task: state.currentTask.text,
@@ -758,50 +1539,99 @@
     state.stickers.push(newSticker);
     saveStickers();
 
-    // Render Seal
-    const showcase = document.getElementById('seal-showcase');
-    const card = document.getElementById('seal-card');
-    const rarityLabel = document.getElementById('seal-rarity');
-    
-    card.className = \`seal-card card-\${rarity}\`;
-    rarityLabel.className = \`seal-rarity rarity-\${rarity}\`;
-    rarityLabel.innerText = rarity;
-    
-    document.getElementById('seal-svg-wrap').innerHTML = generateHedgehogSVG(hedgehogParams);
-    document.getElementById('seal-task-desc').innerText = \`[퀘스트: \${newSticker.task}] 달성\`;
-    document.getElementById('seal-date-desc').innerText = todayStr;
+    var card = document.getElementById('seal-card');
+    var nameLabel = document.getElementById('seal-name-desc');
+    var rarityLabel = document.getElementById('seal-rarity');
+    var taskLabel = document.getElementById('seal-task-desc');
+    var dateLabel = document.getElementById('seal-date-desc');
 
-    showcase.style.display = 'flex';
+    card.className = 'seal-card card-' + rarity;
+    rarityLabel.className = 'seal-card-badge badge-' + rarity;
+    rarityLabel.textContent = rarity;
+    nameLabel.textContent = getHedgehogName(newSticker.id);
+    taskLabel.textContent = '[' + newSticker.task + '] 완료';
+    dateLabel.textContent = todayStr;
+
+    document.getElementById('seal-svg-wrap').innerHTML = generateHedgehogSVG(hedgehogParams, false);
+    document.getElementById('seal-showcase').style.display = 'flex';
   }
 
-  // --- Album Screen ---
+  // --- Screen 4: Album Screen & Detail Modal ---
   function renderAlbum() {
-    document.getElementById('album-title').innerText = \`\${currentMonth}월의 씰 모음\`;
-    
-    const monthStickers = state.stickers.filter(s => s.date.startsWith(\`2026-\${String(currentMonth).padStart(2,'0')}\`));
-    document.getElementById('album-summary').innerText = \`수집: \${monthStickers.length}개 / \${daysInMonth}일\`;
+    document.getElementById('album-title').textContent = currentMonth + '월의 씰 모음';
+    var yr = new Date().getFullYear();
+    var mo = String(currentMonth).padStart(2, '0');
+    var monthStickers = state.stickers.filter(function(s) {
+      return s.date && s.date.indexOf(yr + '-' + mo) === 0;
+    });
 
-    const grid = document.getElementById('album-grid');
+    document.getElementById('album-summary').textContent = '수집: ' + monthStickers.length + '개 / ' + daysInMonth + '일';
+
+    var grid = document.getElementById('album-grid');
     grid.innerHTML = '';
 
-    for (let i = 0; i < daysInMonth; i++) {
-      const slot = document.createElement('div');
+    for (var i = 0; i < daysInMonth; i++) {
+      var slot = document.createElement('div');
       slot.className = 'album-slot';
-      
+
       if (i < monthStickers.length) {
-        const s = monthStickers[i];
+        var s = monthStickers[i];
         slot.classList.add('filled');
-        if(s.rarity === 'SS') slot.classList.add('filled-SS');
-        
-        slot.innerHTML = \`<div class="mini-seal">\${generateHedgehogSVG(s.hedgehog, true)}</div>\`;
+        if (s.rarity === 'SS') slot.classList.add('filled-SS');
+
+        var miniSvg = document.createElement('div');
+        miniSvg.className = 'slot-mini-svg';
+        miniSvg.innerHTML = generateHedgehogSVG(s.hedgehog, true);
+
+        var nameDiv = document.createElement('div');
+        nameDiv.className = 'slot-name';
+        nameDiv.textContent = getHedgehogName(s.id);
+
+        var badgeDiv = document.createElement('div');
+        badgeDiv.className = 'slot-badge badge-' + s.rarity;
+        badgeDiv.textContent = s.rarity;
+
+        var taskDiv = document.createElement('div');
+        taskDiv.className = 'slot-task';
+        taskDiv.textContent = '[' + s.task + ']';
+
+        slot.appendChild(miniSvg);
+        slot.appendChild(nameDiv);
+        slot.appendChild(badgeDiv);
+        slot.appendChild(taskDiv);
+
+        (function(sticker) {
+          slot.addEventListener('click', function() {
+            openAlbumModal(sticker);
+          });
+        })(s);
       }
       grid.appendChild(slot);
     }
   }
 
-  // Init
-  renderTasks();
+  function openAlbumModal(sticker) {
+    var modal = document.getElementById('album-modal');
+    var card = document.getElementById('modal-card');
+    var badge = document.getElementById('modal-badge');
 
+    card.className = 'seal-card card-' + sticker.rarity;
+    badge.className = 'seal-card-badge badge-' + sticker.rarity;
+    badge.textContent = sticker.rarity;
+    document.getElementById('modal-name').textContent = getHedgehogName(sticker.id);
+    document.getElementById('modal-quest').textContent = '[' + sticker.task + '] 완료';
+    document.getElementById('modal-date').textContent = sticker.date;
+    document.getElementById('modal-svg-wrap').innerHTML = generateHedgehogSVG(sticker.hedgehog, false);
+
+    modal.classList.add('open');
+  }
+
+  function closeAlbumModal() {
+    document.getElementById('album-modal').classList.remove('open');
+  }
+
+  // --- Initial Setup ---
+  renderDomeBalls();
 </script>
 </body>
 </html>
