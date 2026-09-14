@@ -98,13 +98,13 @@
       z-index: 1;
     }
     .screen.active { display: flex; }
+    .screen:not(.active) { display: none !important; }
     
     /* Screen Main: 스크롤 절대 없음 (100% 뷰포트 고정) */
     #screen-main {
       overflow: hidden !important;
       touch-action: none;
       overscroll-behavior: none;
-      display: flex;
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
