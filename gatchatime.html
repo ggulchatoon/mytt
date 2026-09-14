@@ -57,6 +57,7 @@
       align-items: center;
       height: 100dvh;
       overflow: hidden;
+      overscroll-behavior: none;
     }
 
     /* 1930s Film Grain Overlay */
@@ -77,6 +78,7 @@
       background-color: var(--paper);
       position: relative;
       overflow: hidden;
+      overscroll-behavior: none;
       display: flex;
       flex-direction: column;
       box-shadow: 0 0 35px rgba(0,0,0,0.35);
@@ -96,8 +98,21 @@
       z-index: 1;
     }
     .screen.active { display: flex; }
+    
+    /* Screen Main: 스크롤 절대 없음 (100% 뷰포트 고정) */
     #screen-main {
-      justify-content: space-evenly;
+      overflow: hidden !important;
+      touch-action: none;
+      overscroll-behavior: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      box-sizing: border-box;
+      padding-bottom: 62px !important;
+    }
+    #screen-main.active {
+      display: flex;
     }
 
     /* Cuphead Vintage Typography & Headings */
