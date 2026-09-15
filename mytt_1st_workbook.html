@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 
 :root{
@@ -65,63 +66,68 @@ body{
   box-shadow: 0 2px 12px var(--shadow);
 }
 .header-top{
-  max-width:1220px; margin:0 auto;
-  padding:12px 26px 8px;
-  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 38px;
+  display:flex; align-items:center; gap:18px;
 }
 .logo{
+  flex:0 0 auto;
   display:flex; align-items:center; gap:7px;
   font-family: 'Jua', sans-serif;
   font-size:17px; font-weight:700; color:var(--d-orange);
   letter-spacing:-0.02em;
+  white-space:nowrap;
 }
 .logo .leaf{font-size:19px;}
-.progress-wrap{
-  display:flex; align-items:center; gap:9px;
-  font-size:12px; color:var(--l-brown);
-}
-.progress-track{
-  width:110px; height:5px; border-radius:99px; background:var(--peach-lt); overflow:hidden;
-}
-.progress-fill{
-  height:100%; background: var(--d-orange);
-  border-radius:99px; transition:width .3s ease;
+.header-meta{
+  flex:0 0 auto;
+  display:flex; align-items:center; gap:10px;
+  font-size:12px; color:var(--l-brown); font-weight:600;
 }
 
-.tab-nav{
-  max-width:1220px; margin:0 auto;
-  display:flex; gap:4px; padding:0 20px 8px;
-  overflow-x:auto; scrollbar-width:none;
+/* ---------- Growth track (chapter progress bar) ---------- */
+.growth-track{
+  flex:1 1 auto; min-width:0;
+  display:flex; align-items:center; gap:7px;
+  padding:2px;
+  overflow-x:auto; overflow-y:visible; scrollbar-width:none;
 }
-.tab-nav::-webkit-scrollbar{display:none;}
-.tab-btn{
-  flex:0 0 auto;
-  display:flex; align-items:center; gap:5px;
-  padding:6px 12px;
-  border-radius: 20px;
-  border: 2px solid var(--border);
-  background: transparent; 
-  color: var(--l-brown);
-  font-size:12.5px; font-weight:600; font-family:inherit;
-  cursor:pointer; white-space:nowrap; transition:all .18s ease;
+.growth-track::-webkit-scrollbar{display:none;}
+.growth-seg{
+  position:relative;
+  flex:1 1 0; min-width:74px;
+  display:block;
+  background:none; border:none; padding:0; margin:0;
+  cursor:pointer; font-family:inherit;
 }
-.tab-btn .num{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:16px; height:16px; border-radius:50%;
-  background:var(--peach-lt); color:var(--l-brown);
-  font-size:10px; font-weight:700;
+.seg-bar{
+  position:relative;
+  width:100%; height:34px;
+  border-radius:17px;
+  background:var(--peach-lt);
+  border:1.5px solid var(--border);
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color .2s ease, box-shadow .2s ease;
 }
-.tab-btn:hover{
-  background: var(--peach-lt);
-  border-color: var(--peach);
+.seg-fill{
+  position:absolute; inset:0; width:0%;
+  background:linear-gradient(90deg, var(--d-orange), var(--orange));
+  transition:width .45s cubic-bezier(.34,1.15,.64,1);
 }
-.tab-btn.active{
-  background: var(--d-orange);
-  border-color: var(--d-orange);
-  color: #fff;
-  font-family: 'Jua', sans-serif;
+.seg-text{
+  position:relative; z-index:1;
+  font-size:11px; font-weight:700; color:var(--brown);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
+  padding:0 10px;
+  transition:color .2s ease;
 }
-.tab-btn.active .num{background:rgba(255,255,255,0.25); color:#fff;}
+.growth-seg.done .seg-bar{ border-color:var(--d-orange); }
+.growth-seg:hover .seg-bar{ border-color:var(--peach); }
+.growth-seg.active .seg-bar{
+  border-color:var(--d-orange);
+  box-shadow:0 0 0 3px rgba(255,155,94,0.18);
+}
+.growth-seg.active .seg-text{ font-family:'Jua', sans-serif; }
 
 /* ---------- Stage ---------- */
 .page-stage{flex:1 1 auto; position:relative; min-height:0;}
@@ -152,23 +158,23 @@ body{
   display:flex; align-items:center; gap:8px;
 }
 .page-desc{
-  font-size:13px; color:var(--l-brown); line-height:1.5; max-width:600px; margin:0;
+  font-size:14.5px; color:var(--l-brown); line-height:1.6; max-width:1000px; margin:0;
 }
 
 .page-body{flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:12px;}
 
 /* ---------- Card system ---------- */
 .card{
-  background: var(--warm-white); 
+  background: var(--warm-white);
   border: 2px solid var(--border);
-  border-radius: var(--radius-lg); 
+  border-radius: var(--radius-lg);
   box-shadow: 0 6px 28px var(--shadow);
   padding:16px 18px; min-height:0;
 }
 .card-title{
   display:flex; align-items:center; gap:7px;
   font-family: 'Jua', sans-serif;
-  font-size: 20px; 
+  font-size: 20px;
   color: var(--brown);
   margin:0 0 9px; flex:0 0 auto;
 }
@@ -192,12 +198,12 @@ body{
 }
 
 textarea.field, input.field, select.field{
-  width:100%; 
-  border: 2px solid var(--border); 
+  width:100%;
+  border: 2px solid var(--border);
   border-radius: 12px;
-  background: var(--cream); 
-  padding:9px 12px; 
-  font-family: 'Gowun Dodum', sans-serif; 
+  background: var(--cream);
+  padding:9px 12px;
+  font-family: 'Gowun Dodum', sans-serif;
   font-size:13px; color:var(--brown);
   resize:none; outline:none; transition:all .15s;
 }
@@ -212,7 +218,7 @@ textarea.field::placeholder, input.field::placeholder{
 
 .pill{
   display:inline-flex; align-items:center; gap:5px;
-  padding:5px 12px; border-radius:999px; border:1.5px solid var(--border);
+  padding:5px 12px; border-radius:999px; border:2px solid var(--border);
   font-size:12px; font-weight:700; background:#fff; cursor:pointer;
 }
 .pill.orange{background: #FFF0E4; border-color:var(--orange); color: var(--orange);}
@@ -242,7 +248,7 @@ textarea.field::placeholder, input.field::placeholder{
   padding:9px 17px; transition:all .15s; flex:0 0 auto;
 }
 .btn-primary{
-  background: linear-gradient(135deg, var(--d-orange), var(--orange)); 
+  background: linear-gradient(135deg, var(--d-orange), var(--orange));
   color:#fff;
   border-radius: 20px;
   box-shadow: 0 3px 10px rgba(244,162,97,.34);
@@ -252,9 +258,9 @@ textarea.field::placeholder, input.field::placeholder{
   box-shadow: 0 5px 14px rgba(244,162,97,.45);
 }
 .btn-ghost{
-  background: var(--cream); 
-  color: var(--l-brown); 
-  border: 1.5px solid var(--border);
+  background: var(--cream);
+  color: var(--l-brown);
+  border: 2px solid var(--border);
   border-radius: 12px;
 }
 .btn-ghost:hover{
@@ -274,9 +280,9 @@ textarea.field::placeholder, input.field::placeholder{
 .concept-card{
   display:flex; flex-direction:column; align-items:flex-start;
   border: 2px solid var(--border); border-left-width:5px; border-radius:var(--radius-md);
-  background:var(--warm-white); padding:16px 18px; min-height:0; height:100%;
+  background:var(--warm-white); padding:14px 18px; min-height:0; height:100%;
 }
-.concept-card .emoji{font-size:28px; margin-bottom:10px;}
+.concept-card .emoji{font-size:28px; margin-bottom:6px;}
 .concept-card .name{font-family:'Jua', sans-serif; font-size:18px; color:var(--brown); margin-bottom:6px;}
 .concept-card .desc{font-size:12.5px; color:var(--l-brown); line-height:1.55;}
 .concept-card .field{margin-top:auto; padding-top:9px;}
@@ -308,7 +314,7 @@ textarea.field::placeholder, input.field::placeholder{
 }
 .field-chip-item {
   display: inline-flex; align-items: center; gap: 5px;
-  background: var(--cream); border: 1.5px solid var(--border); border-radius: 999px;
+  background: var(--cream); border: 2px solid var(--border); border-radius: 999px;
   padding: 4px 10px; font-size: 12px; color: var(--brown);
   animation: popIn 0.18s ease; user-select: none;
 }
@@ -331,7 +337,7 @@ textarea.field::placeholder, input.field::placeholder{
 }
 .btn-chip-add {
   padding: 6px 12px; font-size: 14px; font-weight: bold; border-radius: 10px;
-  background: var(--cream); color: var(--brown); border: 1.5px solid var(--border);
+  background: var(--cream); color: var(--brown); border: 2px solid var(--border);
 }
 .btn-chip-add:hover {
   background: var(--peach-lt); border-color: var(--d-orange); color: var(--d-orange);
@@ -389,21 +395,31 @@ textarea.field::placeholder, input.field::placeholder{
   .page-stage{overflow:visible;}
 }
 
+@page { size: A4 landscape; margin: 8mm; }
 @media print{
-  .app-header, .no-print{display:none !important;}
-  html,body{overflow:visible; height:auto;}
-  body{background:#fff;}
-  .page{display:none; position:relative; padding:10px 4px; overflow:visible; max-width:100%;}
-  .page.print-active{display:flex !important;}
-  body.print-all .page{
-    display:flex !important;
-    position:relative !important;
-    page-break-after: always;
-    break-after: page;
-    min-height: 98vh;
-    margin-bottom: 20px;
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .app-header, .no-print, .sub-tab-bar, .mytt-modal-backdrop, .time-grid-picker-panel,
+  .page-footer-actions .btn, .page-footer-actions button { display:none !important; }
+  html,body{overflow:visible; height:auto; background:#fff;}
+  .page-stage{position:static; overflow:visible;}
+  /* 한 페이지 = 가로 A4 한 장. 화면용 레이아웃(약 1180px)을 종이 폭에 맞게 축소 */
+  .page{
+    display:none; position:relative; overflow:hidden;
+    width:100%; max-width:none; margin:0; padding:6px 8px;
+    zoom:0.86; height:calc(100vh / 0.86);
+    box-sizing:border-box;
   }
-  .card{box-shadow:none;}
+  .page.print-active{display:flex !important;}
+  body.print-all .page{ display:flex !important; break-after:page; page-break-after:always; }
+  body.print-all .page:last-of-type{ break-after:auto; page-break-after:auto; }
+  .card, .concept-card, .note-card, .note-card-col, .note-card-wide, .fruit-card, .farm-grid-container, .farm-hud-card, .svg-container { box-shadow:none !important; }
+  /* 스크롤 영역은 펼쳐서 전부 보이게 */
+  .time-grid-wrapper, .farm-grid-container, .thought-canvas, .review-page-wrap, .fruit-card, .note-page-body-center, .page-body .stack { overflow:visible !important; }
+  #grid1 .time-cell, #grid2 .time-cell { min-height:0 !important; }
+  #grid2 { grid-auto-rows: minmax(12px, 1fr); }
+  .time-col-head { position:static !important; }
+  .focus-curve-handle { opacity:0.95 !important; }
+  textarea.field, .note-reflection-textarea, .thief-card-textarea { resize:none; }
 }
 
 /* Custom Additions */
@@ -420,14 +436,6 @@ textarea.field::placeholder, input.field::placeholder{
 .time-cell[data-type="tree"] { background:#7BB873; }
 .time-cell[data-type="ground"] { background:#A89F91; }
 .time-cell[data-type="buffer"] { background:#FFD166; }
-
-/* ── sub-dots on tab buttons ── */
-.sub-dots {
-  font-size:7px; letter-spacing:1px;
-  color: var(--orange); opacity:.7;
-  vertical-align: middle; margin-left:3px;
-}
-.tab-btn.active .sub-dots { color:#fff; opacity:.85; }
 
 /* ── underline sub-tab bar ── */
 .sub-tab-bar {
@@ -470,11 +478,11 @@ textarea.field::placeholder, input.field::placeholder{
 
 /* ── PDF header button ── */
 .pdf-header-btn {
-  display:flex; align-items:center; gap:5px;
-  padding:5px 14px;
+  display:flex; align-items:center; justify-content:center;
+  width:34px; height:34px; padding:0;
   background:linear-gradient(135deg,var(--d-orange),var(--orange));
-  color:#fff; border:none; border-radius:20px;
-  font-family:'Jua',sans-serif; font-size:12px;
+  color:#fff; border:none; border-radius:50%;
+  font-size:15px;
   cursor:pointer; transition:all .18s;
   box-shadow:0 2px 8px rgba(244,162,97,.34);
   flex-shrink:0;
@@ -518,6 +526,16 @@ textarea.field::placeholder, input.field::placeholder{
 .drop-zone.hover { background:var(--peach-lt); }
 
 .svg-container { flex:1 1 auto; border:2px solid var(--border); border-radius:var(--radius-md); background:var(--warm-white); position:relative; overflow:hidden; touch-action:none; cursor: crosshair; user-select: none; }
+.focus-reset-btn {
+  position: absolute; top: 10px; left: 12px; z-index: 3;
+  padding: 5px 12px; border-radius: 999px; border: 1.5px solid var(--border);
+  background: var(--warm-white); color: var(--l-brown); font-family: 'Gowun Dodum', sans-serif; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .15s; box-shadow: 0 2px 6px rgba(180,120,80,0.10);
+}
+.focus-reset-btn:hover { background: var(--peach-lt); border-color: var(--d-orange); color: var(--brown); }
+.focus-curve-handle { opacity: 0; transition: opacity .2s ease; }
+.svg-container:hover .focus-curve-handle, .focus-curve-handle.handle-glow { opacity: 0.95; }
+.focus-curve-handle.handle-glow { filter: drop-shadow(0 0 4px #F4A261); }
 .svg-curve { width:100%; height:100%; display:block; }
 .focus-point-circle { cursor: pointer; transition: r 0.15s, fill 0.15s; }
 .focus-point-circle:hover { r: 7; }
@@ -530,7 +548,7 @@ textarea.field::placeholder, input.field::placeholder{
 .focus-stat-bar { display: flex; gap: 10px; flex: 0 0 auto; }
 .focus-stat-item {
   flex: 1; display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+  padding: 8px 12px; border-radius: var(--radius-sm); border: 2px solid var(--border);
   background: var(--warm-white);
 }
 .focus-stat-item.high { border-color: var(--orange); background: #FFF5EE; }
@@ -546,8 +564,8 @@ textarea.field::placeholder, input.field::placeholder{
 .focus-ref-head { font-family: 'Jua', sans-serif; font-size: 16px; color: var(--brown); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
 .focus-ref-desc { font-size: 11px; color: var(--l-brown); margin-bottom: 12px; line-height: 1.4; }
 .focus-ref-list { flex: 1 1 auto; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px; }
-.focus-ref-group { 
-  border-radius: 12px; border: 1.5px solid var(--border); padding: 9px 12px; background: var(--cream);
+.focus-ref-group {
+  border-radius: 12px; border: 2px solid var(--border); padding: 9px 12px; background: var(--cream);
   cursor: pointer; transition: all 0.22s ease; user-select: none;
   position: relative;
 }
@@ -579,7 +597,7 @@ textarea.field::placeholder, input.field::placeholder{
 .energy-match-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .energy-pill {
   padding: 4px 10px; border-radius: 999px; font-size: 11.5px; cursor: pointer;
-  border: 1.5px solid var(--border); background: var(--warm-white); color: var(--l-brown);
+  border: 2px solid var(--border); background: var(--warm-white); color: var(--l-brown);
   transition: all 0.15s ease; font-family: 'Gowun Dodum', sans-serif;
 }
 .energy-pill:hover { border-color: var(--d-orange); color: var(--brown); }
@@ -667,7 +685,7 @@ textarea.field::placeholder, input.field::placeholder{
 
 .sum-card-item {
   background: var(--warm-white);
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-top: 3.5px solid var(--d-orange);
   border-radius: var(--radius-md);
   padding: 10px 13px;
@@ -679,7 +697,7 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 .sum-card-item.accent-dash {
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-top: 3.5px solid var(--d-orange);
   background: #FFFDF9;
 }
@@ -770,7 +788,7 @@ textarea.field::placeholder, input.field::placeholder{
   display: flex; align-items: center; gap: 6px; margin-top: 8px;
 }
 .time-select {
-  flex: 1; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  flex: 1; border: 2px solid var(--border); border-radius: var(--radius-sm);
   background: #FFFEFC; padding: 6px 8px;
   font-family: 'Gowun Dodum', sans-serif; font-size: 12px;
   color: var(--brown); outline: none; cursor: pointer; transition: border-color .15s;
@@ -778,47 +796,119 @@ textarea.field::placeholder, input.field::placeholder{
 .time-select:focus { border-color: var(--d-orange); }
 .inline-select { display:inline-block; width:auto; padding:3px 6px; vertical-align:middle; flex: none; }
 .time-sep { font-size: 13px; color: var(--l-brown); flex-shrink: 0; }
+
+/* ── 시간 선택 커스텀 그리드 피커 (긴 네이티브 드롭다운 대체) ── */
+.time-grid-picker { position: relative; flex: 1; }
+.time-grid-picker.inline { flex: none; display: inline-block; width: auto; vertical-align: middle; }
+.time-grid-picker-btn {
+  width: 100%; text-align: left; position: relative;
+  border: 2px solid var(--border); border-radius: var(--radius-sm);
+  background: #FFFEFC; padding: 6px 26px 6px 8px;
+  font-family: 'Gowun Dodum', sans-serif; font-size: 12px; color: var(--brown);
+  cursor: pointer; transition: border-color .15s; outline: none;
+}
+.time-grid-picker.inline .time-grid-picker-btn { width: auto; padding: 3px 22px 3px 6px; }
+.time-grid-picker-btn::after {
+  content: ''; position: absolute; right: 10px; top: 50%; width: 7px; height: 7px;
+  border-right: 1.6px solid var(--l-brown); border-bottom: 1.6px solid var(--l-brown);
+  transform: translateY(-65%) rotate(45deg); pointer-events: none;
+}
+.time-grid-picker-btn:hover, .time-grid-picker-btn.open { border-color: var(--d-orange); }
+
+.time-grid-picker-panel {
+  display: none; position: fixed; z-index: 500; width: 224px;
+  background: var(--warm-white); border: 2px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px var(--shadow); padding: 10px;
+}
+.time-grid-picker-panel.open { display: block; }
+.time-grid-picker-none {
+  width: 100%; margin-bottom: 8px; padding: 6px 8px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); background: var(--cream); color: var(--l-brown);
+  font-family: 'Gowun Dodum', sans-serif; font-size: 12px; cursor: pointer; transition: all .15s;
+}
+.time-grid-picker-none:hover { background: var(--peach-lt); }
+.time-grid-picker-none.selected { background: var(--d-orange); border-color: var(--d-orange); color: #fff; }
+.time-grid-picker-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+.time-grid-picker-cell {
+  padding: 6px 0; border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--cream); color: var(--brown); font-size: 11px; font-family: 'Gowun Dodum', sans-serif;
+  cursor: pointer; transition: all .15s;
+}
+.time-grid-picker-cell:hover { background: var(--peach-lt); border-color: var(--peach); }
+.time-grid-picker-cell.selected { background: var(--d-orange); border-color: var(--d-orange); color: #fff; font-family: 'Jua', sans-serif; }
 .fixed-row {
   display: flex; align-items: center; gap: 6px;
-  padding: 5px 0; border-bottom: 1px solid var(--line-soft);
+  padding: 11px 0; border-bottom: 1px solid var(--line-soft);
   flex-wrap: wrap; width: 100%;
 }
 .fixed-row input.field { width:70px; font-size:12px; padding: 4px 6px; }
 .fixed-row .time-sep { font-size: 12px; }
+.fixed-del-btn {
+  width: 20px; height: 20px; padding: 0; flex-shrink: 0;
+  border: none; border-radius: 50%; background: transparent;
+  color: var(--l-brown); font-size: 11px; line-height: 1; cursor: pointer; opacity: .55; transition: all .15s;
+}
+.fixed-del-btn:hover { background: var(--peach-lt); color: var(--d-orange); opacity: 1; }
+.name-row { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; margin-bottom:6px; }
+.name-row .name { margin-bottom:0; }
+.fixed-add-btn {
+  padding: 4px 11px; flex-shrink: 0; white-space: nowrap;
+  border: 1.5px dashed var(--peach); border-radius: 999px;
+  background: transparent; color: var(--l-brown);
+  font-family: 'Gowun Dodum', sans-serif; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.fixed-add-btn:hover { background: var(--peach-lt); border-color: var(--d-orange); color: var(--brown); }
 
-.day-pills { display:flex; gap:4px; flex-wrap:wrap; }
-.day-pill { padding:3px 8px; border-radius:999px; border:1.5px solid var(--border); font-size:11px; cursor:pointer; transition:all .15s; font-family:'Gowun Dodum',sans-serif; color: var(--l-brown); background: transparent; }
-.day-pill.on { background:var(--d-orange); border-color:var(--d-orange); color:#fff; font-family:'Jua',sans-serif; }
-.day-pill:hover:not(.on) { background:var(--peach-lt); border-color:var(--peach); }
+.day-pills { display:inline-flex; border:2px solid var(--border); border-radius:999px; overflow:hidden; background:var(--warm-white); }
+.day-pill { padding:3px 10px; border-right:1px solid var(--line-soft); font-size:11px; cursor:pointer; transition:all .15s; font-family:'Gowun Dodum',sans-serif; color: var(--l-brown); background: transparent; user-select:none; }
+.day-pill:last-child { border-right:none; }
+.day-pill[data-val="all"] { background:var(--cream); font-weight:700; border-right:1px solid var(--border); }
+.day-pill.on { background:var(--d-orange); color:#fff; font-family:'Jua',sans-serif; border-right-color:rgba(255,255,255,0.35); }
+.day-pill:hover:not(.on) { background:var(--peach-lt); }
 
 /* ── 4-1 이번 주 시간 농장 채우기 (Time Farm Routine - Wide Layout) ── */
+/* 왼쪽: 툴바 + 시간표(세로 꽉 채움), 오른쪽: 요약 카드 3개 세로 스택 */
 .farm-plan-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 232px;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "bar hud" "grid hud";
+  column-gap: 14px;
+  row-gap: 8px;
   height: 100%;
   min-height: 0;
   width: 100%;
 }
+.farm-plan-layout > .farm-action-bar { grid-area: bar; }
+.farm-plan-layout > .farm-grid-container { grid-area: grid; }
 
-/* 상단 밸런스 HUD 바 (3개 카드) */
+/* 오른쪽 요약 카드 스택 */
 .farm-hud-bar {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  flex: 0 0 auto;
+  grid-area: hud;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+@media (max-width: 1100px) {
+  .farm-plan-layout { grid-template-columns: 1fr; grid-template-rows: auto auto minmax(0, 1fr); grid-template-areas: "hud" "bar" "grid"; }
+  .farm-hud-bar { flex-direction: row; }
+  .farm-hud-card { flex: 1; }
 }
 .farm-hud-card {
   background: var(--warm-white);
   border: 1.8px solid var(--border);
   border-radius: 16px;
-  padding: 10px 16px;
+  padding: 7px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
   box-shadow: 0 2px 10px var(--shadow);
   transition: all 0.2s ease;
 }
+.farm-hud-card { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 14px; }
+.farm-hud-card .farm-hud-ico { font-size: 20px; }
 .farm-hud-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(180,120,80,0.12);
@@ -832,7 +922,7 @@ textarea.field::placeholder, input.field::placeholder{
   background: linear-gradient(135deg, #FFFDF8 0%, #F0F9EE 100%);
 }
 .farm-hud-ico {
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
   flex-shrink: 0;
 }
@@ -850,7 +940,7 @@ textarea.field::placeholder, input.field::placeholder{
 }
 .farm-hud-val {
   font-family: 'Jua', sans-serif;
-  font-size: 19px;
+  font-size: 17px;
   color: var(--brown);
   line-height: 1.15;
   display: flex;
@@ -909,7 +999,7 @@ textarea.field::placeholder, input.field::placeholder{
   gap: 4px;
   padding: 5px 11px;
   border-radius: 999px;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   background: var(--warm-white);
   color: var(--brown);
   font-family: 'Gowun Dodum', sans-serif;
@@ -1067,8 +1157,21 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 #grid2 .time-cell {
-  min-height: 38px;
+  min-height: 24px;
 }
+/* 세로로 이어진 같은 항목: 사이 틈을 메우고 라벨은 첫 칸에만 */
+.time-grid { --cell-gap: 1px; }
+#grid2 .time-cell.merge-cont { margin-top: calc(-1 * var(--cell-gap)); border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+#grid2 .time-cell.merge-head { border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+#grid2 .time-cell.merge-cont .farm-cell-content { display: none; }
+#grid2 .time-cell.merge-cont[data-type="free"] .farm-cell-content { display: none; }
+#grid2 { flex: 1 1 0; min-height: 0; grid-template-rows: auto; grid-auto-rows: minmax(24px, 1fr); }
+/* 주간 시간표(grid1): 24시간이 스크롤 없이 한 화면에 다 보이도록 줄 높이를 화면에 맞춤 */
+#grid1 { flex: 1 1 0; min-height: 0; grid-template-rows: auto; grid-auto-rows: minmax(13px, 1fr); }
+#grid1 .time-col-head { padding: 6px 0; }
+#grid1 .time-cell { min-height: 13px; }
+#grid1 .time-label { font-size: 10.5px; }
+#grid2 .time-col-head { padding: 6px 0; }
 
 /* 셀 내부 텍스트 구성: 이모지와 텍스트만 깔끔하게 (노볼드, 일반 두께) */
 .farm-cell-content {
@@ -1126,7 +1229,7 @@ textarea.field::placeholder, input.field::placeholder{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--border);
   padding-bottom: 10px;
 }
 .review-card-title {
@@ -1185,7 +1288,7 @@ textarea.field::placeholder, input.field::placeholder{
 .review-eval-chip {
   padding: 5px 10px;
   border-radius: 999px;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   background: var(--cream);
   color: var(--l-brown);
   font-size: 11.5px;
@@ -1223,7 +1326,7 @@ textarea.field::placeholder, input.field::placeholder{
 .auto-fill-btn {
   display: flex; align-items: center; gap: 5px;
   padding: 5px 12px; border-radius: 12px;
-  border: 1.5px solid var(--border); background: var(--cream);
+  border: 2px solid var(--border); background: var(--cream);
   color: var(--l-brown); font-size: 11px;
   font-family: 'Gowun Dodum', sans-serif; cursor: pointer;
   transition: all .15s;
@@ -1298,7 +1401,7 @@ textarea.field::placeholder, input.field::placeholder{
   padding: 5px 12px;
   border-radius: 999px;
   background: var(--warm-white);
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   color: var(--brown);
   font-size: 12px;
   cursor: grab;
@@ -1339,7 +1442,7 @@ textarea.field::placeholder, input.field::placeholder{
   flex-shrink: 0;
 }
 .thief-custom-input {
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 999px;
   padding: 4px 12px;
   font-size: 11.5px;
@@ -1355,7 +1458,7 @@ textarea.field::placeholder, input.field::placeholder{
   width: 170px;
 }
 .thief-custom-btn {
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   background: var(--warm-white);
   border-radius: 999px;
   padding: 4px 10px;
@@ -1505,7 +1608,7 @@ textarea.field::placeholder, input.field::placeholder{
 .thief-card-textarea {
   width: 100%;
   height: 80px;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 10px;
   background: var(--cream);
   padding: 8px 10px;
@@ -1560,7 +1663,7 @@ textarea.field::placeholder, input.field::placeholder{
   grid-template-columns: 1fr 1.15fr;
   gap: 10px;
   background: var(--cream);
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 12px;
   padding: 10px 12px;
   transition: all 0.18s ease;
@@ -1659,7 +1762,7 @@ textarea.field::placeholder, input.field::placeholder{
   width: 100%;
   flex: 1 1 auto;
   min-height: 52px;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 8px;
   background: var(--warm-white);
   padding: 7px 9px;
@@ -1682,6 +1785,23 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex: 0 0 auto; height: auto; }
+/* 주간 시간표 페이지: 왼쪽 툴바+시간표(세로 꽉 채움), 오른쪽 요약 카드 4개 세로 스택 */
+.weekgrid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "bar sum" "grid sum";
+  column-gap: 14px; row-gap: 8px;
+}
+.weekgrid-layout .weekgrid-bar { grid-area: bar; }
+.weekgrid-layout .weekgrid-card { grid-area: grid; min-height: 0; }
+.weekgrid-layout .summary-cards { grid-area: sum; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.weekgrid-layout .sum-card { padding: 10px 12px; }
+@media (max-width: 1100px) {
+  .weekgrid-layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0,1fr) auto; grid-template-areas: "bar" "grid" "sum"; }
+  .weekgrid-layout .summary-cards { flex-direction: row; }
+  .weekgrid-layout .sum-card { flex: 1; }
+}
 .sum-card { border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--warm-white); padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .sum-card span { font-size: 18px; }
 .sum-card b { font-size: 18px; color: var(--brown); font-family: 'Gowun Dodum', sans-serif; }
@@ -1712,6 +1832,10 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 .hour-block { display: contents; } /* Allows grid items to flow directly into time-grid */
+.time-sleep-divider {
+  background: #EAF1FB; color: #6B8FBF; font-size: 11px; font-weight: 700;
+  text-align: center; padding: 2px 0; letter-spacing: 0.02em;
+}
 .time-label { grid-column: 1; background: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600; color: var(--l-brown); border: none !important; border-bottom: none !important; }
 .time-col-head { background:var(--cream); text-align:center; font-size:12px; font-weight:bold; padding:8px 0; position:sticky; top:0; z-index:2; border-bottom:1px solid var(--border); }
 .time-grid-wrapper { flex:1 1 auto; overflow-y:auto; border:2px solid var(--border); border-radius:var(--radius-sm); background:var(--warm-white); display:flex; flex-direction:column; }
@@ -1739,6 +1863,7 @@ textarea.field::placeholder, input.field::placeholder{
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 16px;
   box-shadow: inset 0 2px 10px rgba(180,120,80,0.05);
@@ -1775,16 +1900,44 @@ textarea.field::placeholder, input.field::placeholder{
   transform: scale(0.96) !important;
 }
 
-/* 대표 열매 / 곳가지로 선택된 뱃지 상태 */
+/* 대표 열매: 사과처럼 — 붉은빛 둥근 몸통 + 꼭지와 잎 */
 .thought-bubble.is-main {
-  border-color: var(--d-orange);
-  background: #FFF0E4;
+  border: 2px solid #E8895A;
+  background: linear-gradient(160deg, #FFE3D0 0%, #FFC9A8 100%);
+  border-radius: 26px;
+  padding: 10px 16px;
   font-weight: bold;
+  margin-top: 10px;
+  box-shadow: 0 5px 14px rgba(232,137,90,0.28), inset 0 -4px 8px rgba(232,137,90,0.15), inset 2px 3px 6px rgba(255,255,255,0.7);
 }
+.thought-bubble.is-main::before {
+  content: ''; position: absolute; left: 50%; top: -9px;
+  width: 4px; height: 11px; margin-left: -2px;
+  background: #8C6A4F; border-radius: 2px;
+}
+.thought-bubble.is-main::after {
+  content: ''; position: absolute; left: 50%; top: -9px;
+  width: 14px; height: 8px; margin-left: 2px;
+  background: #8EC486; border-radius: 0 100% 0 100%;
+  transform: rotate(-20deg);
+}
+
+/* 곁가지: 나뭇가지처럼 — 갈색 가지 테두리 + 양쪽에 잎 */
 .thought-bubble.is-side {
-  border-color: var(--peach);
-  background: #FFFDF8;
+  border: 2px solid #A98466;
+  background: #F6F9F1;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(107,76,59,0.10);
 }
+.thought-bubble.is-side::before,
+.thought-bubble.is-side::after {
+  content: ''; position: absolute;
+  width: 14px; height: 8px;
+  background: #8EC486; border: 1.5px solid #6FAF67;
+  border-radius: 0 100% 0 100%;
+}
+.thought-bubble.is-side::before { left: -6px; top: -7px; transform: rotate(-35deg); }
+.thought-bubble.is-side::after  { right: -6px; bottom: -7px; transform: rotate(145deg); }
 
 /* 개별 거품마다 조금씩 다른 유영 리듬 */
 .thought-bubble:nth-child(2n)   { animation-duration: 8.5s; animation-delay: -1.5s; }
@@ -1924,16 +2077,13 @@ textarea.field::placeholder, input.field::placeholder{
 .fruit-step-body { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
 .step-check { font-size: 14px; }
 .step-hint { font-size: 11.5px; color: var(--l-brown); line-height: 1.5; margin-bottom: 4px; font-style: italic; }
+/* 노트 상단 안내문: 다른 페이지 설명글(.page-desc)과 같은 일반 텍스트 */
 .note-intro {
-  background: var(--peach-lt);
-  border: 1.5px solid var(--peach);
-  border-radius: 16px;
-  padding: 12px 20px;
-  text-align: center;
-  font-size: 13px;
+  font-size: 14.5px;
   line-height: 1.6;
-  color: var(--brown);
+  color: var(--l-brown);
   flex: 0 0 auto;
+  margin: -6px 0 2px;
 }
 
 .note-grid-4 {
@@ -1968,7 +2118,7 @@ textarea.field::placeholder, input.field::placeholder{
   position: relative;
 }
 .note-card.note-card--highlight::after {
-  content: '✨ 몰입의 땅';
+  content: '몰입의 땅';
   position: absolute;
   top: -10px;
   right: 14px;
@@ -1983,7 +2133,7 @@ textarea.field::placeholder, input.field::placeholder{
 
 .note-card-title {
   font-family: 'Jua', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--brown);
   display: flex;
   align-items: center;
@@ -1992,8 +2142,8 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 .note-card-quote {
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--l-brown);
   background: var(--cream);
   padding: 8px 10px;
@@ -2019,9 +2169,9 @@ textarea.field::placeholder, input.field::placeholder{
 .note-check-item {
   display: flex;
   align-items: flex-start;
-  gap: 7px;
-  font-size: 12px;
-  line-height: 1.45;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--brown);
   cursor: pointer;
   user-select: none;
@@ -2029,9 +2179,9 @@ textarea.field::placeholder, input.field::placeholder{
 .note-check-item input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
-  border: 1.5px solid var(--border);
+  width: 17px;
+  height: 17px;
+  border: 2px solid var(--border);
   border-radius: 4px;
   background: var(--warm-white);
   cursor: pointer;
@@ -2065,8 +2215,8 @@ textarea.field::placeholder, input.field::placeholder{
 .note-page-body-center {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 10px;
   height: 100%;
 }
 
@@ -2140,8 +2290,8 @@ textarea.field::placeholder, input.field::placeholder{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 2px;
-  font-size: 12px;
+  padding: 5px 2px;
+  font-size: 14px;
 }
 
 .note-receipt-task {
@@ -2156,21 +2306,21 @@ textarea.field::placeholder, input.field::placeholder{
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11.5px;
+  font-size: 13.5px;
 }
 
 .note-receipt-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1.5px solid var(--border);
+  border-top: 2px solid var(--border);
   padding-top: 8px;
   margin-top: 3px;
 }
 
 .note-receipt-total-label {
   font-family: 'Jua', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--brown);
   display: flex;
   align-items: center;
@@ -2180,10 +2330,10 @@ textarea.field::placeholder, input.field::placeholder{
 .note-tag-total-plan {
   font-family: 'Jua', sans-serif;
   background: #F5EFEB;
-  color: var(--l-brown);
-  padding: 3px 8px;
+  color: var(--brown);
+  padding: 4px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .note-tag-total-real {
@@ -2193,7 +2343,7 @@ textarea.field::placeholder, input.field::placeholder{
   padding: 3px 9px;
   border-radius: 6px;
   border: 1.5px solid var(--peach);
-  font-size: 12.5px;
+  font-size: 14.5px;
 }
 
 /* 2번 카드: 미니멀 좌우 비교 (동일하게 좌우 20px 안쪽으로 인덴트) */
@@ -2221,24 +2371,23 @@ textarea.field::placeholder, input.field::placeholder{
 .note-compare-col {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 11.5px;
+  gap: 7px;
+  font-size: 13.5px;
   line-height: 1.5;
+  color: var(--brown);
 }
 
 .note-compare-col.bad {
-  color: var(--l-brown);
   padding-right: 6px;
 }
 
 .note-compare-col.good {
-  color: var(--brown);
   padding-left: 6px;
 }
 
 .note-compare-col-title {
   font-family: 'Jua', sans-serif;
-  font-size: 12.5px;
+  font-size: 14.5px;
   margin-bottom: 2px;
   display: flex;
   align-items: center;
@@ -2246,7 +2395,7 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 .note-compare-col.bad .note-compare-col-title {
-  color: var(--l-brown);
+  color: #B25E29;
 }
 
 .note-compare-col.good .note-compare-col-title {
@@ -2263,8 +2412,8 @@ textarea.field::placeholder, input.field::placeholder{
 .note-desc-item {
   display: flex;
   align-items: flex-start;
-  gap: 7px;
-  font-size: 12.5px;
+  gap: 8px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--brown);
 }
@@ -2318,19 +2467,39 @@ textarea.field::placeholder, input.field::placeholder{
 }
 
 .note-col-body {
-  font-size: 12.5px;
-  line-height: 1.85;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--brown);
-  flex: 1 1 auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.note-col-body li {
+  position: relative;
+  padding-left: 14px;
+}
+.note-col-body li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--d-orange);
+  opacity: 0.8;
 }
 
 .note-col-check-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 9px;
   border-top: 1px dashed var(--border);
   padding-top: 12px;
-  margin-top: auto;
+  margin-top: 4px;
 }
 
 .note-quote-wide {
@@ -2351,9 +2520,61 @@ textarea.field::placeholder, input.field::placeholder{
   gap: 8px;
 }
 
+/* 카드 안 작은 링크형 버튼 */
+.note-info-btn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--peach);
+  background: #FFF6EE;
+  color: #C85E22;
+  font-family: 'Jua', sans-serif;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.note-info-btn:hover { background: var(--peach-lt); border-color: var(--d-orange); transform: translateY(-1px); }
+
+/* 공용 모달 (뿅 하고 튀어나오는 카드) */
+.mytt-modal-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(107,76,59,0.28);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.mytt-modal-backdrop.open { display: flex; }
+.mytt-modal-card {
+  position: relative;
+  width: min(560px, 100%);
+  padding: 22px 26px 20px;
+  box-shadow: 0 18px 48px rgba(107,76,59,0.25);
+  animation: myttModalPop .28s cubic-bezier(.34,1.5,.64,1);
+}
+.mytt-modal-card .note-quote-main { font-size: 17px; }
+.mytt-modal-card .note-quote-desc { font-size: 14px; }
+.mytt-modal-card .note-quote-source { font-size: 12.5px; }
+.mytt-modal-close {
+  position: absolute; top: 10px; right: 12px;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: var(--warm-white);
+  color: var(--l-brown); font-size: 16px; line-height: 1; cursor: pointer;
+}
+.mytt-modal-close:hover { background: var(--peach-lt); color: var(--brown); }
+.capture-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(255,248,240,0.75);
+  font-family: 'Jua', sans-serif; font-size: 20px; color: var(--brown);
+}
+@keyframes myttModalPop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
 .note-quote-badge {
   font-family: 'Jua', sans-serif;
-  font-size: 11.5px;
+  font-size: 13px;
   background: #FFF0E4;
   color: #C85E22;
   border: 1px solid #FFD8BE;
@@ -2386,7 +2607,7 @@ textarea.field::placeholder, input.field::placeholder{
 /* 모든 노트 페이지 공통: STEP 회고 와이드 카드 스타일 */
 .note-reflection-box {
   background: var(--warm-white);
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 12px 18px 14px;
   display: flex;
@@ -2405,7 +2626,7 @@ textarea.field::placeholder, input.field::placeholder{
 
 .note-reflection-title {
   font-family: 'Jua', sans-serif;
-  font-size: 13.5px;
+  font-size: 15.5px;
   color: var(--brown);
   display: flex;
   align-items: center;
@@ -2426,7 +2647,7 @@ textarea.field::placeholder, input.field::placeholder{
   background: var(--cream);
   padding: 8px 12px;
   font-family: 'Gowun Dodum', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.55;
   color: var(--brown);
   resize: none;
@@ -2442,7 +2663,7 @@ textarea.field::placeholder, input.field::placeholder{
 
 .note-reflection-textarea::placeholder {
   color: #C8A898;
-  font-size: 11.5px;
+  font-size: 13.5px;
 }
 
 /* 4-3 회고 요소 뷔페 & 우선순위 리스트 스타일 */
@@ -2503,7 +2724,7 @@ textarea.field::placeholder, input.field::placeholder{
   justify-content: space-between;
   gap: 10px;
   background: var(--cream);
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 14px;
   padding: 10px 14px;
   cursor: pointer;
@@ -2679,7 +2900,7 @@ textarea.field::placeholder, input.field::placeholder{
 .buffet-add-input {
   flex: 1;
   height: 38px;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 12px;
   background: var(--cream);
   padding: 0 12px;
@@ -2747,22 +2968,36 @@ textarea.field::placeholder, input.field::placeholder{
 <header class="app-header">
   <div class="header-top">
     <div class="logo"><span class="leaf">🍎</span> 나의 시간 농장</div>
-    <div class="progress-wrap">
-      <span id="progressLabel">1 / 18</span>
-      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:6%"></div></div>
-      <button class="pdf-header-btn no-print" onclick="printAllPages()" title="전체 워크북을 한 권의 PDF로 인쇄/저장합니다">📑 전체 PDF 저장</button>
+    <nav class="growth-track" id="tabNav">
+    <button class="growth-seg active" data-step="0">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">표지</span></span>
+    </button>
+    <button class="growth-seg" data-step="1">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">✦ 내 유형은?</span></span>
+    </button>
+    <button class="growth-seg" data-step="2">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">시간 영토 분리</span></span>
+    </button>
+    <button class="growth-seg" data-step="3">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">영감의 씨앗</span></span>
+    </button>
+    <button class="growth-seg" data-step="4">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">시간 농장 조사</span></span>
+    </button>
+    <button class="growth-seg" data-step="6">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">시간 도둑과 거리두기</span></span>
+    </button>
+    <button class="growth-seg" data-step="5">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">시간 농장 채우기</span></span>
+    </button>
+    <button class="growth-seg" data-step="7">
+      <span class="seg-bar"><span class="seg-fill"></span><span class="seg-text">종합 요약</span></span>
+    </button>
+    </nav>
+    <div class="header-meta">
+      <button class="pdf-header-btn no-print" onclick="printAllPages()" title="전체 워크북을 한 권의 PDF로 인쇄/저장합니다">📑</button>
     </div>
   </div>
-  <nav class="tab-nav" id="tabNav">
-    <button class="tab-btn active" data-step="0"><span class="num">0</span>표지</button>
-    <button class="tab-btn" data-step="1"><span class="num">✦</span>내 유형은?</button>
-    <button class="tab-btn" data-step="2"><span class="num">1</span>시간 영토 분리 <span class="sub-dots">●●●</span></button>
-    <button class="tab-btn" data-step="3"><span class="num">2</span>영감의 씨앗 <span class="sub-dots">●●●</span></button>
-    <button class="tab-btn" data-step="4"><span class="num">3</span>시간 농장 조사 <span class="sub-dots">●●●</span></button>
-    <button class="tab-btn" data-step="6"><span class="num">4</span>시간 도둑과 거리두기 <span class="sub-dots">●●●</span></button>
-    <button class="tab-btn" data-step="5"><span class="num">5</span>시간 농장 채우기 <span class="sub-dots">●●●</span></button>
-    <button class="tab-btn" data-step="7"><span class="num">6</span>종합 요약</button>
-  </nav>
   <div class="sub-tab-bar no-print" id="subTabBar" style="display:none;"></div>
 </header>
 
@@ -2779,7 +3014,7 @@ textarea.field::placeholder, input.field::placeholder{
   </div>
   <div class="page-body">
     <div class="card" style="flex:0 0 auto; overflow:hidden;">
-      <div class="card-title"><span class="ico">🗺️</span>전체 여정</div>
+      <div class="card-title"><span class="ico">🚢</span>전체 여정</div>
       <div class="roadmap" style="min-height:60px; height:auto; padding-bottom:4px;">
         <div class="roadmap-step"><span class="emoji">🗺️</span><div class="t">1. 시간 영토<br>분리</div></div>
         <div class="roadmap-step"><span class="emoji">🌱</span><div class="t">2. 영감의<br>씨앗</div></div>
@@ -2792,15 +3027,15 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="grid-2 fill">
       <div class="card row">
         <div class="card-title"><span class="ico">✏️</span>이렇게 사용해보세요</div>
-        <div class="placeholder-box" style="background:#fff; border:none; display:block; text-align:left; line-height:1.8;">
-            1️⃣ 각 화면에서 입력창에 내용을 적거나 컴포넌트를 조작해보세요.<br>
-            2️⃣ 입력한 데이터는 다음 화면에 자동으로 반영되며, 브라우저(로컬스토리지)에 자동 저장됩니다.<br>
-            3️⃣ 모든 단계를 마치고 마지막 6단계 요약 화면에서 <b>PDF로 저장</b>하여 간직하세요.
+        <div class="placeholder-box" style="background:#fff; border:none; display:block; text-align:left; line-height:1.8; font-size:15px;">
+            1. 각 화면에서 입력창에 내용을 적거나 버튼을 눌러 사용해보세요.<br>
+            2. 입력한 데이터는 다음 화면에 자동으로 반영되며, 브라우저(로컬스토리지)에 자동 저장됩니다.<br>
+            3. 모든 단계를 마치고 마지막 6단계 요약 화면에서 <b>PDF로 저장</b>하여 간직하세요.
         </div>
       </div>
       <div class="card row">
         <div class="card-title"><span class="ico">💡</span>시작하기 전에</div>
-        <textarea id="mytt_start_worry" class="field fill" placeholder="지금 이 순간, 시간관리에 대해 갖고 있는 고민을 한 줄 적어보세요."></textarea>
+        <textarea id="mytt_start_worry" class="field fill" placeholder="지금 이 순간, 시간관리에 대해 갖고 있는 고민을 한 줄 적어보세요.&#10;예) 맨날 계획만 세우고 실천을 못해요, 할 일을 자꾸 미루게 돼요, 시간이 어디로 가는지 모르겠어요"></textarea>
       </div>
     </div>
   </div>
@@ -2871,7 +3106,7 @@ textarea.field::placeholder, input.field::placeholder{
         </div>
         <div style="flex: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px;">
             <div class="t">🌀 와리가리형</div>
-            <label><input type="checkbox" class="quiz-check" value="zigzag"> 취침 기상 시간이 들쑥날쑥하다 (ex- 10시, 2시, 5시...)</label>
+            <label><input type="checkbox" class="quiz-check" value="zigzag"> 취침 기상 시간이 들쑥날쑥하다 <br> (ex- 10시, 2시, 5시...)</label>
             <label><input type="checkbox" class="quiz-check" value="zigzag"> 스스로 통제하기 어렵다고 느낀다</label>
         </div>
       </div>
@@ -2926,61 +3161,28 @@ textarea.field::placeholder, input.field::placeholder{
   <div class="page-body">
     <div class="grid-3 fill">
       <div class="concept-card sleep">
-        <span class="emoji">🌊 😴</span>
+        <span class="emoji">😴 🌊</span>
         <div class="name">수면 · 바다</div>
         <div class="desc">언제 자고 언제 일어나나요?</div>
-        <div class="stack" style="width: 100%; margin-top: 15px; gap: 8px;">
-          <label style="font-size: 12px; font-weight: 700; color: var(--brown);">기상 시간</label>
-          <select id="sleep_wake" class="time-select time-options"></select>
-          <label style="font-size: 12px; font-weight: 700; color: var(--brown); margin-top: 8px;">취침 시간</label>
+        <div class="stack" style="width: 100%; margin-top: 10px; gap: 8px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--brown);">취침 시간</label>
           <select id="sleep_bed" class="time-select time-options"></select>
+          <label style="font-size: 12px; font-weight: 700; color: var(--brown); margin-top: 8px;">기상 시간</label>
+          <select id="sleep_wake" class="time-select time-options"></select>
         </div>
       </div>
       <div class="concept-card fixed">
-        <span class="emoji">⛰️ ⏰</span>
-        <div class="name">고정 스케줄 · 언덕</div>
-        <div class="desc">이동시간, 식사, 고정 미팅, 운동, 집안일처럼 콕 박혀있는 일정</div>
-        
-        <div class="stack" style="width: 100%; margin-top: 15px; gap: 0; flex:1; min-height:0; overflow-y:auto;">
-          <div class="fixed-row">
-            <input type="text" class="field" id="fixed_1_label" placeholder="출근 이동">
-            <select id="fixed_1_from" class="time-select time-options"></select>
-            <span class="time-sep" style="color:var(--l-brown);font-size:12px;">~</span>
-            <select id="fixed_1_to" class="time-select time-options"></select>
-            <div class="day-pills" id="fixed_1_days_pill"></div>
-          </div>
-          <div class="fixed-row">
-            <input type="text" class="field" id="fixed_2_label" placeholder="점심식사">
-            <select id="fixed_2_from" class="time-select time-options"></select>
-            <span class="time-sep" style="color:var(--l-brown);font-size:12px;">~</span>
-            <select id="fixed_2_to" class="time-select time-options"></select>
-            <div class="day-pills" id="fixed_2_days_pill"></div>
-          </div>
-          <div class="fixed-row">
-            <input type="text" class="field" id="fixed_3_label" placeholder="운동">
-            <select id="fixed_3_from" class="time-select time-options"></select>
-            <span class="time-sep" style="color:var(--l-brown);font-size:12px;">~</span>
-            <select id="fixed_3_to" class="time-select time-options"></select>
-            <div class="day-pills" id="fixed_3_days_pill"></div>
-          </div>
-          <div class="fixed-row">
-            <input type="text" class="field" id="fixed_4_label" placeholder="일정명">
-            <select id="fixed_4_from" class="time-select time-options"></select>
-            <span class="time-sep" style="color:var(--l-brown);font-size:12px;">~</span>
-            <select id="fixed_4_to" class="time-select time-options"></select>
-            <div class="day-pills" id="fixed_4_days_pill"></div>
-          </div>
-          <div class="fixed-row" style="border-bottom: none;">
-            <input type="text" class="field" id="fixed_5_label" placeholder="일정명">
-            <select id="fixed_5_from" class="time-select time-options"></select>
-            <span class="time-sep" style="color:var(--l-brown);font-size:12px;">~</span>
-            <select id="fixed_5_to" class="time-select time-options"></select>
-            <div class="day-pills" id="fixed_5_days_pill"></div>
-          </div>
+        <span class="emoji">⏰ ⛰️</span>
+        <div class="name-row">
+          <div class="name">고정 스케줄 · 언덕</div>
+          <button type="button" class="fixed-add-btn no-print" id="fixedAddBtn" onclick="addFixedRow()">+ 일정 추가</button>
         </div>
+        <div class="desc">이동시간, 식사, 고정 미팅, 운동, 집안일처럼 콕 박혀있는 일정</div>
+
+        <div class="stack" id="fixedRowsWrap" style="width: 100%; margin-top: 10px; gap: 0; flex:1; min-height:0; overflow-y:auto;"></div>
       </div>
       <div class="concept-card rest">
-        <span class="emoji">🌅 🧘</span>
+        <span class="emoji">🧘 🌅</span>
         <div class="name">휴식 · 평원</div>
         <div class="desc">에너지를 재충전하는 자유 시간. 무엇을 해도 좋아요 — 내일 루틴에 지장 없을 정도로</div>
         <p class="rest-sentence" style="margin-top: 15px;">
@@ -2994,9 +3196,9 @@ textarea.field::placeholder, input.field::placeholder{
         </div>
       </div>
     </div>
-    <div class="card" style="flex:0 0 auto;">
-      <div class="card-title"><span class="ico">🍎</span>남는 시간은 나의 시간 농장</div>
-      <div class="page-desc" style="margin:0;">세 가지 뿌리 영토를 제외한 나머지 시간이 바로 <b>시간 농장(자유 시간)</b> — 내가 영감의 씨앗을 뿌리고 가꿀 수 있는 소중한 땅이에요. 다음 화면에서 실제 주간 시간표에 표시해봅시다.</div>
+    <div class="card" style="flex:0 0 auto; padding:12px 18px;">
+      <div class="card-title" style="margin-bottom:5px;"><span class="ico">🍎</span>남는 시간은 나의 시간 농장</div>
+      <div class="page-desc" style="margin:0; max-width:none;">세 가지 뿌리 영토를 제외한 나머지 시간이 바로 <b>시간 농장(자유 시간)</b> — 내가 영감의 씨앗을 뿌리고 가꿀 수 있는 소중한 땅이에요. 다음 화면에서 실제 주간 시간표에 표시해봅시다.</div>
     </div>
   </div>
   <div class="page-footer-actions">
@@ -3017,8 +3219,8 @@ textarea.field::placeholder, input.field::placeholder{
       <p class="page-desc">이전 페이지에서 설정한 나의 뿌리영토가 시간표에 그려져 있어요. 뿌리영토를 제외하고, 일주일에 몇 시간을 내가 활용할 수 있는지 아래의 버튼을 눌러 확인해보세요.</p>
     </div>
   </div>
-  <div class="page-body">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex:0 0 auto;">
+  <div class="page-body weekgrid-layout">
+    <div class="weekgrid-bar" style="display:flex; justify-content:space-between; align-items:center; flex:0 0 auto;">
       <div style="display:flex; gap:8px; align-items:center;" id="toolbar1">
         <span class="pill blue active" data-type="sleep" onclick="selectType(1, 'sleep', this)">🌊 수면</span>
         <span class="pill green" data-type="fixed" onclick="selectType(1, 'fixed', this)">⛰️ 고정스케줄</span>
@@ -3027,7 +3229,7 @@ textarea.field::placeholder, input.field::placeholder{
       </div>
       <button type="button" class="btn btn-ghost no-print" style="padding:6px 14px;" onclick="resetGrid1ToRoots()" title="1-1 뿌리영토 설정값으로 초기화">↺ 초기화</button>
     </div>
-    <div class="card fill row" style="padding:0; overflow:hidden;">
+    <div class="card fill row weekgrid-card" style="padding:0; overflow:hidden;">
       <div class="time-grid-wrapper" id="grid1-wrapper">
         <div class="time-grid" id="grid1"></div>
       </div>
@@ -3057,18 +3259,18 @@ textarea.field::placeholder, input.field::placeholder{
   <div class="page-head">
     <div class="page-head-text">
       <div class="page-eyebrow">STEP 1 · TIME BLOCK <span class="sub-indicator"><span class="sub-dot"></span><span class="sub-dot"></span><span class="sub-dot on"></span></span></div>
-      <h1 class="page-title">📖 노트</h1>
+      <h1 class="page-title">노트</h1>
     </div>
   </div>
   <div class="page-body" style="gap: 10px;">
     <div class="note-intro">
       시간 영토의 주인은 나예요. 집중할 시간과 쉬는 시간을 구분해두면, 원하는 것을 이루면서도 오래 지속되는 루틴이 만들어져요.
     </div>
-    
+
     <div class="note-grid-4">
-      <!-- 🌊 수면 · 바다 -->
+      <!--  수면 · 바다 -->
       <div class="note-card" style="border-left: 4.5px solid var(--blue);">
-        <div class="note-card-title">🌊 수면 · 바다</div>
+        <div class="note-card-title">수면 · 바다</div>
         <div class="note-card-quote">
           "잠을 줄여 시간을 버는 시대는 지났어요. 내일의 나를 위해 푹 쉬고 있나요?"
         </div>
@@ -3087,10 +3289,10 @@ textarea.field::placeholder, input.field::placeholder{
           </label>
         </div>
       </div>
-      
-      <!-- ⛰️ 고정스케줄 · 언덕 -->
+
+      <!--  고정스케줄 · 언덕 -->
       <div class="note-card" style="border-left: 4.5px solid var(--green);">
-        <div class="note-card-title">⛰️ 고정스케줄 · 언덕</div>
+        <div class="note-card-title">고정스케줄 · 언덕</div>
         <div class="note-card-quote">
           "일상의 뼈대를 잡아주는 시간이에요. 너무 빽빽해도, 너무 헐거워도 좋지 않아요."
         </div>
@@ -3109,10 +3311,10 @@ textarea.field::placeholder, input.field::placeholder{
           </label>
         </div>
       </div>
-      
-      <!-- 🌅 휴식 · 평원 -->
+
+      <!--  휴식 · 평원 -->
       <div class="note-card" style="border-left: 4.5px solid var(--orange);">
-        <div class="note-card-title">🌅 휴식 · 평원</div>
+        <div class="note-card-title">휴식 · 평원</div>
         <div class="note-card-quote">
           "끌려다니는 킬링타임보다는, 내가 마음 편히 누릴 수 있는 쉼을 가지는 게 좋아요."
         </div>
@@ -3131,10 +3333,10 @@ textarea.field::placeholder, input.field::placeholder{
           </label>
         </div>
       </div>
-      
-      <!-- 🌾 가변 스케줄 · 시간 농장 (강조) -->
+
+      <!--  가변 스케줄 · 시간 농장 (강조) -->
       <div class="note-card note-card--highlight">
-        <div class="note-card-title" style="color: #B25E29;">🌾 가변 스케줄 · 시간 농장</div>
+        <div class="note-card-title" style="color: #B25E29;">가변 스케줄 · 시간 농장</div>
         <div class="note-card-quote">
           "나의 영감과 잠재력을 마음껏 발휘할 수 있는 시간이에요. 창작자, 연구자의 몰입은 이 땅에서 자라납니다."
         </div>
@@ -3159,7 +3361,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="note-reflection-box" style="margin-top: 4px;">
       <div class="note-reflection-head">
         <div class="note-reflection-title">
-          <span>📝</span> STEP 1을 마치며... 느낀 점 기록하기
+          STEP 1을 마치며... 느낀 점 기록하기
         </div>
       </div>
       <textarea id="mytt_note_reflection_step1" class="note-reflection-textarea" placeholder="예) 생각보다 나에게 자유 시간이 꽤 있었다!"></textarea>
@@ -3190,7 +3392,7 @@ textarea.field::placeholder, input.field::placeholder{
           <span class="ico">🧧</span>영감 보따리 — 프로젝트와 할 일
         </div>
         <div class="hint" style="margin-top:0; margin-bottom:8px;">머릿속에 떠다니는 생각들을 자유롭게 적고, 가장 중요한 열매를 골라보세요.</div>
-        
+
         <!-- 둥둥 떠다니는 생각 부유 공간 (Canvas) -->
         <div id="thoughtCanvas" class="thought-canvas">
           <!-- JS에서 예시 거품 및 생성된 아이디어 거품 렌더링 -->
@@ -3200,7 +3402,7 @@ textarea.field::placeholder, input.field::placeholder{
         <div class="thought-input-bar">
           <input type="text" id="thoughtInput" class="thought-input" placeholder="✨ 새로운 생각이나 할 일을 적고 Enter!" maxlength="30" onkeydown="handleThoughtInputKey(event)">
           <button type="button" class="thought-add-btn" onclick="addThoughtFromInput()">
-            <span>퐁!</span> 🎈
+            <span>퐁!</span>
           </button>
         </div>
       </div>
@@ -3257,7 +3459,7 @@ textarea.field::placeholder, input.field::placeholder{
   <div class="page-head">
     <div class="page-head-text">
       <div class="page-eyebrow">STEP 2 · PROJECT & GOAL <span class="sub-indicator"><span class="sub-dot"></span><span class="sub-dot"></span><span class="sub-dot on"></span></span></div>
-      <h1 class="page-title">📖 노트</h1>
+      <h1 class="page-title">노트</h1>
     </div>
   </div>
   <div class="page-body note-page-body-center">
@@ -3272,42 +3474,43 @@ textarea.field::placeholder, input.field::placeholder{
       <div class="note-card-wide card-orange">
         <div>
           <div class="note-card-title" style="margin-bottom: 4px;">
-            <span class="ico">⏱️</span> 1. 내 작업 시간을 객관적으로 알고 있나요?
+            1. 내 작업 시간을 객관적으로 알고 있나요?
+			  <div class="note-sub-badge badge-orange">
+				  이상 vs 현실
+			  </div>
           </div>
-          <div class="note-sub-badge badge-orange">
-            이상 vs 현실
-          </div>
+
         </div>
 
         <!-- 예시: 영수증 느낌의 미니멀 점선 라인 + 총 작업시간 대비 -->
         <div class="note-receipt-wrap">
           <div class="note-receipt-row">
-            <span class="note-receipt-task">📝 인스타툰 스크립트 쓰기</span>
+            <span class="note-receipt-task">인스타툰 스크립트 쓰기</span>
             <div class="note-receipt-times">
               <span class="note-tag-plan">예상 1시간</span>
-              <span style="color:var(--l-brown); font-size:11px;">➔</span>
+              <span style="color:var(--l-brown); font-size:13px;">➔</span>
               <span class="note-tag-real">실제 1시간 30분</span>
             </div>
           </div>
           <div class="note-receipt-row">
-            <span class="note-receipt-task">✏️ 인스타툰 그림 콘티</span>
+            <span class="note-receipt-task">인스타툰 그림 콘티</span>
             <div class="note-receipt-times">
               <span class="note-tag-plan">예상 1시간</span>
-              <span style="color:var(--l-brown); font-size:11px;">➔</span>
+              <span style="color:var(--l-brown); font-size:13px;">➔</span>
               <span class="note-tag-real">실제 3시간</span>
             </div>
           </div>
           <div class="note-receipt-row">
-            <span class="note-receipt-task">🎨 선 따기와 채색</span>
+            <span class="note-receipt-task">선 따기와 채색</span>
             <div class="note-receipt-times">
               <span class="note-tag-plan">예상 2시간</span>
-              <span style="color:var(--l-brown); font-size:11px;">➔</span>
+              <span style="color:var(--l-brown); font-size:13px;">➔</span>
               <span class="note-tag-real">실제 3시간 30분</span>
             </div>
           </div>
           <!-- 영수증 합계 라인 -->
           <div class="note-receipt-total">
-            <span class="note-receipt-total-label">🧾 총 작업시간</span>
+            <span class="note-receipt-total-label">총 작업시간</span>
             <div class="note-receipt-times">
               <span class="note-tag-total-plan">예상 4시간</span>
               <span style="color:var(--l-brown); font-size:12px; font-weight:bold;">➔</span>
@@ -3324,7 +3527,7 @@ textarea.field::placeholder, input.field::placeholder{
           </div>
           <div class="note-desc-item">
             <span class="note-bullet">•</span>
-            <span>과소평가했던 일도 의외로 오래 걸릴 수 있어요. 자책 대신 내 진짜 속도를 익히고 계획에 반영해보세요.</span>
+            <span>과소평가했던 일도 의외로 오래 걸릴 수 있어요. 자책 대신 내 진짜 속도를 <br>익히고 계획에 반영해보세요.</span>
           </div>
         </div>
       </div>
@@ -3333,28 +3536,28 @@ textarea.field::placeholder, input.field::placeholder{
       <div class="note-card-wide card-green">
         <div>
           <div class="note-card-title" style="margin-bottom: 4px;">
-            <span class="ico">🌱</span> 2. 주변일 말고 알맹이를 심고 있나요?
-          </div>
-          <div class="note-sub-badge badge-green">
-            생산적인 딴짓을 조심하세요!
+            2. 주변일 말고 알맹이를 심고 있나요?
+			  <div class="note-sub-badge badge-green">
+				  생산적인 딴짓을 조심하세요!
+			  </div>
           </div>
         </div>
 
         <!-- 예시: 박스 대신 미니멀한 점선 + 중앙 라인 대비 -->
         <div class="note-minimal-compare">
           <div class="note-compare-col bad">
-            <div class="note-compare-col-title"><span>🙅‍♀️</span> 주변 일 (가짜 씨앗)</div>
-            <div>• 책상 치우기 🧹</div>
-            <div>• 레퍼런스 무한 서칭 🔍</div>
-            <div>• 새 장비·케이스 쇼핑 🛒</div>
-            <div style="margin-top:2px; font-size:10.5px; opacity:0.85;">➔ 일하는 기분만 날 뿐 열매는 자라지 않아요</div>
+            <div class="note-compare-col-title">주변 일 (가짜 씨앗)</div>
+            <div>• 책상 치우기</div>
+            <div>• 레퍼런스 무한 서칭</div>
+            <div>• 새 장비·케이스 쇼핑</div>
+            <div style="margin-top:2px; font-size:12.5px; font-weight:700; color:#B25E29;">➔ 열매가 맺히지 않는 가짜 일</div>
           </div>
           <div class="note-compare-col good">
-            <div class="note-compare-col-title"><span>🙆‍♀️</span> 알맹이 일 (진짜 씨앗)</div>
-            <div>• 스크립트 한 줄 적기 ✍️</div>
-            <div>• 콘티 1컷 러프 그리기 🎨</div>
-            <div>• 마감 목표에 직접 닿는 행동 🍎</div>
-            <div style="margin-top:2px; font-size:10.5px; font-weight:700; color:#2E7D32;">➔ 내 시간 농장에 열매가 맺히는 진짜 일!</div>
+            <div class="note-compare-col-title">알맹이 일 (진짜 씨앗)</div>
+            <div>• 스크립트 한 줄 적기</div>
+            <div>• 콘티 1컷 러프 그리기</div>
+            <div>• 마감 목표에 직접 닿는 행동</div>
+            <div style="margin-top:2px; font-size:12.5px; font-weight:700; color:#2E7D32;">➔ 내 시간 농장에 열매가 맺히는 진짜 일!</div>
           </div>
         </div>
 
@@ -3362,7 +3565,7 @@ textarea.field::placeholder, input.field::placeholder{
         <div class="note-desc-list">
           <div class="note-desc-item">
             <span class="note-bullet">•</span>
-            <span>책상 치우기, 레퍼런스 무한 서칭, 새 장비 쇼핑은 '내 씨앗'을 직접 심는 일이 아니랍니다.</span>
+            <span>책상 치우기, 레퍼런스 무한 서칭은 '내 씨앗'을 직접 심는 일이 아니랍니다.</span>
           </div>
           <div class="note-desc-item">
             <span class="note-bullet">•</span>
@@ -3376,7 +3579,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="note-reflection-box">
       <div class="note-reflection-head">
         <div class="note-reflection-title">
-          <span>📝</span> STEP 2를 마치며... 느낀 점 기록하기
+          STEP 2를 마치며... 느낀 점 기록하기
         </div>
       </div>
       <textarea id="mytt_note_reflection_step2" class="note-reflection-textarea" placeholder="예) 주변 일로 도망치지 말고 첫 줄부터 써보자!"></textarea>
@@ -3402,7 +3605,7 @@ textarea.field::placeholder, input.field::placeholder{
   </div>
   <div class="page-body">
     <div class="grid-4 fill" style="gap:12px;">
-      
+
       <!-- 농기구 관리 -->
       <div class="card field-bucket" data-field="ground">
         <div class="field-bucket-head">
@@ -3481,20 +3684,12 @@ textarea.field::placeholder, input.field::placeholder{
   </div>
   <div class="page-body">
     <div class="focus-page-layout">
-      
+
       <!-- 좌측: 집중력 곡선 그래프 & 통계 -->
       <div class="focus-left-pane">
-        <div style="display:flex; gap:8px; justify-content:space-between; align-items:center; flex:0 0 auto;">
-          <div style="display:flex; gap:8px; align-items:center;">
-            <span class="pill orange">🔥 고조</span>
-            <span class="pill green">😊 보통</span>
-            <span class="pill blue">😪 저집중</span>
-          </div>
-          <button class="btn btn-ghost no-print" style="padding:6px 14px;" onclick="resetFocusCurve()">↺ 초기화</button>
-        </div>
-
         <div class="svg-container" id="svgContainer">
           <svg class="svg-curve" id="focusSvg"></svg>
+          <button type="button" class="focus-reset-btn no-print" onclick="resetFocusCurve()" title="곡선을 처음 상태로 되돌립니다">↺ 초기화</button>
         </div>
 
         <!-- 하단 시간 통계 뱃지 바 -->
@@ -3520,7 +3715,7 @@ textarea.field::placeholder, input.field::placeholder{
           <span>🧺 나의 일 서랍</span>
         </div>
         <div class="focus-ref-desc">내 집중력 곡선에 맞춰 어울리는 일을 골라보세요.</div>
-        
+
         <div class="focus-ref-list" id="focusRefList">
           <!-- JS 렌더링 -->
         </div>
@@ -3542,10 +3737,10 @@ textarea.field::placeholder, input.field::placeholder{
   <div class="page-head">
     <div class="page-head-text">
       <div class="page-eyebrow">STEP 3 · TASK TYPE & FOCUS <span class="sub-indicator"><span class="sub-dot"></span><span class="sub-dot"></span><span class="sub-dot on"></span></span></div>
-      <h1 class="page-title">📖 노트</h1>
+      <h1 class="page-title">노트</h1>
     </div>
   </div>
-  <div class="page-body note-page-body-center" style="gap: 13px;">
+  <div class="page-body note-page-body-center">
     <!-- 1. 상단 인트로 1줄 문장 (앞에 벼 이모지 제거) -->
     <div class="note-intro" style="width: 100%;">
       에너지를 억지로 끌어쓰기보다, 내 몸의 리듬에 맞춰 가장 깊은 몰입의 땅을 가꿔보세요.
@@ -3556,11 +3751,13 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 1번 카드: 에너지에 맞게 일 배치하기 -->
       <div class="note-card-col col-green">
         <div class="note-card-title">
-          <span class="ico">🚜</span> 1. 에너지에 맞게 일 배치하기
+          1. 에너지에 맞게 일 배치하기
         </div>
-        <div class="note-col-body">
-          세금 계산부터 미팅, 작업, 그리고 집안일까지. 창작자가 혼자 해야 할 일은 너무 다양하고 많아요. 나의 하루 에너지 리듬에 맞게 잘 되는 일을 배치해보세요. 보람차게 마친 후에는 완전한 휴식으로 들어가는 리듬을 만들어 보아요.
-        </div>
+        <ul class="note-col-body">
+          <li>세금 계산, 미팅, 작업, 집안일까지 — 창작자가 혼자 해야 할 일은 다양하고 많아요.</li>
+          <li>나의 하루 에너지 리듬에 맞게 잘 되는 일을 배치해보세요.</li>
+          <li>보람차게 마친 후에는 완전한 휴식으로 들어가는 리듬을 만들어요.</li>
+        </ul>
         <div class="note-col-check-list">
           <label class="note-check-item">
             <input type="checkbox" id="check_task_type_1">
@@ -3572,11 +3769,12 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 2번 카드: 나의 에너지 패턴 관찰하기 -->
       <div class="note-card-col col-blue">
         <div class="note-card-title">
-          <span class="ico">🌊</span> 2. 나의 에너지 패턴 관찰하기
+          2. 나의 에너지 패턴 관찰하기
         </div>
-        <div class="note-col-body">
-          나의 에너지 패턴이 꼭 하루 단위가 아닐 수도 있어요. 2~3일은 잘 달리다가도 하루는 날려버려 속상해지기도 하지요. 그럴 땐 무리한 계획을 세우고 지치기보다, 내 에너지 변화를 관찰하고 대책을 세우는 게 먼저일 수 있어요.
-        </div>
+        <ul class="note-col-body">
+          <li>에너지 패턴은 꼭 하루 단위가 아닐 수도 있어요. 2~3일 잘 달리다가 하루를 날리기도 하죠.</li>
+          <li>그럴 땐 무리한 계획으로 지치기보다, 내 에너지 변화를 관찰하고 대책을 세우는 게 먼저예요.</li>
+        </ul>
         <div class="note-col-check-list">
           <label class="note-check-item">
             <input type="checkbox" id="check_task_pattern_1">
@@ -3596,11 +3794,14 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 3번 카드: 나만의 딥워크 시간 사수하기 (강조 하이라이트) -->
       <div class="note-card-col col-orange">
         <div class="note-card-title" style="color: #B25E29;">
-          <span class="ico">🌳</span> 3. 나만의 딥워크 시간 사수하기
+          3. 나만의 딥워크 시간 사수하기
         </div>
-        <div class="note-col-body">
-          나무 가꾸기는 창작자와 연구자가 몰입하여 나만의 결과물을 내는 시간이에요. 작게는 1~2시간이라도 좋으니, 방해받지 않는 나만의 딥워크 시간을 확보해보세요. 매일의 루틴 속에서 이 시간만큼은 오롯이 내 나무를 가꾸어주세요.
-        </div>
+        <ul class="note-col-body">
+          <li>나무 가꾸기는 몰입해서 나만의 결과물을 내는 시간이에요.</li>
+          <li>작게는 1~2시간이라도 좋으니, 방해받지 않는 딥워크 시간을 확보해보세요.</li>
+          <li>매일의 루틴 속에서 이 시간만큼은 오롯이 내 나무를 가꿔주세요.</li>
+        </ul>
+        <button type="button" class="note-info-btn no-print" onclick="openDeepworkModal()">딥워크와 뇌의 한계, 왜 4시간일까? →</button>
         <div class="note-col-check-list">
           <label class="note-check-item">
             <input type="checkbox" id="check_task_deep_1">
@@ -3610,17 +3811,20 @@ textarea.field::placeholder, input.field::placeholder{
       </div>
     </div>
 
-    <!-- 3. 하단 와이드 박스: 인지심리학 딥워크 연구 인용 -->
-    <div class="note-quote-wide">
-      <div class="note-quote-header">
-        <span class="note-quote-badge">💡 딥워크(Deep Work)와 뇌의 한계</span>
-        <span class="note-quote-source">인지심리학자 K. 앤더스 에릭손 & 『딥워크』 저자 칼 뉴포트</span>
-      </div>
-      <div class="note-quote-main">
-        "인간의 뇌가 하루에 고도의 창의적 몰입을 발휘할 수 있는 한계는 ‘최대 4시간’이다."
-      </div>
-      <div class="note-quote-desc">
-        하루 종일 집중하지 못한다고 자책하지 마세요. 숙련된 전문가도 4시간이 한계예요. 작게는 1~2시간이라도 온전히 방해받지 않는 나만의 몰입 블록을 지켜내는 것이 가장 중요해요.
+    <!-- 딥워크 연구 인용: 3번 카드의 버튼으로 여는 모달 -->
+    <div class="mytt-modal-backdrop" id="deepworkModal" onclick="closeDeepworkModal()">
+      <div class="note-quote-wide mytt-modal-card" onclick="event.stopPropagation()">
+        <button type="button" class="mytt-modal-close" onclick="closeDeepworkModal()" title="닫기">×</button>
+        <div class="note-quote-header">
+          <span class="note-quote-badge">딥워크(Deep Work)와 뇌의 한계</span>
+        </div>
+        <div class="note-quote-source">인지심리학자 K. 앤더스 에릭손 & 『딥워크』 저자 칼 뉴포트</div>
+        <div class="note-quote-main">
+          "인간의 뇌가 하루에 고도의 창의적 몰입을 발휘할 수 있는 한계는 ‘최대 4시간’이다."
+        </div>
+        <div class="note-quote-desc">
+          하루 종일 집중하지 못한다고 자책하지 마세요. 숙련된 전문가도 4시간이 한계예요. 작게는 1~2시간이라도 온전히 방해받지 않는 나만의 몰입 블록을 지켜내는 것이 가장 중요해요.
+        </div>
       </div>
     </div>
 
@@ -3628,7 +3832,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="note-reflection-box">
       <div class="note-reflection-head">
         <div class="note-reflection-title">
-          <span>📝</span> STEP 3을 마치며... 느낀 점 기록하기
+          STEP 3을 마치며... 느낀 점 기록하기
         </div>
       </div>
       <textarea id="mytt_note_reflection_step3" class="note-reflection-textarea" placeholder="예) 아침 9시~12시엔 꼭 나무 가꾸기만 해야겠다!"></textarea>
@@ -3649,7 +3853,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="page-head-text">
       <div class="page-eyebrow">STEP 4 · DISTRACTION <span class="sub-indicator"><span class="sub-dot on"></span><span class="sub-dot"></span><span class="sub-dot"></span></span></div>
       <h1 class="page-title">🕵️ 내 시간 도둑 찾기</h1>
-      <p class="page-desc">🚨 내 시간 농장을 망치는 도둑을 찾아봅시다! 언제 어떤 도둑이 찾아오는지 조사해보세요.</p>
+      <p class="page-desc">내 시간 농장을 망치는 도둑을 찾아봅시다! 언제 어떤 도둑이 찾아오는지 조사해보세요.</p>
     </div>
   </div>
   <div class="page-body">
@@ -3657,25 +3861,25 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 상단: 유명한 도둑 명단 (풀와이드 가로 100% 활용) -->
       <div class="thief-pool-container">
         <div class="thief-pool-head">
-          <span>🎒 유명한 도둑 명단</span>
+          <span>유명한 도둑 명단</span>
         </div>
-        
+
         <!-- 외부 요인 (라벨 좌측 + 칩 + 직접추가 가로 나열) -->
         <div class="thief-pool-row">
-          <div class="thief-pool-label">🌐 외부<br>요인</div>
+          <div class="thief-pool-label">외부 요인</div>
           <div class="thief-pool-chips" id="thiefPoolExternal"></div>
           <div class="thief-inline-add">
-            <input type="text" id="customThiefInputExt" class="thief-custom-input" placeholder="+ 직접 추가 (예: 🎮 게임)" onkeydown="handleCustomThiefKey(event, 'ext')">
+            <input type="text" id="customThiefInputExt" class="thief-custom-input" placeholder="+ 직접 추가 (예: 게임)" onkeydown="handleCustomThiefKey(event, 'ext')">
             <button class="thief-custom-btn" onclick="addCustomThiefCategory('ext')">+ 추가</button>
           </div>
         </div>
 
         <!-- 내부 요인 (라벨 좌측 + 칩 + 직접추가 가로 나열) -->
         <div class="thief-pool-row">
-          <div class="thief-pool-label">🧠 내부<br>요인</div>
+          <div class="thief-pool-label">내부 요인</div>
           <div class="thief-pool-chips" id="thiefPoolInternal"></div>
           <div class="thief-inline-add">
-            <input type="text" id="customThiefInputInt" class="thief-custom-input" placeholder="+ 직접 추가 (예: 🥺 조급함)" onkeydown="handleCustomThiefKey(event, 'int')">
+            <input type="text" id="customThiefInputInt" class="thief-custom-input" placeholder="+ 직접 추가 (예: 조급함)" onkeydown="handleCustomThiefKey(event, 'int')">
             <button class="thief-custom-btn" onclick="addCustomThiefCategory('int')">+ 추가</button>
           </div>
         </div>
@@ -3686,11 +3890,11 @@ textarea.field::placeholder, input.field::placeholder{
         <!-- 1. 시작을 늦추는 도둑 -->
         <div class="thief-target-card" id="thiefCard1" onclick="handleThiefCardClick(1)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 1)">
           <div class="thief-target-card-head">
-            <div class="thief-target-card-title">🐢 1. 시작을 늦추는 도둑 <span class="thief-title-sub">(착수 방해)</span></div>
+            <div class="thief-target-card-title">1. 시작을 늦추는 도둑 <span class="thief-title-sub">(시작 방해)</span></div>
           </div>
           <div class="thief-card-slot-box" id="thiefSlot1"></div>
           <div class="thief-card-desc-box" onclick="event.stopPropagation()">
-            <div class="thief-card-desc-label">📝 도둑 분석 리포트</div>
+            <div class="thief-card-desc-label">도둑 분석 리포트</div>
             <textarea id="mytt_thief1_desc" class="thief-card-textarea" placeholder="예) 아침에 잠에서 깨더라도 오늘 할 일을 시작하기 싫어서 누워 있다가 다시 잠든다."></textarea>
           </div>
         </div>
@@ -3698,11 +3902,11 @@ textarea.field::placeholder, input.field::placeholder{
         <!-- 2. 중간 집중을 훔치는 도둑 -->
         <div class="thief-target-card" id="thiefCard2" onclick="handleThiefCardClick(2)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 2)">
           <div class="thief-target-card-head">
-            <div class="thief-target-card-title">🌪️ 2. 중간 집중을 훔치는 도둑 <span class="thief-title-sub">(몰입 방해)</span></div>
+            <div class="thief-target-card-title">2. 중간 집중을 훔치는 도둑 <span class="thief-title-sub">(몰입 방해)</span></div>
           </div>
           <div class="thief-card-slot-box" id="thiefSlot2"></div>
           <div class="thief-card-desc-box" onclick="event.stopPropagation()">
-            <div class="thief-card-desc-label">📝 도둑 분석 리포트</div>
+            <div class="thief-card-desc-label">도둑 분석 리포트</div>
             <textarea id="mytt_thief2_desc" class="thief-card-textarea" placeholder="예) 글을 쓰다가 문장이 잘 안 풀리면 무의식적으로 인스타나 유튜브를 켜서 1시간을 날린다."></textarea>
           </div>
         </div>
@@ -3710,11 +3914,11 @@ textarea.field::placeholder, input.field::placeholder{
         <!-- 3. 끝맺음을 막는 도둑 -->
         <div class="thief-target-card" id="thiefCard3" onclick="handleThiefCardClick(3)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 3)">
           <div class="thief-target-card-head">
-            <div class="thief-target-card-title">🧱 3. 끝맺음을 막는 도둑 <span class="thief-title-sub">(마무리/결정 방해)</span></div>
+            <div class="thief-target-card-title">3. 끝맺음을 막는 도둑 <span class="thief-title-sub">(마무리/결정 방해)</span></div>
           </div>
           <div class="thief-card-slot-box" id="thiefSlot3"></div>
           <div class="thief-card-desc-box" onclick="event.stopPropagation()">
-            <div class="thief-card-desc-label">📝 도둑 분석 리포트</div>
+            <div class="thief-card-desc-label">도둑 분석 리포트</div>
             <textarea id="mytt_thief3_desc" class="thief-card-textarea" placeholder="예) 마감이 코앞인데도 디테일이 마음에 안 들어 계속 붙잡고 수정하느라 결국 완성을 못 한다."></textarea>
           </div>
         </div>
@@ -3846,10 +4050,10 @@ textarea.field::placeholder, input.field::placeholder{
   <div class="page-head">
     <div class="page-head-text">
       <div class="page-eyebrow">STEP 4 · ENVIRONMENT DESIGN <span class="sub-indicator"><span class="sub-dot"></span><span class="sub-dot"></span><span class="sub-dot on"></span></span></div>
-      <h1 class="page-title">📖 노트</h1>
+      <h1 class="page-title">노트</h1>
     </div>
   </div>
-  <div class="page-body note-page-body-center" style="gap: 12px;">
+  <div class="page-body note-page-body-center">
     <!-- 1. 상단 인트로 1줄 문장 -->
     <div class="note-intro" style="width: 100%;">
       내 의지력을 탓하기보다, 도둑이 얼씬 못 할 안전한 환경을 먼저 만들어주세요.
@@ -3860,7 +4064,7 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 1번 카드: 의지박약이 아니라 환경 문제 -->
       <div class="note-card-wide card-orange">
         <div class="note-card-title">
-          <span class="ico">🛡️</span> 1. 의지박약이 아니라, 환경 문제예요
+          1. 의지박약이 아니라, 환경 문제예요
         </div>
         <div class="note-col-body">
           스마트폰과 알고리즘은 수천 명의 천재들이 만든 거대한 환경이에요.<br>
@@ -3877,7 +4081,7 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 2번 카드: 시간 경찰은 가벼운 실험 -->
       <div class="note-card-wide card-green">
         <div class="note-card-title">
-          <span class="ico">🧪</span> 2. 시간 경찰은 가벼운 실험이에요
+          2. 시간 경찰은 가벼운 실험이에요
         </div>
         <div class="note-col-body">
           기껏 세운 대책이 하루 만에 무너져도 실망할 필요 없어요.<br>
@@ -3896,7 +4100,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="note-reflection-box">
       <div class="note-reflection-head">
         <div class="note-reflection-title">
-          <span>📝</span> STEP 5를 마치며... 느낀 점 기록하기
+          STEP 5를 마치며... 느낀 점 기록하기
         </div>
       </div>
       <textarea id="mytt_note_reflection_step5" class="note-reflection-textarea" placeholder="예) 폰을 다른 방 서랍에 두는 것부터 시작해봐야겠다!"></textarea>
@@ -3922,7 +4126,7 @@ textarea.field::placeholder, input.field::placeholder{
   </div>
   <div class="page-body">
     <div class="farm-plan-layout">
-      
+
       <!-- 상단: 밸런스 HUD 바 (3개 통일 카드) -->
       <div class="farm-hud-bar">
         <!-- 1. (사과이모지) 나의 시간 농장 -->
@@ -4031,13 +4235,13 @@ textarea.field::placeholder, input.field::placeholder{
   </div>
   <div class="page-body">
     <div class="review-page-wrap">
-      
+
       <!-- 1. 계획과 실행 -->
       <div class="review-card-item">
         <div class="review-card-head">
           <div class="review-card-title"><span>📋</span>1. 계획과 실행</div>
         </div>
-        
+
         <!-- 이번 주 나는 어떤 일을 했나요? -->
         <div class="review-field-box">
           <label>이번 주 나는 어떤 일을 했나요?</label>
@@ -4144,10 +4348,10 @@ textarea.field::placeholder, input.field::placeholder{
   <div class="page-head">
     <div class="page-head-text">
       <div class="page-eyebrow">STEP 5 · TIME FARM ROUTINE <span class="sub-indicator"><span class="sub-dot"></span><span class="sub-dot"></span><span class="sub-dot on"></span></span></div>
-      <h1 class="page-title">📖 노트</h1>
+      <h1 class="page-title">노트</h1>
     </div>
   </div>
-  <div class="page-body note-page-body-center" style="gap: 12px;">
+  <div class="page-body note-page-body-center">
     <!-- 1. 상단 인트로 1줄 문장 -->
     <div class="note-intro" style="width: 100%;">
       모든 것을 완벽히 통제하려 하기보다, 내게 도움이 될 회고에 집중하세요.
@@ -4174,14 +4378,14 @@ textarea.field::placeholder, input.field::placeholder{
       <!-- 오른쪽: 나의 이번 주 회고 우선순위 -->
       <div class="buffet-card">
         <div class="buffet-card-head">
-          <div class="buffet-card-title">🎯 2. 나의 이번 주 회고 우선순위</div>
+          <div class="buffet-card-title">2. 나의 이번 주 회고 우선순위</div>
           <div class="buffet-card-sub">내가 집중할 핵심 기준이에요.</div>
         </div>
         <div class="priority-plate" id="priorityPlateContainer">
           <!-- JS dynamic render -->
         </div>
         <div class="priority-guide-box">
-          💡 한 번에 많은 걸 점검하려다 보면 지치기 쉬워요. 이번 주 딱 필요한 1~2가지에 집중해보세요!
+           한 번에 많은 걸 점검하려다 보면 지치기 쉬워요. 이번 주 딱 필요한 1~2가지에 집중해보세요!
         </div>
       </div>
     </div>
@@ -4190,7 +4394,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="note-reflection-box">
       <div class="note-reflection-head">
         <div class="note-reflection-title">
-          <span>📝</span> STEP 5를 마치며... 느낀 점 기록하기
+          STEP 5를 마치며... 느낀 점 기록하기
         </div>
       </div>
       <textarea id="mytt_note_reflection_step4" class="note-reflection-textarea" placeholder="예) 이번 주엔 에너지 리듬에 맞게 일 배치하는 것만 신경 써봐야겠다!"></textarea>
@@ -4218,7 +4422,7 @@ textarea.field::placeholder, input.field::placeholder{
     <div class="summary-grid-3x2">
       <!-- 1. 시간 영토 -->
       <div class="sum-card-item">
-        <div class="sum-card-head"><span class="ico">🗺️</span>시간 영토</div>
+        <div class="sum-card-head"><span class="ico">🗺약️</span>시간 영토</div>
         <div class="summary-content" id="sum_zone1"></div>
       </div>
       <!-- 2. 씨앗과 핵심 열매 -->
@@ -4280,7 +4484,7 @@ const typeDesc = {
 function initQuiz() {
     const checks = document.querySelectorAll('.quiz-check');
     const saved = ST.get('mytt_quiz_result', {});
-    
+
     checks.forEach((chk, i) => {
         chk.checked = !!saved[i];
         chk.addEventListener('change', updateQuiz);
@@ -4293,7 +4497,7 @@ function updateQuiz() {
     const saved = {};
     const scores = { fire: 0, owl: 0, zigzag: 0, routine: 0 };
     let totalChecked = 0;
-    
+
     checks.forEach((chk, i) => {
         saved[i] = chk.checked;
         if(chk.checked) {
@@ -4302,31 +4506,31 @@ function updateQuiz() {
         }
     });
     ST.set('mytt_quiz_result', saved);
-    
+
     const cards = document.querySelectorAll('.type-quiz-card');
     cards.forEach(c => c.classList.remove('quiz-winner'));
-    
+
     const box = document.getElementById('quizResultBox');
     const rText = document.getElementById('quizResultText');
     const rDesc = document.getElementById('quizResultDesc');
-    
+
     if(totalChecked === 0) {
         box.style.display = 'none';
         return;
     }
-    
+
     box.style.display = 'flex';
-    
+
     let max = 0;
     for(let k in scores) {
         if(scores[k] > max) max = scores[k];
     }
-    
+
     let winners = [];
     for(let k in scores) {
         if(scores[k] === max && max > 0) winners.push(k);
     }
-    
+
     if(winners.length === 1) {
         rText.textContent = `✨ 당신은 ${typeNames[winners[0]]}이에요!`;
         rDesc.textContent = typeDesc[winners[0]];
@@ -4345,21 +4549,20 @@ function updateQuiz() {
 window.addEventListener('DOMContentLoaded', () => {
   initQuiz();
   bindRoots();
+  enhanceTimeSelects();
 });
 
 
 
 // ======== 뿌리 영토 자동 채우기 및 옵션 초기화 ========
+const TIME_OPTIONS_HTML = (() => {
+  let html = '<option value="-1">선택 안 함</option>';
+  for(let h=0; h<24; h++) html += `<option value="${h}">${String(h).padStart(2, '0')}:00</option>`;
+  return html;
+})();
 function initTimeOptions() {
-  const selects = document.querySelectorAll('.time-options');
-  let optionsHTML = '<option value="-1">선택 안 함</option>';
-  for(let h=0; h<24; h++) {
-    const val = h;
-    const label = `${String(h).padStart(2, '0')}:00`;
-    optionsHTML += `<option value="${val}">${label}</option>`;
-  }
-  selects.forEach(sel => {
-    sel.innerHTML = optionsHTML;
+  document.querySelectorAll('.time-options').forEach(sel => {
+    if (!sel.options.length) sel.innerHTML = TIME_OPTIONS_HTML;
   });
 }
 
@@ -4368,16 +4571,16 @@ function renderDayPills(containerId, storageKey) {
   if(!container) return;
   const daysStr = ['월','화','수','목','금'];
   const vals = [0,1,2,3,4];
-  
+
   let html = `<div class="day-pill" data-val="all">매일</div>`;
   daysStr.forEach((d, i) => {
     html += `<div class="day-pill" data-val="${vals[i]}">${d}</div>`;
   });
   container.innerHTML = html;
-  
+
   const saved = ST.get(storageKey, []);
   const pills = container.querySelectorAll('.day-pill');
-  
+
   const updateVisuals = (arr) => {
     pills.forEach(p => {
       const v = p.dataset.val;
@@ -4388,9 +4591,9 @@ function renderDayPills(containerId, storageKey) {
       }
     });
   };
-  
+
   updateVisuals(saved);
-  
+
   pills.forEach(p => {
     p.addEventListener('click', () => {
       let arr = ST.get(storageKey, []);
@@ -4405,101 +4608,245 @@ function renderDayPills(containerId, storageKey) {
       }
       ST.set(storageKey, arr);
       updateVisuals(arr);
+      afterFixedChange();
     });
   });
 }
 
-const rootKeys = [
-  'mytt_sleep_wake', 'mytt_sleep_bed',
-  'mytt_rest_from',
-  'mytt_fixed_1_from', 'mytt_fixed_1_to',
-  'mytt_fixed_2_from', 'mytt_fixed_2_to',
-  'mytt_fixed_3_from', 'mytt_fixed_3_to',
-  'mytt_fixed_4_from', 'mytt_fixed_4_to',
-  'mytt_fixed_5_from', 'mytt_fixed_5_to'
-];
-const fixedKeys = ['1', '2', '3', '4', '5'];
+const rootKeys = ['mytt_sleep_wake', 'mytt_sleep_bed', 'mytt_rest_from'];
+// 고정 스케줄 줄 id 목록 (화면 표시 순서 = 배열 순서). 개수 제한 없음.
+let fixedKeys = [];
+
+function loadFixedKeys() {
+  let ids = ST.get('fixed_ids', null);
+  if (!Array.isArray(ids)) {
+    // 예전 저장 방식(1~5 고정 슬롯)에서 이어받기: 데이터 있는 줄만 가져오고 최소 2줄 보장
+    ids = [];
+    for (let i = 1; i <= 5; i++) if (fixedRowHasData(String(i))) ids.push(String(i));
+    for (let i = 1; ids.length < 2; i++) if (!ids.includes(String(i))) ids.push(String(i));
+    ST.set('fixed_ids', ids);
+  }
+  fixedKeys = ids.map(String);
+}
+function fixedRowHasData(fk) {
+  const label = ST.get(`mytt_fixed_${fk}_label`, '');
+  const from = ST.get(`mytt_fixed_${fk}_from`, -1);
+  const to = ST.get(`mytt_fixed_${fk}_to`, -1);
+  const days = ST.get(`mytt_fixed_${fk}_days`, []);
+  return !!(label && label.trim()) || from !== -1 || to !== -1 || (Array.isArray(days) && days.length > 0);
+}
+// 뿌리 영토(수면/고정/휴식)가 바뀌면 주간 시간표를 항상 그 기준으로 다시 그림
+function afterFixedChange() {
+  autoFillFromRoots();
+}
+
+const FIXED_PLACEHOLDERS = ['출근 이동', '점심식사', '운동'];
+function buildFixedRow(fk, placeholder) {
+  const row = document.createElement('div');
+  row.className = 'fixed-row';
+  row.dataset.fixed = fk;
+  row.innerHTML = `
+    <input type="text" class="field" id="fixed_${fk}_label" placeholder="${placeholder}">
+    <select id="fixed_${fk}_from" class="time-select time-options"></select>
+    <span class="time-sep" style="color:var(--l-brown);font-size:12px;">~</span>
+    <select id="fixed_${fk}_to" class="time-select time-options"></select>
+    <button type="button" class="fixed-del-btn no-print" title="일정 삭제" onclick="removeFixedRow('${fk}')">✕</button>
+    <div class="day-pills" id="fixed_${fk}_days_pill"></div>`;
+  return row;
+}
+function bindFixedRow(fk) {
+  ['from', 'to'].forEach(part => {
+    const el = document.getElementById(`fixed_${fk}_${part}`);
+    const key = `mytt_fixed_${fk}_${part}`;
+    el.innerHTML = TIME_OPTIONS_HTML;
+    el.value = ST.get(key, '-1');
+    el.addEventListener('change', () => { ST.set(key, parseFloat(el.value)); afterFixedChange(); });
+  });
+  const labelEl = document.getElementById(`fixed_${fk}_label`);
+  labelEl.value = ST.get(`mytt_fixed_${fk}_label`, '');
+  labelEl.addEventListener('input', () => ST.set(`mytt_fixed_${fk}_label`, labelEl.value));
+  // 요일을 한 번도 고른 적 없는 줄은 '매일'로 시작 (시간만 넣어도 바로 시간표에 그려지도록)
+  if (localStorage.getItem(`mytt_mytt_fixed_${fk}_days`) === null) ST.set(`mytt_fixed_${fk}_days`, [0, 1, 2, 3, 4]);
+  renderDayPills(`fixed_${fk}_days_pill`, `mytt_fixed_${fk}_days`);
+}
+function renderFixedRows() {
+  const wrap = document.getElementById('fixedRowsWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  fixedKeys.forEach((fk, i) => {
+    const ph = FIXED_PLACEHOLDERS[i] || '일정명';
+    wrap.appendChild(buildFixedRow(fk, ph));
+    bindFixedRow(fk);
+  });
+  if (typeof enhanceTimeSelects === 'function') enhanceTimeSelects();
+}
+function addFixedRow() {
+  const next = String(Math.max(0, ...fixedKeys.map(Number).filter(n => !isNaN(n))) + 1);
+  fixedKeys.unshift(next);
+  ST.set('fixed_ids', fixedKeys);
+  const wrap = document.getElementById('fixedRowsWrap');
+  const row = buildFixedRow(next, '일정명');
+  wrap.prepend(row);
+  bindFixedRow(next);
+  if (typeof enhanceTimeSelects === 'function') enhanceTimeSelects();
+  row.querySelector('input.field').focus();
+}
+function removeFixedRow(fk) {
+  fixedKeys = fixedKeys.filter(k => k !== String(fk));
+  ST.set('fixed_ids', fixedKeys);
+  ['label', 'from', 'to', 'days'].forEach(p => localStorage.removeItem(`mytt_mytt_fixed_${fk}_${p}`));
+  const row = document.querySelector(`.fixed-row[data-fixed="${fk}"]`);
+  if (row) {
+    row.querySelectorAll('select').forEach(sel => { if (sel._gridPanel) sel._gridPanel.remove(); });
+    row.remove();
+  }
+  afterFixedChange();
+}
 
 function bindRoots() {
   initTimeOptions();
-  
+
   const idMap = {
     'mytt_sleep_wake': 'sleep_wake',
     'mytt_sleep_bed': 'sleep_bed',
     'mytt_rest_from': 'rest_from'
   };
-  for(let i=1; i<=5; i++) {
-    idMap[`mytt_fixed_${i}_from`] = `fixed_${i}_from`;
-    idMap[`mytt_fixed_${i}_to`] = `fixed_${i}_to`;
-  }
-  
   rootKeys.forEach(k => {
-    const elId = idMap[k] || k;
-    const el = document.getElementById(elId);
+    const el = document.getElementById(idMap[k]);
     if(el) {
       el.value = ST.get(k, '-1');
       el.addEventListener('change', () => {
         ST.set(k, parseFloat(el.value));
-        if (window._autoFilledGrid1) autoFillFromRoots();
-        else updateGridSummary();
+        afterFixedChange();
       });
     }
   });
 
-  fixedKeys.forEach(fk => {
-    renderDayPills(`fixed_${fk}_days_pill`, `mytt_fixed_${fk}_days`);
-    const labelEl = document.getElementById(`fixed_${fk}_label`);
-    if(labelEl) {
-      labelEl.value = ST.get(`mytt_fixed_${fk}_label`, '');
-      labelEl.addEventListener('input', () => {
-        ST.set(`mytt_fixed_${fk}_label`, labelEl.value);
+  loadFixedKeys();
+  renderFixedRows();
+}
+
+// ======== 딥워크 인용 모달 ========
+window.openDeepworkModal = () => { const m = document.getElementById('deepworkModal'); if (m) m.classList.add('open'); };
+window.closeDeepworkModal = () => { const m = document.getElementById('deepworkModal'); if (m) m.classList.remove('open'); };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDeepworkModal(); });
+
+// ======== 시간 선택 select를 짧은 그리드 팝업으로 감싸기 (긴 네이티브 드롭다운 대체) ========
+function closeAllTimeGridPickers() {
+  document.querySelectorAll('.time-grid-picker-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.time-grid-picker-btn.open').forEach(b => b.classList.remove('open'));
+}
+document.addEventListener('click', closeAllTimeGridPickers);
+
+function enhanceTimeSelects() {
+  const formatHour = (v) => {
+    const n = parseInt(v, 10);
+    if (isNaN(n) || n === -1) return '선택 안 함';
+    return `${String(n).padStart(2, '0')}:00`;
+  };
+
+  document.querySelectorAll('select.time-options').forEach(sel => {
+    if (sel.dataset.enhanced) return;
+    sel.dataset.enhanced = '1';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'time-grid-picker' + (sel.classList.contains('inline-select') ? ' inline' : '');
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'time-grid-picker-btn';
+    btn.textContent = formatHour(sel.value);
+
+    const panel = document.createElement('div');
+    panel.className = 'time-grid-picker-panel';
+
+    const noneBtn = document.createElement('button');
+    noneBtn.type = 'button';
+    noneBtn.className = 'time-grid-picker-none';
+    noneBtn.textContent = '선택 안 함';
+
+    const grid = document.createElement('div');
+    grid.className = 'time-grid-picker-grid';
+    for (let h = 0; h < 24; h++) {
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'time-grid-picker-cell';
+      cell.textContent = String(h).padStart(2, '0');
+      cell.addEventListener('click', (e) => { e.stopPropagation(); pick(String(h)); });
+      grid.appendChild(cell);
+    }
+    panel.appendChild(noneBtn);
+    panel.appendChild(grid);
+
+    function syncSelected() {
+      const cur = String(parseInt(sel.value, 10));
+      grid.querySelectorAll('.time-grid-picker-cell').forEach(c => {
+        c.classList.toggle('selected', String(parseInt(c.textContent, 10)) === cur);
       });
+      noneBtn.classList.toggle('selected', sel.value === '-1' || sel.value === '');
     }
-  });
-}
 
-function getStartHour() {
-  const w = ST.get('mytt_sleep_wake', -1);
-  return w !== -1 ? Math.floor(w) : 6;
-}
-
-function getEndHour() {
-  const w = getStartHour();
-  const bed = ST.get('mytt_sleep_bed', -1);
-  let end = 23;
-  if (bed !== -1) {
-    if (bed === 0) {
-      end = 24; // 자정 00:00
-    } else if (bed <= w) {
-      end = 24 + Math.ceil(bed); // 다음 날 새벽 (예: 취침 01:00, 02:00)
-    } else {
-      end = Math.ceil(bed);
+    function pick(val) {
+      sel.value = val;
+      btn.textContent = formatHour(val);
+      closeAllTimeGridPickers();
+      sel.dispatchEvent(new Event('change'));
     }
-  } else {
-    let maxEnd = -1;
-    fixedKeys.forEach(fk => {
-      const to = ST.get(`mytt_fixed_${fk}_to`, -1);
-      if(to > maxEnd) maxEnd = to;
+
+    noneBtn.addEventListener('click', (e) => { e.stopPropagation(); pick('-1'); });
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = !panel.classList.contains('open');
+      closeAllTimeGridPickers();
+      if (willOpen) {
+        syncSelected();
+        const r = btn.getBoundingClientRect();
+        panel.classList.add('open');
+        btn.classList.add('open');
+        const panelH = panel.offsetHeight;
+        const openUp = r.bottom + panelH + 8 > window.innerHeight;
+        panel.style.left = Math.min(r.left, window.innerWidth - 224 - 12) + 'px';
+        panel.style.top = (openUp ? r.top - panelH - 6 : r.bottom + 6) + 'px';
+      }
     });
-    end = maxEnd !== -1 ? Math.ceil(maxEnd) : 23;
-  }
-  // 종료 시간이 시작 시간보다 작거나 같으면 최소 12시간 범위 확보
-  if (end <= w) {
-    end = w + 12;
-  }
-  return end;
+
+    panel.addEventListener('click', (e) => e.stopPropagation());
+
+    sel.addEventListener('change', () => { btn.textContent = formatHour(sel.value); });
+    sel._gridPanel = panel;
+    sel.style.display = 'none';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(btn);
+    wrap.appendChild(sel);
+    document.body.appendChild(panel);
+    syncSelected();
+  });
+}
+
+// 주간 시간표는 항상 0시~24시 전체를 보여줌 (기상/취침에 따라 범위가 바뀌지 않음)
+function getStartHour() { return 0; }
+function getEndHour() { return 24; }
+
+// 뿌리 영토 설정 전체를 문자열로 요약 → 시간표가 어떤 설정으로 그려졌는지 기억해 두고, 달라지면 다시 그림
+const ROOTS_FILL_VERSION = 2; // 시간표 자동 채우기 방식이 바뀔 때 올리면 저장된 그림을 다시 그림
+function rootsSignature() {
+  const parts = ['v' + ROOTS_FILL_VERSION, ST.get('mytt_sleep_wake', -1), ST.get('mytt_sleep_bed', -1), ST.get('mytt_rest_from', -1)];
+  fixedKeys.forEach(fk => parts.push(fk, ST.get(`mytt_fixed_${fk}_from`, -1), ST.get(`mytt_fixed_${fk}_to`, -1), JSON.stringify(ST.get(`mytt_fixed_${fk}_days`, []))));
+  return parts.join('|');
 }
 
 function autoFillFromRoots() {
-  gridData1 = {}; 
+  gridData1 = {};
+  ST.set('grid1_roots_sig', rootsSignature());
   const sHour = getStartHour();
   const eHour = getEndHour();
-  
+
   const fillRange = (fromVal, toVal, daysArr, type) => {
     if(fromVal === -1 || toVal === -1) return;
     let fromH = Math.floor(fromVal);
     let toH = Math.ceil(toVal);
-    
+
     daysArr.forEach(d => {
       if(fromH < toH) {
         for(let h=fromH; h<toH; h++) {
@@ -4520,27 +4867,18 @@ function autoFillFromRoots() {
 
   const workDays = [0,1,2,3,4];
   // 우선순위: 고정 > 휴식 > 수면 (나중에 채울수록 덮어씀)
-  // 1. 수면: 취침시간이 타임라인 끝이므로, 기상시간 이전 또는 취침시간 이후 구간
+  // 1. 수면: 취침 → 기상 구간 (자정을 넘기면 fillRange가 알아서 두 구간으로 나눔)
   const sWake = ST.get('mytt_sleep_wake', -1);
   const sBed = ST.get('mytt_sleep_bed', -1);
-  if(sWake !== -1 && sBed !== -1) {
-    // 취침 시각(eHour)에 도달하면 수면 상태가 됨
+  if(sWake !== -1 && sBed !== -1 && sWake !== sBed) {
+    fillRange(sBed, sWake, workDays, 'sleep');
   }
 
-  // 2. 휴식 (중간 우선순위)
+  // 2. 휴식: 휴식 시작 → 취침 (취침 시간이 없으면 자정까지)
   const rFrom = ST.get('mytt_rest_from', -1);
   if (rFrom !== -1) {
-    let rStart = rFrom;
-    if (rStart < sHour && rStart + 24 <= eHour) rStart += 24;
-    if (rStart < eHour) {
-      workDays.forEach(d => {
-        const fromH = Math.floor(rStart);
-        const toH = Math.ceil(eHour);
-        for(let h=fromH; h<toH; h++) {
-          gridData1[`${d}-${h}`] = 'rest';
-        }
-      });
-    }
+    const rEnd = (sBed !== -1 && sBed !== rFrom) ? sBed : 24;
+    fillRange(rFrom, rEnd, workDays, 'rest');
   }
 
   // 3. 고정스케줄 마지막 (최고 우선순위 — 다른 것 덮어씀)
@@ -4616,8 +4954,15 @@ let thieves = ST.get('thieves', []);
 
 // ======== Page Navigation ========
 const pages = [...document.querySelectorAll('.page')];
-const tabs = [...document.querySelectorAll('.tab-btn')];
+const tabs = [...document.querySelectorAll('.growth-seg')];
 let current = 0;
+
+// 각 탭(챕터)이 pages 배열에서 차지하는 구간을 미리 계산해 그래프 바 채우기에 사용
+const tabSegments = tabs.map(t => {
+  const step = t.dataset.step;
+  const idxs = pages.reduce((arr, p, i) => { if (p.dataset.step === step) arr.push(i); return arr; }, []);
+  return { btn: t, fill: t.querySelector('.seg-fill'), start: idxs[0], count: idxs.length };
+});
 
 // 서브페이지 정보 맵
 const subPageNames = {
@@ -4650,12 +4995,17 @@ function activate(i){
   if(i < 0) i = 0;
   if(i >= pages.length) i = pages.length - 1;
   current = i;
+  if (typeof closeAllTimeGridPickers === 'function') closeAllTimeGridPickers();
   pages.forEach((p, idx) => p.classList.toggle('active', idx === i));
   const step = pages[i].dataset.step;
   const sub  = pages[i].dataset.sub;
   tabs.forEach(t => t.classList.toggle('active', t.dataset.step === step));
-  document.getElementById('progressLabel').textContent = (i+1) + ' / ' + pages.length;
-  document.getElementById('progressFill').style.width = ((i+1)/pages.length*100) + '%';
+  tabSegments.forEach(seg => {
+    const reached = Math.min(Math.max(i - seg.start + 1, 0), seg.count);
+    const pct = (reached / seg.count) * 100;
+    seg.fill.style.width = pct + '%';
+    seg.btn.classList.toggle('done', reached === seg.count);
+  });
   renderSubTabBar(step, sub);
   updateAll();
   if(pages[i].dataset.step === '4' && pages[i].dataset.sub === '2') drawCurve();
@@ -4666,7 +5016,7 @@ function activate(i){
     renderBuffetUI();
   }
   if(pages[i].dataset.step === '2' && pages[i].dataset.sub === '2') {
-    if(!gridData1 || Object.keys(gridData1).length === 0) {
+    if(!gridData1 || Object.keys(gridData1).length === 0 || ST.get('grid1_roots_sig', '') !== rootsSignature()) {
       autoFillFromRoots();
     } else {
       renderGrid('grid1', gridData1, 'grid1', () => currentType1);
@@ -4683,22 +5033,79 @@ tabs.forEach(t => t.addEventListener('click', () => {
 function goNext(){ activate(current + 1); }
 function goPrev(){ activate(current - 1); }
 
-function printPage(){
-  pages.forEach((p, idx) => p.classList.toggle('print-active', idx === current));
-  window.print();
-  pages.forEach(p => p.classList.remove('print-active'));
+// ======== 인쇄: 화면을 그대로 이미지로 찍어서 가로 A4 한 장에 한 페이지씩 ========
+function showCaptureOverlay(text) {
+  let ov = document.getElementById('captureOverlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'captureOverlay';
+    ov.className = 'capture-overlay';
+    document.body.appendChild(ov);
+  }
+  ov.textContent = text;
+  ov.style.display = 'flex';
+}
+function hideCaptureOverlay() {
+  const ov = document.getElementById('captureOverlay');
+  if (ov) ov.style.display = 'none';
 }
 
-function printAllPages(){
-  document.body.classList.add('print-all');
-  window.print();
-  document.body.classList.remove('print-all');
+async function capturePagesToImages(indexes) {
+  const startIdx = current;
+  const imgs = [];
+  for (let n = 0; n < indexes.length; n++) {
+    const i = indexes[n];
+    showCaptureOverlay(`PDF 준비 중… ${n + 1} / ${indexes.length}`);
+    activate(i);
+    await new Promise(r => setTimeout(r, 350));
+    const el = pages[i];
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#FFF8F0',
+      ignoreElements: (node) => node.classList && (node.classList.contains('no-print') || node.classList.contains('capture-overlay') || node.classList.contains('mytt-modal-backdrop') || node.classList.contains('time-grid-picker-panel') || (node.tagName === 'BUTTON' && node.closest('.page-footer-actions')))
+    });
+    imgs.push(canvas.toDataURL('image/jpeg', 0.92));
+  }
+  activate(startIdx);
+  hideCaptureOverlay();
+  return imgs;
+}
+
+function openPrintWindow(imgs) {
+  const w = window.open('', '_blank');
+  if (!w) { showToast('팝업이 차단됐어요. 이 사이트의 팝업을 허용해주세요.'); return; }
+  const sheets = imgs.map(src => `<div class="sheet"><img src="${src}"></div>`).join('');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>나의 시간 농장</title>
+    <style>
+      @page { size: A4 landscape; margin: 6mm; }
+      html, body { margin: 0; padding: 0; background: #fff; }
+      .sheet { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; break-after: page; page-break-after: always; overflow: hidden; }
+      .sheet:last-child { break-after: auto; page-break-after: auto; }
+      .sheet img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      @media screen { body { background: #777; } .sheet { height: auto; margin: 12px auto; width: 90vw; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.3); } }
+    </style></head><body>${sheets}
+    <script>window.addEventListener('load', () => setTimeout(() => window.print(), 300));<\/script>
+    </body></html>`);
+  w.document.close();
+}
+
+async function printPage(){
+  if (typeof html2canvas !== 'function') { showToast('인쇄 모듈을 불러오지 못했어요. 인터넷 연결을 확인해주세요.'); return; }
+  const imgs = await capturePagesToImages([current]);
+  openPrintWindow(imgs);
+}
+
+async function printAllPages(){
+  if (typeof html2canvas !== 'function') { showToast('인쇄 모듈을 불러오지 못했어요. 인터넷 연결을 확인해주세요.'); return; }
+  const imgs = await capturePagesToImages(pages.map((_, i) => i));
+  openPrintWindow(imgs);
 }
 function toggleAcc(head){ head.parentElement.classList.toggle('open'); }
 
 // ======== Form Binding ========
 const bindFields = [
-    'mytt_start_worry', 
+    'mytt_start_worry',
     'mytt_rest_custom_desc',
     'mytt_fruit_1', 'mytt_fruit_2', 'mytt_fruit_3', 'mytt_wannabe',
     'mytt_buffer_check1', 'mytt_buffer_check2',
@@ -4708,8 +5115,8 @@ const bindFields = [
     'mytt_review_cop_comment', 'mytt_review_next_cop',
     'mytt_note_reflection_step4',
     'mytt_note_reflection_step5',
-    'mytt_thief1_title', 'mytt_thief1_desc', 'mytt_thief2_title', 'mytt_thief2_desc',
-    'mytt_cop_strategy', 'mytt_declaration'
+    // 도둑 분석 리포트(mytt_thiefN_desc)는 renderThiefBoard에서 따로 바인딩 — 여기 넣으면 키 입력마다 보드가 다시 그려져 깜빡임
+    'mytt_declaration'
 ];
 bindFields.forEach(id => ST.bind(id));
 
@@ -4782,7 +5189,7 @@ function closeAllTaskDropdowns() {
 // 밭 툴 버튼 클릭 처리 (도구 기본 선택 + 드롭다운 토글)
 window.handleToolBtnClick = function(field, btnEl, event) {
     if(event) event.stopPropagation();
-    
+
     const dd = document.getElementById(`dropdown_${field}`);
     const isCurrentlyOpen = dd && dd.style.display === 'flex';
 
@@ -4846,7 +5253,7 @@ function selectTaskItem(field, taskText) {
         // 대제목을 직접 선택했거나 초기화된 경우
         currentSelectedTasks[field] = meta.title;
     }
-    
+
     // 버튼 라벨 업데이트
     const btn = document.querySelector(`#toolbar2 .farm-tool-btn[data-type="${field}"]`);
     if(btn) {
@@ -4873,7 +5280,7 @@ window.autoFillFarmFromStep3 = function(force = false) {
     if(!gridData1 || Object.keys(gridData1).length === 0) {
         autoFillFromRoots();
     }
-    
+
     if(!force && gridData2 && Object.keys(gridData2).length > 0) {
         renderGrid('grid2', gridData2, 'grid2', () => currentFarmTool);
         updateFarmHUD();
@@ -5115,11 +5522,42 @@ function selectType(gridNum, type, el) {
 }
 window.selectType = selectType;
 
+
+// 농장 시간표: 같은 요일에서 같은 항목이 위아래로 이어지면 한 덩어리처럼 보이게 (첫 칸에만 라벨)
+function applyFarmMerges(container) {
+    const cells = [...container.querySelectorAll('.time-cell')];
+    const byDay = {};
+    cells.forEach(c => {
+        const m = /^grid2-cell-(\d+)-(\d+)$/.exec(c.id || '');
+        if (!m) return;
+        (byDay[m[1]] = byDay[m[1]] || []).push({ h: +m[2], el: c });
+    });
+    const keyOf = (el) => {
+        const t = el.dataset.type;
+        if (!t) return '';
+        const txt = el.querySelector('.farm-cell-task');
+        return t + '|' + (txt ? txt.textContent.trim() : '');
+    };
+    Object.values(byDay).forEach(list => {
+        list.sort((a, b) => a.h - b.h);
+        let prev = null;
+        list.forEach(({ h, el }) => {
+            el.classList.remove('merge-cont', 'merge-head');
+            const k = keyOf(el);
+            if (prev && k && prev.k === k && prev.h === h - 1) {
+                el.classList.add('merge-cont');
+                prev.el.classList.add('merge-head');
+            }
+            prev = { h, k, el };
+        });
+    });
+}
+
 function renderGrid(containerId, dataObj, storageKey, currentTypeVarFn) {
     const container = document.getElementById(containerId);
     if(!container) return;
     container.innerHTML = '';
-    
+
     // Header row
     container.appendChild(document.createElement('div'));
     days.forEach(d => {
@@ -5130,8 +5568,8 @@ function renderGrid(containerId, dataObj, storageKey, currentTypeVarFn) {
     });
 
     let isDrawing = false;
-    let drawMode = true; 
-    
+    let drawMode = true;
+
     const sHour = getStartHour();
     const eHour = getEndHour();
 
@@ -5146,10 +5584,26 @@ function renderGrid(containerId, dataObj, storageKey, currentTypeVarFn) {
         return fieldMeta[fKey] ? fieldMeta[fKey].title : '작업 몰입';
     };
 
+    // 농장 그리드(grid2)에서는 월~금 전부 수면인 시간대는 접어서 한 줄 구분선으로만 표시
+    const isAllSleep = (h) => containerId === 'grid2' && [0,1,2,3,4].every(d => gridData1[`${d}-${h}`] === 'sleep');
+    let sleepRunStart = null;
+    const flushSleepDivider = (endH) => {
+        if (sleepRunStart === null) return;
+        const div = document.createElement('div');
+        div.className = 'time-sleep-divider';
+        div.style.gridColumn = '1 / -1';
+        const a = sleepRunStart % 24, b = endH % 24;
+        div.textContent = `수면 ${a}시 ~ ${b}시`;
+        container.appendChild(div);
+        sleepRunStart = null;
+    };
+
     for(let h = sHour; h < eHour; h++) {
+        if (isAllSleep(h)) { if (sleepRunStart === null) sleepRunStart = h; continue; }
+        flushSleepDivider(h);
         const hourBlock = document.createElement('div');
         hourBlock.className = 'hour-block';
-        
+
         // 1시간 단위 시간 표기 (예: 10시, 11시, 12시)
         const displayH = h >= 24 ? (h % 24) : h;
         const timeStr = `${displayH}시`;
@@ -5186,7 +5640,7 @@ function renderGrid(containerId, dataObj, storageKey, currentTypeVarFn) {
             } else if(rawVal) {
                 cell.dataset.type = rawVal;
             }
-            
+
             const applyDraw = (target) => {
                 if(containerId === 'grid2') {
                     const tool = currentTypeVarFn();
@@ -5213,6 +5667,7 @@ function renderGrid(containerId, dataObj, storageKey, currentTypeVarFn) {
                     }
                     ST.set(storageKey, dataObj);
                     updateFarmHUD();
+                    applyFarmMerges(container);
                 } else {
                     const type = currentTypeVarFn();
                     if(drawMode) { target.dataset.type = type; dataObj[cellId] = type; }
@@ -5246,6 +5701,8 @@ function renderGrid(containerId, dataObj, storageKey, currentTypeVarFn) {
         }
         container.appendChild(hourBlock);
     }
+    flushSleepDivider(eHour);
+    if (containerId === 'grid2') applyFarmMerges(container);
 
     document.addEventListener('mouseup', () => {
         isDrawing = false;
@@ -5271,7 +5728,7 @@ window.resetGrid1ToRoots = function() {
 
 function updateGridSummary() {
     let sleep=0, fixed=0, rest=0, freeCount=0;
-    
+
     // 수면 시간: 그리드 셀에 직접 그려진 sleep 셀의 합계 (없으면 1-1 설정 기준)
     let gridSleepCount = 0;
     Object.keys(gridData1).forEach(k => {
@@ -5283,34 +5740,35 @@ function updateGridSummary() {
         if(type==='rest') rest += 1.0;
         if(type==='free') freeCount += 1.0;
     });
-    
+
     const sWake = ST.get('mytt_sleep_wake', -1);
     const sBed = ST.get('mytt_sleep_bed', -1);
     let defaultDailySleep = 0;
     if(sWake !== -1 && sBed !== -1) {
-        if(sBed < sWake) defaultDailySleep = (24 - sWake) + sBed;
-        else defaultDailySleep = sBed - sWake;
+        // 취침 → 다음날 기상까지의 시간 (예: 23시 취침·7시 기상 = 8시간, 1시 취침·7시 기상 = 6시간)
+        if(sBed > sWake) defaultDailySleep = (24 - sBed) + sWake;
+        else defaultDailySleep = sWake - sBed;
     }
-    
+
     const sHour = getStartHour();
     const eHour = getEndHour();
     const totalHours = (eHour - sHour) * 5;
-    
+
     const weeklySleep = gridSleepCount > 0 ? gridSleepCount : (defaultDailySleep * 5);
     const weeklyFixed = fixed;
     const weeklyRest = rest;
-    
+
     let free = freeCount > 0 ? freeCount : (totalHours - weeklyFixed - weeklyRest - (gridSleepCount > 0 ? gridSleepCount : 0));
     if(free < 0) free = 0;
     const dailyFree = (free / 5).toFixed(1);
-    
+
     const sumSleep = document.getElementById('sum_sleep');
     if(sumSleep) sumSleep.textContent = weeklySleep + '시간';
     const sumFixed = document.getElementById('sum_fixed');
     if(sumFixed) sumFixed.textContent = weeklyFixed + '시간';
     const sumRest = document.getElementById('sum_rest');
     if(sumRest) sumRest.textContent = weeklyRest + '시간';
-    
+
     const btnFree = document.getElementById('freeRevealBtn');
     const sumFree = document.getElementById('sum_free');
     const subFree = document.getElementById('sum_free_sub');
@@ -5621,14 +6079,14 @@ function addThought(text, customEmoji = null) {
     let thoughts = ST.get('mytt_thoughts', []);
     const newId = Date.now();
     const emoji = customEmoji || seedEmojis[thoughts.length % seedEmojis.length];
-    
+
     thoughts.push({
         id: newId,
         emoji: emoji,
         text: text
     });
     ST.set('mytt_thoughts', thoughts);
-    
+
     // 대표 열매가 아직 없으면 첫 번째 아이디어를 자동으로 대표 열매로 지정
     let mainSeed = ST.get('mytt_main_seed', 0);
     if(!mainSeed) {
@@ -5663,7 +6121,7 @@ window.toggleSeed = (idx, e) => {
     if(e) e.stopPropagation();
     let mainSeed = ST.get('mytt_main_seed', 0);
     let sideSeeds = ST.get('mytt_side_seeds', []);
-    
+
     if(mainSeed === idx) {
         ST.set('mytt_main_seed', 0);
     } else if(sideSeeds.includes(idx)) {
@@ -5686,17 +6144,17 @@ window.toggleSeed = (idx, e) => {
 function renderGoalCards32() {
     const container = document.getElementById('goalCards32');
     if(!container) return;
-    
+
     let mainSeed = ST.get('mytt_main_seed', 0);
     container.innerHTML = '';
-    
+
     // Left 60%: 이달의 열매 (One Thing)
     const leftWrap = document.createElement('div');
     leftWrap.style.display = 'flex';
     leftWrap.style.flexDirection = 'column';
     leftWrap.style.gap = '10px';
     leftWrap.style.height = '100%';
-    
+
     if(mainSeed) {
         let thoughts = ST.get('mytt_thoughts', []);
         let found = thoughts.find(t => t.id === mainSeed);
@@ -5705,7 +6163,7 @@ function renderGoalCards32() {
         let fName = ST.get(`mytt_main_name`, seedVal) || seedVal;
         let fYear = ST.get(`mytt_main_year`, '2026');
         let fMonth = ST.get(`mytt_main_month`, '');
-        
+
         // 세부 항목 리스트 (기본 1개 슬롯)
         let subItems = ST.get('mytt_main_sub_items', null);
         if(!subItems || !Array.isArray(subItems) || subItems.length === 0) {
@@ -5719,13 +6177,13 @@ function renderGoalCards32() {
                 subItems = [''];
             }
         }
-        
+
         // Step 1 완료 조건: 열매 이름과 마감 년/월 입력 완료 시
         // Step 1 완료 조건: 열매 이름과 마감 년/월 입력 완료 시
         const step1Done = Boolean(fName && fMonth);
         // Step 2 완료 조건: 세부 항목 중 1개 이상 입력 시
         const step2Done = subItems.some(item => (item || '').trim().length > 0);
-        
+
         const subItemsPlaceholders = [
             '예) 디자인 1차 시안 완성',
             '예) 샘플 인쇄 및 펀딩 오픈',
@@ -5744,7 +6202,7 @@ function renderGoalCards32() {
         leftWrap.innerHTML = `
         <div class="fruit-card" style="flex:1;">
             <div class="fruit-card-header">👑 이달의 열매 - <span>${sEmoji}</span> <span id="fruitHeaderName">${fName}</span></div>
-            
+
             <!-- 이달의 열매 기본 정보 -->
             <div class="fruit-step" style="border-top:none; padding-top:0;">
                 <div class="fruit-step-body" style="display:flex; margin-top:0;">
@@ -5763,7 +6221,7 @@ function renderGoalCards32() {
                     </div>
                 </div>
             </div>
-            
+
             <!-- 완성에 필요한 세부 항목 -->
             <div class="fruit-step" style="display:block;">
                 <div class="fruit-step-head active">완성에 필요한 세부 항목</div>
@@ -5786,16 +6244,16 @@ function renderGoalCards32() {
         </div>`;
     }
     container.appendChild(leftWrap);
-    
+
     // Right 40%: 이번 주 작은 씨앗 + 💡 팁 카드
     const rightWrap = document.createElement('div');
     rightWrap.style.display = 'flex';
     rightWrap.style.flexDirection = 'column';
     rightWrap.style.gap = '12px';
     rightWrap.style.height = '100%';
-    
+
     let seedTasks = ST.get(`mytt_main_seed_task`, ['', '']);
-    
+
     rightWrap.innerHTML = `
     <!-- 우측 상단: 이번 주 작은 씨앗 -->
     <div class="fruit-card" style="flex:1 1 auto; overflow:visible;">
@@ -5816,7 +6274,7 @@ function renderGoalCards32() {
             </div>
         </div>
     </div>
-    
+
     <!-- 우측 하단: 💡 팁 카드 -->
     <div class="card" style="flex:0 0 auto; background:var(--peach-lt); border-color:var(--d-orange); padding:12px 14px;">
         <div style="font-family:'Jua',sans-serif; font-size:13.5px; color:var(--brown); margin-bottom:4px; display:flex; align-items:center; gap:5px;">
@@ -5827,7 +6285,7 @@ function renderGoalCards32() {
             <b>30분~1시간 안에 가볍게 끝낼 수 있는</b> 작은 크기로 쪼개어 적어보세요!
         </div>
     </div>`;
-    
+
     container.appendChild(rightWrap);
 }
 
@@ -5975,13 +6433,13 @@ function getFocusHours() {
     const sBed = ST.get('mytt_sleep_bed', -1);
     let start = sWake !== -1 ? Math.floor(sWake) : 7;
     let end = sBed !== -1 ? Math.floor(sBed) : 23;
-    
+
     // 자정(24시)을 넘어 새벽에 취침하는 경우 (예: 기상 8시, 취침 2시 -> end = 26)
     if(end <= start) {
         end += 24;
     }
     if(end - start < 6) { end = start + 16; }
-    
+
     const hours = [];
     for(let h = start; h <= end; h++) {
         hours.push(h);
@@ -6007,7 +6465,7 @@ let cardEnergyLevel = ST.get('mytt_card_energy', {
 function getEnergyRanges(level) {
     const HOURS = getFocusHours();
     if(!myttFocusVals) return { hours: 0, rangesStr: '0시간' };
-    
+
     // level: 'high' (v > 0.66), 'mid' (0.33 < v <= 0.66), 'low' (v <= 0.33)
     const matchHours = [];
     HOURS.forEach(h => {
@@ -6017,16 +6475,16 @@ function getEnergyRanges(level) {
                         (level === 'low' && v <= 0.33);
         if(isMatch) matchHours.push(h);
     });
-    
+
     if(matchHours.length === 0) {
         return { hours: 0, rangesStr: '0시간' };
     }
-    
+
     // 연속된 시간대를 구간으로 묶기 (예: [9, 10, 11] -> "9~12시")
     const ranges = [];
     let start = matchHours[0];
     let prev = matchHours[0];
-    
+
     for(let i = 1; i < matchHours.length; i++) {
         const curr = matchHours[i];
         if(curr === prev + 1) {
@@ -6038,7 +6496,7 @@ function getEnergyRanges(level) {
         }
     }
     ranges.push(`${formatHourLabel(start).replace('새벽', '새벽 ')}~${formatHourLabel(prev + 1).replace('새벽', '새벽 ')}`);
-    
+
     return {
         hours: matchHours.length,
         rangesStr: ranges.join(', ')
@@ -6118,7 +6576,7 @@ function renderFocusRefList() {
     const listEl = document.getElementById('focusRefList');
     if(!listEl) return;
     listEl.innerHTML = '';
-    
+
     const configs = [
         { key: 'ground', emoji: '🚜', title: '🚜 농기구 관리 (기계적 잡무)' },
         { key: 'tree', emoji: '🌳', title: '🌳 나무 가꾸기 (몰입·창의)' },
@@ -6142,9 +6600,9 @@ function renderFocusRefList() {
             // 카드가 열려있으면 열린 카드의 하이라이트 유지, 아니면 끔
             window.highlightCurveForCard(selectedFocusCardKey);
         };
-        
+
         let chipsHtml = arr.map(t => `
-            <span class="focus-ref-chip" draggable="true" 
+            <span class="focus-ref-chip" draggable="true"
                   ondragstart="window.handleChipDragStart(event, '${cfg.key}', '${cfg.emoji}', '${t.text.replace(/'/g, "\\'")}')"
                   ondragend="window.handleChipDragEnd(event)">
                 ${t.text}
@@ -6158,7 +6616,7 @@ function renderFocusRefList() {
         if(isSelected) {
             const currentLevel = cardEnergyLevel[cfg.key] || 'high';
             const { hours, rangesStr } = getEnergyRanges(currentLevel);
-            
+
             panelHtml = `
             <div class="energy-match-panel" onclick="event.stopPropagation()">
                 <div class="energy-match-pills">
@@ -6250,9 +6708,8 @@ function drawCurve() {
             const nx = hToX(nowH);
             nowMark = `
               <line x1="${f(nx)}" y1="${f(PT)}" x2="${f(nx)}" y2="${f(yB)}"
-                stroke="#F4A261" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.7"/>
-              <circle cx="${f(nx)}" cy="${f(PT+10)}" r="4" fill="#F4A261" opacity="0.9"/>
-              <text x="${f(nx+8)}" y="${f(PT+14)}" font-size="11" fill="#C07028"
+                stroke="#F4A261" stroke-width="1.2" stroke-dasharray="3,5" opacity="0.45"/>
+              <text x="${f(nx)}" y="${f(yB+32)}" text-anchor="middle" font-size="10.5" fill="#D07030"
                 font-family="Gowun Dodum,sans-serif" font-weight="bold">지금</text>`;
         }
 
@@ -6261,20 +6718,17 @@ function drawCurve() {
         if(HOURS[0] <= 12 && HOURS[HOURS.length-1] >= 12) {
             const midX = hToX(12);
             periods += `
-              <line x1="${f(midX)}" y1="${f(PT)}" x2="${f(midX)}" y2="${f(yB)}" stroke="#DEC8B0" stroke-width="1" stroke-dasharray="3,5" opacity="0.65"/>
               <text x="${f(x0+(midX-x0)/2)}" y="${f(PT-7)}" text-anchor="middle" font-size="11" fill="#C0A088" font-family="Gowun Dodum,sans-serif">오전</text>`;
-            
+
             const nextBorder = HOURS[HOURS.length-1] >= 18 ? 18 : null;
             if(nextBorder) {
                 const eveX = hToX(18);
                 periods += `
-                  <line x1="${f(eveX)}" y1="${f(PT)}" x2="${f(eveX)}" y2="${f(yB)}" stroke="#DEC8B0" stroke-width="1" stroke-dasharray="3,5" opacity="0.65"/>
                   <text x="${f(midX+(eveX-midX)/2)}" y="${f(PT-7)}" text-anchor="middle" font-size="11" fill="#C0A088" font-family="Gowun Dodum,sans-serif">오후</text>`;
 
                 if(HOURS[HOURS.length-1] >= 24) {
                     const nightX = hToX(24);
                     periods += `
-                      <line x1="${f(nightX)}" y1="${f(PT)}" x2="${f(nightX)}" y2="${f(yB)}" stroke="#DEC8B0" stroke-width="1" stroke-dasharray="3,5" opacity="0.65"/>
                       <text x="${f(eveX+(nightX-eveX)/2)}" y="${f(PT-7)}" text-anchor="middle" font-size="11" fill="#C0A088" font-family="Gowun Dodum,sans-serif">저녁</text>
                       <text x="${f(nightX+(x1-nightX)/2)}" y="${f(PT-7)}" text-anchor="middle" font-size="11" fill="#C0A088" font-family="Gowun Dodum,sans-serif">새벽</text>`;
                 } else {
@@ -6303,42 +6757,46 @@ function drawCurve() {
             const y = vToY(v);
             const level = v > 0.66 ? 'high' : v > 0.33 ? 'mid' : 'low';
             const col = level === 'high' ? '#F4A261' : level === 'mid' ? '#8EC486' : '#89BEF0';
-            handles += `<circle class="focus-curve-handle" data-hour="${h}" data-level="${level}" cx="${f(x)}" cy="${f(y)}" r="5.5" fill="white" stroke="${col}" stroke-width="2.5" opacity="0.95"/>`;
+            handles += `<circle class="focus-curve-handle" data-hour="${h}" data-level="${level}" cx="${f(x)}" cy="${f(y)}" r="4.5" fill="white" stroke="${col}" stroke-width="2"/>`;
         });
 
         svg.innerHTML = `
             <defs>
+              <!-- 높이에 따라 색이 변함: 고조(위) 빨강 → 보통 주황 → 저집중(아래) 파랑 -->
+              <linearGradient id="myttLineGrad" x1="0" y1="${f(yT)}" x2="0" y2="${f(yB)}" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#E5533D"/>
+                <stop offset="50%"  stop-color="#6FBF67"/>
+                <stop offset="100%" stop-color="#4F94E5"/>
+              </linearGradient>
               <linearGradient id="myttAreaGrad" x1="0" y1="${f(yT)}" x2="0" y2="${f(yB)}" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stop-color="#F4A261" stop-opacity="0.82"/>
-                <stop offset="38%"  stop-color="#9ECC90" stop-opacity="0.65"/>
-                <stop offset="100%" stop-color="#88BEFF" stop-opacity="0.46"/>
+                <stop offset="0%"   stop-color="#E5533D" stop-opacity="0.45"/>
+                <stop offset="50%"  stop-color="#8EC486" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#4F94E5" stop-opacity="0.25"/>
               </linearGradient>
               <linearGradient id="myttBgGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stop-color="#FFF6EE"/>
-                <stop offset="100%" stop-color="#F4F2FF"/>
+                <stop offset="0%"   stop-color="#FFFCF8"/>
+                <stop offset="100%" stop-color="#FFF7F0"/>
               </linearGradient>
+              <filter id="myttLineGlow" filterUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#B77A5A" flood-opacity="0.28"/>
+              </filter>
               <clipPath id="myttClip"><rect x="${PL}" y="${PT}" width="${CW}" height="${CH}" rx="4"/></clipPath>
             </defs>
 
             <!-- 배경 -->
             <rect x="${PL}" y="${PT}" width="${CW}" height="${CH}" fill="url(#myttBgGrad)" rx="6"/>
 
-            <!-- 구역 색상 밴드 (고조 / 보통 / 저집중) -->
-            <rect x="${PL}" y="${f(yT)}"  width="${CW}" height="${f(CH/3)}" fill="#FFE4CC" opacity="0.22" rx="4"/>
-            <rect x="${PL}" y="${f(yZ2)}" width="${CW}" height="${f(CH/3)}" fill="#CCF0C8" opacity="0.22"/>
-            <rect x="${PL}" y="${f(yZ1)}" width="${CW}" height="${f(CH/3)}" fill="#C8E4FF" opacity="0.22"/>
-
-            <!-- 구역 경계 점선 -->
-            <line x1="${PL}" y1="${f(yZ1)}" x2="${f(PL+CW)}" y2="${f(yZ1)}" stroke="#E0C8B0" stroke-width="1" stroke-dasharray="6,5"/>
-            <line x1="${PL}" y1="${f(yZ2)}" x2="${f(PL+CW)}" y2="${f(yZ2)}" stroke="#E0C8B0" stroke-width="1" stroke-dasharray="6,5"/>
+            <!-- 구역 경계선 (옅게) -->
+            <line x1="${PL}" y1="${f(yZ1)}" x2="${f(PL+CW)}" y2="${f(yZ1)}" stroke="#EAD8C8" stroke-width="1" stroke-dasharray="2,6" stroke-linecap="round"/>
+            <line x1="${PL}" y1="${f(yZ2)}" x2="${f(PL+CW)}" y2="${f(yZ2)}" stroke="#EAD8C8" stroke-width="1" stroke-dasharray="2,6" stroke-linecap="round"/>
 
             <!-- Y축 레이블 -->
-            <text x="${PL-9}" y="${f(vToY(0.84))}" text-anchor="end" dominant-baseline="middle" font-size="11.5" fill="#D07030" font-family="Gowun Dodum,sans-serif" font-weight="bold">고조</text>
-            <text x="${PL-9}" y="${f(vToY(0.50))}" text-anchor="end" dominant-baseline="middle" font-size="11.5" fill="#5EAA54" font-family="Gowun Dodum,sans-serif" font-weight="bold">보통</text>
-            <text x="${PL-9}" y="${f(vToY(0.16))}" text-anchor="end" dominant-baseline="middle" font-size="11.5" fill="#5090C8" font-family="Gowun Dodum,sans-serif" font-weight="bold">저집중</text>
+            <text x="${PL-9}" y="${f(vToY(0.84))}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="#D07030" font-family="Jua,sans-serif">고조</text>
+            <text x="${PL-9}" y="${f(vToY(0.50))}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="#5EAA54" font-family="Jua,sans-serif">보통</text>
+            <text x="${PL-9}" y="${f(vToY(0.16))}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="#5090C8" font-family="Jua,sans-serif">저집중</text>
 
             <!-- 기준선 -->
-            <line x1="${PL}" y1="${f(yB)}" x2="${f(PL+CW)}" y2="${f(yB)}" stroke="#D8C0A8" stroke-width="1.5"/>
+            <line x1="${PL}" y1="${f(yB)}" x2="${f(PL+CW)}" y2="${f(yB)}" stroke="#E6D3C2" stroke-width="1.2"/>
 
             <!-- 오전/오후/저녁 -->
             ${periods}
@@ -6347,8 +6805,8 @@ function drawCurve() {
             <path d="${area}" fill="url(#myttAreaGrad)" clip-path="url(#myttClip)"/>
 
             <!-- 곡선 (스트로크 굵기 2.8px, 컬러 #D07030) -->
-            <path d="${line}" fill="none" stroke="#D07030" stroke-width="2.8"
-              stroke-linecap="round" stroke-linejoin="round" clip-path="url(#myttClip)"/>
+            <path d="${line}" fill="none" stroke="url(#myttLineGrad)" stroke-width="3.6"
+              stroke-linecap="round" stroke-linejoin="round" clip-path="url(#myttClip)" filter="url(#myttLineGlow)"/>
 
             <!-- 현재 시간 마커 -->
             ${nowMark}
@@ -6475,7 +6933,7 @@ function drawCurve() {
 
     function attachEvents() {
         const hit = document.getElementById('focusHitLayer') || svg;
-        
+
         hit.onmousedown = (e) => {
             isDrawingFocus = true; lastFocusI = null; lastFocusV = null;
             window.highlightCardsFromHoverLevel(null);
@@ -6581,13 +7039,13 @@ function drawCurve() {
         const { x, y } = svgPt(e); applyAt(x, y); e.preventDefault();
     };
 
-    window.onmouseup = () => { 
+    window.onmouseup = () => {
         if(isDrawingFocus) {
             isDrawingFocus = false;
             renderFocusRefList();
         }
     };
-    window.ontouchend = () => { 
+    window.ontouchend = () => {
         if(isDrawingFocus) {
             isDrawingFocus = false;
             renderFocusRefList();
@@ -6617,7 +7075,7 @@ if(_focusWrapEl && window.ResizeObserver) {
 
 // ======== Thieves Board System (Step 5-1 / data-step 6-1) ========
 const THIEF_DEFAULTS_EXT = [
-    '📱 인스타그램', '💬 카카오톡', '🍿 유튜브·넷플릭스', 
+    '📱 인스타그램', '💬 카카오톡', '🍿 유튜브·넷플릭스',
     '🛒 온라인 쇼핑', '🛏️ 낮잠·눕기', '🍻 갑작스런 약속'
 ];
 const THIEF_DEFAULTS_INT = [
@@ -6625,6 +7083,7 @@ const THIEF_DEFAULTS_INT = [
     '😰 실패 불안감', '💭 딴생각 발산',
     '🥱 귀찮음·하기 싫음', '🪫 에너지 고갈'
 ];
+function thiefLabel(t) { return String(t || ''); }
 
 let thiefSelectedChip = null;
 let thiefDraggedChip = null;
@@ -6676,11 +7135,11 @@ function createThiefChipElement(t, isCustom, category) {
     const btn = document.createElement('div');
     btn.className = 'thief-source-chip' + (thiefSelectedChip === t ? ' selected' : '');
     btn.draggable = true;
-    
+
     if (isCustom) {
-        btn.innerHTML = `<span>${t}</span><span style="margin-left:4px; opacity:0.6; font-size:11px; cursor:pointer;" onclick="event.stopPropagation(); removeCustomThiefCategory('${category}', '${t}')" title="삭제">×</span>`;
+        btn.innerHTML = `<span>${thiefLabel(t)}</span><span style="margin-left:4px; opacity:0.6; font-size:11px; cursor:pointer;" onclick="event.stopPropagation(); removeCustomThiefCategory('${category}', '${t}')" title="삭제">×</span>`;
     } else {
-        btn.textContent = t;
+        btn.textContent = thiefLabel(t);
     }
 
     // Click handler (for tap/click to select)
@@ -6787,7 +7246,7 @@ function renderThiefCardSlot(cardNum) {
     list.forEach(chipName => {
         const chip = document.createElement('span');
         chip.className = 'thief-placed-chip';
-        chip.innerHTML = `${chipName} <button type="button" class="thief-chip-del-btn" onclick="event.stopPropagation(); removeThiefFromGroup(${cardNum}, '${chipName}')" title="삭제">×</button>`;
+        chip.innerHTML = `${thiefLabel(chipName)} <button type="button" class="thief-chip-del-btn" onclick="event.stopPropagation(); removeThiefFromGroup(${cardNum}, '${chipName}')" title="삭제">×</button>`;
         slot.appendChild(chip);
     });
 }
@@ -7005,10 +7464,10 @@ function generateMiniFocusCurveSvg() {
             ${xGradStops}
           </linearGradient>
         </defs>
-        
+
         <!-- X축 황금 몰입 수직 점선 (Vertical Dashed Lines) -->
         ${vLines}
-        
+
         <!-- 곡선 채움 및 라인 -->
         <path d="${areaPath}" fill="url(#miniCurveAreaGrad)" />
         <path d="${linePath}" fill="none" stroke="url(#miniLineXGrad)" stroke-width="2.3" stroke-linecap="round" />
@@ -7022,7 +7481,7 @@ function updateAll() {
     renderFieldChips();
     renderThiefBoard();
     renderCopBoard();
-    
+
     // 1. 시간 영토 (Step 1)
     const s1 = document.getElementById('sum_zone1');
     if(s1) {
@@ -7030,7 +7489,7 @@ function updateAll() {
         const sBed = ST.get('mytt_sleep_bed', -1);
         const wakeStr = sWake >= 0 ? `${String(Math.floor(sWake)).padStart(2,'0')}:00` : '';
         const bedStr = sBed >= 0 ? `${String(Math.floor(sBed)).padStart(2,'0')}:00` : '';
-        
+
         let sleepDisplay = '미설정';
         if (wakeStr && bedStr) {
             sleepDisplay = `${bedStr} 취침 ~ ${wakeStr} 기상`;
@@ -7069,9 +7528,9 @@ function updateAll() {
               <span>🍎 내 시간 농장</span>
               <span>주 ${freeNum}시간 <small style="font-size:10px; font-weight:normal;">(하루 ${dailyFree}h)</small></span>
             </div>
-            <div class="sum-row-item"><span class="sum-row-label">😴 수면:</span> <span class="sum-row-val">${sleepDisplay}</span></div>
-            <div class="sum-row-item"><span class="sum-row-label">⛰️ 고정:</span> <span class="sum-row-val">${sumFixed} <small style="color:var(--l-brown);">${fixedNamesStr}</small></span></div>
-            <div class="sum-row-item"><span class="sum-row-label">🌅 휴식:</span> <span class="sum-row-val">${sumRest} <small style="color:var(--l-brown);">${restFromStr}</small></span></div>
+            <div class="sum-row-item"><span class="sum-row-label">수면:</span> <span class="sum-row-val">${sleepDisplay}</span></div>
+            <div class="sum-row-item"><span class="sum-row-label">고정:</span> <span class="sum-row-val">${sumFixed} <small style="color:var(--l-brown);">${fixedNamesStr}</small></span></div>
+            <div class="sum-row-item"><span class="sum-row-label">휴식:</span> <span class="sum-row-val">${sumRest} <small style="color:var(--l-brown);">${restFromStr}</small></span></div>
         `;
     }
 
@@ -7081,7 +7540,7 @@ function updateAll() {
         let thoughts = ST.get('mytt_thoughts', []);
         let mainSeedId = ST.get('mytt_main_seed', 0);
         let mainItem = thoughts.find(t => t.id === mainSeedId);
-        
+
         const fName = ST.get('mytt_main_name', mainItem ? mainItem.text : '') || (mainItem ? mainItem.text : '');
         const fYear = ST.get('mytt_main_year', '2026');
         const fMonth = ST.get('mytt_main_month', '');
@@ -7113,7 +7572,7 @@ function updateAll() {
               <span><small style="font-size:10px; font-weight:normal;">${ddayStr}</small></span>
             </div>
             <div style="margin-top:2px;">
-              <span class="sum-row-label">📋 세부 실행 계획:</span>
+              <span class="sum-row-label">세부 실행 계획:</span>
               ${subItemsHtml}
             </div>
         `;
@@ -7157,7 +7616,7 @@ function updateAll() {
         const reviewDone = ST.get('mytt_review_done_tasks', '').trim();
         const reviewLesson = ST.get('mytt_review_lesson', '').trim();
         const achieve = reviewGood || reviewDone || reviewLesson || ST.get('mytt_review_achieve', '');
-        
+
         // gridData2에서 심긴 고유 할 일들과 각 시간(hours) 집계
         const taskHourMap = {};
         let totalPlantHours = 0;
@@ -7229,7 +7688,7 @@ function updateAll() {
         const cop2 = ST.get('mytt_cop_action_2', '').trim();
         const cop3 = ST.get('mytt_cop_action_3', '').trim();
         const legacyCop = ST.get('mytt_cop_strategy', '').trim();
-        
+
         let copList = [];
         if(cop1) copList.push(`🐢 시작: ${cop1}`);
         if(cop2) copList.push(`🌪️ 집중: ${cop2}`);
