@@ -847,6 +847,7 @@ let tasks = JSON.parse(localStorage.getItem('mytt_receipt_v3_tasks')) || DEFAULT
 let activeId = null;
 let timerInterval = null;
 let lastTick = null;
+let wakeLock = null;
 
 // 날짜 및 자동 날짜별 영수증 리셋 체크
 const now = new Date();
@@ -1076,17 +1077,70 @@ function renderList() {
   }
 }
 
-// ── 타이머 작동 로직 ──
+// ── 타이머 작동 로직 (모바일 화면 꺼짐 방지 & 백그라운드 시간 완전 동기화) ──
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (err) {
+      // 저전력 모드 등에서 거부될 수 있음
+    }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().then(() => { wakeLock = null; }).catch(() => {});
+  }
+}
+
+function syncElapsedTime() {
+  if (!activeId || !lastTick) return;
+  const nowTime = Date.now();
+  const delta = Math.floor((nowTime - lastTick) / 1000);
+  if (delta >= 1) {
+    const t = tasks.find(x => x.id === activeId);
+    if (t) {
+      t.seconds += delta;
+      lastTick += delta * 1000;
+      localStorage.setItem('mytt_receipt_last_tick', String(lastTick));
+      saveTasks();
+      updateTimerUI(t);
+    }
+  }
+}
+
+function updateTimerUI(t) {
+  const activeCard = document.querySelector('.item-card.measuring .item-time-display');
+  if (activeCard && t) activeCard.textContent = fmt(t.seconds);
+  
+  const totalSec = tasks.reduce((sum, item) => sum + item.seconds, 0);
+  const totalEl = document.getElementById('rTotalTime');
+  if (totalEl) totalEl.textContent = fmt(totalSec);
+  
+  const distractEl = document.getElementById('rDistractTime');
+  if (distractEl) distractEl.textContent = fmt(Math.round(totalSec * 0.25));
+
+  if (t) {
+    const name = t.name.trim() || t.placeholder.split('(')[0].trim();
+    document.title = `⏱️ [${fmt(t.seconds)}] ${name} - 나만의 마감공방`;
+  }
+}
+
 function toggleTimer(id) {
   if (activeId === id) {
     pauseTimer();
     showToast('측정을 멈췄습니다.');
   } else {
+    if (activeId) {
+      syncElapsedTime();
+    }
     activeId = id;
     startTimer();
     const t = tasks.find(x => x.id === id);
     const name = t.name.trim() || t.placeholder.split('(')[0].trim();
-    showToast(`[${name}] 측정 시작`);
+    showToast(`[${name}] 측정 시작 (화면이 꺼져도 계속 기록됩니다)`);
   }
   renderList();
 }
@@ -1094,34 +1148,29 @@ function toggleTimer(id) {
 function startTimer() {
   clearInterval(timerInterval);
   lastTick = Date.now();
+  localStorage.setItem('mytt_receipt_active_id', activeId);
+  localStorage.setItem('mytt_receipt_last_tick', String(lastTick));
+  requestWakeLock();
+  startTimerLoop();
+}
+
+function startTimerLoop() {
+  clearInterval(timerInterval);
   timerInterval = setInterval(() => {
-    const nowTime = Date.now();
-    const delta = Math.floor((nowTime - lastTick) / 1000);
-    if (delta >= 1) {
-      const t = tasks.find(x => x.id === activeId);
-      if (t) {
-        t.seconds += delta;
-        lastTick = nowTime;
-        saveTasks();
-        
-        // 전체 DOM을 다시 그리지 않고 시간 표시만 부드럽게 갱신 (입력 중 끊김 완벽 방지)
-        const activeCard = document.querySelector('.item-card.measuring .item-time-display');
-        if (activeCard) activeCard.textContent = fmt(t.seconds);
-        
-        const totalSec = tasks.reduce((sum, item) => sum + item.seconds, 0);
-        const totalEl = document.getElementById('rTotalTime');
-        if (totalEl) totalEl.textContent = fmt(totalSec);
-        
-        const distractEl = document.getElementById('rDistractTime');
-        if (distractEl) distractEl.textContent = fmt(Math.round(totalSec * 0.25));
-      }
-    }
+    syncElapsedTime();
   }, 500);
 }
 
 function pauseTimer() {
+  syncElapsedTime();
   clearInterval(timerInterval);
+  timerInterval = null;
   activeId = null;
+  lastTick = null;
+  localStorage.removeItem('mytt_receipt_active_id');
+  localStorage.removeItem('mytt_receipt_last_tick');
+  releaseWakeLock();
+  document.title = '나만의 마감공방 영수증';
   saveTasks();
   renderList();
 }
@@ -1342,9 +1391,49 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
 }
 
+// ── 백그라운드 / 화면 꺼짐 및 복귀 자동 동기화 ──
+function handleVisibilityOrResume() {
+  if (document.visibilityState === 'visible') {
+    if (activeId) {
+      syncElapsedTime();
+      requestWakeLock();
+      if (!timerInterval) {
+        startTimerLoop();
+      }
+    }
+  } else {
+    // 화면이 꺼지거나 백그라운드로 전환될 때 즉시 경과 시간 동기화 및 저장
+    if (activeId) {
+      syncElapsedTime();
+      saveTasks();
+    }
+  }
+}
+
+document.addEventListener('visibilitychange', handleVisibilityOrResume);
+window.addEventListener('focus', handleVisibilityOrResume);
+window.addEventListener('pageshow', handleVisibilityOrResume);
+
+// ── 세션 복원 (브라우저 리로드 또는 재오픈 시 측정 연속 복원) ──
+function restoreActiveSession() {
+  const savedActiveId = localStorage.getItem('mytt_receipt_active_id');
+  const savedLastTick = parseInt(localStorage.getItem('mytt_receipt_last_tick'), 10);
+  if (savedActiveId && savedLastTick && !isNaN(savedLastTick)) {
+    const t = tasks.find(x => x.id === savedActiveId);
+    if (t) {
+      activeId = savedActiveId;
+      lastTick = savedLastTick;
+      syncElapsedTime();
+      startTimer();
+      renderList();
+    }
+  }
+}
+
 // 최초 실행
 updatePullUpBadge();
 renderList();
+restoreActiveSession();
 </script>
 
 </body>
