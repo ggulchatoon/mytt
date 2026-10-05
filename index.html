@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마감 보스 레이드</title>
+<style>
+  @font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-weight: normal;
+  }
+  :root {
+    --bg: #1e1e1e; --ink: #f0f0f0; --muted: #aaaaaa; --line: #444;
+    --me: #4FB37A; --boss: #D32F2F; --warn: #E0564B; --card: #2a2a2a;
+    --accent: #9c27b0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DungGeunMo', monospace; }
+  body {
+    background: var(--bg); color: var(--ink);
+    height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
+  }
+  .app { width: min(1000px, 98vw); height: min(760px, 98vh); display: flex; flex-direction: column; gap: 10px; padding: 10px 0; }
+  
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--line); padding-bottom: 10px; }
+  .header-left { display: flex; flex-direction: column; gap: 4px; }
+  header h1 { font-size: 26px; color: var(--boss); text-shadow: 2px 2px 0px var(--accent); }
+  .project-name-input { 
+    font-size: 20px; background: transparent; border: none; color: #fff; 
+    border-bottom: 1px dashed var(--muted); outline: none; width: 320px; padding: 2px 0;
+  }
+  .project-name-input:focus { border-bottom-color: #fff; }
+  
+  .deadline { display: flex; gap: 8px; align-items: center; font-size: 16px; color: var(--ink); }
+  
+  input, select, button { 
+    font: inherit; border: 2px solid var(--line); border-radius: 0; 
+    padding: 6px 10px; background: #000; color: var(--ink); 
+  }
+  input[type="datetime-local"] { color-scheme: dark; }
+  button { cursor: pointer; text-transform: uppercase; transition: transform 0.1s; z-index: 20; position: relative; }
+  button:active { transform: translateY(2px); }
+  .btn-main { background: var(--accent); color: #fff; border-color: #fff; }
+  .btn-start { background: var(--me); color: #000; border-color: #fff; }
+  .btn-stop { background: var(--warn); color: #fff; border-color: #fff; }
+  .btn-done { background: var(--boss); color: #fff; border-color: #fff; }
+
+  /* 전장 */
+  .arena { 
+    background: var(--card); border: 4px solid var(--line); 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: relative; overflow: hidden; 
+    padding: 12px 20px; flex: 0 0 250px; /* 창 사이즈 줄여서 퀘스트 목록 영역 확보 */
+  }
+  .side { display: flex; flex-direction: column; gap: 6px; position: relative; z-index: 10; height: 100%; }
+  .side.boss { align-items: flex-end; text-align: right; }
+  .side.me { align-items: flex-start; text-align: left; }
+  
+  .name { font-size: 20px; color: #fff; }
+  .bar { width: 100%; height: 20px; background: #000; border: 2px solid var(--line); position: relative; }
+  .fill { height: 100%; transition: width 0.8s ease; } 
+  .me .fill { background: var(--me); }
+  .boss .fill { background: var(--boss); }
+  .hp-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; text-shadow: 1px 1px 0 #000; }
+  
+  .sprite-container { flex: 1; display: flex; align-items: center; width: 100%; }
+  .boss .sprite-container { justify-content: flex-end; }
+  
+  .sprite { image-rendering: pixelated; transition: transform 0.8s ease; }
+  
+  /* 캐릭터 크기 약 75%로 축소 (100px) */
+  .player-sprite { height: 100px; position: relative; left: 0; z-index: 15; }
+  
+  /* 보스 크기 약 75%로 축소 (스케일 제거, 120px 제한 유지) */
+  #bossSprite { width: 100%; max-height: 120px; object-fit: contain; object-position: right center; z-index: 15; position: relative; transform-origin: right center; }
+  
+  .hit { animation: flash 0.8s; } /* 피격 이펙트 느리게 */
+  @keyframes flash { 
+    0%, 100% { filter: brightness(1); transform: translateX(0); } 
+    50% { filter: brightness(3) invert(1); transform: translateX(10px); } 
+  }
+  
+  .attack-move { animation: dash 1s ease-in-out; }
+  @keyframes dash { 
+    0% { transform: translateX(0); }
+    40% { transform: translateX(350px) translateY(-20px); } /* 보스 쪽으로 돌진 */
+    60% { transform: translateX(350px) translateY(-20px) scale(1.1); filter: brightness(2); } 
+    100% { transform: translateX(0); }
+  }
+
+  .shake { animation: shake 0.8s; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-8px); } 80% { transform: translateX(8px); } }
+
+  .msg-box { 
+    position: absolute; left: 50%; top: 6px; transform: translateX(-50%);
+    background: #000; border: 2px solid #fff; padding: 4px 10px; font-size: 14px;
+    text-align: center; z-index: 20;
+  }
+
+  /* 잔잔한 불꽃/도트 애니메이션 */
+  .spark {
+    position: absolute;
+    background: var(--warn);
+    box-shadow: 0 0 4px var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-20px) translateX(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(280px) translateX(30px); opacity: 0; }
+  }
+
+  /* 퀘스트 목록 */
+  .quests { background: var(--card); border: 4px solid var(--line); padding: 12px; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; z-index: 20; position: relative;}
+  .add { display: flex; gap: 8px; }
+  .add input[type="text"] { flex: 1; }
+  .add input[type="number"] { width: 330px; }
+  .add input::placeholder { color: #888; font-size: 13px; }
+  
+  ul { list-style: none; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex: 1; padding-right: 5px; }
+  ul::-webkit-scrollbar { width: 8px; }
+  ul::-webkit-scrollbar-thumb { background: var(--line); }
+  
+  /* 아이템이 4.5개 정도 보이도록 높이 조절 */
+  li { display: flex; align-items: center; gap: 10px; padding: 12px; background: #000; border: 2px solid var(--line); flex-shrink: 0; height: 75px; }
+  li.active { border-color: var(--me); box-shadow: 0 0 5px var(--me); }
+  li.done { opacity: 0.4; }
+  
+  .t-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .t-name { font-size: 18px; }
+  .t-done-name { text-decoration: line-through; }
+  .t-meta { font-size: 14px; color: var(--muted); }
+  .t-time-active { color: var(--me); animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.5; } }
+  
+  .actions { display: flex; gap: 6px; }
+  .actions button { padding: 8px 12px; font-size: 14px; }
+  
+  .dmg-text { position: absolute; font-size: 40px; color: #fff; text-shadow: 2px 2px 0 red; pointer-events: none; animation: floatUp 1.2s forwards; z-index: 30; }
+  @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-60px); } }
+
+  /* 모달 */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 100; }
+  .overlay.show { display: flex; }
+  .modal { background: #000; border: 4px solid #fff; padding: 30px; text-align: center; display: flex; flex-direction: column; gap: 20px; min-width: 400px; max-height: 90vh; overflow-y: auto; }
+  .modal h2 { font-size: 40px; color: var(--boss); }
+  .modal h2.win { color: var(--me); }
+  
+  .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+  .report-table th, .report-table td { border: 1px solid var(--line); padding: 8px; text-align: left; }
+  .report-table th { background: #222; }
+  .report-total { font-weight: bold; font-size: 18px; margin-top: 10px; color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="header-left">
+      <h1>마감 보스 레이드</h1>
+      <input type="text" class="project-name-input" id="projectName" placeholder="프로젝트명 (예: 기획서 작성)">
+    </div>
+    <div class="deadline">
+      <span id="dlText">마감: </span>
+      <input type="datetime-local" id="dl">
+      <button class="btn-main" id="startRaidBtn">레이드 시작</button>
+    </div>
+  </header>
+
+  <section class="arena" id="arena">
+    <div class="msg-box" id="msgBox">마감을 정하고 할 일을 추가하세요</div>
+
+    <div class="side me">
+      <div class="name">PLAYER</div>
+      <div class="bar">
+        <div class="fill" id="meBar" style="width:100%"></div>
+        <div class="hp-text" id="meHpText">STAMINA 100%</div>
+      </div>
+      <div class="sprite-container">
+        <img src="assets/player.png" class="sprite player-sprite" id="playerSprite" alt="Player">
+      </div>
+    </div>
+
+    <div class="side boss">
+      <div class="name" id="bossNameDisplay">BOSS: 메가돈</div>
+      <div class="bar">
+        <div class="fill" id="bossBar" style="width:100%"></div>
+        <div class="hp-text" id="bossHpText">HP 100/100</div>
+      </div>
+      <div class="sprite-container" style="justify-content: flex-end;">
+        <img src="assets/boss.png" class="sprite" id="bossSprite" alt="Boss">
+      </div>
+    </div>
+  </section>
+
+  <section class="quests">
+    <form class="add" id="addForm">
+      <input type="text" id="taskIn" placeholder="할 일 입력 (예: 자료 확인하기)" autocomplete="off" required>
+      <input type="number" id="estIn" placeholder="예상 시간 (분 - 30분 이하 쪼개쓰기 권장)" min="1" required>
+      <button type="submit" id="addBtn">퀘스트 추가</button>
+    </form>
+    <ul id="list"></ul>
+  </section>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="resTitle"></h2>
+    <div id="resDesc" style="font-size: 18px;"></div>
+    <div id="resReport"></div>
+    <div class="report-total" id="resTotal"></div>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+      <button class="btn-main" style="padding:10px 20px; font-size:18px;" onclick="resetGame()">새로운 레이드 준비</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function createSparks() {
+    const arena = document.getElementById('arena');
+    // 불꽃 도트 이펙트 추가
+    for (let i = 0; i < 20; i++) {
+      let spark = document.createElement('div');
+      spark.className = 'spark';
+      spark.style.left = (Math.random() * 100) + '%';
+      spark.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      spark.style.animationDelay = (Math.random() * 5) + 's';
+      
+      const sizeOptions = ['2px', '4px', '6px'];
+      const size = sizeOptions[Math.floor(Math.random() * sizeOptions.length)];
+      spark.style.width = size;
+      spark.style.height = size;
+      
+      arena.appendChild(spark);
+    }
+  }
+  createSparks();
+
+  const KEY = 'mytt_boss_raid_v3';
+  let S = JSON.parse(localStorage.getItem(KEY)) || { 
+    started: false, 
+    deadline: null, 
+    startTime: null,
+    projectName: '',
+    tasks: [], 
+    bossMaxHp: 0,
+    ended: false 
+  };
+  
+  const $ = id => document.getElementById(id);
+  const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+
+  let timer = null;
+
+  function init() {
+    if (S.projectName) $('projectName').value = S.projectName;
+    if (S.deadline) $('dl').value = new Date(S.deadline - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    if (S.started && !S.ended) {
+      $('dl').disabled = true;
+      $('projectName').disabled = true;
+      $('startRaidBtn').textContent = '포기하기';
+      $('startRaidBtn').className = 'btn-stop';
+    }
+    
+    renderList();
+    renderArena();
+    if (S.started && !S.ended) {
+      timer = setInterval(gameLoop, 1000);
+    }
+  }
+
+  function formatTime(ms) {
+    if (ms < 0) ms = 0;
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    if (h > 0) return h + '시간 ' + m + '분 ' + s + '초';
+    return m + '분 ' + s + '초';
+  }
+
+  function getTaskActTime(t) {
+    let act = t.actTime;
+    if (t.status === 'active' && t.currentStart) {
+      act += (Date.now() - t.currentStart);
+    }
+    return act;
+  }
+
+  function getBossCurrentHp() {
+    let hp = 0;
+    S.tasks.forEach(t => {
+      if (t.status !== 'done') hp += t.estTime;
+    });
+    return hp;
+  }
+
+  function gameLoop() {
+    if (S.ended) return;
+    
+    const now = Date.now();
+    const timeLeft = S.deadline - now;
+    
+    const hasActive = S.tasks.some(t => t.status === 'active');
+    if (hasActive) {
+      renderList(true); 
+    }
+
+    renderArena();
+
+    if (timeLeft <= 0) {
+      endGame(false);
+    }
+  }
+
+  function renderArena() {
+    $('bossNameDisplay').textContent = "BOSS: " + (S.projectName || "미지의 보스");
+
+    if (!S.started) {
+      $('msgBox').textContent = '프로젝트명과 마감을 설정하고 레이드를 시작하세요!';
+      return;
+    }
+
+    const now = Date.now();
+    const totalTime = S.deadline - S.startTime;
+    const timeLeft = Math.max(0, S.deadline - now);
+    let mePct = totalTime > 0 ? (timeLeft / totalTime) * 100 : 0;
+    mePct = Math.min(100, Math.max(0, mePct));
+
+    $('meBar').style.width = mePct + '%';
+    $('meHpText').textContent = '남은 시간: ' + formatTime(timeLeft);
+    if (mePct < 20) $('meBar').style.background = 'var(--warn)';
+    else $('meBar').style.background = 'var(--me)';
+
+    const curHp = getBossCurrentHp();
+    const maxHp = S.bossMaxHp || 1;
+    let bossPct = (curHp / maxHp) * 100;
+    bossPct = Math.min(100, Math.max(0, bossPct));
+
+    $('bossBar').style.width = bossPct + '%';
+    $('bossHpText').textContent = 'HP ' + curHp + ' / ' + S.bossMaxHp;
+
+    if (curHp === 0 && S.tasks.length > 0) {
+      endGame(true);
+      return;
+    }
+
+    const msg = $('msgBox');
+    const hpDiff = bossPct - mePct;
+    if (curHp === 0) msg.textContent = '적의 숨통을 끊으세요!';
+    else if (hpDiff > 20) { msg.textContent = '보스가 너무 강합니다! 서두르세요!'; msg.style.color = 'var(--warn)'; }
+    else if (hpDiff < -20) { msg.textContent = '여유롭습니다. 계속 몰아붙이세요!'; msg.style.color = 'var(--me)'; }
+    else { msg.textContent = '팽팽한 접전입니다!'; msg.style.color = '#fff'; }
+  }
+
+  function renderList(onlyTime = false) {
+    const ul = $('list');
+    
+    if (onlyTime) {
+      S.tasks.forEach(t => {
+        const span = $('t-act-' + t.id);
+        if (span) {
+          const actMin = (getTaskActTime(t) / 60000).toFixed(1);
+          span.textContent = actMin;
+        }
+      });
+      return;
+    }
+
+    if (S.tasks.length === 0) {
+      ul.innerHTML = '<li style="justify-content:center; color:var(--muted); height: auto; padding: 20px;">추가된 퀘스트가 없습니다.</li>';
+      return;
+    }
+
+    ul.innerHTML = S.tasks.map(t => {
+      const isDone = t.status === 'done';
+      const isActive = t.status === 'active';
+      const actMin = (getTaskActTime(t) / 60000).toFixed(1);
+      
+      let buttons = '';
+      if (!isDone) {
+        if (!isActive) {
+          buttons += `<button class="btn-start" onclick="toggleTask(${t.id})">시작</button>`;
+        } else {
+          buttons += `<button class="btn-stop" onclick="toggleTask(${t.id})">일시정지</button>`;
+        }
+        buttons += `<button class="btn-done" onclick="finishTask(${t.id})">완료 (공격!)</button>`;
+      }
+      
+      return `
+        <li class="${isActive ? 'active' : ''} ${isDone ? 'done' : ''}">
+          <div class="t-info">
+            <div class="t-name ${isDone ? 't-done-name' : ''}">${t.text.replace(/</g, '&lt;')}</div>
+            <div class="t-meta">
+              예상: ${t.estTime}분 | 
+              실제: <span id="t-act-${t.id}" class="${isActive ? 't-time-active' : ''}">${actMin}</span>분
+            </div>
+          </div>
+          <div class="actions">
+            ${buttons}
+          </div>
+        </li>
+      `;
+    }).join('');
+  }
+
+  $('projectName').addEventListener('input', (e) => {
+    if (!S.started) {
+      S.projectName = e.target.value;
+      save();
+      renderArena();
+    }
+  });
+
+  $('startRaidBtn').onclick = () => {
+    if (S.started && !S.ended) {
+      if (confirm('정말 레이드를 포기하시겠습니까?')) endGame(false);
+      return;
+    }
+    
+    const dlVal = $('dl').value;
+    if (!dlVal) return alert('마감 시간을 설정해주세요.');
+    const t = new Date(dlVal).getTime();
+    if (t <= Date.now()) return alert('마감은 미래 시간이어야 합니다.');
+    
+    if (S.tasks.length === 0) return alert('최소 1개의 퀘스트를 추가해야 시작할 수 있습니다.');
+
+    S.started = true;
+    S.ended = false;
+    S.deadline = t;
+    S.startTime = Date.now();
+    S.bossMaxHp = getBossCurrentHp();
+    save();
+    
+    $('dl').disabled = true;
+    $('projectName').disabled = true;
+    $('startRaidBtn').textContent = '포기하기';
+    $('startRaidBtn').className = 'btn-stop';
+    
+    renderList();
+    renderArena();
+    timer = setInterval(gameLoop, 1000);
+  };
+
+  $('addForm').onsubmit = e => {
+    e.preventDefault();
+    const text = $('taskIn').value.trim();
+    const est = parseInt($('estIn').value);
+    if (!text || !est) return;
+
+    S.tasks.push({ 
+      id: Date.now(), 
+      text, 
+      estTime: est, 
+      actTime: 0, 
+      currentStart: null, 
+      status: 'pending' 
+    });
+    
+    if (S.started) {
+      S.bossMaxHp += est;
+      // 보스 힐 이펙트
+      showDamage('+' + est + ' HP (강화!)', 'var(--me)');
+    }
+
+    $('taskIn').value = '';
+    $('estIn').value = '';
+    save();
+    renderList();
+    renderArena();
+    
+    // 스크롤 맨 아래로
+    const list = $('list');
+    list.scrollTop = list.scrollHeight;
+  };
+
+  window.toggleTask = (id) => {
+    if (!S.started) return alert('레이드를 먼저 시작해주세요!');
+    
+    const task = S.tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    if (task.status === 'active') {
+      task.actTime += (Date.now() - task.currentStart);
+      task.currentStart = null;
+      task.status = 'pending';
+    } else {
+      // Pause other active tasks correctly
+      S.tasks.forEach(t => {
+        if (t.status === 'active') {
+          t.actTime += (Date.now() - t.currentStart);
+          t.currentStart = null;
+          t.status = 'pending';
+        }
+      });
+      task.status = 'active';
+      task.currentStart = Date.now();
+    }
+    save();
+    renderList();
+  };
+
+  window.finishTask = (id) => {
+    if (!S.started) return alert('레이드를 먼저 시작해주세요!');
+    
+    const task = S.tasks.find(t => t.id === id);
+    if (!task) return;
+
+    if (task.status === 'active') {
+      task.actTime += (Date.now() - task.currentStart);
+      task.currentStart = null;
+    }
+    task.status = 'done';
+    save();
+    
+    renderList();
+    
+    // 공격 이펙트
+    playAttackAnim(task.estTime);
+  };
+
+  function playAttackAnim(dmg) {
+    const player = $('playerSprite');
+    const boss = $('bossSprite');
+    const arena = $('arena');
+    
+    // 돌진 애니메이션
+    player.classList.add('attack-move');
+    
+    // 돌진 중간쯤(400ms)에 타격
+    setTimeout(() => {
+      boss.src = 'assets/boss_hurt.png';
+      boss.classList.add('hit');
+      arena.classList.add('shake');
+      showDamage('-' + dmg);
+      
+      // 800ms 뒤 복구
+      setTimeout(() => {
+        boss.src = 'assets/boss.png';
+        boss.classList.remove('hit');
+        arena.classList.remove('shake');
+        renderArena(); // Update HP bar after hit
+      }, 800);
+    }, 400);
+
+    setTimeout(() => {
+      player.classList.remove('attack-move');
+    }, 1000);
+  }
+
+  function showDamage(text, color = 'red') {
+    const d = document.createElement('div');
+    d.className = 'dmg-text';
+    d.textContent = text;
+    d.style.left = '65%';
+    d.style.top = '30%';
+    d.style.textShadow = '3px 3px 0 ' + (color === 'red' ? '#000' : '#fff');
+    d.style.color = color;
+    $('arena').appendChild(d);
+    setTimeout(() => d.remove(), 1200);
+  }
+
+  function endGame(win) {
+    S.ended = true;
+    clearInterval(timer);
+    
+    S.tasks.forEach(t => {
+      if (t.status === 'active') {
+        t.actTime += (Date.now() - t.currentStart);
+        t.currentStart = null;
+        t.status = 'pending';
+      }
+    });
+    save();
+    
+    const title = $('resTitle');
+    title.textContent = win ? '🎉 레이드 성공! 보스 토벌 🎉' : '💀 레이드 실패... 시간 초과 💀';
+    title.className = win ? 'win' : '';
+    
+    $('resDesc').textContent = win ? '마감 시간 전에 모든 퀘스트를 완료했습니다!' : '보스를 물리치지 못했습니다. 하지만 여기까지 온 것도 대단합니다.';
+    
+    let totalEst = 0;
+    let totalAct = 0;
+    
+    let table = '<table class="report-table"><tr><th>퀘스트</th><th>상태</th><th>예상 시간</th><th>실제 걸린 시간</th><th>차이</th></tr>';
+    S.tasks.forEach(t => {
+      const isDone = t.status === 'done';
+      const actMin = (t.actTime / 60000);
+      totalEst += t.estTime;
+      totalAct += actMin;
+      
+      const diff = actMin - t.estTime;
+      let diffStr = '';
+      if (diff > 0) diffStr = `<span style="color:var(--warn)">+${diff.toFixed(1)}분 (초과)</span>`;
+      else if (diff < 0) diffStr = `<span style="color:var(--me)">${diff.toFixed(1)}분 (단축)</span>`;
+      else diffStr = '정확함';
+      
+      table += `<tr>
+        <td>${t.text.replace(/</g, '&lt;')}</td>
+        <td>${isDone ? '완료' : '미완료'}</td>
+        <td>${t.estTime}분</td>
+        <td>${actMin.toFixed(1)}분</td>
+        <td>${diffStr}</td>
+      </tr>`;
+    });
+    table += '</table>';
+    
+    $('resReport').innerHTML = table;
+    
+    const totalDiff = totalAct - totalEst;
+    let totalDiffStr = totalDiff > 0 ? `(${totalDiff.toFixed(1)}분 초과)` : `(${Math.abs(totalDiff).toFixed(1)}분 단축)`;
+    $('resTotal').innerHTML = `총 예상: ${totalEst}분 <br> 총 실제: ${totalAct.toFixed(1)}분 <br> ${totalDiffStr}`;
+    
+    $('overlay').classList.add('show');
+  }
+
+  window.resetGame = () => {
+    S = { started: false, deadline: null, startTime: null, projectName: '', tasks: [], bossMaxHp: 0, ended: false };
+    save();
+    $('dl').disabled = false;
+    $('projectName').disabled = false;
+    $('projectName').value = '';
+    $('dl').value = '';
+    $('startRaidBtn').textContent = '레이드 시작';
+    $('startRaidBtn').className = 'btn-main';
+    $('overlay').classList.remove('show');
+    $('bossSprite').src = 'assets/boss.png';
+    renderList();
+    renderArena();
+  };
+
+  init();
+</script>
+</body>
+</html>
