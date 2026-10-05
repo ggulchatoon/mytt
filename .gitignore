@@ -1,0 +1,5 @@
+.DS_Store
+**/.DS_Store
+*.psd
+statusline.sh
+node_modules/
