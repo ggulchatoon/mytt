@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>mytt.kr 인스타그램 피드 & 프로필 그리드 (마스터 에디션)</title>
+  
+  <!-- Pretendard, Gowun Batang, JetBrains Mono, Gaegu, Nanum Myeongjo Fonts -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=JetBrains+Mono:wght@500;700;800&family=Gaegu:wght@400;700&family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Warm-Tech Atelier Palette */
+      --bg-canvas: #ebe6dc;
+      --bg-desktop: #ebe6dc;
+      --card-paper: #fbf9f4;
+      --card-white: #ffffff;
+      --paper-cream: #faf8f3;
+      --paper-border: #ded8cb;
+      --frame-border: #ded7cb;
+      --frame-subtle: #eae4d8;
+      --box-linen: #f5f1e7;
+      --box-border: #e6dfd2;
+      --ink-charcoal: #1c1e21;
+      --ink-black: #141518;
+      --charcoal: #2c2f35;
+      --text-body: #3c4048;
+      --text-sub: #5a5e67;
+      --text-muted: #8c887e;
+      --atelier-slate: #2d3b55;
+      --warm-wood: #a6723e;
+      --soft-sage: #586b58;
+      --ig-border: #ded8cd;
+      --accent-orange: #ff5500;
+      --accent-indigo: #4338ca;
+      --accent-soft: rgba(0, 0, 0, 0.04);
+
+      /* Typography Hierarchy */
+      --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-serif: "Gowun Batang", serif;
+      --font-mono: "JetBrains Mono", monospace;
+      --font-hand: "Gaegu", cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-canvas);
+      color: var(--ink-charcoal);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 12px 80px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Simulator Mode Pill Bar */
+    .top-meta-control-bar {
+      width: 100%;
+      max-width: 450px;
+      background: var(--ink-charcoal);
+      color: #ffffff;
+      padding: 9px 16px;
+      border-radius: 16px 16px 0 0;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .meta-control-pill {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    /* Mobile Phone Simulator Shell */
+    .mobile-simulator {
+      width: 100%;
+      max-width: 450px;
+      background: #ffffff;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 24px 60px rgba(45, 40, 30, 0.18), 0 4px 16px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 4px solid var(--ink-charcoal);
+      border-top: none;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* App Top Bar */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      padding: 13px 18px 11px;
+      border-bottom: 1px solid var(--ig-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .app-header .logo-id {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-charcoal);
+    }
+    .verified-badge {
+      width: 15px;
+      height: 15px;
+      background: var(--ink-charcoal);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .header-icons {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-charcoal);
+      transition: transform 0.15s ease;
+    }
+    .icon-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Profile Header Info */
+    .profile-section {
+      padding: 16px 18px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--ig-border);
+    }
+    .profile-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .avatar-wrapper {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+    }
+    .avatar-ring {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: linear-gradient(45deg, #d4a34b, #ba6d3e, #8c4843, #5a4b75);
+    }
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .avatar-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .profile-stats {
+      display: flex;
+      flex: 1;
+      justify-content: space-around;
+      text-align: center;
+    }
+    .stat-box {
+      cursor: pointer;
+    }
+    .stat-box .count {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink-charcoal);
+    }
+    .stat-box .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .profile-bio h1 {
+      font-size: 13.5px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--ink-charcoal);
+    }
+    .profile-bio p {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--charcoal);
+    }
+    .profile-bio-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-charcoal);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 5px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .profile-actions-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .btn-profile {
+      flex: 1;
+      padding: 7px 0;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid var(--paper-border);
+      background: #faf8f5;
+      color: var(--ink-charcoal);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-profile:hover {
+      background: #f0ece3;
+    }
+    .btn-profile.primary {
+      background: var(--ink-charcoal);
+      color: #ffffff;
+      border-color: var(--ink-charcoal);
+    }
+    .btn-profile.primary:hover {
+      background: #2d3b55;
+    }
+
+    /* Story Highlights */
+    .story-highlights-bar {
+      padding: 12px 16px;
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--ig-border);
+      background: #ffffff;
+    }
+    .story-highlights-bar::-webkit-scrollbar {
+      display: none;
+    }
+    .highlight-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .highlight-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1.5px solid var(--paper-border);
+      padding: 2.5px;
+      background: #ffffff;
+    }
+    .highlight-circle-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #f4efe6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: var(--ink-charcoal);
+    }
+    .highlight-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--charcoal);
+    }
+
+    /* Profile Tabs: Grid vs Feed Switcher */
+    .profile-tabs-bar {
+      display: flex;
+      background: #ffffff;
+      border-top: 1px solid var(--ig-border);
+      border-bottom: 1px solid var(--ig-border);
+      position: sticky;
+      top: 45px;
+      z-index: 95;
+    }
+    .profile-tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: none;
+      border: none;
+      border-bottom: 2.5px solid transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .profile-tab-btn.active {
+      color: var(--ink-charcoal);
+      border-bottom-color: var(--ink-charcoal);
+    }
+
+    /* 3-Column Profile Grid View */
+    .profile-grid-view {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: #ded7cb;
+      padding-bottom: 2px;
+    }
+    .profile-grid-view.active {
+      display: grid;
+    }
+    .grid-post-thumb {
+      aspect-ratio: 1 / 1;
+      background: #faf8f3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 7px 8px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.15s ease;
+    }
+    .grid-post-thumb:hover {
+      background: #f0ece3;
+    }
+    .grid-badge-top {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 9px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      background: rgba(20, 21, 24, 0.78);
+      color: #ffffff;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    .grid-thumb-tag {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .grid-thumb-title {
+      font-family: var(--font-serif);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.32;
+      color: var(--ink-charcoal);
+      word-break: keep-all;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Feed Container (Continuous Scroll) */
+    .feed-container {
+      display: block;
+    }
+    .feed-guide-bar {
+      padding: 9px 16px;
+      background: #f2ede2;
+      border-bottom: 1px solid var(--frame-border);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #6d6455;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .feed-section-divider {
+      background: #f4efe6;
+      padding: 9px 16px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #6d6455;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--ig-border);
+      border-bottom: 1px solid var(--ig-border);
+    }
+
+    /* ============================================================
+       V2 POST & CAROUSEL STYLES (Strict 4:5 Golden Ratio)
+       ============================================================ */
+    .feed-post-unit {
+      display: block;
+      background: #ffffff;
+      border-bottom: 8px solid #ece7dd;
+    }
+    .post-author-bar {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .author-info-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .author-mini-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #141518;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 11px;
+    }
+    .author-name-meta .id {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink-black);
+      line-height: 1.2;
+    }
+    .author-name-meta .sub-loc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+    .series-badge-pill {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      background: #f0ebe1;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--paper-border);
+      color: var(--charcoal);
+    }
+    .carousel-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      background: var(--paper-cream);
+      overflow: hidden;
+      user-select: none;
+    }
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+    }
+    .carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+    .slide-item {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 22px;
+      box-sizing: border-box;
+      background: var(--paper-cream);
+    }
+    .slide-frame {
+      width: 100%;
+      height: 100%;
+      border: 1.5px solid var(--paper-border);
+      border-radius: 18px;
+      padding: 28px 22px 24px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 4px 16px rgba(60, 50, 40, 0.04);
+      box-sizing: border-box;
+    }
+    .slide-page-badge {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: rgba(20, 21, 24, 0.85);
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      z-index: 10;
+    }
+    .carousel-nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--paper-border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 20;
+      transition: all 0.15s;
+    }
+    .carousel-nav-arrow:hover {
+      background: #ffffff;
+      transform: translateY(-50%) scale(1.08);
+    }
+    .carousel-nav-arrow.prev { left: 10px; }
+    .carousel-nav-arrow.next { right: 10px; }
+    .slide-header-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .slide-cover-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.38;
+      letter-spacing: -0.6px;
+      color: var(--ink-black);
+      margin-bottom: 12px;
+      word-break: keep-all;
+    }
+    .slide-body-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.42;
+      color: var(--ink-black);
+      margin-bottom: 12px;
+      word-break: keep-all;
+    }
+    .slide-lead-copy {
+      font-size: 13.5px;
+      color: var(--charcoal);
+      line-height: 1.6;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+    .mock-visual-box {
+      border: 1px solid var(--paper-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: #faf8f4;
+      margin: 10px 0;
+    }
+    .mock-visual-box.neobrutal {
+      border: 2px solid var(--ink-black);
+      background: #ffffff;
+      box-shadow: 3px 3px 0px var(--ink-black);
+    }
+    .mock-visual-box.dark-indigo {
+      background: #171b26;
+      color: #ffffff;
+      border: 1px solid #333a4d;
+    }
+    .mock-visual-box.minimal-bw {
+      border: 1px solid var(--ink-black);
+      background: #ffffff;
+    }
+    .visual-quote-bubble {
+      border-left: 2.5px solid var(--ink-black);
+      padding: 8px 12px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--charcoal);
+      background: #ffffff;
+      border-radius: 0 6px 6px 0;
+      margin: 8px 0;
+    }
+    .slide-bottom-brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid #f0ece3;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .slide-cta-pill {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 800;
+      background: var(--ink-black);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .post-action-bar {
+      padding: 12px 16px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .action-icons-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .action-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-black);
+      transition: transform 0.15s ease;
+    }
+    .action-icon-btn:active {
+      transform: scale(0.85);
+    }
+    .action-icon-btn.liked svg path {
+      fill: #ed4956;
+      stroke: #ed4956;
+    }
+    .action-icon-btn.saved svg path {
+      fill: var(--ink-black);
+    }
+    .carousel-dots-row {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding-bottom: 6px;
+    }
+    .dot-node {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #d6d0c4;
+      transition: all 0.2s;
+    }
+    .dot-node.active {
+      background: var(--ink-black);
+      width: 14px;
+      border-radius: 3px;
+    }
+    .post-likes-count {
+      padding: 0 16px 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink-black);
+    }
+    .post-caption-box {
+      padding: 0 16px 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-black);
+    }
+    .caption-author-id {
+      font-weight: 800;
+      margin-right: 6px;
+    }
+    .caption-content-text {
+      color: var(--charcoal);
+      word-break: keep-all;
+    }
+    .caption-content-text.collapsed {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .btn-toggle-caption {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding-top: 4px;
+      display: inline-block;
+    }
+    .caption-hashtags {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #3b5998;
+      line-height: 1.5;
+      word-break: break-all;
+    }
+    .caption-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ============================================================
+       V1 POST & CAROUSEL STYLES
+       ============================================================ */
+    .feed-post {
+      border-bottom: 8px solid #ece7dd;
+      background: #ffffff;
+      display: block;
+    }
+    .post-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .post-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .user-name-box .name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-charcoal);
+    }
+    .user-name-box .tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .post-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: #eee8dc;
+      color: #585145;
+      border: 1px solid #dfd8cb;
+    }
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      background: var(--card-paper);
+      overflow: hidden;
+    }
+    .card-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 22px 20px;
+      background: var(--card-paper);
+      user-select: none;
+      box-sizing: border-box;
+    }
+    .frame-box {
+      width: 100%;
+      height: 100%;
+      border: 1.5px solid var(--frame-border);
+      border-radius: 20px;
+      padding: 34px 26px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      box-sizing: border-box;
+      position: relative;
+      background: #ffffff;
+      box-shadow: 0 4px 16px rgba(90, 80, 65, 0.04);
+    }
+    .cover-title {
+      font-family: "Gowun Batang", serif;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: -0.5px;
+      color: var(--ink-charcoal);
+      margin-bottom: 22px;
+      word-break: keep-all;
+    }
+    .cover-title .accent-word {
+      color: var(--warm-wood);
+      text-decoration: underline;
+      text-decoration-color: #d4a34b;
+      text-underline-offset: 6px;
+    }
+    .slide-title {
+      font-family: "Gowun Batang", serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--ink-charcoal);
+      margin-bottom: 20px;
+      word-break: keep-all;
+    }
+    .image-slot {
+      width: 100%;
+      flex: 1;
+      max-height: 220px;
+      background: var(--box-linen);
+      border: 1px dashed var(--box-border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 20px;
+      padding: 16px;
+      overflow: hidden;
+    }
+    .image-slot img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .slot-desc {
+      font-size: 11px;
+      color: #8c8375;
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .box-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-body);
+      background: var(--card-paper);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--box-border);
+      word-break: keep-all;
+      width: 100%;
+      text-align: left;
+    }
+    .box-text.center {
+      text-align: center;
+    }
+    .brand-watermark {
+      position: absolute;
+      bottom: 12px;
+      font-size: 10px;
+      color: #b5ad9e;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--frame-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--ink-charcoal);
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
+    }
+    .nav-arrow:hover {
+      background: #ffffff;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .nav-prev { left: 10px; }
+    .nav-next { right: 10px; }
+    .post-actions-bar {
+      padding: 12px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .action-left {
+      display: flex;
+      gap: 16px;
+      font-size: 20px;
+      color: var(--ink-charcoal);
+    }
+    .carousel-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #d4cec2;
+      transition: all 0.2s ease;
+    }
+    .dot.active {
+      background: var(--atelier-slate);
+      width: 7px;
+      height: 7px;
+    }
+    .caption-author {
+      font-weight: 700;
+      color: var(--ink-charcoal);
+      margin-right: 6px;
+    }
+    .caption-text {
+      color: var(--ink-charcoal);
+    }
+    .caption-tags {
+      color: var(--atelier-slate);
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .post-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    /* Bottom Nav Bar */
+    .mobile-bottom-bar {
+      padding: 12px 24px 14px;
+      border-top: 1px solid var(--ig-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    /* Notification Toast */
+    .sim-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(20, 21, 24, 0.92);
+      color: #ffffff;
+      padding: 9px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 1000;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .sim-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Controller Guide -->
+  <aside class="top-meta-control-bar">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="meta-control-pill">MASTER EDITION</span>
+      <span>mytt 인스타그램 프리뷰</span>
+    </div>
+    <span style="font-size:11px; color:#aaa;">피드 &amp; 그리드 뷰</span>
+  </aside>
+
+  <!-- Mobile Simulator Phone Container -->
+  <main class="mobile-simulator">
+
+    <!-- Top Instagram App Bar -->
+    <header class="app-header">
+      <div class="logo-id">
+        <span>mytt.kr</span>
+        <span class="verified-badge">✓</span>
+      </div>
+      <div class="header-icons">
+        <button class="icon-btn" onclick="triggerToast('좋아요 활동 알림 내역입니다.')" aria-label="활동 알림">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+        <button class="icon-btn" onclick="triggerToast('1기 문의 DM 채팅창이 열립니다.')" aria-label="메시지">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Profile Header Info -->
+    <section class="profile-section">
+      <div class="profile-top-row">
+        <div class="avatar-wrapper">
+          <div class="avatar-ring">
+            <div class="avatar-inner">
+              <img src="mytt_live_avatar.png" alt="mytt profile">
+            </div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-box" onclick="setProfileView('grid')">
+            <div class="count">8</div>
+            <div class="label">게시물</div>
+          </div>
+          <div class="stat-box" onclick="triggerToast('팔로워 24,000명')">
+            <div class="count">2.4만</div>
+            <div class="label">팔로워</div>
+          </div>
+          <div class="stat-box" onclick="triggerToast('팔로잉 18명')">
+            <div class="count">18</div>
+            <div class="label">팔로잉</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-bio">
+        <h1>mytt ㅣ 나만의 시간관리툴 제작소</h1>
+        <p>
+          my time table<br />
+          내게 필요한 기능만 쏙<br />
+          바이브코딩으로 만드는 나만의 시간관리툴
+        </p>
+        <a href="#link" class="profile-bio-link" onclick="triggerToast('프로필 링크: mytt_sales_page_v12.html로 연결됩니다'); return false;">
+          linktr.ee/mytt_workshop
+        </a>
+      </div>
+
+      <div class="profile-actions-row">
+        <button class="btn-profile primary" onclick="triggerToast('팔로잉 중입니다.')">팔로잉</button>
+        <button class="btn-profile" onclick="triggerToast('1기 문의 DM 채팅창이 열립니다.')">메시지</button>
+        <button class="btn-profile" onclick="triggerToast('공유 링크가 클립보드에 복사되었습니다.')">공유</button>
+      </div>
+    </section>
+
+    <!-- Story Highlights Row -->
+    <nav class="story-highlights-bar">
+      <div class="highlight-item" onclick="triggerToast('스토리: [실물 툴 4종] 아카이브')">
+        <div class="highlight-circle"><div class="highlight-circle-inner">툴4종</div></div>
+        <span class="highlight-label">실물툴4종</span>
+      </div>
+      <div class="highlight-item" onclick="triggerToast('스토리: [0기 100% 완주] 후기 모음')">
+        <div class="highlight-circle"><div class="highlight-circle-inner">후기</div></div>
+        <span class="highlight-label">0기후기</span>
+      </div>
+      <div class="highlight-item" onclick="triggerToast('스토리: [꿀차 x 깨굴] 튜터 소개')">
+        <div class="highlight-circle"><div class="highlight-circle-inner">튜터</div></div>
+        <span class="highlight-label">꿀차x깨굴</span>
+      </div>
+      <div class="highlight-item" onclick="triggerToast('스토리: [Claude 3만원 페이백] 안내')">
+        <div class="highlight-circle"><div class="highlight-circle-inner">환급</div></div>
+        <span class="highlight-label">100%환급</span>
+      </div>
+      <div class="highlight-item" onclick="triggerToast('스토리: [24시 온라인 공방] 랜선 아지트')">
+        <div class="highlight-circle"><div class="highlight-circle-inner">공방</div></div>
+        <span class="highlight-label">바디더블링</span>
+      </div>
+    </nav>
+
+    <!-- Profile Tabs: Grid vs Feed Switcher -->
+    <nav class="profile-tabs-bar" id="profileTabs">
+      <button class="profile-tab-btn active" id="btnTabFeed" onclick="setProfileView('feed')" aria-label="피드 뷰">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        <span>피드 (스크롤)</span>
+      </button>
+      <button class="profile-tab-btn" id="btnTabGrid" onclick="setProfileView('grid')" aria-label="그리드 뷰">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>그리드</span>
+      </button>
+    </nav>
+
+    <!-- 3-Column Profile Grid View Mode -->
+    <section class="profile-grid-view" id="profileGrid">
+      <!-- Grid 1: 데스크테리어 3선 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v2-1')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">SERIES 01</div>
+        <div class="grid-thumb-title">모니터 구석 비밀 웹앱 3선</div>
+      </div>
+
+      <!-- Grid 2: 노션 자책감 탈출 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v2-2')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>7P</span>
+        </div>
+        <div class="grid-thumb-tag">SERIES 02</div>
+        <div class="grid-thumb-title">노션 정리하다 하루 다 보낸 사람</div>
+      </div>
+
+      <!-- Grid 3: 귀여운 시간관리 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v2-3')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">SERIES 03</div>
+        <div class="grid-thumb-title">시간관리가 귀여우면 일어나는 일</div>
+      </div>
+
+      <!-- Grid 4: 문과생 바이브코딩 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v2-4')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">SERIES 04</div>
+        <div class="grid-thumb-title">문과생 90% 첫날 웹 배포 비결</div>
+      </div>
+
+      <!-- Grid 5: 모닝 베이커리 제작기 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v1-1')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">MAKING LOG</div>
+        <div class="grid-thumb-title">바이브코딩으로 나만의 시간관리 툴</div>
+      </div>
+
+      <!-- Grid 6: 5대 핵심 문제 뇌과학 맵 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v1-2')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">RESEARCH</div>
+        <div class="grid-thumb-title">5대 핵심 문제와 뇌과학 솔루션 맵</div>
+      </div>
+
+      <!-- Grid 7: 4대 시각화 웹앱 -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v1-3')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">WEB APPS</div>
+        <div class="grid-thumb-title">실행력 300% 올려주는 4대 웹앱</div>
+      </div>
+
+      <!-- Grid 8: 0기 완주율 100% -->
+      <div class="grid-post-thumb" onclick="scrollToPost('post-v1-4')">
+        <div class="grid-badge-top">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="13" height="13" rx="2"></rect><path d="M8 21h11a2 2 0 0 0 2-2V8"></path></svg>
+          <span>6P</span>
+        </div>
+        <div class="grid-thumb-tag">CLASS STORY</div>
+        <div class="grid-thumb-title">우리가 0기 완주율 100%를 만든 비결</div>
+      </div>
+    </section>
+
+    <!-- Feed Container (Continuous Scroll) -->
+    <div class="feed-container" id="feedContainer">
+      <div class="feed-guide-bar">
+        <span>Warm-Tech Atelier Edition · 아래로 스크롤하여 탐색</span>
+        <span>카드뉴스 8종 연속 피드</span>
+      </div>
+
+      <!-- ==========================================
+           1. V2 시리즈 카드뉴스 4종 (메인 상단 배치)
+           ========================================== -->
+
+      <article class="feed-post-unit" id="post-v2-1">
+        <!-- Post Header -->
+        <div class="post-author-bar">
+          <div class="author-info-left">
+            <div class="author-mini-avatar">mytt</div>
+            <div class="author-name-meta">
+              <div class="id">mytt.kr</div>
+              <div class="sub-loc">책상 위 감성 데스크테리어 공방</div>
+            </div>
+          </div>
+          <span class="series-badge-pill">SERIES 01</span>
+        </div>
+
+        <!-- 4:5 Carousel Slider -->
+        <div class="carousel-stage">
+          <div class="slide-page-badge" id="badge-p1">1/6</div>
+          <button class="carousel-nav-arrow prev" onclick="scrollSlide('track-p1', -1)" aria-label="이전">&#8249;</button>
+          <button class="carousel-nav-arrow next" onclick="scrollSlide('track-p1', 1)" aria-label="다음">&#8250;</button>
+
+          <div class="carousel-track" id="track-p1" onscroll="updateSlideIndicator('track-p1', 'badge-p1', 'dots-p1')">
+            <!-- Slide 1: Cover -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">DESKTERIOR ESSENTIAL // 01</div>
+                  <div class="slide-cover-title">
+                    우리가 책상 위에<br />
+                    예쁜 조명을 두는 것처럼.
+                  </div>
+                  <p class="slide-lead-copy">
+                    엑셀 표 버리고 모니터 구석에 띄워둔<br />
+                    프리랜서들의 <strong>'비밀 데스크테리어 웹앱'</strong> 3선.
+                  </p>
+                  <div class="mock-visual-box">
+                    <div style="font-family:var(--font-mono); font-size:11px; font-weight:800; color:var(--text-muted); margin-bottom:4px;">WORKSPACE AMBIENCE</div>
+                    <div style="font-size:13px; font-weight:700; color:var(--ink-black);">원목 데스크 × 미니멀 브라우저 창</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>MYTT TIME ATELIER</span>
+                  <span class="slide-cta-pill">옆으로 넘겨보기 &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Empathy / Contrast -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">PAIN &amp; CONTRAST</div>
+                  <div class="slide-body-title">
+                    모니터 화면도<br />
+                    내 방 인테리어니까요.
+                  </div>
+                  <p class="slide-lead-copy">
+                    회사에서 종일 보던 지라, 엑셀, 빽빽한 노션…<br />
+                    퇴근 후 내 개인 작업을 할 때까지 그런 딱딱한 화면을 마주하고 싶진 않잖아요.
+                  </p>
+                  <div class="mock-visual-box">
+                    <div style="font-size:12px; color:var(--text-sub); margin-bottom:6px;">차가운 스프레드시트 ❌</div>
+                    <div style="font-size:13px; font-weight:800; color:var(--ink-black);">내 방 분위기에 맞춘 감성 웹앱 ⭕</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>MYTT PERSPECTIVE</span>
+                  <span>2/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Case 1 (이*혁 작곡 레슨 보드) -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">CASE 01 // NEOBRUTALISM</div>
+                  <div class="slide-body-title">
+                    7년 차 프리랜서<br />
+                    이*혁님의 레슨 트래커
+                  </div>
+                  <div class="mock-visual-box neobrutal">
+                    <div style="font-family:var(--font-mono); font-size:11px; font-weight:900;">LESSON BOARD &amp; D-DAY</div>
+                    <div style="font-size:12px; margin-top:4px;">피아노 재즈 · 진도 8/12강 · 결제 D-3</div>
+                  </div>
+                  <div class="visual-quote-bubble">
+                    "학생들 일정과 결제일이 한눈에 보여요. 엑셀 대신 작업실 무드에 맞춘 네오브루탈리즘 디자인을 입히니 속이 시원합니다."
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>CREATOR SPOTLIGHT</span>
+                  <span>3/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 4: Case 2 (임*수 야간 공방 모드) -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">CASE 02 // INDIGO BLUE</div>
+                  <div class="slide-body-title">
+                    사이드 프로젝트를 하는<br />
+                    직장인 임*수님의 mytt
+                  </div>
+                  <div class="mock-visual-box dark-indigo">
+                    <div style="font-size:12px; font-weight:800; margin-bottom:6px; color:#c7d2fe;">"퇴근 후 1시간, 온전한 내 프로젝트의 주인"</div>
+                    <div style="font-size:11.5px; opacity:0.85;">1. 브랜딩 로고 스케치 3종 (완료)</div>
+                    <div style="font-size:11.5px; opacity:0.85;">2. 헤드카피 A/B 작성 (25m 집중)</div>
+                  </div>
+                  <div class="visual-quote-bubble">
+                    "회사 생각 싹 지워주는 인디고 블루 화면! 동기부여 문장과 오늘 밤 꼭 끝낼 딱 3가지 일만 크게 띄워둡니다."
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>NIGHT ATELIER</span>
+                  <span>4/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 5: Case 3 (박*원 마일스톤 지도) -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">CASE 03 // B&amp;W MINIMAL</div>
+                  <div class="slide-body-title">
+                    신사업 런칭을 준비하는<br />
+                    박*원님의 마일스톤 지도
+                  </div>
+                  <div class="mock-visual-box minimal-bw">
+                    <div style="font-family:var(--font-mono); font-size:11px; font-weight:900;">MILESTONE MAP &amp; CALENDAR</div>
+                    <div style="font-size:12px; margin-top:4px;">예상 소요 14h vs 실제 집중 11.5h (오차 측정)</div>
+                  </div>
+                  <div class="visual-quote-bubble">
+                    "머리 아픈 간트차트 대신 깔끔한 블랙&amp;화이트 여정 지도. 구글 캘린더와 연동해 제 페이스를 지키고 있어요."
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>FOUNDER DASHBOARD</span>
+                  <span>5/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 6: Outro / CTA -->
+            <div class="slide-item">
+              <div class="slide-frame" style="background:#f4f1ea;">
+                <div>
+                  <div class="slide-header-meta">JOIN THE ATELIER</div>
+                  <div class="slide-body-title">
+                    세상에서 단 하나뿐인<br />
+                    내 책상 위 비밀무기
+                  </div>
+                  <p class="slide-lead-copy">
+                    코딩 1도 몰라도 괜찮아요.<br />
+                    AI에게 일기 쓰듯 대화하며 10분 만에 직접 깎아 쓰는 나만의 웹앱.
+                  </p>
+                  <div class="mock-visual-box" style="background:#ffffff; border:1.5px solid var(--ink-black);">
+                    <div style="font-weight:800; font-size:13px;">mytt 시간관리 툴 공방 1기</div>
+                    <div style="font-size:12px; color:var(--text-sub); margin-top:2px;">10.12(월) 개강 · 선착순 잔여 4석 · 100% 환급</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>MYTT 1ST COHORT</span>
+                  <a href="#link" class="slide-cta-pill" onclick="triggerToast('프로필 링크: v10-line.html로 이동'); return false;">프로필 링크 확인 &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Post Action Bar -->
+        <div class="post-action-bar">
+          <div class="action-icons-left">
+            <button class="action-icon-btn heart-btn" onclick="toggleLike(this, 'like-count-p1')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('댓글 42개가 있습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('게시물 공유 링크가 복사되었습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <button class="action-icon-btn bookmark-btn" onclick="toggleSave(this)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Carousel Dots -->
+        <div class="carousel-dots-row" id="dots-p1">
+          <span class="dot-node active"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span>
+        </div>
+
+        <!-- Likes Counter -->
+        <div class="post-likes-count" id="like-count-p1">좋아요 1,482개</div>
+
+        <!-- Caption Section with Collapsible Read More -->
+        <div class="post-caption-box">
+          <span class="caption-author-id">mytt.kr</span>
+          <span class="caption-content-text collapsed" id="caption-p1">
+            "우리가 책상 위에 예쁜 조명을 두는 것처럼, 모니터 화면 하나도 내 방의 인테리어니까요."<br /><br />
+            회사에서 하루 종일 보던 엑셀, 지라, 노션… 퇴근하고 내 개인 작업을 하려는데 컴퓨터에 또 그런 딱딱한 화면을 띄워두고 싶진 않았습니다.<br /><br />
+            그래서 직접 만들었습니다. 내 방 무드에 맞춰 10분 만에 깎아 쓰는 나만의 웹앱 3선:<br />
+            • 7년 차 작곡 프리랜서 이*혁님의 네오브루탈리즘 레슨 트래커<br />
+            • 사이드 프로젝트 직장인 임*수님의 인디고 블루 야간 공방 모드<br />
+            • 신사업 런칭 박*원님의 흑백 미니멀 마일스톤 지도<br /><br />
+            어떻게 만드냐고요? 코딩 몰라도 괜찮아요. AI에게 일기 쓰듯 대화하며 단 10분 만에 내 습관에 꼭 맞는 툴을 만듭니다.<br /><br />
+            👉 <mytt 1기> 얼리버드 모집 중 (선착순 12명 / 잔여 4석)<br />
+            👉 4주 완주 시 Claude 3만 원 100% 전액 현금 환급!<br />
+            👉 프로필 링크 (@mytt.kr)에서 지금 확인하세요.
+          </span>
+          <button class="btn-toggle-caption" onclick="toggleCaption('caption-p1', this)">...더보기</button>
+
+          <div class="caption-hashtags">
+            #mytt #시간관리 #데스크테리어 #프리랜서 #바이브코딩 #작업실 #사이드프로젝트 #노션 #루틴 #생산성
+          </div>
+          <div class="caption-date">1일 전</div>
+        </div>
+      </article>
+
+      <article class="feed-post-unit" id="post-v2-2">
+        <div class="post-author-bar">
+          <div class="author-info-left">
+            <div class="author-mini-avatar">mytt</div>
+            <div class="author-name-meta">
+              <div class="id">mytt.kr</div>
+              <div class="sub-loc">심리학 기반 시간관리 팩트체크</div>
+            </div>
+          </div>
+          <span class="series-badge-pill">SERIES 02</span>
+        </div>
+
+        <div class="carousel-stage">
+          <div class="slide-page-badge" id="badge-p2">1/7</div>
+          <button class="carousel-nav-arrow prev" onclick="scrollSlide('track-p2', -1)" aria-label="이전">&#8249;</button>
+          <button class="carousel-nav-arrow next" onclick="scrollSlide('track-p2', 1)" aria-label="다음">&#8250;</button>
+
+          <div class="carousel-track" id="track-p2" onscroll="updateSlideIndicator('track-p2', 'badge-p2', 'dots-p2')">
+            <!-- P2 Slide 1 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">PSYCHOLOGY // 02</div>
+                  <div class="slide-cover-title">
+                    노션 템플릿 정리하다<br />
+                    하루 다 보낸 사람 특.
+                  </div>
+                  <p class="slide-lead-copy">
+                    (그거, 절대로 당신의 <strong>의지 탓</strong>이 아닙니다)
+                  </p>
+                  <div class="mock-visual-box">
+                    <div style="font-size:13px; font-weight:800;">"뽀모도로, 노션 다 써봤는데 왜 작심삼일일까?"</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>MYTT ESSAY</span>
+                  <span class="slide-cta-pill">넘겨보기 &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 Slide 2 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">3 REAL PAINS</div>
+                  <div class="slide-body-title">솔직히 이런 적<br />한 번쯤 있죠?</div>
+                  <div class="visual-quote-bubble">
+                    <strong>1. 과제 마비:</strong> 할 일이 너무 거대해 스케줄 짜다 뇌 정지
+                  </div>
+                  <div class="visual-quote-bubble">
+                    <strong>2. 가짜 작업:</strong> 본 작업 대신 책상 청소나 폰트 찾기로 회피
+                  </div>
+                  <div class="visual-quote-bubble">
+                    <strong>3. 시간 도둑:</strong> 시간 보려다 쇼츠 1시간 증발
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>REALITY CHECK</span>
+                  <span>2/7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 Slide 3 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">THE PARADOX</div>
+                  <div class="slide-body-title">당신이 나약해서가<br />아닙니다.</div>
+                  <p class="slide-lead-copy">
+                    실리콘밸리가 규격화한 대량생산 앱에 내 뇌와 일하는 방식을 억지로 구겨 넣었기 때문입니다.<br /><br />
+                    남이 만든 앱은 내 약점과 컨디션을 모르니까요.
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>PARADIGM SHIFT</span>
+                  <span>3/7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 Slide 4 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">NEW STANDARD</div>
+                  <div class="slide-body-title">100명에겐<br />100개의 툴이 필요해요.</div>
+                  <p class="slide-lead-copy">
+                    거창한 생산성 시스템 대신, 딱 <strong>'내 게으름 하나'</strong>만 다정하게 막아주는 나만의 작은 미니 툴이면 충분합니다.
+                  </p>
+                  <div class="mock-visual-box">
+                    <div style="font-weight:800; font-size:12.5px;">디지털 목공예 : 내 손으로 깎아 쓰는 툴</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>CUSTOM TOOLKIT</span>
+                  <span>4/7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 Slide 5 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">PROOF OF TOOLS</div>
+                  <div class="slide-body-title">내 약점을 막아주는<br />귀여운 무기들</div>
+                  <div class="mock-visual-box">
+                    <strong>• 산오르기:</strong> 딴짓 멈추는 4시간 등산 타이머
+                  </div>
+                  <div class="mock-visual-box">
+                    <strong>• 별자리 만들기:</strong> 막막한 일을 쪼개는 마이크로 태스킹
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>PSYCHOLOGY SOLUTIONS</span>
+                  <span>5/7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 Slide 6 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">TRANSFORMATION</div>
+                  <div class="slide-body-title">그랬더니 찾아온<br />놀라운 변화</div>
+                  <p class="slide-lead-copy">
+                    1. 자책 대신 뿌듯함으로 잠들어요.<br />
+                    2. 스마트폰 대신 내 애착 mytt를 켜요.<br />
+                    3. 필요한 기능은 AI로 직접 만들어요.<br />
+                    4. 혼자 끙끙 앓던 작심삼일에서 벗어납니다.
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>LIFE CHANGE</span>
+                  <span>6/7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 Slide 7 -->
+            <div class="slide-item">
+              <div class="slide-frame" style="background:#f5f3ec;">
+                <div>
+                  <div class="slide-header-meta">START TODAY</div>
+                  <div class="slide-body-title">의지 탓은 그만,<br />나만의 mytt 1기</div>
+                  <p class="slide-lead-copy">
+                    복잡한 시간관리를 즐거운 놀이 루틴으로.<br />
+                    문과생 90%가 첫날 전원 웹 배포에 성공했습니다.
+                  </p>
+                  <div class="mock-visual-box" style="background:#fff; border:1.5px solid #111;">
+                    <div style="font-weight:900;">mytt 1기 정규 공방 [잔여 4석]</div>
+                    <div style="font-size:12px; color:var(--text-sub);">완주 시 Claude 3만 원 100% 현금 환급</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>10.12 OPEN</span>
+                  <a href="#link" class="slide-cta-pill" onclick="triggerToast('프로필 링크: v10-line.html로 이동'); return false;">프로필 링크 신청 &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="post-action-bar">
+          <div class="action-icons-left">
+            <button class="action-icon-btn heart-btn" onclick="toggleLike(this, 'like-count-p2')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('댓글 78개가 있습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('공유 링크가 복사되었습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <button class="action-icon-btn bookmark-btn" onclick="toggleSave(this)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="carousel-dots-row" id="dots-p2">
+          <span class="dot-node active"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span>
+        </div>
+
+        <div class="post-likes-count" id="like-count-p2">좋아요 2,194개</div>
+
+        <div class="post-caption-box">
+          <span class="caption-author-id">mytt.kr</span>
+          <span class="caption-content-text collapsed" id="caption-p2">
+            "작업을 하려 컴퓨터를 켜도 집중이 안 되고, 책 한 장 읽으려 해도 유튜브와 인스타에 빠지던 나..."<br /><br />
+            과제 마비, 가짜 작업, 시간 도둑... 좋다는 뽀모도로 앱과 노션 템플릿을 다 써봤지만 왜 3일 만에 포기했을까요?<br /><br />
+            그건 여러분의 의지가 박약해서가 아닙니다. 남이 정해둔 복잡한 틀에 내 하루를 억지로 끼워 맞췄기 때문이에요.<br /><br />
+            내 일과 스케줄을 가장 잘 아는 건 나 자신입니다. 일상 한국어로 AI에게 하소연하며 10분 만에 내 습관에 꼭 맞는 툴을 직접 깎아 쓰는 '디지털 목공예'를 시작해 보세요.<br /><br />
+            👉 <mytt 1기> 10.12(월) 개강 [잔여 4석]<br />
+            👉 완주 시 Claude 유료 구독료 3만 원 전액 현금 페이백!<br />
+            👉 프로필 링크 (@mytt.kr)에서 상세페이지 확인
+          </span>
+          <button class="btn-toggle-caption" onclick="toggleCaption('caption-p2', this)">...더보기</button>
+          <div class="caption-hashtags">#노션 #시간관리 #작심삼일 #자기계발 #프리랜서 #직장인 #바이브코딩 #mytt</div>
+          <div class="caption-date">2일 전</div>
+        </div>
+      </article>
+
+      <article class="feed-post-unit" id="post-v2-3">
+        <div class="post-author-bar">
+          <div class="author-info-left">
+            <div class="author-mini-avatar">mytt</div>
+            <div class="author-name-meta">
+              <div class="id">mytt.kr</div>
+              <div class="sub-loc">인스타툰 작가 꿀차의 시간관리 툴</div>
+            </div>
+          </div>
+          <span class="series-badge-pill">SERIES 03</span>
+        </div>
+
+        <div class="carousel-stage">
+          <div class="slide-page-badge" id="badge-p3">1/6</div>
+          <button class="carousel-nav-arrow prev" onclick="scrollSlide('track-p3', -1)" aria-label="이전">&#8249;</button>
+          <button class="carousel-nav-arrow next" onclick="scrollSlide('track-p3', 1)" aria-label="다음">&#8250;</button>
+
+          <div class="carousel-track" id="track-p3" onscroll="updateSlideIndicator('track-p3', 'badge-p3', 'dots-p3')">
+            <!-- P3 Slide 1 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">CUTE ROUTINE // 03</div>
+                  <div class="slide-cover-title">
+                    시간관리가 귀여우면<br />
+                    일어나는 일.
+                  </div>
+                  <p class="slide-lead-copy">
+                    하루 4시간 집중을 놀이로 바꾼<br />
+                    인스타툰 작가의 실제 모바일 웹앱 3종.
+                  </p>
+                  <div class="mock-visual-box">
+                    <div style="font-size:12.5px; font-weight:800;">모닝베이커리 쿠폰북 × 4시간 등산 타이머</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>WARM ROUTINE</span>
+                  <span class="slide-cta-pill">열어보기 &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 Slide 2 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">STRESSFUL ALARMS</div>
+                  <div class="slide-body-title">알람 소리만 들어도<br />심장이 쿵쾅거렸나요?</div>
+                  <p class="slide-lead-copy">
+                    삑삑거리는 기계음 대신, 아침에 눈뜨면 빵이 구워지고 캐릭터가 산을 오르는 다정한 화면을 봅니다.
+                  </p>
+                  <div class="visual-quote-bubble">
+                    "시간관리는 나를 감시하는 숙제가 아니라, 나를 응원하는 놀이가 되어야 해요."
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>GENTLE PRODUCTIVITY</span>
+                  <span>2/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 Slide 3 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">TOOL 01 // 꿀차 튜터</div>
+                  <div class="slide-body-title">4시간 등산 타이머 &amp;<br />자이가르닉 휴식 버튼</div>
+                  <p class="slide-lead-copy">
+                    "하루 4시간은 온전히 제 그림체로 그림을 그려야 해요. 등산 컨셉으로 '잠깐 쉬기'를 누르면 미완성 과제를 계속 떠올리는 자이가르닉 효과 덕에 집중력이 폭발합니다!"
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>DEEP WORK HIKE</span>
+                  <span>3/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 Slide 4 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">TOOL 02 // 꿀차 튜터</div>
+                  <div class="slide-body-title">모닝베이커리 &amp;<br />오늘의 결산 영수증</div>
+                  <p class="slide-lead-copy">
+                    아침 기상할 때마다 갓 구운 크루아상이 적립되고, 퇴근할 땐 오늘 해낸 일들이 영수증처럼 지이익- 출력되는 도파민 성취감!
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>BAKERY &amp; RECEIPT</span>
+                  <span>4/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 Slide 5 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">TOOL 03 // 깨굴 튜터</div>
+                  <div class="slide-body-title">별자리 만들기<br />마이크로 태스킹</div>
+                  <p class="slide-lead-copy">
+                    "일을 시작할 때 막막해 미룰 때가 있어요. 큰 일을 작게 쪼개어 별자리 컨셉으로 하나씩 이어가니 성취감이 느껴져요."
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>CONSTELLATION APP</span>
+                  <span>5/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 Slide 6 -->
+            <div class="slide-item">
+              <div class="slide-frame" style="background:#fbf8f2;">
+                <div>
+                  <div class="slide-header-meta">GET THE TEMPLATES</div>
+                  <div class="slide-body-title">앱스토어엔 없어요.<br />직접 깎아 쓰니까요.</div>
+                  <p class="slide-lead-copy">
+                    1기 수강생 전원 위 프롬프트 예제 10선 제공 + 평생 업데이트권 부여!<br />
+                    내 컴퓨터와 폰에 평생 소장하세요.
+                  </p>
+                  <div class="mock-visual-box" style="background:#fff; border:1.5px solid #111;">
+                    <div style="font-weight:800;">mytt 1기 얼리버드 [선착순 마감 임박]</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>MYTT 1ST COHORT</span>
+                  <a href="#link" class="slide-cta-pill" onclick="triggerToast('프로필 링크: v10-line.html로 이동'); return false;">프로필 링크 구경하기 &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="post-action-bar">
+          <div class="action-icons-left">
+            <button class="action-icon-btn heart-btn" onclick="toggleLike(this, 'like-count-p3')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('댓글 51개가 있습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('공유 링크가 복사되었습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <button class="action-icon-btn bookmark-btn" onclick="toggleSave(this)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="carousel-dots-row" id="dots-p3">
+          <span class="dot-node active"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span>
+        </div>
+
+        <div class="post-likes-count" id="like-count-p3">좋아요 3,420개</div>
+
+        <div class="post-caption-box">
+          <span class="caption-author-id">mytt.kr</span>
+          <span class="caption-content-text collapsed" id="caption-p3">
+            "이 귀여운 타이머… 어디서 다운받았냐는 디엠 진짜 많이 받았는데요, 사실 다운받은 게 아닙니다."<br /><br />
+            아침에 일어나면 빵이 구워지는 모닝베이커리 쿠폰북,<br />
+            퇴근할 때 오늘 한 일이 영수증처럼 출력되는 던리스트,<br />
+            산책하듯 4시간 몰입하는 등산 타이머까지!<br /><br />
+            인스타툰 작가 꿀차와 시니어 개발자 깨굴이 직접 만들어 쓰는 애착 툴들을 수강생 여러분도 10분 만에 만들 수 있게 뼈대를 다 챙겨드립니다.<br /><br />
+            👉 1기 수강생 프롬프트 10선 평생 업데이트권 증정<br />
+            👉 4주 완주 시 Claude 3만 원 100% 전액 현금 페이백<br />
+            👉 프로필 링크 (@mytt.kr)에서 지금 신청하세요!
+          </span>
+          <button class="btn-toggle-caption" onclick="toggleCaption('caption-p3', this)">...더보기</button>
+          <div class="caption-hashtags">#모닝베이커리 #인스타툰 #일러스트 #시간관리 #타이머 #디지털문구 #바이브코딩 #mytt</div>
+          <div class="caption-date">3일 전</div>
+        </div>
+      </article>
+
+      <article class="feed-post-unit" id="post-v2-4">
+        <div class="post-author-bar">
+          <div class="author-info-left">
+            <div class="author-mini-avatar">mytt</div>
+            <div class="author-name-meta">
+              <div class="id">mytt.kr</div>
+              <div class="sub-loc">비전공자 100% 완주 팩트 데이터</div>
+            </div>
+          </div>
+          <span class="series-badge-pill">SERIES 04</span>
+        </div>
+
+        <div class="carousel-stage">
+          <div class="slide-page-badge" id="badge-p4">1/6</div>
+          <button class="carousel-nav-arrow prev" onclick="scrollSlide('track-p4', -1)" aria-label="이전">&#8249;</button>
+          <button class="carousel-nav-arrow next" onclick="scrollSlide('track-p4', 1)" aria-label="다음">&#8250;</button>
+
+          <div class="carousel-track" id="track-p4" onscroll="updateSlideIndicator('track-p4', 'badge-p4', 'dots-p4')">
+            <!-- P4 Slide 1 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">PROOF DATA // 04</div>
+                  <div class="slide-cover-title">
+                    코딩 모르는 문과생 90%가<br />
+                    첫날 전원 웹 배포한 비결.
+                  </div>
+                  <p class="slide-lead-copy">
+                    0기 파일럿 만족도 4.9 / 5.0<br />
+                    웹 배포 완주율 100%의 비밀.
+                  </p>
+                  <div class="mock-visual-box">
+                    <div style="font-size:12.5px; font-weight:800;">"개발 문법 외우는 코딩이 아닙니다."</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>REAL PROOF</span>
+                  <span class="slide-cta-pill">비결 보기 &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 Slide 2 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">THE MYTH</div>
+                  <div class="slide-body-title">'내가 진짜<br />할 수 있을까?'</div>
+                  <p class="slide-lead-copy">
+                    다들 그렇게 시작했습니다. 영어 코드 한 줄 못 쳐도, 클릭 위치까지 캡처된 무결점 교안과 검증된 스타터 뼈대가 있으니까요.
+                  </p>
+                  <div class="visual-quote-bubble">
+                    빈 화면 공포? 1초도 없습니다.
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>ZERO BARRIER</span>
+                  <span>2/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 Slide 3 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">3-STEP WORKFLOW</div>
+                  <div class="slide-body-title">하소연 ➔ 복붙 ➔ 옷입히기<br />10분이면 끝납니다.</div>
+                  <p class="slide-lead-copy">
+                    1. <strong>문제 분석:</strong> AI에게 일기 쓰듯 고민 털어놓기<br />
+                    2. <strong>바이브 코딩:</strong> 프롬프트 넣고 10분 만에 툴 생성<br />
+                    3. <strong>일상 적용:</strong> 취향 폰트와 캐릭터 입혀 실사용
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>SIMPLE METHOD</span>
+                  <span>3/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 Slide 4 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">RAW REVIEWS</div>
+                  <div class="slide-body-title">0기 수강생들의<br />1초 날것 후기</div>
+                  <div class="visual-quote-bubble">
+                    "노션 3일 만에 버렸는데 이건 매일 켭니다. 내 손으로 깎아 만든 애착이 진짜 커요." (디자이너 K님)
+                  </div>
+                  <div class="visual-quote-bubble">
+                    "코딩 'ㅋ'자도 몰랐는데 10분 만에 웹 링크 생겨서 소름 돋았어요." (마케터 L님)
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>STUDENT VOICES</span>
+                  <span>4/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 Slide 5 -->
+            <div class="slide-item">
+              <div class="slide-frame">
+                <div>
+                  <div class="slide-header-meta">SAFETY NET</div>
+                  <div class="slide-body-title">막히면 뚫어주는<br />든든한 두 길잡이</div>
+                  <p class="slide-lead-copy">
+                    • <strong>꿀차 튜터:</strong> 인스타툰 작가, 비전공자 눈높이 기획<br />
+                    • <strong>깨굴 튜터:</strong> 10년 차 시니어 개발자, 에러 1:1 처방<br /><br />
+                    어떤 에러가 나도 뒤에서 100% 뚫어드립니다.
+                  </p>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>TWO TUTORS</span>
+                  <span>5/6</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 Slide 6 -->
+            <div class="slide-item">
+              <div class="slide-frame" style="background:#f4f1ea;">
+                <div>
+                  <div class="slide-header-meta">ZERO RISK</div>
+                  <div class="slide-body-title">완주하면<br />100% 전액 환급!</div>
+                  <p class="slide-lead-copy">
+                    4주 완주 시 Claude 유료 구독료 3만 원 전액 현금 계좌 입금.<br />
+                    카메라·마이크 100% OFF! 세수 안 하고 편하게 참여하세요.
+                  </p>
+                  <div class="mock-visual-box" style="background:#fff; border:1.5px solid #111;">
+                    <div style="font-weight:900;">10.12(월) 개강 · 선착순 잔여 4석</div>
+                  </div>
+                </div>
+                <div class="slide-bottom-brand">
+                  <span>MYTT 1ST COHORT</span>
+                  <a href="#link" class="slide-cta-pill" onclick="triggerToast('프로필 링크: v10-line.html로 이동'); return false;">수강신청 바로가기 &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="post-action-bar">
+          <div class="action-icons-left">
+            <button class="action-icon-btn heart-btn" onclick="toggleLike(this, 'like-count-p4')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('댓글 63개가 있습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </button>
+            <button class="action-icon-btn" onclick="triggerToast('공유 링크가 복사되었습니다.')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <button class="action-icon-btn bookmark-btn" onclick="toggleSave(this)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="carousel-dots-row" id="dots-p4">
+          <span class="dot-node active"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span><span class="dot-node"></span>
+        </div>
+
+        <div class="post-likes-count" id="like-count-p4">좋아요 1,830개</div>
+
+        <div class="post-caption-box">
+          <span class="caption-author-id">mytt.kr</span>
+          <span class="caption-content-text collapsed" id="caption-p4">
+            "바이브코딩이 대세라는데… 문과생인 내가 과연 웹사이트를 직접 만들 수 있을까?"<br /><br />
+            네, 100% 가능합니다. 어려운 프로그래밍 문법을 외우는 게 아닙니다. 일상 한국어로 AI에게 질문하고 코드를 복사해 붙여넣는 직관적인 실습입니다.<br /><br />
+            실제로 파일럿 수강생의 90%가 문과생 및 비전공자였으며, 전원이 당일 본인만의 웹 링크 배포에 성공했습니다.<br /><br />
+            감성 기획은 인스타툰 작가 꿀차가, 코드 오류와 배포 에러는 10년 차 개발자 깨굴이 1:1로 뚫어드립니다.<br /><br />
+            👉 10.12(월) 개강 · 선착순 얼리버드 [잔여 4석]<br />
+            👉 완주 시 Claude 3만 원 100% 전액 현금 페이백!<br />
+            👉 프로필 링크 (@mytt.kr)에서 지금 신청하세요.
+          </span>
+          <button class="btn-toggle-caption" onclick="toggleCaption('caption-p4', this)">...더보기</button>
+          <div class="caption-hashtags">#바이브코딩 #비전공자코딩 #웹앱만들기 #생산성툴 #시간관리 #인스타툰 #mytt</div>
+          <div class="caption-date">4일 전</div>
+        </div>
+      </article>
+
+      <!-- 아틀리에 메이킹 & 리서치 아카이브 구분선 -->
+      <div class="feed-section-divider">
+        <span>ARCHIVE COLLECTION // 작업실 메이킹 스토리</span>
+        <span>4 SERIES</span>
+      </div>
+
+      <!-- ==========================================
+           2. V1 아카이브 카드뉴스 4종 (이어서 배치)
+           ========================================== -->
+
+      <article class="feed-post" id="post-v1-1">
+      <div class="post-header">
+        <div class="post-user">
+          <img src="mytt_live_avatar.png" class="user-thumb" alt="thumb">
+          <div class="user-name-box">
+            <div class="name">mytt.kr</div>
+            <div class="tagline">작업실 일기</div>
+          </div>
+        </div>
+        <div class="post-badge">메이킹 로그</div>
+      </div>
+
+      <div class="carousel-container" id="carousel-1">
+        <button class="nav-arrow nav-prev" onclick="moveSlide(1, -1)">‹</button>
+        <button class="nav-arrow nav-next" onclick="moveSlide(1, 1)">›</button>
+
+        <div class="carousel-track" onscroll="handleScroll(1)">
+          <!-- 1-1 Cover -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h2 class="cover-title">
+                바이브코딩으로<br>
+                100억은 못 벌어도<br>
+                <span class="accent-word">나만의 시간관리 툴</span>은<br>
+                만든다
+              </h2>
+
+              <div class="image-slot">
+                <span class="slot-desc">[정물 컷: 햇살 드는 나무 책상 위 머그컵과 직접 그린 크루아상 손그림]</span>
+              </div>
+
+              <div class="box-text">
+                스스로를 칭찬하기 위해 30분 만에 만든 나만의 작은 도구 이야기입니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 1-2 Problem -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="image-slot" style="max-height:160px;">
+                <span class="slot-desc">[선화 일러스트: 침대 위에서 턱을 괴고 멍하니 화면을 응시하는 창작자]</span>
+              </div>
+
+              <div class="box-text" style="margin-bottom:8px;">
+                눈뜰 때마다 자책하는 게 지쳤습니다. 시끄러운 알람 소리에 기분만 상하고 하루를 도망치듯 시작했거든요.
+              </div>
+
+              <div class="box-text">
+                나에게 필요했던 건 강압적인 숫자가 아니라 나를 다독여줄 다정한 보상이었습니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 1-3 Concept -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                일어나면 빵 냄새가 나는<br>앱이면 어떨까?
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[연필 스케치: 오븐에서 빵이 구워지는 아침 베이커리 아이디어 노트]</span>
+              </div>
+
+              <div class="box-text">
+                정해진 시간에 눈을 뜨면 따뜻한 빵이 구워지고, 오늘의 나에게 짧은 칭찬 한 줄을 건네는 상상을 했습니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 1-4 Assets -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="box-text" style="margin-bottom:12px;">
+                좋아하는 크루아상과 커피를 아이패드로 슥슥 그렸습니다. 내가 그린 낙서가 앱의 얼굴이 될 준비를 마쳤습니다.
+              </div>
+
+              <div class="image-slot">
+                <span class="slot-desc">[에셋 이미지: 캔버스 위에 놓인 투명 배경의 손그림 빵과 커피잔]</span>
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 1-5 Process -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                코딩 문법 대신<br>한국어로 말을 걸었습니다
+              </h3>
+
+              <div class="box-text" style="margin:10px 0;">
+                "클로드야, 내가 그린 빵 넣고 시간 되면 오븐 열리는 애니메이션 만들어줘." 몇 번의 대화 끝에 코드가 완성되었습니다.
+              </div>
+
+              <div class="image-slot">
+                <span class="slot-desc">[화면 캡처: 인공지능과 나눈 차분한 한글 대화창]</span>
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 1-6 Result -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="image-slot">
+                <span class="slot-desc">[실물 캡처: 원목 책상 위 스마트폰 홈화면에 뜬 모닝베이커리]</span>
+              </div>
+
+              <div class="box-text">
+                이제 매일 아침 빵을 굽고 모닝 페이지를 적습니다. 남들이 만든 어떤 앱보다 내가 직접 만든 이 도구를 제일 아끼게 되었어요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 1-7 Nudge -->
+          <div class="card-slide">
+            <div class="frame-box" style="justify-content:center; align-items:center; text-align:center;">
+              <h3 class="slide-title" style="font-size:23px; margin-bottom:16px;">
+                여러분도 직접<br>만들어보지 않을래요?
+              </h3>
+
+              <div class="box-text center" style="margin-bottom:18px;">
+                프로필 링크에서 모닝 베이커리를 직접 만져볼 수 있습니다. 나만의 도구를 함께 만들어보고 싶다면 mytt에서 만나요.
+              </div>
+
+              <div class="box-text center" style="background:var(--atelier-slate); color:white; border-color:var(--atelier-slate); font-weight:600;">
+                프로필 링크에서 웹앱 체험하기
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post 1 Meta -->
+      <div class="post-actions-bar">
+        <div class="action-left">
+          <span>♡</span>
+          <span>💬</span>
+          <span>↗</span>
+        </div>
+        <div class="carousel-dots" id="dots-1">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <span>⚑</span>
+      </div>
+      <div class="post-caption-box">
+        <span class="caption-author">mytt.kr</span>
+        <span class="caption-text">아침마다 스스로를 탓하던 만화가가 만든 세상에서 제일 다정한 칭찬 빵집 앱. 프로필 링크에서 진짜 작동하는 빵집을 눌러보세요.</span>
+        <div class="caption-tags">#모닝베이커리 #mytt #손그림앱 #1인창작자 #작업실메이트</div>
+        <div class="post-time">1일 전</div>
+      </div>
+    </article>
+
+      <article class="feed-post" id="post-v1-2">
+      <div class="post-header">
+        <div class="post-user">
+          <img src="mytt_live_avatar.png" class="user-thumb" alt="thumb">
+          <div class="user-name-box">
+            <div class="name">mytt.kr</div>
+            <div class="tagline">시간관리 솔루션 맵</div>
+          </div>
+        </div>
+        <div class="post-badge">뇌과학 리서치</div>
+      </div>
+
+      <div class="carousel-container" id="carousel-2">
+        <button class="nav-arrow nav-prev" onclick="moveSlide(2, -1)">‹</button>
+        <button class="nav-arrow nav-next" onclick="moveSlide(2, 1)">›</button>
+
+        <div class="carousel-track" onscroll="handleScroll(2)">
+
+          <!-- 2-1: Cover -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h2 class="cover-title">
+                시간 관리가 어려운<br>
+                사람들의 6가지 문제와<br>
+                <span class="accent-word">6가지 해결책</span>
+              </h2>
+
+              <div class="image-slot">
+                <span class="slot-desc">[에디토리얼 그래픽: 엉킨 생각의 실타래와 차분한 해답 아이콘]</span>
+              </div>
+
+              <div class="box-text">
+                혼자 일하는 창작자가 매일 겪는 시간 붕괴의 원인과 뇌를 다독이는 실용적인 처방전입니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 2-2: Problem 1 -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                01. 혼자 일하다 보니<br>
+                하루 루틴을 스스로 지키기 어려움
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[선화 일러스트: 홀로 남겨진 책상과 무언의 온라인 동료들의 온기]</span>
+              </div>
+
+              <div class="box-text">
+                출퇴근 지지대가 없으면 전두엽 결정 피로가 급증합니다. 말 한마디 안 해도 타인의 존재만으로 집중력을 깨우는 바디더블링 환경에 나를 던져두세요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 2-3: Problem 2 -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                02. 작업을 시작해야 하는 순간<br>
+                몸이 굳고 회피하게 됨
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[선화 일러스트: 막막한 과제 앞에서 얼어붙은 몸을 3단계로 쪼개기]</span>
+              </div>
+
+              <div class="box-text">
+                게으름이 아니라 뇌의 편도체가 느끼는 공포입니다. 짐을 내려놓고 가장 사소한 행동 하나를 3분 안에 시작하도록 쪼개보세요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 2-4: Problem 3 -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                03. 온종일 컴퓨터 앞에 앉았지만<br>
+                정작 SNS에 시간을 털림
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[인포그래픽: 산오르기 딥워크 타이머의 시각적 정상 완주 곡선]</span>
+              </div>
+
+              <div class="box-text">
+                진짜 몰입을 피해 쉬운 자극에 빠진 상태입니다. 미완성된 과제를 정상까지 끝내고 싶어 하는 자이가르닉 효과를 활용해 25분 단기 몰입을 시도하세요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 2-5: Problem 4 -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                04. 각 작업에 실제로 몇 시간이<br>
+                걸리는지 객관적으로 모름
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[차트 그래픽: 예상했던 시간과 실제 걸린 시간의 대조 데이터]</span>
+              </div>
+
+              <div class="box-text">
+                소요 시간을 비현실적으로 낙관하는 계획 오류 탓입니다. 짐작으로 넘기지 말고 딱 사흘간 실제 걸린 시간을 스톱워치로 측정해 보세요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 2-6: Problem 5 -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                05. 밤이 되면 오늘 대체 뭘 했나<br>
+                성취감 없이 우울해짐
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[일러스트: 찌이잉- 출력되어 찍히는 사소한 성취 영수증과 칭찬 도장]</span>
+              </div>
+
+              <div class="box-text">
+                사소한 성취를 잊어버리는 뇌의 부정 편향 때문입니다. 할 일 목록 대신 오늘 해낸 일을 기록하는 던리스트를 작성해 보세요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 2-7: Epilogue -->
+          <div class="card-slide">
+            <div class="frame-box" style="justify-content:center; align-items:center; text-align:center;">
+              <h3 class="slide-title" style="font-size:22px; margin-bottom:14px;">
+                의지박약이 아니라<br>
+                <span class="accent-word">뇌에 맞는 도구</span>가 없었던 것
+              </h3>
+
+              <div class="box-text center" style="margin-bottom:12px;">
+                우리는 이 처방전들을 직접 작동하는 웹 도구로 코딩했습니다. 산오르기 타이머, 던리스트 영수증, 모닝 베이커리처럼요.
+              </div>
+
+              <div class="box-text center" style="background:#f0ebe0; border-color:#ded7cb;">
+                이 카드를 저장해두고, 일이 안 풀릴 때 꺼내보세요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Post 2 Meta -->
+      <div class="post-actions-bar">
+        <div class="action-left">
+          <span>♡</span>
+          <span>💬</span>
+          <span>↗</span>
+        </div>
+        <div class="carousel-dots" id="dots-2">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <span>⚑</span>
+      </div>
+      <div class="post-caption-box">
+        <span class="caption-author">mytt.kr</span>
+        <span class="caption-text">혼자 일할 때 왜 매일 자책하고 미루게 될까요? 뇌과학과 심리학으로 증명된 1인 창작자의 5가지 시간 붕괴 원인과 처방전입니다.</span>
+        <div class="caption-tags">#시간관리 #1인창작자 #바디더블링 #던리스트 #자이가르닉 #mytt</div>
+        <div class="post-time">2일 전</div>
+      </div>
+    </article>
+
+      <article class="feed-post" id="post-v1-3">
+      <div class="post-header">
+        <div class="post-user">
+          <img src="mytt_live_avatar.png" class="user-thumb" alt="thumb">
+          <div class="user-name-box">
+            <div class="name">mytt.kr</div>
+            <div class="tagline">mytt 빌더스 1기</div>
+          </div>
+        </div>
+        <div class="post-badge" style="background:#f7eeee; color:#8c4343; border-color:#e6d3d3;">선착순 30명</div>
+      </div>
+
+      <div class="carousel-container" id="carousel-3">
+        <button class="nav-arrow nav-prev" onclick="moveSlide(3, -1)">‹</button>
+        <button class="nav-arrow nav-next" onclick="moveSlide(3, 1)">›</button>
+
+        <div class="carousel-track" onscroll="handleScroll(3)">
+          <!-- 3-1: Cover -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h2 class="cover-title" style="font-size:25px;">
+                얼리버드 할인 25%<br>
+                <span style="text-decoration:line-through; color:var(--text-muted); font-size:18px;">160,000</span> → <span class="accent-word">120,000</span><br>
+                바이브코딩으로<br>
+                내 맞춤형 시간관리 툴 만들기
+              </h2>
+
+              <div class="image-slot">
+                <span class="slot-desc">[아틀리에 킷: 린넨 파우치와 나만의 도구 초대장 티켓]</span>
+              </div>
+
+              <div class="box-text" style="color:#8c4343; font-weight:600;">
+                클로드 유료 구독이 필요해요. 선착순 30명 마감.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 3-2: No Syntax -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="image-slot" style="max-height:160px;">
+                <span class="slot-desc">[화면 캡처: 문법 없이 첫날부터 브라우저에서 작동하는 인터페이스]</span>
+              </div>
+
+              <h3 class="slide-title" style="margin-top:6px;">
+                문법 암기 없이<br>첫날부터 내 화면을 봅니다
+              </h3>
+
+              <div class="box-text">
+                복잡한 개발 지식은 필요 없습니다. 미리 준비된 안 깨지는 스타터 템플릿에 나의 규칙과 손그림을 채워 넣습니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 3-3: 4-Week Roadmap -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                4주 만에 내 도구를<br>스마트폰에 배포합니다
+              </h3>
+
+              <div class="box-text" style="margin:10px 0;">
+                워크북으로 내 시간을 진단하고, 템플릿에 코드를 입힌 뒤, 손그림을 얹어 내 도메인 웹앱으로 세상에 공개합니다.
+              </div>
+
+              <div class="image-slot">
+                <span class="slot-desc">[타임라인 그래픽: 1주차 시간 자각부터 4주차 모바일 배포까지]</span>
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 3-4: Environment -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="image-slot" style="max-height:160px;">
+                <span class="slot-desc">[화면 캡처: 5인 1조 아지트와 디스코드 바디더블링 작업실]</span>
+              </div>
+
+              <h3 class="slide-title" style="margin-top:6px;">
+                혼자가 아니라서<br>끝까지 갈 수 있습니다
+              </h3>
+
+              <div class="box-text">
+                5인 1조 러닝메이트와 함께 달리고, 막히면 디스코드에서 강사진이 즉시 처방합니다. 함께 갇혀서 일하는 딥워크룸도 열려 있어요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 3-5: Payback Benefits -->
+          <div class="card-slide">
+            <div class="frame-box" style="justify-content:center;">
+              <h3 class="slide-title" style="margin-bottom:14px;">
+                완주 시 클로드 구독료<br>
+                <span class="accent-word">3만 원 전액 페이백</span>
+              </h3>
+
+              <div class="box-text" style="margin-bottom:10px;">
+                진짜 완주하게 만들기 위해 준비했습니다. 4회차 과제를 끝내면 클로드 한 달 구독료 30,000원을 현금으로 돌려드립니다.
+              </div>
+
+              <div class="box-text">
+                꿀차툰 손그림 투명 PNG 에셋팩 15종과 평생 업데이트되는 프롬프트 치트키북도 함께 제공됩니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 3-6: Final Closing -->
+          <div class="card-slide">
+            <div class="frame-box" style="justify-content:center; align-items:center; text-align:center;">
+              <h3 class="slide-title" style="font-size:22px; margin-bottom:14px;">
+                얼리버드 25% 할인은<br>선착순 마감됩니다
+              </h3>
+
+              <div class="box-text center" style="margin-bottom:18px;">
+                10월 12일 첫 라이브가 시작됩니다. 남의 도구 대신 내 삶을 내 손으로 코딩하는 mytt 1기 메이커가 되어보세요.
+              </div>
+
+              <div class="box-text center" style="background:var(--atelier-slate); color:white; border-color:var(--atelier-slate); font-weight:600;">
+                프로필 링크에서 1기 신청하기
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post 3 Meta -->
+      <div class="post-actions-bar">
+        <div class="action-left">
+          <span>♡</span>
+          <span>💬</span>
+          <span>↗</span>
+        </div>
+        <div class="carousel-dots" id="dots-3">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <span>⚑</span>
+      </div>
+      <div class="post-caption-box">
+        <span class="caption-author">mytt.kr</span>
+        <span class="caption-text">[mytt 1기 얼리버드 오픈] 남의 앱에 지친 1인 창작자를 위한 4주 실전 메이커스 클럽. 완주 시 3만 원 페이백 혜택을 놓치지 마세요.</span>
+        <div class="caption-tags">#mytt1기 #얼리버드 #바이브코딩 #페이백 #1인창작자 #소수정예</div>
+        <div class="post-time">방금 전</div>
+      </div>
+    </article>
+
+      <article class="feed-post" id="post-v1-4">
+      <div class="post-header">
+        <div class="post-user">
+          <img src="mytt_live_avatar.png" class="user-thumb" alt="thumb">
+          <div class="user-name-box">
+            <div class="name">mytt.kr</div>
+            <div class="tagline">브랜드 에세이</div>
+          </div>
+        </div>
+        <div class="post-badge">시간 자립</div>
+      </div>
+
+      <div class="carousel-container" id="carousel-4">
+        <button class="nav-arrow nav-prev" onclick="moveSlide(4, -1)">‹</button>
+        <button class="nav-arrow nav-next" onclick="moveSlide(4, 1)">›</button>
+
+        <div class="carousel-track" onscroll="handleScroll(4)">
+
+          <!-- 4-1: Cover -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h2 class="cover-title" style="font-size:26px;">
+                100명의 프리랜서에겐<br>
+                <span class="accent-word">100개의 시간관리앱</span>이<br>
+                필요하다
+              </h2>
+
+              <div class="image-slot">
+                <span class="slot-desc">[에디토리얼 일러스트: 저마다 다른 책상과 스케줄을 가진 창작자들의 실루엣]</span>
+              </div>
+
+              <div class="box-text">
+                남이 만든 템플릿에 내 일상을 억지로 맞추다 지쳐버린 이야기예요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 4-2: Wall of Apps -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="image-slot" style="max-height:160px;">
+                <span class="slot-desc">[정물 사진: 복잡한 생산성 앱이 켜진 노트북과 차갑게 식은 커피잔]</span>
+              </div>
+
+              <h3 class="slide-title" style="margin-top:6px;">
+                유명하다는 생산성 앱,<br>
+                왜 내 손엔 안 붙었을까요?
+              </h3>
+
+              <div class="box-text">
+                며칠 밤새워 노션 템플릿을 세팅해도 결국 작심삼일이더라고요. 내 의지박약이 아니라 내 몸에 안 맞는 옷을 입었던 거였어요.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 4-3: Unique Rhythms -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                내 시간은<br>
+                내가 가장 잘 아니까
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[인포그래픽: 낮형, 밤형, 마감형 등 저마다 다른 3인의 하루 곡선]</span>
+              </div>
+
+              <div class="box-text">
+                프리랜서마다 생활 리듬과 작업 방식이 다 다르잖아요. 세상 그 어떤 완벽한 앱도 우리 모두를 만족시킬 수는 없답니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 4-4: Solution -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <div class="image-slot" style="max-height:160px;">
+                <span class="slot-desc">[화면 캡처: 군더더기 없이 나에게 꼭 필요한 기능만 넣은 심플 웹 도구]</span>
+              </div>
+
+              <h3 class="slide-title" style="margin-top:6px;">
+                딱 내가 원하는 기능만<br>
+                담아 쓰기로 했어요
+              </h3>
+
+              <div class="box-text">
+                남의 복잡한 룰을 싹 빼고, 바이브코딩으로 내게 꼭 필요한 기능만 쏙 넣었더니 비로소 손에 착 붙는 내 도구가 되었답니다.
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 4-5: Mastery -->
+          <div class="card-slide">
+            <div class="frame-box">
+              <h3 class="slide-title">
+                도구에 끌려다니지 않고<br>
+                도구를 다스리는 일
+              </h3>
+
+              <div class="image-slot">
+                <span class="slot-desc">[선화 일러스트: 나만의 도구 툴킷을 쥐고 여유롭게 작업하는 창작자]</span>
+              </div>
+
+              <div class="box-text">
+                남의 앱에 내 하루를 끼워 맞추지 않고, 내 규칙대로 도구를 직접 조립할 때 진짜 시간 자립이 시작되지 않을까요?
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+          <!-- 4-6: Invitation -->
+          <div class="card-slide">
+            <div class="frame-box" style="justify-content:center; align-items:center; text-align:center;">
+              <h3 class="slide-title" style="font-size:22px; margin-bottom:14px;">
+                나만의 mytt를<br>
+                함께 만들어보세요
+              </h3>
+
+              <div class="box-text center" style="margin-bottom:18px;">
+                내가 능동적으로 내 시간을 다스릴 수 있도록. 코딩 몰라도 내 취향의 도구를 만드는 곳, mytt에서 함께 만들어요!
+              </div>
+
+              <div class="box-text center" style="background:var(--atelier-slate); color:white; border-color:var(--atelier-slate); font-weight:600;">
+                프로필 링크에서 mytt 둘러보기
+              </div>
+              <span class="brand-watermark">mytt atelier · @mytt.kr</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Post 4 Meta -->
+      <div class="post-actions-bar">
+        <div class="action-left">
+          <span>♡</span>
+          <span>💬</span>
+          <span>↗</span>
+        </div>
+        <div class="carousel-dots" id="dots-4">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <span>⚑</span>
+      </div>
+      <div class="post-caption-box">
+        <span class="caption-author">mytt.kr</span>
+        <span class="caption-text">프리랜서마다 생활 리듬이 다른데 어떻게 하나의 앱으로 해결할 수 있을까요? 100명의 프리랜서에겐 100개의 맞춤 도구가 필요합니다.</span>
+        <div class="caption-tags">#프리랜서 #시간관리 #바이브코딩 #mytt #1인창작자 #생산성도구</div>
+        <div class="post-time">방금 전</div>
+      </div>
+    </article>
+
+    </div>
+
+    <!-- App Bottom Nav Bar -->
+    <nav class="mobile-bottom-bar">
+      <button class="icon-btn" onclick="triggerToast('피드 홈 화면입니다.')" aria-label="홈">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="setProfileView('grid')" aria-label="탐색">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="triggerToast('mytt 릴스 숏폼 영상 보기')" aria-label="릴스">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <polygon points="10 8 16 12 10 16 10 8"></polygon>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="setProfileView('feed')" aria-label="프로필">
+        <div style="width:23px; height:23px; border-radius:50%; background:var(--ink-charcoal); color:white; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center;">
+          M
+        </div>
+      </button>
+    </nav>
+
+    <!-- Notification Toast Popup -->
+    <div class="sim-toast" id="simToast">알림 메시지</div>
+
+  </main>
+
+  <!-- Interactive JavaScript Engine -->
+  <script>
+    // Profile Tabs Switching (Grid vs Feed)
+    function setProfileView(mode) {
+      const btnGrid = document.getElementById('btnTabGrid');
+      const btnFeed = document.getElementById('btnTabFeed');
+      const profileGrid = document.getElementById('profileGrid');
+      const feedContainer = document.getElementById('feedContainer');
+
+      if (mode === 'grid') {
+        btnGrid.classList.add('active');
+        btnFeed.classList.remove('active');
+        profileGrid.classList.add('active');
+        feedContainer.style.display = 'none';
+        triggerToast('프로필 그리드 뷰 (3열 보기)');
+      } else {
+        btnFeed.classList.add('active');
+        btnGrid.classList.remove('active');
+        profileGrid.classList.remove('active');
+        feedContainer.style.display = 'block';
+        triggerToast('연속 스크롤 피드 뷰');
+      }
+    }
+
+    // Scroll to specific post from Grid Thumbnail
+    function scrollToPost(postId) {
+      setProfileView('feed');
+      setTimeout(() => {
+        const el = document.getElementById(postId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 80);
+    }
+
+    // ==========================================
+    // V2 Posts Carousel Engine
+    // ==========================================
+    function scrollSlide(trackId, direction) {
+      const track = document.getElementById(trackId);
+      if (!track) return;
+      const slideWidth = track.clientWidth;
+      track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
+    }
+
+    function updateSlideIndicator(trackId, badgeId, dotsId) {
+      const track = document.getElementById(trackId);
+      const badge = document.getElementById(badgeId);
+      const dotsContainer = document.getElementById(dotsId);
+      if (!track || !badge) return;
+
+      const slideWidth = track.clientWidth;
+      const currentIndex = Math.round(track.scrollLeft / slideWidth);
+      const totalSlides = track.children.length;
+
+      badge.textContent = `${currentIndex + 1}/${totalSlides}`;
+
+      if (dotsContainer) {
+        const dots = dotsContainer.querySelectorAll('.dot-node');
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+      }
+    }
+
+    // V2 Heart Like Toggle
+    function toggleLike(btn, counterId) {
+      btn.classList.toggle('liked');
+      const counter = document.getElementById(counterId);
+      if (!counter) return;
+      let count = parseInt(counter.textContent.replace(/[^0-9]/g, '')) || 1000;
+      if (btn.classList.contains('liked')) {
+        count += 1;
+        triggerToast('게시물에 좋아요를 눌렀습니다.');
+      } else {
+        count -= 1;
+      }
+      counter.textContent = `좋아요 ${count.toLocaleString()}개`;
+    }
+
+    // V2 Bookmark Toggle
+    function toggleSave(btn) {
+      btn.classList.toggle('saved');
+      if (btn.classList.contains('saved')) {
+        triggerToast('게시물이 저장되었습니다.');
+      } else {
+        triggerToast('저장이 취소되었습니다.');
+      }
+    }
+
+    // V2 Caption Read More Toggle
+    function toggleCaption(captionId, btn) {
+      const caption = document.getElementById(captionId);
+      if (!caption) return;
+      if (caption.classList.contains('collapsed')) {
+        caption.classList.remove('collapsed');
+        btn.textContent = '접기';
+      } else {
+        caption.classList.add('collapsed');
+        btn.textContent = '...더보기';
+      }
+    }
+
+    // ==========================================
+    // V1 Posts Carousel Engine
+    // ==========================================
+    function moveSlide(postIndex, direction) {
+      const carousel = document.querySelector(`#carousel-${postIndex} .carousel-track`);
+      if (!carousel) return;
+      const slides = Array.from(carousel.querySelectorAll('.card-slide'));
+      if (!slides.length) return;
+
+      const currentScroll = carousel.scrollLeft;
+      let currentIndex = 0;
+      let minDiff = Infinity;
+      slides.forEach((slide, idx) => {
+        const diff = Math.abs(slide.offsetLeft - currentScroll);
+        if (diff < minDiff) {
+          minDiff = diff;
+          currentIndex = idx;
+        }
+      });
+
+      const targetIndex = Math.max(0, Math.min(currentIndex + direction, slides.length - 1));
+      carousel.scrollTo({
+        left: slides[targetIndex].offsetLeft,
+        behavior: 'smooth'
+      });
+    }
+
+    function goToSlide(postIndex, targetIndex) {
+      const carousel = document.querySelector(`#carousel-${postIndex} .carousel-track`);
+      if (!carousel) return;
+      const slides = carousel.querySelectorAll('.card-slide');
+      if (slides[targetIndex]) {
+        carousel.scrollTo({
+          left: slides[targetIndex].offsetLeft,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    function handleScroll(postIndex) {
+      const carousel = document.querySelector(`#carousel-${postIndex} .carousel-track`);
+      if (!carousel) return;
+      const slides = carousel.querySelectorAll('.card-slide');
+      const dots = document.querySelectorAll(`#dots-${postIndex} .dot`);
+      const currentScroll = carousel.scrollLeft;
+
+      let activeIndex = 0;
+      let minDiff = Infinity;
+      slides.forEach((slide, idx) => {
+        const diff = Math.abs(slide.offsetLeft - currentScroll);
+        if (diff < minDiff) {
+          minDiff = diff;
+          currentIndex = idx;
+        }
+      });
+
+      dots.forEach((dot, index) => {
+        if (index === activeIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+
+    // Initialize Clickable Dots for V1
+    document.addEventListener('DOMContentLoaded', () => {
+      [1, 2, 3, 4].forEach(postIndex => {
+        const dots = document.querySelectorAll(`#dots-${postIndex} .dot`);
+        dots.forEach((dot, slideIdx) => {
+          dot.style.cursor = 'pointer';
+          dot.onclick = () => goToSlide(postIndex, slideIdx);
+        });
+      });
+    });
+
+    // Toast Notification System
+    let toastTimeout;
+    function triggerToast(msg) {
+      const toast = document.getElementById('simToast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

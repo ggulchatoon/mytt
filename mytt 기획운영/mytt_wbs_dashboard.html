@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mytt 1기 런칭 WBS 대시보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --surface: #FFFFFF;
+      --surface-sub: #F8F9FA;
+      --text: #111827;
+      --text-sub: #4B5563;
+      --text-muted: #9CA3AF;
+      --border: #E5E7EB;
+      --border-dark: #D1D5DB;
+      
+      --status-done-bg: #F3F4F6;
+      --status-done-text: #111827;
+      --status-done-border: #D1D5DB;
+
+      --status-prog-bg: #111827;
+      --status-prog-text: #FFFFFF;
+      --status-prog-border: #111827;
+
+      --status-todo-bg: #FFFFFF;
+      --status-todo-text: #6B7280;
+      --status-todo-border: #E5E7EB;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Inter", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 32px 40px;
+      min-width: 1200px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1560px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .brand-area h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.02em;
+    }
+    .brand-area h1 span.logo-tag {
+      background: #111827;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0;
+    }
+    .brand-sub {
+      font-size: 13.5px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+    .header-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .meta-pill {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: var(--text-sub);
+    }
+    .meta-pill strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+    .kpi-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .kpi-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+    .progress-bar-wrap {
+      height: 4px;
+      background: #E5E7EB;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #111827;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* Main Layout */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      margin-right: 2px;
+    }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .filter-btn:hover {
+      background: var(--surface-sub);
+      color: var(--text);
+    }
+    .filter-btn.active {
+      background: #111827;
+      border-color: #111827;
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+    .search-input {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12.5px;
+      color: var(--text);
+      background: #FFFFFF;
+      width: 180px;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #111827;
+    }
+    .view-switcher {
+      display: flex;
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .view-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .view-tab-btn.active {
+      background: #FFFFFF;
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* Compare Mode Styles */
+    .compare-toggle-btn {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .compare-toggle-btn:hover {
+      background: #F3F4F6;
+      color: var(--text);
+    }
+    .compare-toggle-btn.active {
+      background: #FEF3C7;
+      border-color: #F59E0B;
+      color: #92400E;
+      box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+    }
+    .compare-state-tag {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #E5E7EB;
+      color: #4B5563;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .compare-toggle-btn.active .compare-state-tag {
+      background: #D97706;
+      color: #FFFFFF;
+    }
+
+    .compare-summary-banner {
+      background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+      border: 1px solid #FCD34D;
+      border-radius: 8px;
+      padding: 12px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 4px rgba(245, 158, 11, 0.08);
+    }
+    .compare-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #92400E;
+    }
+    .compare-summary-pill {
+      background: #F59E0B;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: -0.01em;
+    }
+    .compare-summary-right {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: #B45309;
+    }
+    .compare-summary-right strong {
+      color: #78350F;
+    }
+
+    /* Table Diff Styles */
+    body.is-compare-mode .col-dates {
+      width: 175px;
+    }
+    .date-diff-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .date-diff-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .date-base-struck {
+      text-decoration: line-through;
+      color: #9CA3AF;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+    }
+    .date-curr {
+      color: #111827;
+      font-weight: 700;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .diff-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 3px;
+      line-height: 1.3;
+    }
+    .diff-badge.is-buffer {
+      background: #FEF3C7;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+    .diff-badge.is-new {
+      background: #DBEAFE;
+      color: #1E40AF;
+      border: 1px solid #BFDBFE;
+    }
+    .diff-badge.is-same {
+      background: #F3F4F6;
+      color: #9CA3AF;
+    }
+
+    /* Gantt Compare Styles */
+    .gantt-bars-container.is-compare {
+      height: 44px;
+    }
+    .gantt-ghost-bar {
+      position: absolute;
+      height: 18px;
+      border-radius: 4px;
+      top: 2px;
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      font-size: 10px;
+      color: #6B7280;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(156, 163, 175, 0.12);
+      border: 1.5px dashed #9CA3AF;
+      z-index: 1;
+      cursor: help;
+      transition: all 0.1s ease;
+    }
+    .gantt-ghost-bar:hover {
+      background: rgba(156, 163, 175, 0.25);
+      border-color: #4B5563;
+      color: #111827;
+    }
+    .gantt-bar.is-compare {
+      top: 22px;
+      height: 18px;
+      font-size: 10px;
+      padding: 0 6px;
+      z-index: 2;
+    }
+
+    /* Gantt / Horizontal Bar View */
+    .gantt-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+    }
+    .gantt-header-row {
+      display: grid;
+      grid-template-columns: 240px repeat(7, 1fr);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-align: center;
+    }
+    .gantt-header-label {
+      text-align: left;
+      padding-left: 8px;
+    }
+    .gantt-col-header.is-current {
+      color: #111827;
+      background: rgba(17, 24, 39, 0.05);
+      border-radius: 4px;
+    }
+    .gantt-body {
+      margin-top: 8px;
+    }
+    .gantt-row {
+      display: grid;
+      grid-template-columns: 240px repeat(7, 1fr);
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #F3F4F6;
+      font-size: 12.5px;
+      position: relative;
+    }
+    .gantt-row:hover {
+      background: #F9FAFB;
+    }
+    .gantt-row.is-done .gantt-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .gantt-title-col {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .gantt-bars-container {
+      grid-column: 2 / -1;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      height: 28px;
+      position: relative;
+      align-items: center;
+    }
+    .gantt-grid-col {
+      border-right: 1px solid #E5E7EB;
+      height: 100%;
+    }
+    .gantt-grid-col.is-current {
+      background: rgba(17, 24, 39, 0.03);
+    }
+    .gantt-grid-col:last-child {
+      border-right: none;
+    }
+    .gantt-bar {
+      position: absolute;
+      height: 22px;
+      border-radius: 5px;
+      top: 3px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 11px;
+      color: #fff;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      cursor: pointer;
+      transition: transform 0.1s ease, filter 0.1s ease;
+    }
+    .gantt-bar:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+    .gantt-bar.owner-꿀차 {
+      background: #F59E0B;
+      border: 1px solid #D97706;
+      color: #78350F;
+      font-weight: 700;
+    }
+    .gantt-bar.owner-깨굴 {
+      background: #059669;
+      border: 1px solid #047857;
+    }
+    .gantt-bar.owner-공통 {
+      background: #4B5563;
+      border: 1px solid #374151;
+    }
+    .gantt-bar.status-완료 {
+      opacity: 0.45;
+      filter: grayscale(20%);
+    }
+
+    /* Table */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table.wbs-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    table.wbs-table th {
+      background: var(--surface-sub);
+      color: var(--text-sub);
+      font-weight: 600;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    table.wbs-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--text);
+    }
+    table.wbs-table tr:hover td {
+      background: #F9FAFB;
+    }
+    table.wbs-table tr.is-done td.task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .col-no { width: 50px; color: var(--text-muted); font-size: 11.5px; font-weight: 600; font-family: 'Inter', sans-serif; }
+    .col-cat { width: 130px; font-weight: 600; color: var(--text-sub); font-size: 12.5px; }
+    .col-task { font-size: 13.5px; font-weight: 500; }
+    .col-owner { width: 68px; }
+    .col-dates { width: 105px; font-size: 12px; color: var(--text-sub); text-align: center; font-family: 'Inter', sans-serif; }
+    .col-status { width: 85px; text-align: center; }
+
+    .owner-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      border: 1px solid var(--border);
+      background: var(--surface-sub);
+      color: var(--text-sub);
+    }
+    .owner-pill.owner-꿀차 {
+      background: #FEF3C7;
+      border-color: #FCD34D;
+      color: #92400E;
+    }
+    .owner-pill.owner-깨굴 {
+      background: #D1FAE5;
+      border-color: #A7F3D0;
+      color: #065F46;
+    }
+
+    /* Milestone Styles */
+    .milestone-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .milestone-item {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      transition: all 0.15s ease;
+    }
+    .milestone-item:hover {
+      background: #FFFFFF;
+      border-color: var(--border-dark);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .milestone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .milestone-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .milestone-tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #111827;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+    }
+    .milestone-detail {
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--text-sub);
+    }
+    .milestone-detail strong {
+      color: var(--text);
+    }
+    .milestone-meaning {
+      font-size: 11px;
+      color: #B45309;
+      background: rgba(245, 158, 11, 0.08);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
+      line-height: 1.45;
+    }
+
+    .status-badge {
+      border: 1px solid;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+      text-align: center;
+      transition: all 0.12s;
+    }
+    .status-badge:active { transform: scale(0.94); }
+    .status-badge.완료 {
+      background: var(--status-done-bg);
+      color: var(--status-done-text);
+      border-color: var(--status-done-border);
+    }
+    .status-badge.진행중 {
+      background: var(--status-prog-bg);
+      color: var(--status-prog-text);
+      border-color: var(--status-prog-border);
+    }
+    .status-badge.대기 {
+      background: var(--status-todo-bg);
+      color: var(--status-todo-text);
+      border-color: var(--status-todo-border);
+    }
+
+    /* Side Panel */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .side-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .side-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 18px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 1px;
+      background: var(--border);
+    }
+    .time-item {
+      position: relative;
+      margin-bottom: 16px;
+      padding: 6px 10px 6px 0;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+    .time-item:last-child { margin-bottom: 0; }
+    .time-item.is-current {
+      background: rgba(17, 24, 39, 0.04);
+      padding: 8px 10px 8px 8px;
+      border-radius: 6px;
+    }
+    .time-dot {
+      position: absolute;
+      left: -18px;
+      top: 9px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 2px solid #9CA3AF;
+    }
+    .time-item.is-current .time-dot {
+      background: #111827;
+      border-color: #111827;
+    }
+    .time-week {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .time-week span.curr-tag {
+      background: #111827;
+      color: #FFFFFF;
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 4px;
+    }
+    .time-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 3px;
+    }
+    .time-bullets {
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+    .time-item.is-current .time-bullets {
+      color: var(--text-sub);
+    }
+
+    /* 오늘 진행 중인 태스크 행 강조 */
+    table.wbs-table tr.is-current-period td {
+      background: #F8FAFC;
+    }
+    table.wbs-table tr.is-current-period td.col-task {
+      font-weight: 600;
+    }
+    table.wbs-table tr.is-current-period td.col-dates {
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .rr-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .rr-role {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .rr-role h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .rr-role ul {
+      list-style: none;
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="brand-area">
+      <h1>mytt 1기 런칭 WBS 마스터 대시보드 <span class="logo-tag">D-12</span></h1>
+      <div class="brand-sub">나에게 딱 맞는 시간표를, AI로 직접 만드는 한 달 · 2026.08.23 ~ 2026.10.12</div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill">오늘: <strong>2026.09.30 (수)</strong></div>
+      <div class="meta-pill">팀원: <strong>꿀차</strong> (운영기획/마케팅) · <strong>깨굴</strong> (기술/개발)</div>
+    </div>
+  </header>
+
+  <!-- Top KPI Grid -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">1기 개강 카운트다운</div>
+      <div class="kpi-val" id="ddayDisplay">D-12</div>
+      <div class="kpi-desc">개강일: 2026년 10월 12일 (월)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">전체 태스크 진행률</div>
+      <div class="kpi-val" id="progressPercent">0%</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+      </div>
+      <div class="kpi-desc" id="progressCount">0 / 25 완료</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">클래스 운영 스펙</div>
+      <div class="kpi-val">정원 30명</div>
+      <div class="kpi-desc">4회차 + 오프라인 1회 · 5인 1조 관리</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">동기부여 & 준비물</div>
+      <div class="kpi-val">30,000원 환급</div>
+      <div class="kpi-desc">완주 시 Claude Pro($20) 페이백</div>
+    </div>
+  </div>
+
+  <!-- Dashboard 2-Column Wide Layout -->
+  <div class="dashboard-layout">
+
+    <!-- Left: Table Area -->
+    <div class="main-table-area">
+      
+      <!-- Filter Toolbar -->
+      <div class="toolbar">
+        <div class="filter-group">
+          <span class="filter-label">담당자</span>
+          <button class="filter-btn active" data-filter="all" onclick="setOwnerFilter('all', this)">전체</button>
+          <button class="filter-btn" data-filter="꿀차" onclick="setOwnerFilter('꿀차', this)">꿀차</button>
+          <button class="filter-btn" data-filter="깨굴" onclick="setOwnerFilter('깨굴', this)">깨굴</button>
+          <button class="filter-btn" data-filter="공통" onclick="setOwnerFilter('공통', this)">공통</button>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">상태</span>
+          <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all', this)">전체</button>
+          <button class="filter-btn" data-status="완료" onclick="setStatusFilter('완료', this)">완료</button>
+          <button class="filter-btn" data-status="진행중" onclick="setStatusFilter('진행중', this)">진행중</button>
+          <button class="filter-btn" data-status="대기" onclick="setStatusFilter('대기', this)">대기</button>
+        </div>
+
+        <!-- Compare Toggle Button -->
+        <button class="compare-toggle-btn" id="compareToggleBtn" onclick="toggleCompareMode()">
+          <span>🔍</span> 최초 계획 비교 <span class="compare-state-tag" id="compareStateTag">OFF</span>
+        </button>
+
+        <div class="view-switcher">
+          <button class="view-tab-btn active" id="viewTabTable" onclick="switchView('table')">
+            <span>📋</span> 목록 뷰
+          </button>
+          <button class="view-tab-btn" id="viewTabGantt" onclick="switchView('gantt')">
+            <span>📊</span> 타임라인 바
+          </button>
+        </div>
+
+        <div>
+          <input type="text" class="search-input" id="searchInput" placeholder="태스크 검색..." oninput="renderCurrentView()">
+        </div>
+      </div>
+
+      <!-- Compare Summary Banner -->
+      <div id="compareSummaryBanner" class="compare-summary-banner" style="display: none;">
+        <div class="compare-summary-left">
+          <span class="compare-summary-pill">타임머신 비교 뷰</span>
+          <strong>🌱 최초 초안 (08.23) ➔ 🌿 현재 조정안 (09.30)</strong>
+        </div>
+        <div class="compare-summary-right">
+          <span>총 29개 중 <strong>9개 전략적 일정 조정</strong> 🥐</span>
+          <span>1기 본 모집: <strong>10.02 오픈 ~ 10.11 마감</strong></span>
+          <span>사당 리허설: <strong>10.07 (수)</strong></span>
+        </div>
+      </div>
+
+      <!-- View 1: Interactive Table -->
+      <div id="tableViewWrap">
+        <div class="table-card">
+          <table class="wbs-table">
+            <thead>
+              <tr>
+                <th class="col-no">No.</th>
+                <th class="col-cat">대분류</th>
+                <th class="col-task">세부 작업 (Task)</th>
+                <th class="col-owner">담당</th>
+                <th class="col-dates">일정</th>
+                <th class="col-status">상태</th>
+              </tr>
+            </thead>
+            <tbody id="wbsTbody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;text-align:right;">
+          상태 버튼을 클릭하면 <strong>대기 ➔ 진행중 ➔ 완료</strong> 순으로 변경되며 자동 저장됩니다.
+        </div>
+      </div>
+
+      <!-- View 2: Horizontal Timeline / Gantt Bar View -->
+      <div id="ganttViewWrap" style="display: none;">
+        <div class="gantt-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding: 0 4px;">
+            <div style="font-size:12px; color:var(--text-sub);">
+              총 7주간의 주차별 진행 바 (클릭 시 상태 토글)
+            </div>
+            <div style="display:flex; gap:12px; font-size:11.5px; align-items:center;">
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; border-radius:2px; background:#F59E0B; border:1px solid #D97706; display:inline-block;"></span> 꿀차</span>
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; border-radius:2px; background:#059669; border:1px solid #047857; display:inline-block;"></span> 깨굴</span>
+              <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; border-radius:2px; background:#4B5563; border:1px solid #374151; display:inline-block;"></span> 공통</span>
+            </div>
+          </div>
+
+          <div class="gantt-header-row">
+            <div class="gantt-header-label">세부 작업 (Task)</div>
+            <div class="gantt-col-header">Week 1<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">08.23~</span></div>
+            <div class="gantt-col-header">Week 2<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.01~</span></div>
+            <div class="gantt-col-header">Week 3<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.08~</span></div>
+            <div class="gantt-col-header">Week 4<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.14~</span></div>
+            <div class="gantt-col-header">Week 5<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.21~</span></div>
+            <div class="gantt-col-header is-current">Week 6<br><span style="font-weight:600;font-size:10px;color:#111827;">09.28 (현재)</span></div>
+            <div class="gantt-col-header">Week 7<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">10.05~</span></div>
+          </div>
+
+          <div class="gantt-body" id="ganttBody">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;text-align:right;">
+          타임라인 바 또는 작업명을 클릭하면 <strong>대기 ➔ 진행중 ➔ 완료</strong> 순으로 변경됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Roadmap & R&R Panel -->
+    <div class="side-panel">
+
+      <!-- Timeline Card -->
+      <div class="side-card">
+        <div class="side-card-title">로드맵 타임라인</div>
+        <div class="timeline">
+
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 1 (08.23 ~ 08.31)</div>
+            <div class="time-sub">기획 & 바이브 코딩 검증</div>
+            <div class="time-bullets">• mytt 프로젝트 구상 & 깨굴미팅<br>• 바이브코딩 예시 템플릿 샘플 제작 (깨굴)<br>• '구원이 수강생인 척' 프롬프트 검증</div>
+          </div>
+
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 2 (09.01 ~ 09.07)</div>
+            <div class="time-sub">워크북 개발 & 파일럿 1회차</div>
+            <div class="time-bullets">• 시간농장 인터랙티브 워크북 코딩<br>• 1회차 진행 (6인 시간부자 자각 충격)</div>
+          </div>
+
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 3 (09.08 ~ 09.13)</div>
+            <div class="time-sub">실패 회고 & 킬러앱 개발</div>
+            <div class="time-bullets">• 2회차 코딩 멘붕 ➔ 심야 회고 (피봇)<br>• 『모닝 베이커리』 개발 & 깃허브 배포</div>
+          </div>
+
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 4 (09.14 ~ 09.20)</div>
+            <div class="time-sub">1기 운영안 확정 & 파일럿 완료</div>
+            <div class="time-bullets">• 09.14 1기 클래스 스펙 확정 (4회/30명)<br>• 09.16 파일럿 3회차 배포 완료<br>• 09.18 파일럿 최종 회고 줌 회의 완료</div>
+          </div>
+
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 5 (09.21 ~ 09.27)</div>
+            <div class="time-sub">브랜딩 심화 & 기획회의 (완료)</div>
+            <div class="time-bullets">• 09.21~22 mytt 브랜딩 & 기획회의 완료<br>• 09.26 결제창 & 인스타 디자인 시스템 완료<br>• 09.29 꿀차 생일 🎂</div>
+          </div>
+
+          <div class="time-item is-current">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 6 (09.28 ~ 10.04) <span class="curr-tag">현재</span></div>
+            <div class="time-sub">프로필 완성 & 결제창 구축 & 본 모집 오픈</div>
+            <div class="time-bullets">• 09.30 mytt 프로필 일러스트 완성<br>• 10.01 카드뉴스 9장 & 스토어 결제창 완성<br>• 10.02 꿀차툰 릴스 & 1기 본 모집 오픈 (얼리버드 10명)</div>
+          </div>
+
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 7 (10.05 ~ 10.12)</div>
+            <div class="time-sub">사당 실전 리허설 & 최종 패키징 & 개강</div>
+            <div class="time-bullets">• 10.07 사당 오프라인 1기 실전 리허설 (지인 2인)<br>• 10.08~10.11 에셋+코드 패키징 & 디스코드 안내<br>• 10.11 자정 1기 본 모집 마감<br>• 10.12 1기 정식 개강 🚀</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- R&R Card -->
+      <div class="side-card">
+        <div class="side-card-title">파트너 R&R 분업</div>
+        <div class="rr-box">
+          <div class="rr-role">
+            <h4>꿀차 (기획/마케팅/디자인)</h4>
+            <ul>
+              <li>• mytt 전체 운영 기획 총괄</li>
+              <li>• 인스타 마케팅 & 모객 릴스</li>
+              <li>• 시간관리 방법론 구체화</li>
+              <li>• 꿀차툰 PNG 에셋 15종 제작</li>
+              <li>• 손쉬운 디자인 프롬프트 개발</li>
+            </ul>
+          </div>
+          <div class="rr-role">
+            <h4>깨굴 (기술/개발)</h4>
+            <ul>
+              <li>• 디스코드 서버 구축 & 운영 환경</li>
+              <li>• 1회차 워크북 디자인/코드 보강</li>
+              <li>• 스타터 HTML 템플릿 3종</li>
+              <li>• 복붙 프롬프트 치트키북</li>
+              <li>• 실습 기술 안전망 & 에러 케어</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Major Milestones Card -->
+      <div class="side-card">
+        <div class="side-card-title">1기 런칭 4대 중간 마일스톤</div>
+        <div class="milestone-list">
+          
+          <div class="milestone-item">
+            <div class="milestone-header">
+              <div class="milestone-title">M1. 파일럿 0기 졸업 & 후기 자산화</div>
+              <span class="milestone-tag" style="background:#E5E7EB;color:#374151;">09.18 달성 완료</span>
+            </div>
+            <div class="milestone-detail">
+              • <strong>달성 조건:</strong> 파일럿 6인 전원 웹앱 배포 완료 + 카톡방 감동 후기 캡처 3장 이상 확보
+            </div>
+          </div>
+
+          <div class="milestone-item">
+            <div class="milestone-header">
+              <div class="milestone-title">M2. 스토어 결제창 오픈 & 릴스 빌드업</div>
+              <span class="milestone-tag">10.02 (금)</span>
+            </div>
+            <div class="milestone-detail">
+              • <strong>달성 조건:</strong> 결제창 상세페이지 구축 완료 + 꿀차툰 본계정 공감 만화 릴스 업로드
+            </div>
+          </div>
+
+          <div class="milestone-item">
+            <div class="milestone-header">
+              <div class="milestone-title">M3. mytt 1기 본 모집 & 슈퍼 얼리버드 완판</div>
+              <span class="milestone-tag">10.02 (금) ~ 10.11 (일)</span>
+            </div>
+            <div class="milestone-detail">
+              • <strong>달성 조건:</strong> @mytt 인스타 피드 박제 & 본 공지, 선착순 얼리버드 10명 완판 & 개강 직전 30명 마감
+            </div>
+          </div>
+
+          <div class="milestone-item">
+            <div class="milestone-header">
+              <div class="milestone-title">M4. 사당 실전 리허설 & 스타터킷 패키징</div>
+              <span class="milestone-tag">10.07 (수) ~ 10.10 (토)</span>
+            </div>
+            <div class="milestone-detail">
+              • <strong>달성 조건:</strong> 10/7 사당 2인 리허설 완료 + 깨굴 템플릿 3종 & 꿀차 에셋 15종 최종 합체
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+        </div>
+      </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const INITIAL_TASKS = [
+  { no:"1.0", cat:"기획 & 검증", task:"mytt 프로젝트 구상 & 깨굴미팅", owner:"공통", start:"08.23", end:"08.23", status:"완료" },
+  { no:"1.1", cat:"기획 & 검증", task:"1인 창작자 시간관리 방법론 개념 체계화", owner:"꿀차", start:"08.26", end:"08.27", status:"완료" },
+  { no:"1.2", cat:"기획 & 검증", task:"바이브코딩 예시 템플릿 샘플 제작", owner:"깨굴", start:"08.27", end:"08.28", status:"완료" },
+  { no:"1.3", cat:"기획 & 검증", task:"'구원이 수강생인 척' 바이브 코딩 시뮬레이션", owner:"공통", start:"08.29", end:"08.29", status:"완료" },
+  { no:"2.0", cat:"파일럿 모임 (0기)", task:"파일럿 참가자 홍보 모집 및 6인 선발", owner:"꿀차", start:"08.25", end:"08.28", status:"완료" },
+  { no:"2.1", cat:"파일럿 모임 (0기)", task:"웨일온 화상회의 세팅 & 단톡방 개설", owner:"꿀차", start:"09.01", end:"09.04", status:"완료" },
+  { no:"2.2", cat:"파일럿 모임 (0기)", task:"파일럿 1회차 줌 모임 진행 (90분)", owner:"꿀차", start:"09.07", end:"09.07", status:"완료" },
+  { no:"2.3", cat:"파일럿 모임 (0기)", task:"2회차 실습 방식 논의 & 예제 준비 회의", owner:"공통", start:"09.08", end:"09.08", status:"완료" },
+  { no:"2.4", cat:"파일럿 모임 (0기)", task:"파일럿 2회차 바이브 코딩 실습 진행", owner:"공통", start:"09.09", end:"09.09", status:"완료" },
+  { no:"2.5", cat:"파일럿 모임 (0기)", task:"파일럿 2회차 실패 요인 심야 회고 회의", owner:"공통", start:"09.09", end:"09.09", status:"완료" },
+  { no:"2.6", cat:"파일럿 모임 (0기)", task:"파일럿 3회차 줌 모임 진행 (깃허브 배포)", owner:"공통", start:"09.16", end:"09.16", status:"완료" },
+  { no:"2.7", cat:"파일럿 모임 (0기)", task:"파일럿 전체 최종 회고 회의 & 찐 후기 설문 취합", owner:"공통", start:"09.16", end:"09.18", status:"완료" },
+  { no:"3.0", cat:"클래스 기획/제작", task:"'나의 시간 농장' 인터랙티브 웹 워크북 제작", owner:"꿀차", start:"09.04", end:"09.06", status:"완료" },
+  { no:"3.1", cat:"클래스 기획/제작", task:"기상 알람 웹앱 『모닝 베이커리』 코딩 & 배포", owner:"꿀차", start:"09.10", end:"09.10", status:"완료" },
+  { no:"3.2", cat:"클래스 기획/제작", task:"1기 스펙 확정 (4회+오프1회, 30명, 5인1조)", owner:"공통", start:"09.14", end:"09.14", status:"완료" },
+  { no:"3.3", cat:"클래스 기획/제작", task:"디스코드 서버 세팅 (안내, 조별채널, SOS)", owner:"깨굴", start:"09.14", end:"09.17", status:"진행중" },
+  { no:"3.4", cat:"클래스 기획/제작", task:"1회차 워크북 디자인/코드 보강 & 진입장벽 완화", owner:"깨굴", start:"09.15", end:"09.20", status:"진행중" },
+  { no:"3.5", cat:"클래스 기획/제작", task:"mytt 브랜딩 & 클래스 기획 심층 회의", owner:"공통", start:"09.21", end:"09.22", status:"완료" },
+  { no:"4.0", cat:"1기 마케팅/모객", task:"mytt 쇼룸 인스타 계정 & 프로필 완성", owner:"꿀차", start:"09.17", end:"09.30", status:"완료" },
+  { no:"4.1", cat:"1기 마케팅/모객", task:"꿀차툰 본계정 시간관리 공감 만화 릴스 업로드", owner:"꿀차", start:"10.02", end:"10.02", status:"대기" },
+  { no:"4.2", cat:"1기 마케팅/모객", task:"꿀차툰스토어 1기 수강권 상품 등록 & 상세페이지", owner:"꿀차", start:"10.01", end:"10.02", status:"진행중" },
+  { no:"4.3", cat:"1기 마케팅/모객", task:"mytt 1기 본 모집 개시 (선착순 얼리버드)", owner:"꿀차", start:"10.02", end:"10.11", status:"대기" },
+  { no:"4.4", cat:"1기 마케팅/모객", task:"1기 잔여석 추가 모집 & 단톡방 사전 안내", owner:"꿀차", start:"10.08", end:"10.11", status:"대기" },
+  { no:"4.5", cat:"클래스 기획/제작", task:"사당 오프라인 1기 실전 리허설 (지인 2인 테스트)", owner:"공통", start:"10.07", end:"10.07", status:"대기" },
+  { no:"5.0", cat:"자료 & 툴킷 준비", task:"안 깨지는 스타터 HTML 템플릿 3종 코드화", owner:"깨굴", start:"09.28", end:"10.04", status:"진행중" },
+  { no:"5.1", cat:"자료 & 툴킷 준비", task:"비개발자용 단계별 복붙 프롬프트 치트키 작성", owner:"깨굴", start:"10.01", end:"10.07", status:"대기" },
+  { no:"5.2", cat:"자료 & 툴킷 준비", task:"꿀차툰 손그림 PNG 15종 & 강의안 에셋 제작", owner:"꿀차", start:"10.05", end:"10.08", status:"대기" },
+  { no:"5.3", cat:"자료 & 툴킷 준비", task:"꿀차 에셋 + 깨굴 코드 합체 테스트 & 최종 리허설", owner:"공통", start:"10.08", end:"10.11", status:"대기" },
+  { no:"6.0", cat:"1기 운영", task:"1회차 줌 라이브 (시간 고해성사 & 조별 아지트)", owner:"공통", start:"10.12", end:"10.12", status:"대기" }
+];
+
+const STORAGE_KEY = "mytt_wbs_tasks_minimal_v6";
+let tasks = [];
+
+function loadTasks() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      tasks = JSON.parse(saved);
+      return;
+    }
+  } catch(e) {}
+  tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+}
+
+function saveTasks() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  updateKPIs();
+}
+
+let curOwnerFilter = "all";
+let curStatusFilter = "all";
+
+const BASELINE_TASKS = {
+  "1.0": { start: "08.23", end: "08.23" },
+  "1.1": { start: "08.26", end: "08.27" },
+  "1.2": { start: "08.27", end: "08.28" },
+  "1.3": { start: "08.29", end: "08.29" },
+  "2.0": { start: "08.25", end: "08.28" },
+  "2.1": { start: "09.01", end: "09.04" },
+  "2.2": { start: "09.07", end: "09.07" },
+  "2.3": { start: "09.08", end: "09.08" },
+  "2.4": { start: "09.09", end: "09.09" },
+  "2.5": { start: "09.09", end: "09.09" },
+  "2.6": { start: "09.16", end: "09.16" },
+  "2.7": { start: "09.18", end: "09.18" },
+  "3.0": { start: "09.04", end: "09.06" },
+  "3.1": { start: "09.10", end: "09.10" },
+  "3.2": { start: "09.14", end: "09.14" },
+  "3.3": { start: "09.14", end: "09.17" },
+  "3.4": { start: "09.17", end: "09.19" },
+  "3.5": null,
+  "4.0": { start: "09.17", end: "09.17" },
+  "4.1": { start: "09.18", end: "09.18" },
+  "4.2": { start: "09.21", end: "09.21" },
+  "4.3": { start: "09.22", end: "09.26" },
+  "4.4": { start: "09.27", end: "10.11" },
+  "4.5": null,
+  "5.0": { start: "09.22", end: "09.30" },
+  "5.1": { start: "10.01", end: "10.07" },
+  "5.2": { start: "10.01", end: "10.07" },
+  "5.3": { start: "10.10", end: "10.11" },
+  "6.0": { start: "10.12", end: "10.12" }
+};
+
+let isCompareMode = false;
+
+function toggleCompareMode() {
+  isCompareMode = !isCompareMode;
+  document.body.classList.toggle("is-compare-mode", isCompareMode);
+  
+  const btn = document.getElementById("compareToggleBtn");
+  if (btn) btn.classList.toggle("active", isCompareMode);
+  
+  const tag = document.getElementById("compareStateTag");
+  if (tag) tag.textContent = isCompareMode ? "ON" : "OFF";
+  
+  const banner = document.getElementById("compareSummaryBanner");
+  if (banner) banner.style.display = isCompareMode ? "flex" : "none";
+  
+  renderCurrentView();
+}
+
+function calcDayDiff(d1, d2) {
+  try {
+    const [m1, day1] = d1.split(".").map(Number);
+    const [m2, day2] = d2.split(".").map(Number);
+    const dt1 = new Date(2026, m1 - 1, day1);
+    const dt2 = new Date(2026, m2 - 1, day2);
+    return Math.round((dt2 - dt1) / (1000 * 60 * 60 * 24));
+  } catch(e) {
+    return 0;
+  }
+}
+
+function setOwnerFilter(owner, btn) {
+  curOwnerFilter = owner;
+  btn.parentElement.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderCurrentView();
+}
+
+function setStatusFilter(status, btn) {
+  curStatusFilter = status;
+  btn.parentElement.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderCurrentView();
+}
+
+function toggleStatus(idx) {
+  const cur = tasks[idx].status;
+  if (cur === "대기") tasks[idx].status = "진행중";
+  else if (cur === "진행중") tasks[idx].status = "완료";
+  else tasks[idx].status = "대기";
+  saveTasks();
+  renderCurrentView();
+}
+
+function updateKPIs() {
+  const total = tasks.length;
+  const done = tasks.filter(t => t.status === "완료").length;
+  const pct = Math.round((done / total) * 100);
+
+  document.getElementById("progressPercent").textContent = `${pct}%`;
+  document.getElementById("progressFill").style.width = `${pct}%`;
+  document.getElementById("progressCount").textContent = `${done} / ${total} 완료`;
+}
+
+function isDateInRange(startStr, endStr, targetMonth, targetDay) {
+  try {
+    const [sM, sD] = startStr.split(".").map(Number);
+    const [eM, eD] = endStr.split(".").map(Number);
+    const sVal = sM * 100 + sD;
+    const eVal = eM * 100 + eD;
+    const tVal = targetMonth * 100 + targetDay;
+    return tVal >= sVal && tVal <= eVal;
+  } catch(e) {
+    return false;
+  }
+}
+
+let currentView = "table";
+
+function switchView(view) {
+  currentView = view;
+  const tableWrap = document.getElementById("tableViewWrap");
+  const ganttWrap = document.getElementById("ganttViewWrap");
+  const btnTable = document.getElementById("viewTabTable");
+  const btnGantt = document.getElementById("viewTabGantt");
+
+  if (view === "table") {
+    tableWrap.style.display = "block";
+    ganttWrap.style.display = "none";
+    btnTable.classList.add("active");
+    btnGantt.classList.remove("active");
+    renderTable();
+  } else {
+    tableWrap.style.display = "none";
+    ganttWrap.style.display = "block";
+    btnTable.classList.remove("active");
+    btnGantt.classList.add("active");
+    renderGantt();
+  }
+}
+
+function renderCurrentView() {
+  if (currentView === "table") renderTable();
+  else renderGantt();
+}
+
+// 7주간 기준일 (2026.08.23 ~ 2026.10.12)
+const WEEKS = [
+  { w: 1, start: new Date(2026, 7, 23), end: new Date(2026, 7, 31, 23, 59, 59) },
+  { w: 2, start: new Date(2026, 8, 1), end: new Date(2026, 8, 7, 23, 59, 59) },
+  { w: 3, start: new Date(2026, 8, 8), end: new Date(2026, 8, 13, 23, 59, 59) },
+  { w: 4, start: new Date(2026, 8, 14), end: new Date(2026, 8, 20, 23, 59, 59) },
+  { w: 5, start: new Date(2026, 8, 21), end: new Date(2026, 8, 27, 23, 59, 59) },
+  { w: 6, start: new Date(2026, 8, 28), end: new Date(2026, 9, 4, 23, 59, 59), current: true },
+  { w: 7, start: new Date(2026, 9, 5), end: new Date(2026, 9, 12, 23, 59, 59) }
+];
+
+function getWeekIndex(dateStr) {
+  const [m, d] = dateStr.split(".").map(Number);
+  const target = new Date(2026, m - 1, d, 12, 0, 0).getTime();
+  for (let i = 0; i < WEEKS.length; i++) {
+    if (target >= WEEKS[i].start.getTime() && target <= WEEKS[i].end.getTime()) {
+      return i;
+    }
+  }
+  if (target < WEEKS[0].start.getTime()) return 0;
+  return WEEKS.length - 1;
+}
+
+function renderTable() {
+  const query = (document.getElementById("searchInput").value || "").toLowerCase();
+  const tbody = document.getElementById("wbsTbody");
+  tbody.innerHTML = "";
+
+  const todayM = 9, todayD = 30; // 2026.09.30 기준
+
+  tasks.forEach((t, idx) => {
+    if (curOwnerFilter !== "all" && t.owner !== curOwnerFilter) return;
+    if (curStatusFilter !== "all" && t.status !== curStatusFilter) return;
+    if (query && !t.task.toLowerCase().includes(query) && !t.cat.toLowerCase().includes(query)) return;
+
+    const tr = document.createElement("tr");
+    if (t.status === "완료") tr.classList.add("is-done");
+
+    const isTodayTask = isDateInRange(t.start, t.end, todayM, todayD);
+    if (isTodayTask) {
+      tr.classList.add("is-current-period");
+    }
+
+    const currDateText = (t.start === t.end) ? t.start : `${t.start} ~ ${t.end}`;
+    let dateColHtml = currDateText;
+
+    if (isCompareMode) {
+      const base = BASELINE_TASKS[t.no];
+      if (!base) {
+        dateColHtml = `
+          <div class="date-diff-wrap">
+            <span class="date-curr">${currDateText}</span>
+            <span class="diff-badge is-new">✨ 신규 추가</span>
+          </div>
+        `;
+      } else if (base.start === t.start && base.end === t.end) {
+        dateColHtml = `
+          <div class="date-diff-wrap">
+            <span class="date-curr">${currDateText}</span>
+            <span class="diff-badge is-same">정시 준수</span>
+          </div>
+        `;
+      } else {
+        const baseDateText = (base.start === base.end) ? base.start : `${base.start} ~ ${base.end}`;
+        const diffDays = calcDayDiff(base.start, t.start);
+        let badgeLabel = "";
+        if (diffDays > 0) badgeLabel = `+${diffDays}일 버퍼`;
+        else if (diffDays < 0) badgeLabel = `${diffDays}일 조기`;
+        else {
+          const endDiff = calcDayDiff(base.end, t.end);
+          badgeLabel = `+${endDiff}일 연장`;
+        }
+        dateColHtml = `
+          <div class="date-diff-wrap">
+            <div class="date-diff-row">
+              <span class="date-base-struck">${baseDateText}</span>
+              <span style="color:var(--text-muted);font-size:10px;">➔</span>
+              <span class="date-curr">${currDateText}</span>
+            </div>
+            <span class="diff-badge is-buffer">${badgeLabel}</span>
+          </div>
+        `;
+      }
+    }
+
+    tr.innerHTML = `
+      <td class="col-no">${t.no}</td>
+      <td class="col-cat">${t.cat}</td>
+      <td class="col-task task-title">
+        ${t.task}
+        ${isTodayTask ? '<span style="font-size:10.5px;color:#111827;background:#E2E8F0;padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:600;">오늘</span>' : ''}
+      </td>
+      <td class="col-owner"><span class="owner-pill owner-${t.owner}">${t.owner}</span></td>
+      <td class="col-dates">${dateColHtml}</td>
+      <td class="col-status">
+        <span class="status-badge ${t.status}" onclick="toggleStatus(${idx})">${t.status}</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderGantt() {
+  const query = (document.getElementById("searchInput").value || "").toLowerCase();
+  const container = document.getElementById("ganttBody");
+  container.innerHTML = "";
+
+  const colWidthPct = 100 / 7; // 14.2857%
+
+  tasks.forEach((t, idx) => {
+    if (curOwnerFilter !== "all" && t.owner !== curOwnerFilter) return;
+    if (curStatusFilter !== "all" && t.status !== curStatusFilter) return;
+    if (query && !t.task.toLowerCase().includes(query) && !t.cat.toLowerCase().includes(query)) return;
+
+    const startWeek = getWeekIndex(t.start);
+    const endWeek = getWeekIndex(t.end);
+    const spanWeeks = (endWeek - startWeek) + 1;
+
+    const leftPct = startWeek * colWidthPct;
+    const widthPct = spanWeeks * colWidthPct;
+
+    const row = document.createElement("div");
+    row.className = `gantt-row ${t.status === "완료" ? "is-done" : ""}`;
+
+    let ghostBarHtml = "";
+    let shiftTag = "";
+
+    if (isCompareMode) {
+      const base = BASELINE_TASKS[t.no];
+      if (base) {
+        const baseStartWeek = getWeekIndex(base.start);
+        const baseEndWeek = getWeekIndex(base.end);
+        const baseSpan = (baseEndWeek - baseStartWeek) + 1;
+        const baseLeftPct = baseStartWeek * colWidthPct;
+        const baseWidthPct = baseSpan * colWidthPct;
+        const baseDateText = base.start === base.end ? base.start : `${base.start}~${base.end}`;
+
+        ghostBarHtml = `
+          <div class="gantt-ghost-bar" 
+               style="left: calc(${baseLeftPct.toFixed(3)}% + 3px); width: calc(${baseWidthPct.toFixed(3)}% - 6px);"
+               title="[최초 계획 (초안)] ${t.task} (${base.start} ~ ${base.end})">
+            👻 초안: ${baseDateText}
+          </div>
+        `;
+
+        if (base.start !== t.start || base.end !== t.end) {
+          const diffDays = calcDayDiff(base.start, t.start);
+          if (diffDays > 0) shiftTag = ` <span style="background:#B45309;padding:1px 4px;border-radius:3px;font-size:9.5px;margin-left:3px;">+${diffDays}d 버퍼</span>`;
+          else if (diffDays < 0) shiftTag = ` <span style="background:#0D9488;padding:1px 4px;border-radius:3px;font-size:9.5px;margin-left:3px;">${diffDays}d</span>`;
+          else {
+            const endDiff = calcDayDiff(base.end, t.end);
+            shiftTag = ` <span style="background:#B45309;padding:1px 4px;border-radius:3px;font-size:9.5px;margin-left:3px;">+${endDiff}d 연장</span>`;
+          }
+        }
+      } else {
+        shiftTag = ` <span style="background:#1D4ED8;padding:1px 4px;border-radius:3px;font-size:9.5px;margin-left:3px;">신규</span>`;
+      }
+    }
+
+    const dateText = (t.start === t.end) ? t.start : `${t.start}~${t.end}`;
+
+    row.innerHTML = `
+      <div class="gantt-title-col">
+        <span style="font-size:11px;font-weight:600;color:var(--text-muted);width:26px;">${t.no}</span>
+        <span class="gantt-title" style="cursor:pointer;" title="${t.task}" onclick="toggleStatus(${idx})">${t.task}</span>
+      </div>
+      <div class="gantt-bars-container ${isCompareMode ? 'is-compare' : ''}">
+        <div class="gantt-grid-col"></div>
+        <div class="gantt-grid-col"></div>
+        <div class="gantt-grid-col"></div>
+        <div class="gantt-grid-col"></div>
+        <div class="gantt-grid-col"></div>
+        <div class="gantt-grid-col is-current"></div>
+        <div class="gantt-grid-col"></div>
+        ${ghostBarHtml}
+        <div class="gantt-bar owner-${t.owner} status-${t.status} ${isCompareMode ? 'is-compare' : ''}" 
+             style="left: calc(${leftPct.toFixed(3)}% + 3px); width: calc(${widthPct.toFixed(3)}% - 6px);"
+             title="${t.task} (${t.owner} | ${t.start} ~ ${t.end} | ${t.status})"
+             onclick="toggleStatus(${idx})">
+          ${t.status === "완료" ? "✓ " : ""}${t.owner} · ${dateText}${shiftTag}
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+loadTasks();
+updateKPIs();
+renderTable();
+</script>
+
+</body>
+</html>

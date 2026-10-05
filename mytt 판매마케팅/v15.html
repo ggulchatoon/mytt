@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mytt : 나만의 시간관리툴 만들기 1기</title>
+
+  <!-- Noto Serif KR (본명조 계열) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Pretendard for Latin/mono elements -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <style>
+    /* ============================================================
+       mytt v15 : Organic Editorial Design System (캡처 전용 / 비인터랙티브)
+       - v15 : 히어로 전면 재설계 (가독성 개선) · 상단 리본 삭제
+       - 본명조 (Noto Serif KR) · 올리브 & 오트밀 팔레트
+       - 오렌지레드 포인트 · 브라운블랙 텍스트
+       - 모바일 우선 / 스마트스토어 캡처 최적화
+       ============================================================ */
+
+    :root {
+      /* ─── Color System ─── */
+      --cream-white:   #FAF8F2;   /* 크림 화이트 (페이지 배경) */
+      --oatmeal:       #E8D5B5;   /* 오트밀 베이지 (카드/섹션 배경) */
+      --oatmeal-mid:   #D4BC96;   /* 오트밀 미드 (테두리/구분선) */
+      --olive:         #444E1C;   /* 다크 올리브 (강조 배경) */
+      --olive-light:   #6B7A2D;   /* 라이트 올리브 (보조 강조) */
+      --vermilion:     #F23A00;   /* 오렌지레드 (포인트 컬러) */
+      --brown-black:   #2E2018;   /* 브라운블랙 (기본 텍스트) */
+      --brown-mid:     #5C3D28;   /* 미드 브라운 (서브 텍스트) */
+      --brown-light:   #9A7860;   /* 라이트 브라운 (캡션/설명) */
+      --white:         #FFFFFF;
+
+      /* ─── Typography ─── */
+      --font-serif: 'Noto Serif KR', 'Apple Myungjo', 'Batang', serif;
+      --font-sans:  'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--cream-white);
+      color: var(--brown-black);
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.95;
+      padding-bottom: 0;
+      word-break: keep-all;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Layout ─── */
+    .page-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--cream-white);
+      min-height: 100vh;
+    }
+
+    /* ─── Hero (v15 재설계) ─── */
+    .hero {
+      padding: 40px 24px 44px;
+      border-bottom: 2px solid var(--oatmeal-mid);
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--brown-light);
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .hero-stamp {
+      background: var(--brown-black);
+      color: var(--oatmeal);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+    }
+    .hero-date { color: var(--brown-black); font-weight: 700; }
+
+    /* 헤드라인 */
+    .hero-kicker {
+      font-family: var(--font-sans);
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--brown-light);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -1.4px;
+      color: var(--brown-black);
+      margin-bottom: 18px;
+    }
+    .hero-title em {
+      font-style: normal;
+      color: var(--vermilion);
+    }
+    .hero-sub {
+      font-family: var(--font-sans);
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: var(--brown-mid);
+      margin-bottom: 26px;
+    }
+    .hero-sub strong { color: var(--brown-black); font-weight: 800; }
+
+    /* 신뢰 배지 */
+    .trust-strip {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .trust-pill {
+      background: var(--oatmeal);
+      border: 1px solid var(--oatmeal-mid);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--brown-mid);
+      font-weight: 600;
+    }
+    .trust-pill strong {
+      color: var(--brown-black);
+      font-weight: 900;
+      font-size: 15px;
+    }
+    .trust-note {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      color: var(--brown-light);
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    /* 수강권 카드 (개요 · 2단) */
+    .tracks-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      margin-bottom: 14px;
+      align-items: stretch;
+    }
+    .track-card {
+      position: relative;
+      border: 2px solid var(--oatmeal-mid);
+      border-radius: 13px;
+      padding: 20px 15px 16px;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+    }
+    .track-card.pro {
+      border-color: var(--olive);
+      background: #FCFBF6;
+      box-shadow: 3px 3px 0 rgba(68,78,28,0.14);
+    }
+    .track-flag {
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      background: var(--vermilion);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+    }
+    .track-tier {
+      font-family: var(--font-sans);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      color: var(--brown-black);
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .track-card.pro .track-tier { color: var(--olive); }
+    .track-term {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brown-light);
+      margin-bottom: 11px;
+    }
+    .track-price {
+      font-family: var(--font-sans);
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--brown-black);
+      line-height: 1.1;
+    }
+    .track-price span {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+      margin-left: 1px;
+    }
+    .track-list {
+      list-style: none;
+      margin: 13px 0 0;
+      padding-top: 13px;
+      border-top: 1.5px dashed var(--oatmeal-mid);
+      flex: 1;
+    }
+    .track-list li {
+      position: relative;
+      padding-left: 13px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      line-height: 1.75;
+      color: var(--brown-mid);
+    }
+    .track-list li::before {
+      content: '';
+      position: absolute;
+      left: 1px;
+      top: 9px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--oatmeal-mid);
+    }
+    .track-card.pro .track-list li::before { background: var(--olive-light); }
+    .track-list li b { color: var(--brown-black); font-weight: 800; }
+    .track-foot {
+      margin-top: 11px;
+      padding-top: 10px;
+      border-top: 1px solid var(--oatmeal);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brown-light);
+    }
+
+    /* 환급 안내 띠 */
+    .payback-strip {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      background: var(--oatmeal);
+      border-radius: 10px;
+      padding: 15px 17px;
+      margin-bottom: 28px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--brown-mid);
+    }
+    .payback-strip strong { color: var(--brown-black); font-weight: 800; font-size: 13.5px; }
+    .payback-strip span { font-size: 12px; color: var(--brown-light); }
+    .payback-badge {
+      background: var(--olive);
+      color: var(--oatmeal);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* 추천 대상 */
+    .target-box {
+      background: var(--white);
+      border: 2px solid var(--oatmeal-mid);
+      border-radius: 12px;
+      padding: 20px 20px 18px;
+    }
+    .target-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--brown-black);
+      margin-bottom: 12px;
+    }
+    .target-list { list-style: none; }
+    .target-list li {
+      position: relative;
+      padding-left: 25px;
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: var(--brown-mid);
+      margin-bottom: 9px;
+    }
+    .target-list li:last-child { margin-bottom: 0; }
+    .target-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--vermilion);
+      font-weight: 900;
+      font-size: 15px;
+    }
+    .target-list li b { color: var(--brown-black); font-weight: 800; }
+
+    /* ─── Common Section ─── */
+    .section {
+      padding: 56px 28px;
+      border-bottom: 1.5px solid var(--oatmeal);
+    }
+    .sec-eyebrow {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--vermilion);
+      letter-spacing: 0.8px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .sec-heading {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.42;
+      letter-spacing: -0.3px;
+      color: var(--brown-black);
+      margin-bottom: 14px;
+    }
+    .sec-lead {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      color: var(--brown-mid);
+      line-height: 1.95;
+      margin-bottom: 28px;
+    }
+
+    /* ─── SECTION 1 : Problem ─── */
+    .empathy-quote {
+      border-left: 3px solid var(--oatmeal-mid);
+      padding: 16px 18px;
+      margin: 0 0 28px;
+      background: var(--white);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .pain-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .pain-item {
+      background: var(--white);
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 12px;
+      padding: 20px 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .pain-num {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 900;
+      background: var(--brown-black);
+      color: var(--oatmeal);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pain-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 5px;
+    }
+    .pain-desc {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+    }
+
+    /* ─── SECTION 2 : Solution ─── */
+    .paradigm-banner {
+      background: var(--olive);
+      color: var(--cream-white);
+      border-radius: 14px;
+      padding: 28px 22px;
+      margin: 24px 0 32px;
+    }
+    .paradigm-banner h3 {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.45;
+    }
+    .paradigm-banner p {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      color: var(--oatmeal);
+      line-height: 1.9;
+    }
+
+    /* 소제목 (sec-heading 하위) */
+    .sub-heading {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: -0.2px;
+      color: var(--brown-black);
+      margin: 36px 0 16px;
+    }
+
+    /* 이미지/GIF 슬롯 */
+    .media-slot {
+      margin: 26px 0 32px;
+      border: 2px dashed var(--oatmeal-mid);
+      border-radius: 14px;
+      background: var(--oatmeal);
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .media-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .media-slot-inner {
+      text-align: center;
+      font-family: var(--font-sans);
+    }
+    .media-slot-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--brown-mid);
+      margin-bottom: 5px;
+    }
+    .media-slot-note {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--brown-light);
+      letter-spacing: 0.3px;
+    }
+
+    /* 3단계 */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0 0;
+    }
+    .step-item {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 12px;
+      padding: 18px 18px 18px 16px;
+      background: var(--white);
+    }
+    .step-icon {
+      flex-shrink: 0;
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      background: var(--cream-white);
+      border: 1.5px solid var(--oatmeal-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .step-icon svg { width: 27px; height: 27px; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-badge {
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 800;
+      background: var(--olive);
+      color: var(--oatmeal);
+      padding: 3px 9px;
+      border-radius: 3px;
+      display: inline-block;
+      letter-spacing: 0.4px;
+      margin-bottom: 7px;
+    }
+    .step-name {
+      font-family: var(--font-serif);
+      font-size: 17.5px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 5px;
+    }
+    .step-desc {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--brown-mid);
+    }
+
+    /* 왜 mytt인가 */
+    .objection {
+      margin: 44px 0 20px;
+      padding: 22px 20px;
+      border-radius: 12px;
+      background: var(--brown-black);
+      color: var(--cream-white);
+    }
+    .objection-q {
+      font-family: var(--font-serif);
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+    .objection-a {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: var(--oatmeal);
+    }
+    .objection-a strong { color: var(--vermilion); font-weight: 800; }
+
+    .reasons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .reason-card {
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 12px;
+      padding: 20px 18px 16px;
+      background: var(--white);
+    }
+    .reason-stop {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-serif);
+      font-size: 17.5px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 8px;
+    }
+    .reason-num {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--white);
+      background: var(--brown-light);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .reason-desc {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: var(--brown-light);
+      margin-bottom: 14px;
+    }
+    .reason-desc em { font-style: normal; color: var(--brown-mid); font-weight: 700; }
+    .reason-fix {
+      border-top: 1.5px dashed var(--oatmeal-mid);
+      padding-top: 13px;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: var(--brown-black);
+      font-weight: 600;
+    }
+    .reason-note {
+      display: block;
+      margin-top: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--olive);
+      letter-spacing: -0.1px;
+    }
+    .reason-note::before { content: '+ '; }
+    .reason-tag {
+      display: inline-block;
+      background: var(--olive);
+      color: var(--oatmeal);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.4px;
+      margin-right: 7px;
+      vertical-align: 2px;
+    }
+
+    /* ─── SECTION 3 : Showcase ─── */
+    .showcase-group-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--brown-black);
+      margin: 36px 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .showcase-sub {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--brown-light);
+    }
+
+    .showcase-card {
+      border: 2px solid var(--oatmeal-mid);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      background: var(--white);
+    }
+    .browser-bar {
+      background: var(--oatmeal);
+      border-bottom: 1.5px solid var(--oatmeal-mid);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .browser-dots {
+      display: flex;
+      gap: 5px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--oatmeal-mid);
+    }
+    .url-bar {
+      flex: 1;
+      background: var(--cream-white);
+      border: 1px solid var(--oatmeal-mid);
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      color: var(--brown-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mock-viewport {
+      background: var(--cream-white);
+      padding: 22px 18px;
+      border-bottom: 1.5px solid var(--oatmeal);
+    }
+    .mock-board {
+      border: 2px solid var(--brown-black);
+      border-radius: 8px;
+      background: var(--white);
+      padding: 14px;
+      box-shadow: 3px 3px 0 var(--brown-black);
+    }
+    .mock-board-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--brown-black);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .mock-title {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--brown-black);
+    }
+    .mock-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 6px;
+      padding: 7px 4px;
+      border-bottom: 1px solid var(--oatmeal);
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      align-items: center;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+      border: 1px solid var(--oatmeal-mid);
+      border-radius: 3px;
+      text-align: center;
+      font-family: var(--font-sans);
+      background: var(--oatmeal);
+      color: var(--brown-mid);
+    }
+
+    /* Indigo mock */
+    .mock-indigo {
+      background: #171b26;
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .indigo-quote {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: 600;
+      color: #f1f5f9;
+      border-left: 3px solid var(--olive-light);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .indigo-task {
+      background: #23293b;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      color: #e2e8f0;
+    }
+    .indigo-tag {
+      font-size: 10px;
+      background: #3b4461;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #a0aec0;
+    }
+
+    /* Timeline mock */
+    .mock-timeline {
+      background: var(--white);
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .timeline-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .timeline-node {
+      flex: 1;
+      background: var(--oatmeal);
+      border: 1px solid var(--oatmeal-mid);
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--brown-mid);
+    }
+    .timeline-node.active {
+      border-color: var(--brown-black);
+      font-weight: 800;
+      color: var(--brown-black);
+      background: var(--white);
+    }
+
+    .creator-note {
+      padding: 18px 20px;
+      background: var(--white);
+    }
+    .creator-name {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--brown-black);
+      margin-bottom: 5px;
+    }
+    .creator-quote {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+      margin-bottom: 8px;
+    }
+    .creator-tag {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      color: var(--olive);
+      background: var(--oatmeal);
+      padding: 3px 10px;
+      border-radius: 4px;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    /* Mobile cards */
+    .mobile-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .mobile-card {
+      border: 2px solid var(--oatmeal-mid);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--white);
+    }
+    .mobile-topbar {
+      background: var(--brown-black);
+      color: var(--oatmeal);
+      padding: 6px 12px;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .mobile-screen {
+      padding: 20px 16px;
+      background: var(--oatmeal);
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 8px;
+      border-bottom: 1.5px solid var(--oatmeal-mid);
+    }
+    .mobile-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 2px solid var(--brown-black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--brown-black);
+    }
+    .mobile-label {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--brown-black);
+    }
+    .mobile-sub {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      color: var(--brown-mid);
+      line-height: 1.4;
+    }
+    .mobile-caption {
+      padding: 14px 16px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+    }
+    .mobile-creator {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--brown-black);
+      margin-bottom: 4px;
+    }
+
+    /* Voucher Banner */
+    .voucher-banner {
+      border: 2.5px solid var(--brown-black);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--white);
+      box-shadow: 4px 4px 0 var(--brown-black);
+      margin: 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .voucher-text h4 {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 4px;
+    }
+    .voucher-text p {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      color: var(--brown-light);
+    }
+    .voucher-stamp {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 900;
+      background: var(--olive);
+      color: var(--oatmeal);
+      padding: 6px 14px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* Outcomes */
+    .outcomes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .outcome-card {
+      border: 1.5px solid var(--oatmeal-mid);
+      padding: 16px;
+      background: var(--oatmeal);
+      border-radius: 10px;
+    }
+    .outcome-num {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--olive);
+      margin-bottom: 4px;
+    }
+    .outcome-text {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--brown-black);
+      line-height: 1.5;
+    }
+
+    /* ─── SECTION 4 : Curriculum ─── */
+    .roadmap-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 24px 0;
+    }
+    .roadmap-item {
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--white);
+    }
+    .week-tag {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 900;
+      background: var(--olive);
+      color: var(--oatmeal);
+      padding: 4px 9px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 10px;
+      letter-spacing: 0.4px;
+    }
+    .roadmap-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 6px;
+      line-height: 1.45;
+    }
+    .roadmap-desc {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+      margin-bottom: 10px;
+    }
+    .roadmap-deliverable {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--olive);
+      background: var(--oatmeal);
+      padding: 4px 10px;
+      border-radius: 4px;
+      display: inline-block;
+      border: 1px solid var(--oatmeal-mid);
+    }
+
+    .timetable-box {
+      border: 2px solid var(--olive);
+      border-radius: 14px;
+      padding: 22px 20px;
+      background: var(--oatmeal);
+      margin-top: 24px;
+    }
+    .timetable-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 14px;
+    }
+    .slot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .slot-card {
+      background: var(--white);
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .slot-day {
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--olive);
+      background: var(--oatmeal);
+      padding: 2px 7px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 7px;
+    }
+    .slot-name {
+      font-family: var(--font-serif);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 4px;
+    }
+    .slot-desc {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--brown-light);
+      line-height: 1.55;
+    }
+
+    /* ─── SECTION 5 : Benefits ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    .stat-box {
+      border: 1.5px solid var(--oatmeal-mid);
+      background: var(--oatmeal);
+      border-radius: 10px;
+      padding: 16px 8px;
+    }
+    .stat-num {
+      font-family: var(--font-sans);
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--brown-black);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--brown-light);
+      line-height: 1.4;
+    }
+
+    .quotes-wall {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0 28px;
+    }
+    .quote-bubble {
+      border-left: 3.5px solid var(--olive);
+      background: var(--white);
+      border-top: 1px solid var(--oatmeal-mid);
+      border-right: 1px solid var(--oatmeal-mid);
+      border-bottom: 1px solid var(--oatmeal-mid);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      color: var(--brown-black);
+      line-height: 1.9;
+    }
+    .quote-author {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brown-light);
+      margin-top: 6px;
+    }
+
+    .kits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .kit-card {
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--oatmeal);
+    }
+    .kit-code {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--olive);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .kit-title {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .kit-desc {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      color: var(--brown-mid);
+      line-height: 1.5;
+    }
+
+    /* ─── SECTION 6 : Guild & Tutors ─── */
+    .perks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .perk-item {
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 10px;
+      padding: 16px 18px;
+      background: var(--white);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .perk-badge {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 800;
+      background: var(--oatmeal);
+      color: var(--olive);
+      padding: 3px 7px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      letter-spacing: 0.3px;
+    }
+    .perk-text strong {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--brown-black);
+      display: block;
+      margin-bottom: 3px;
+    }
+    .perk-text p {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      color: var(--brown-light);
+      line-height: 1.6;
+    }
+
+    .tutors-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .tutor-card {
+      border: 2px solid var(--oatmeal-mid);
+      border-radius: 14px;
+      padding: 22px 20px;
+      background: var(--white);
+    }
+    .tutor-role {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 800;
+      background: var(--olive);
+      color: var(--oatmeal);
+      padding: 2px 8px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 8px;
+      letter-spacing: 0.4px;
+    }
+    .tutor-name {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 3px;
+    }
+    .tutor-sub {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--brown-light);
+      margin-bottom: 14px;
+    }
+    .tutor-bullets {
+      list-style: none;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .tutor-quote {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1.5px dashed var(--oatmeal-mid);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-style: italic;
+      color: var(--brown-mid);
+      line-height: 1.9;
+    }
+
+    /* ─── SECTION 7 : Pricing ─── */
+    .tickets-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .ticket-card {
+      border: 2px solid var(--oatmeal-mid);
+      border-radius: 16px;
+      padding: 26px 22px;
+      background: var(--white);
+      position: relative;
+    }
+    .ticket-card.pro {
+      border-color: var(--olive);
+      box-shadow: 5px 5px 0 var(--olive);
+    }
+    .ticket-recommended {
+      position: absolute;
+      top: -12px;
+      right: 18px;
+      background: var(--vermilion);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+    .ticket-tier {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 4px;
+    }
+    .ticket-sub {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      color: var(--brown-light);
+      margin-bottom: 18px;
+    }
+    .ticket-price-box {
+      border-bottom: 1.5px solid var(--oatmeal);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+    .ticket-pct {
+      font-family: var(--font-sans);
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--vermilion);
+      margin-right: 6px;
+    }
+    .ticket-won {
+      font-family: var(--font-sans);
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--brown-black);
+    }
+    .ticket-net {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--olive);
+      margin-top: 4px;
+    }
+    .ticket-orig {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--brown-light);
+      text-decoration: line-through;
+    }
+    .ticket-perks {
+      list-style: none;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--brown-mid);
+      line-height: 1.65;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .ticket-perks li {
+      padding-left: 16px;
+      position: relative;
+    }
+    .ticket-perks li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--olive-light);
+      font-weight: 600;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      margin: 24px 0;
+    }
+    .compare-table th, .compare-table td {
+      border: 1.5px solid var(--oatmeal-mid);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: middle;
+      line-height: 1.55;
+    }
+    .compare-table th {
+      background: var(--oatmeal);
+      font-weight: 800;
+      color: var(--brown-black);
+      font-size: 12px;
+    }
+    .compare-table td strong {
+      color: var(--olive);
+    }
+
+    /* ─── SECTION 8 : FAQ ─── */
+    .faq-item {
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      background: var(--white);
+    }
+    .faq-q {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brown-black);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .faq-a {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      color: var(--brown-mid);
+      line-height: 1.9;
+    }
+
+    .legal-box {
+      background: var(--oatmeal);
+      border: 1.5px dashed var(--oatmeal-mid);
+      border-radius: 8px;
+      padding: 16px 18px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--brown-light);
+      line-height: 1.75;
+      margin-top: 20px;
+    }
+    .legal-box strong {
+      color: var(--brown-mid);
+    }
+
+    /* ─── Final CTA ─── */
+    .final-cta {
+      padding: 60px 28px;
+      background: var(--olive);
+      text-align: center;
+    }
+    .final-cta h2 {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--cream-white);
+      margin-bottom: 10px;
+      line-height: 1.45;
+    }
+    .final-cta p {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--oatmeal);
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+
+    /* ─── v14 : 캡처용 안내 블록 (비인터랙티브) ─── */
+    .buy-guide {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 15px 12px;
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      font-weight: 700;
+      line-height: 1.6;
+      border-radius: 10px;
+      border: 2px dashed var(--oatmeal-mid);
+      background: rgba(255,255,255,0.55);
+      color: var(--brown-mid);
+    }
+    .buy-guide strong { color: var(--vermilion); font-weight: 900; }
+    .buy-guide.pro {
+      border-color: var(--olive);
+      background: rgba(68,78,28,0.06);
+      color: var(--olive);
+    }
+    .buy-guide.pro strong { color: var(--olive); }
+
+    .seat-note {
+      margin-top: 10px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      line-height: 1.6;
+      text-align: center;
+      color: var(--brown-light);
+    }
+    .seat-note strong { color: var(--vermilion); font-weight: 800; }
+
+    .payback-terms {
+      margin-top: 28px;
+      padding: 18px 20px;
+      border: 1.5px solid var(--oatmeal-mid);
+      border-radius: 10px;
+      background: rgba(232,213,181,0.35);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.95;
+      color: var(--brown-mid);
+    }
+    .payback-terms strong { color: var(--brown-black); }
+
+    .cta-guide {
+      display: inline-block;
+      border: 2px dashed var(--oatmeal);
+      border-radius: 10px;
+      padding: 16px 30px;
+      font-family: var(--font-sans);
+      font-size: 15.5px;
+      font-weight: 800;
+      line-height: 1.65;
+      color: var(--oatmeal);
+    }
+    .cta-guide strong { color: var(--vermilion); font-weight: 900; }
+    .cta-sub {
+      margin-top: 14px;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--oatmeal);
+      opacity: 0.85;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      .hero-title { font-size: 36px; }
+      .hero-kicker { font-size: 17px; }
+      .sec-heading { font-size: 22px; }
+      .slot-grid { grid-template-columns: 1fr; }
+        .track-tier { font-size: 21px; }
+      .track-price { font-size: 22px; }
+      .track-list li { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <!-- ═══ [1] HERO ═══ -->
+  <section class="hero">
+    <!-- ═══ [1-1] 개강일·정원 뱃지 ═══ -->
+    <div class="hero-eyebrow">
+      <span class="hero-stamp">mytt 정규 1기</span>
+      <span class="hero-date">2026. 10. 12 (월) 개강 · 20:00</span>
+    </div>
+
+    <!-- ═══ [1-2] 메인 헤드라인 ═══ -->
+    <div class="hero-kicker">코딩 몰라도</div>
+    <h1 class="hero-title">
+      4주 뒤엔<br />
+      <em>내 시간관리 앱</em>이<br />
+      생깁니다
+    </h1>
+    <p class="hero-sub">
+      노션도 투두리스트도 결국 안 맞았다면,<br />
+      이번엔 AI로 <strong>나한테만 맞는 툴</strong>을 직접 만들어보세요.
+    </p>
+
+    <!-- ═══ [1-3] 신뢰 배지 ═══ -->
+    <div class="trust-strip">
+      <span class="trust-pill">만족도 <strong>4.4</strong> / 5.0</span>
+      <span class="trust-pill">4점 이상 <strong>100%</strong></span>
+      <span class="trust-pill">비전공자 <strong>100%</strong></span>
+    </div>
+    <div class="trust-note">※ 파일럿 0기 수강생 6명 · 3개 회차 누적 설문 응답 11건 기준</div>
+
+    <!-- ═══ [1-4] 수강권 개요 2종 ═══ -->
+    <div class="tracks-grid">
+
+      <div class="track-card">
+        <div class="track-tier">BASIC</div>
+        <div class="track-term">2주 · 라이브 2회</div>
+        <div class="track-price">59,000<span>원</span></div>
+        <ul class="track-list">
+          <li>내 시간 패턴 분석</li>
+          <li>나만의 웹앱 만들기</li>
+          <li>실습 교안 &amp; 프롬프트</li>
+          <li>공방 평생 입장</li>
+        </ul>
+        <div class="track-foot">정원 20명</div>
+      </div>
+
+      <div class="track-card pro">
+        <span class="track-flag">추천</span>
+        <div class="track-tier">PRO</div>
+        <div class="track-term">4주 · 라이브 4회</div>
+        <div class="track-price">129,000<span>원</span></div>
+        <ul class="track-list">
+          <li><b>베이직 전체 포함</b></li>
+          <li>디자인 · 기능 확장</li>
+          <li><b>1:1 코칭 30분</b></li>
+          <li><b>웹 배포 URL</b></li>
+        </ul>
+        <div class="track-foot">정원 10명</div>
+      </div>
+
+    </div>
+
+    <div class="payback-strip">
+      <span class="payback-badge">완주 환급</span>
+      <div>
+        <strong>프로 완주 시 30,000원 현금 환급</strong> — 실질 99,000원<br />
+        <span>조건 : 출석 완주 + 결과물 인증</span>
+      </div>
+    </div>
+
+    <!-- ═══ [1-5] 추천 대상 ═══ -->
+    <div class="target-box">
+      <div class="target-title">이런 분께 추천합니다</div>
+      <ul class="target-list">
+        <li>노션·투두리스트를 써봤지만 <b>결국 안 맞았던 분</b></li>
+        <li>혼자 일해 집중이 흐트러지는 <b>프리랜서 · 창작자</b></li>
+        <li>AI를 써먹고 싶은데 <b>시작점을 모르겠는 분</b></li>
+        <li>코딩은 몰라도 <b>직접 만들어보고 싶은 분</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 1 : Problem Empathy
+       ============================================================ -->
+  <!-- ═══ [2] 문제 공감 ═══ -->
+  <section id="problem" class="section">
+    <span class="sec-eyebrow">01 / REALISTIC PAIN POINT</span>
+    <h2 class="sec-heading">솔직히, 이런 적 한 번쯤 있죠?</h2>
+    <p class="sec-lead">
+      작업을 하려 컴퓨터를 켜도 집중이 되지 않고,<br />
+      책 한 장 읽으려 해도 유튜브… 인스타그램에 빠지던 나.
+    </p>
+
+    <!-- ═══ [2-1] 공감 인용구 ═══ -->
+    <div class="empathy-quote">
+      "뽀모도로, 노션, 투두리스트… 좋다는 다양한 프로그램을 써봤지만 결국 나에게는 맞지 않았어요."
+    </div>
+
+    <!-- ═══ [2-2] 페인포인트 3종 ═══ -->
+    <div class="pain-list">
+      <div class="pain-item">
+        <div class="pain-num">01</div>
+        <div>
+          <div class="pain-title">과제 마비 (Task Paralysis)</div>
+          <div class="pain-desc">"할 일이 너무 거대하고 막막해서 어디서부터 스케줄을 짜야 할지 엄두가 나지 않아요."</div>
+        </div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-num">02</div>
+        <div>
+          <div class="pain-title">가짜 작업 (Productive Procrastination)</div>
+          <div class="pain-desc">"정작 집중해야 할 진짜 본 작업 대신, 레퍼런스 무한 서칭이나 책상 청소를 하며 시간을 회피해요."</div>
+        </div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-num">03</div>
+        <div>
+          <div class="pain-title">시간 도둑 (Attention Theft)</div>
+          <div class="pain-desc">"핸드폰으로 시간만 보려다 쇼츠와 릴스를 무심코 켰는데, 정신 차려보니 한두 시간이 훌쩍 지나있어요."</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2 : Solution & 3-Step
+       ============================================================ -->
+  <!-- ═══ [3] 솔루션 ═══ -->
+  <section id="solution" class="section">
+    <span class="sec-eyebrow">02 / TAILORED SOLUTION</span>
+    <h2 class="sec-heading">그래서 만든, mytt</h2>
+    <p class="sec-lead">
+      남이 만든 틀에 나를 맞추는 대신, <strong>나에게 맞춘 툴</strong>을 만듭니다.<br />
+      코드 한 줄 몰라도, AI에게 말을 걸면 돼요.
+    </p>
+
+    <!-- ═══ [3-1] 결과물 GIF 영역 ═══ -->
+    <div class="media-slot">
+      <div class="media-slot-inner">
+        <span class="media-slot-label">실제 mytt 결과물 모음</span>
+        <span class="media-slot-note">GIF 교체 예정</span>
+      </div>
+    </div>
+
+    <!-- ═══ [3-2] 패러다임 배너 ═══ -->
+    <div class="paradigm-banner">
+      <h3>복잡하고 어려운 시간관리가<br />나만의 놀이루틴이 돼요.</h3>
+      <p>
+        내 시간관리 툴은 내가 가장 잘 만들 수 있습니다.<br />
+        나의 일, 시간, 스케줄을 가장 잘 아는 사람은 나 자신이니까요.
+      </p>
+    </div>
+
+    <!-- ═══ [3-3] 3단계 제작 과정 ═══ -->
+    <h3 class="sub-heading">mytt는 이렇게 만듭니다</h3>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-icon"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <circle cx="21" cy="21" r="12" stroke="var(--olive)" stroke-width="2.6"/>
+          <path d="M30 30 L41 41" stroke="var(--olive)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M14 23 L18 18 L22 25 L26 15" stroke="var(--vermilion)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg></div>
+        <div class="step-body">
+          <span class="step-badge">STEP 01</span>
+          <div class="step-name">문제 분석</div>
+          <div class="step-desc">AI에게 일기 쓰듯 고민을 털어놓으면, 내 심리 기제에 맞는 솔루션을 함께 기획합니다.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="M6 10h36v22H26l-9 8v-8H6z" stroke="var(--olive)" stroke-width="2.6" stroke-linejoin="round"/>
+          <path d="M19 17l-5 4 5 4" stroke="var(--vermilion)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M29 17l5 4-5 4" stroke="var(--vermilion)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg></div>
+        <div class="step-body">
+          <span class="step-badge">STEP 02</span>
+          <div class="step-name">바이브 코딩</div>
+          <div class="step-desc">준비된 프롬프트를 넣으면, 짜잔! 나만의 시간관리 툴 코드가 10분 만에 생성됩니다.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="6" y="9" width="36" height="25" rx="3" stroke="var(--olive)" stroke-width="2.6"/>
+          <path d="M18 40h12" stroke="var(--olive)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M24 34v6" stroke="var(--olive)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M16 21.5l5 5 11-11" stroke="var(--vermilion)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg></div>
+        <div class="step-body">
+          <span class="step-badge">STEP 03</span>
+          <div class="step-name">일상 적용</div>
+          <div class="step-desc">취향에 맞는 디자인을 입히고 모니터에 띄워 쓰면, 시간관리가 즐거운 하루 루틴이 됩니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ [3-4] 왜 mytt인가 ═══ -->
+    <div class="objection">
+      <div class="objection-q">그런데, 혼자 해도 되지 않나요?</div>
+      <div class="objection-a">맞아요. 그런데 혼자 하면 <strong>대부분 여기서 멈춥니다.</strong></div>
+    </div>
+
+    <div class="reasons-list">
+      <div class="reason-card">
+        <div class="reason-stop"><span class="reason-num">01</span>기획에서 막힙니다</div>
+        <div class="reason-desc">"시간관리 앱 만들어줘" 한 줄로는 아무것도 안 나와요. 내 게으름이 <em>어떤 종류</em>인지 알아야 뭘 만들지가 나옵니다.</div>
+        <div class="reason-fix"><span class="reason-tag">mytt</span>인지심리학 자료로 나의 시간 사용을 먼저 진단하고, 나에게 필요한 기능을 설계합니다.
+          <span class="reason-note">시간관리 이론 교안 제공</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-stop"><span class="reason-num">02</span>에러에서 멈춥니다</div>
+        <div class="reason-desc">코드는 나왔는데 화면이 안 떠요. 모바일에서 깨져요. 검색해도 무슨 말인지 모르겠고요.</div>
+        <div class="reason-fix"><span class="reason-tag">mytt</span>개발자 출신 튜터가 1:1로 막힌 지점을 함께 풉니다. 혼자 끙끙 앓는 시간이 없어요.
+          <span class="reason-note">1:1 코칭 &amp; 디스코드 바디더블링룸 제공</span>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-stop"><span class="reason-num">03</span>나만의 디자인이 어렵습니다</div>
+        <div class="reason-desc">기능은 됐는데 화면이 밋밋해요. 내 취향대로 바꾸고 싶은데 <em>어디를 어떻게</em> 건드려야 할지 모르겠고요.</div>
+        <div class="reason-fix"><span class="reason-tag">mytt</span>디자이너 튜터가 내 취향에 쏙 맞는 감성 커스텀 방법을 알려줘요. 나만의 애착 툴을 쓰고 발전시켜 나갈 수 있어요.
+          <span class="reason-note">디자인 레퍼런스 &amp; 프롬프트 자료 제공</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3 : Showcase
+       ============================================================ -->
+  <!-- ═══ [4] 결과물 쇼케이스 ═══ -->
+  <section id="showcase" class="section">
+    <span class="sec-eyebrow">03 / REAL OUTPUT SHOWCASE</span>
+    <h2 class="sec-heading">mytt는 이런 결과물을 만듭니다</h2>
+    <p class="sec-lead">*튜터와 수강생이 직접 일상에서 쓰기 위해 만든 실제 웹앱 예시입니다.</p>
+
+    <!-- ═══ [4-1] 데스크톱 결과물 3종 ═══ -->
+    <!-- Desktop Tools -->
+    <div class="showcase-group-title">
+      <span>01 나만의 데스크테리어템, 시간/업무관리툴</span>
+      <span class="showcase-sub">DESKTOP SUITE</span>
+    </div>
+
+    <!-- Case 1 -->
+    <div class="showcase-card">
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <div class="url-bar">lee-hyuk.github.io/lesson-board (네오브루탈리즘 레슨 트래커)</div>
+      </div>
+      <div class="mock-viewport">
+        <div class="mock-board">
+          <div class="mock-board-hdr">
+            <span class="mock-title">LESSON TIMETABLE &amp; BILLING D-DAY</span>
+            <span style="font-family:var(--font-sans); font-size:10.5px; font-weight:800; color:var(--brown-mid);">OCTOBER 2026</span>
+          </div>
+          <div class="mock-row">
+            <strong>김*원 학생 (피아노 재즈)</strong>
+            <span>매주 화 19:00 (진도: 8/12강)</span>
+            <span class="status-pill" style="background:#e6ffea; color:#2d6a4f;">결제 D-3</span>
+          </div>
+          <div class="mock-row">
+            <strong>박*준 학생 (미디 작곡)</strong>
+            <span>매주 목 20:30 (진도: 4/8강)</span>
+            <span class="status-pill">수업 완료</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-note">
+        <div class="creator-name">7년 차 프리랜서 이*혁님의 mytt</div>
+        <div class="creator-quote">"저는 작곡 레슨을 하고 있는데요, 수강생의 일정과 진도, 결제일이 중요해 한눈에 볼 수 있도록 만들었어요. 이제는 스프레드시트에 한 땀 한 땀 기록하지 않아도 돼요. 제가 좋아하는 스타일이 '네오브루탈리즘'이라는 것을 처음 알았고, 그 디자인을 적용해 만들어보았어요."</div>
+        <span class="creator-tag">스프레드시트 탈출 · 작업실 감성 데스크테리어 완성</span>
+      </div>
+    </div>
+
+    <!-- Case 2 -->
+    <div class="showcase-card">
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <div class="url-bar">lim-soo.github.io/night-workshop (인디고 블루 야간 공방 모드)</div>
+      </div>
+      <div class="mock-viewport">
+        <div class="mock-indigo">
+          <div class="indigo-quote">"퇴근 후 1시간, 회사 생각은 잊고 오직 내 프로젝트의 주인으로 집중한다."</div>
+          <div class="indigo-task">
+            <span>1. 사이드 프로젝트 브랜딩 로고 스케치 3종</span>
+            <span class="indigo-tag">오늘 밤 완료</span>
+          </div>
+          <div class="indigo-task">
+            <span>2. 랜딩페이지 헤드라인 카피 A/B 작성</span>
+            <span class="indigo-tag">진행 중 (25m)</span>
+          </div>
+          <div class="indigo-task">
+            <span>3. 농구 커뮤니티 피드백 1회 확인</span>
+            <span class="indigo-tag">대기</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-note">
+        <div class="creator-name">회사를 다니며 사이드 프로젝트를 하는 임*수님의 mytt</div>
+        <div class="creator-quote">"동기부여가 되는 문장을 크게 보고 싶어 넣었어요. 또 매일매일의 주요 할 일 3가지를 체크할 수 있도록 했어요. 핸드폰 메모장을 꺼내서 체크하고 지우지 않아도 되어 편해요. 제가 좋아하는 인디고 블루 컬러를 쓴 것도, 농구하는 제 캐릭터를 넣은 것도 무척 마음에 듭니다."</div>
+        <span class="creator-tag">퇴근 후 야간 공방 모드 · 메모장 피로도 제로</span>
+      </div>
+    </div>
+
+    <!-- Case 3 -->
+    <div class="showcase-card">
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <div class="url-bar">park-won.github.io/milestone-map (미니멀 흑백 마일스톤 지도)</div>
+      </div>
+      <div class="mock-viewport">
+        <div class="mock-timeline">
+          <div class="timeline-bar">
+            <div class="timeline-node">1. 고객 설문 (완료)</div>
+            <div class="timeline-node active">2. MVP 런칭 (D-7 진행 중)</div>
+            <div class="timeline-node">3. 정식 결제 연동 (11월)</div>
+          </div>
+          <div style="font-family:var(--font-sans); font-size:11.5px; color:var(--brown-light);">
+            GOOGLE CALENDAR SYNC: 예상 소요 14시간 vs 실제 집중 11.5시간 (달성률 92%)
+          </div>
+        </div>
+      </div>
+      <div class="creator-note">
+        <div class="creator-name">새로운 사업 런칭을 준비하는 박*원님의 mytt</div>
+        <div class="creator-quote">"내 전체 스케줄을 타임라인 뷰와 목록 뷰로 상시 확인할 수 있도록 만들었어요. 또 구글 캘린더와 연동해, 예상 스케줄과 실제 스케줄을 비교할 수 있는 기능도 넣었죠. 한눈에 깔끔하게 확인할 수 있도록 블랙&amp;화이트로 미니멀하게 만들었어요."</div>
+        <span class="creator-tag">블랙&amp;화이트 미니멀 · 구글 캘린더 예상/실제 오차 측정</span>
+      </div>
+    </div>
+
+    <!-- ═══ [4-2] 모바일 결과물 3종 ═══ -->
+    <!-- Mobile Solutions -->
+    <div class="showcase-group-title">
+      <span>02 나만의 사랑스러운 모바일 솔루션</span>
+      <span class="showcase-sub">MOBILE PWA SYSTEM</span>
+    </div>
+
+    <div class="mobile-grid">
+      <div class="mobile-card">
+        <div class="mobile-topbar">
+          <span>MYTT MOBILE</span><span>10:24 AM</span>
+        </div>
+        <div class="mobile-screen">
+          <div class="mobile-icon">산</div>
+          <div class="mobile-label">4시간 등산 딥워크</div>
+          <div class="mobile-sub">미완성을 떠올리는 자이가르닉 휴식 버튼 탑재</div>
+        </div>
+        <div class="mobile-caption">
+          <div class="mobile-creator">인스타툰 작가 꿀차 님</div>
+          "아무리 AI가 다 해주는 세상이라도 저는 하루 4시간 온전히 제 그림체로 그리는 시간이 필요해요. 4시간 등산 컨셉으로 '잠깐 쉬기'를 누르면 자이가르닉 효과 덕에 집중력이 엄청나게 좋아져요!"
+        </div>
+      </div>
+
+      <div class="mobile-card">
+        <div class="mobile-topbar">
+          <span>MYTT MOBILE</span><span>07:30 AM</span>
+        </div>
+        <div class="mobile-screen">
+          <div class="mobile-icon">빵</div>
+          <div class="mobile-label">모닝베이커리 &amp; 영수증</div>
+          <div class="mobile-sub">시간 메타인지 측정 &amp; 해낸 일 영수증 출력</div>
+        </div>
+        <div class="mobile-caption">
+          <div class="mobile-creator">인스타툰 작가 꿀차 님</div>
+          "문제 분석 수업을 통해 제 시간 메타인지가 부족함을 알았어요. 예상 시간 vs 실제 시간을 비교하고, 하루 일과가 영수증처럼 출력되니 일이 덜 밀려 너무 행복합니다!"
+        </div>
+      </div>
+
+      <div class="mobile-card">
+        <div class="mobile-topbar">
+          <span>MYTT MOBILE</span><span>11:15 PM</span>
+        </div>
+        <div class="mobile-screen">
+          <div class="mobile-icon">별</div>
+          <div class="mobile-label">별자리 마이크로 태스킹</div>
+          <div class="mobile-sub">큰 일을 잘게 쪼개어 별을 잇는 성취감</div>
+        </div>
+        <div class="mobile-caption">
+          <div class="mobile-creator">시연 튜터 제작 예시</div>
+          "일을 시작할 때 막막해 미룰 때가 있어요. 큰 일을 작게 쪼개어 별자리 컨셉으로 하나씩 이어가니 무리하지 않고 성취감이 느껴져 일 착수가 빨라졌습니다."
+        </div>
+      </div>
+    </div>
+
+    <!-- Voucher -->
+    <!-- ═══ [4-3] 수강생 특전 배너 ═══ -->
+    <div class="voucher-banner">
+      <div class="voucher-text">
+        <h4>mytt 1기 수강생 전원 특별 제공 혜택</h4>
+        <p>위 예제와 동일한 <strong>mytt 프롬프트 예제 10선 (2026.10.01 업데이트판)</strong> 제공 + <strong>평생 업데이트권</strong> 부여</p>
+      </div>
+      <div class="voucher-stamp">LIFETIME ACCESS</div>
+    </div>
+
+    <!-- 4 Outcomes -->
+    <h3 style="font-family:var(--font-serif); font-size:18px; font-weight:700; margin:32px 0 12px; color:var(--brown-black);">mytt와 함께, 내 삶은 이렇게 변해요</h3>
+    <!-- ═══ [4-4] 변화 4가지 ═══ -->
+    <div class="outcomes-grid">
+      <div class="outcome-card">
+        <div class="outcome-num">01</div>
+        <div class="outcome-text">자책 대신 뿌듯함으로 잠들어요</div>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-num">02</div>
+        <div class="outcome-text">스마트폰 대신 내 애착 mytt를 먼저 켜요</div>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-num">03</div>
+        <div class="outcome-text">필요한 기능은 AI로 직접 만들어요</div>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-num">04</div>
+        <div class="outcome-text">혼자 끙끙 앓던 작심삼일에서 벗어나요</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4 : Curriculum
+       ============================================================ -->
+  <!-- ═══ [5] 커리큘럼 4주 ═══ -->
+  <section id="curriculum" class="section">
+    <span class="sec-eyebrow">04 / 4-WEEK ROADMAP</span>
+    <h2 class="sec-heading">4주 만에 끝내는<br />나만의 생산성 툴 제작기</h2>
+    <p class="sec-lead">
+      베이직 트랙은 1~2주차(진단 &amp; 첫 기능 구현),<br />
+      프로 트랙은 1~4주차(심화 툴 완성 + 감성 디자인 &amp; GitHub 배포 + 1:1 코칭)를 완성합니다.
+    </p>
+
+    <div class="roadmap-list">
+      <div class="roadmap-item">
+        <span class="week-tag">WEEK 01</span>
+        <div class="roadmap-title">나의 시간 농장 돌아보기 (시간관리 방법론 &amp; 도둑 진단)</div>
+        <div class="roadmap-desc">'나의 시간 농장' 인터랙티브 워크북으로 내 하루 24시간 중 어디로 시간이 새어 나가는지 객관적으로 진단합니다. 혼자 일할 때 마주치는 시간관리 고민(과제 마비, 가짜 작업, 시간 도둑)을 해체하고, 나에게 꼭 필요한 맞춤형 툴의 솔루션 뼈대를 확인합니다.</div>
+        <span class="roadmap-deliverable">손에 남는 것: 나의 시간 농장 분석 결과물 &amp; 맞춤 툴 기획 뼈대</span>
+      </div>
+      <div class="roadmap-item">
+        <span class="week-tag">WEEK 02</span>
+        <div class="roadmap-title">바이브코딩의 시작 &amp; 첫 기능 구현 (미니멀 대시보드)</div>
+        <div class="roadmap-desc">"복잡한 코드는 몰라도 내가 무슨 기능이 필요한지만 알면 된다!" 제미나이로 프롬프트를 체계적으로 빌드하고, 클로드로 로컬스토리지 연동 노스크롤 대시보드를 10분 만에 즉시 코딩합니다. 내 결과물을 직접 열어보며 동작을 확인하고 셀프 QA하는 법을 마스터합니다.</div>
+        <span class="roadmap-deliverable">손에 남는 것: 내 첫 맞춤형 웹앱 HTML 파일 (베이직 수료 산출물)</span>
+      </div>
+      <div class="roadmap-item">
+        <span class="week-tag">WEEK 03</span>
+        <div class="roadmap-title">웹 페이지 알기 &amp; 나만의 시간관리 프로그램 심화 제작</div>
+        <div class="roadmap-desc">스케치 그림을 글로 바꾸고 프롬프팅으로 연결하는 완성형 대형 루프를 돕니다. 웹 페이지의 핵심 구성요소를 이해하며 내 업무와 일상에 꼭 맞는 기능을 직접 구현하고, 소규모 공방 채팅방에서 결과물을 서로 자랑하며 유용한 아이디어를 흡수합니다.</div>
+        <span class="roadmap-deliverable">손에 남는 것: 각자의 일하는 방식에 맞춘 나만의 실전 시간관리 프로그램</span>
+      </div>
+      <div class="roadmap-item">
+        <span class="week-tag">WEEK 04</span>
+        <div class="roadmap-title">감성 디자인 옷 입히기 &amp; 0초 GitHub 웹 배포 (URL 소장)</div>
+        <div class="roadmap-desc">레퍼런스 자료와 디자인 템플릿을 활용해 내 취향의 감성 비주얼 옷을 입힙니다. GitHub Pages 무료 호스팅 배포를 실습하여 사내 보안 차단 0%, 크롬에서 1초 만에 열리는 평생 소장 고유 웹 링크를 확보하고, 최종 쇼케이스와 튜터 1:1 밀착 코칭으로 완성도를 극대화합니다.</div>
+        <span class="roadmap-deliverable">손에 남는 것: 완성된 시간관리 툴 + 평생 소장 웹 URL + 1:1 밀착 코칭 완료</span>
+      </div>
+    </div>
+
+    <!-- ═══ [5-1] 주간 시간표 ═══ -->
+    <!-- Timetable -->
+    <div class="timetable-box">
+      <div class="timetable-title">주간 2-Track 정규 운영 시스템</div>
+      <div class="slot-grid">
+        <div class="slot-card">
+          <span class="slot-day">월요일 20:30~22:00</span>
+          <div class="slot-name">정규 실습 라이브 (90분)</div>
+          <div class="slot-desc">카메라·마이크 OFF! 편안하게 채팅으로 보며 따라 하는 실습 (교안 제공으로 자율 완주 가능).</div>
+        </div>
+        <div class="slot-card">
+          <span class="slot-day">목요일 20:30~22:00</span>
+          <div class="slot-name">자율 집중 딥워크룸 (90분)</div>
+          <div class="slot-desc">내 툴을 만들며 모르는 부분은 튜터에게 실시간으로 질문하고 뚫어내는 집중 공방 세션.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5 : Benefits & 8-Kit Assets
+       ============================================================ -->
+  <!-- ═══ [6] 증거 & 툴킷 ═══ -->
+  <section id="benefits" class="section">
+    <span class="sec-eyebrow">05 / PROOF &amp; 8 ASSET KITS</span>
+    <h2 class="sec-heading">수강 혜택 &amp; 사회적 증거 &amp; 8종 툴킷</h2>
+    <p class="sec-lead">파일럿 0기(6명)에서 실제로 나온 지표와, 수강 즉시 평생 소장하는 패키지 자산입니다.<br /><span style="font-size:13px; color:var(--brown-light);">※ 2026년 파일럿 0기 자체 설문 기준 · 3개 회차 누적 응답 11건 · 후기는 수강생 동의를 받아 게재</span></p>
+
+    <!-- Stats -->
+    <!-- ═══ [6-1] 통계 3종 ═══ -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num">4.4</div>
+        <div class="stat-label">회차 만족도 평균<br />(5점 만점 · 응답 11건)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">4점 이상 평가<br />(불만족 0건)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">문과생 &amp; 비전공자<br />(0기 6명 전원)</div>
+      </div>
+    </div>
+
+    <!-- Quotes -->
+    <!-- ═══ [6-2] 수강생 후기 ═══ -->
+    <div class="quotes-wall">
+      <div class="quote-bubble">
+        "바이브코딩 배우고 싶으면서도 접근이 어려웠는데 이렇게 경험해볼 수 있는 계기가 되어 너무 좋았어요! 시연님 설명 쏙쏙 잘 들어오고, 꿀차님도 초보자 입장에서 궁금한 포인트 잘 챙겨주셔서 도움이 많이 됐습니다."
+        <div class="quote-author">— 0기 수강생 · 3회차 설문</div>
+      </div>
+      <div class="quote-bubble">
+        "설명대로 따라하니 생각보다 쉽게 웹 링크가 만들어졌어요. 직접 실습해 본 게 정말 좋았습니다."
+        <div class="quote-author">— 0기 수강생 · 3회차 설문</div>
+      </div>
+      <div class="quote-bubble">
+        "시간 농장을 찾는다는 것 자체가 무척 흥미로웠습니다. 실제 내가 쓰는 시간과 남는 시간을 눈으로 알 수 있어 좋았어요."
+        <div class="quote-author">— 0기 수강생 · 1회차 설문</div>
+      </div>
+      <div class="quote-bubble">
+        "바이브코딩에 대해 사실 잘 몰랐는데, 짧은 시간이지만 밀도 있게 내용 정리해서 알려주셔서 배우고 해보니까 정말 좋았습니다!"
+        <div class="quote-author">— 0기 수강생 · 2회차 설문</div>
+      </div>
+    </div>
+
+    <!-- 8 Kits -->
+    <h3 style="font-family:var(--font-serif); font-size:18px; font-weight:700; margin:32px 0 14px; color:var(--brown-black);">수강 즉시 내 것이 되는 패키지 자산<br /><span style="font-size:14px; font-weight:500; color:var(--brown-light);">베이직 7종 · 프로 8종 (KIT 06은 프로 전용)</span></h3>
+    <!-- ═══ [6-3] KIT 8종 ═══ -->
+    <div class="kits-grid">
+      <div class="kit-card">
+        <div class="kit-code">KIT 01</div>
+        <div class="kit-title">시간 고해성사 워크북 (PDF)</div>
+        <div class="kit-desc">하루 24시간 도둑 진단 &amp; 맞춤 타이머 설계 템플릿</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 02</div>
+        <div class="kit-title">시간관리 이론 분석서 (PDF 35p)</div>
+        <div class="kit-desc">ADHD형 과제 마비 인지과학 원인 &amp; 90초 마이크로 착수법</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 03</div>
+        <div class="kit-title">바이브코딩 프롬프트 100선</div>
+        <div class="kit-desc">기획 구조화 + 타이머 UI/진척도 + 사내 보안 배포 치트키</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 04</div>
+        <div class="kit-title">감성 웹폰트 &amp; 컬러 키트</div>
+        <div class="kit-desc">상업적 무료 손글씨 폰트 8종 코드 + 캐릭터 투명 PNG 에셋팩</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 05</div>
+        <div class="kit-title">단계별 캡처 실습 교안집</div>
+        <div class="kit-desc">클릭 위치마다 빨간 번호가 표기된 무결점 매뉴얼</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 06</div>
+        <div class="kit-title">1:1 밀착 코칭권 30분 (프로 전용)</div>
+        <div class="kit-desc">최애 캐릭터 커스텀 &amp; 레이아웃 에러 시니어 개발자 원격 처방</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 07</div>
+        <div class="kit-title">검증된 원본 HTML 4종 풀세트</div>
+        <div class="kit-desc">서버 설치 없이 더블클릭 즉시 실행, 로컬 자동 저장 클린 코드</div>
+      </div>
+      <div class="kit-card">
+        <div class="kit-code">KIT 08</div>
+        <div class="kit-title">디스코드 온라인 공방 영구 입장권</div>
+        <div class="kit-desc">수업 종료 후에도 24시간 365일 평생 무료 개방되는 랜선 아지트</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 6 : 24h Guild & Tutors
+       ============================================================ -->
+  <!-- ═══ [7] 공방 & 튜터 ═══ -->
+  <section id="tutors" class="section">
+    <span class="sec-eyebrow">06 / GUILD &amp; GUIDES</span>
+    <h2 class="sec-heading">24시 온라인 공방 &amp;<br />바디더블링 길드</h2>
+    <p class="sec-lead">
+      "누군가 곁에서 함께 일한다는 감각만으로도 딴짓이 멈춘다."<br />
+      행동심리학이 증명한 <strong>바디더블링(Body Doubling)</strong> 효과를 경험해보세요.
+    </p>
+
+    <!-- ═══ [7-1] 공방 혜택 3종 ═══ -->
+    <div class="perks-list">
+      <div class="perk-item">
+        <span class="perk-badge">POINT 01</span>
+        <div class="perk-text">
+          <strong>카메라·마이크 OFF</strong>
+          <p>세수 안 하고 잠옷 차림이어도 OK! 부담 없이 조용히 화면과 채팅으로 몰입합니다.</p>
+        </div>
+      </div>
+      <div class="perk-item">
+        <span class="perk-badge">POINT 02</span>
+        <div class="perk-text">
+          <strong>오픈 레시피 &amp; 쇼케이스</strong>
+          <p>내가 깎은 툴을 자랑하고, 동료의 기발한 프롬프트 레시피를 복사해 내 취향대로 커스텀합니다.</p>
+        </div>
+      </div>
+      <div class="perk-item">
+        <span class="perk-badge">POINT 03</span>
+        <div class="perk-text">
+          <strong>1:1 에러 응급실</strong>
+          <p>코드 에러나 배포 문제가 생기면 혼자 끙끙 앓지 마세요. 상주 개발자가 1:1로 즉시 뚫어드립니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-family:var(--font-sans); font-size:12px; color:var(--brown-light); margin-bottom:44px;">
+      * 상시 개방 혜택: 정규 수업이 끝나도 24시간 365일 평생 무료 상시 개방됩니다.
+    </p>
+
+    <!-- Tutors -->
+    <h3 style="font-family:var(--font-serif); font-size:20px; font-weight:700; margin-bottom:8px; color:var(--brown-black);">막히면 뚫어주는 든든한 두 길잡이</h3>
+    <p style="font-family:var(--font-sans); font-size:13.5px; color:var(--brown-light); margin-bottom:22px;">비전공자 창작자의 감성과 시니어 개발자의 기술력이 만나 가장 탄탄한 안전망을 만듭니다.</p>
+
+    <!-- ═══ [7-2] 튜터 2인 ═══ -->
+    <div class="tutors-grid">
+      <div class="tutor-card">
+        <span class="tutor-role">CREATIVE DIRECTOR</span>
+        <div class="tutor-name">꿀차 튜터</div>
+        <div class="tutor-sub">기획 &amp; 비주얼 디렉터 / 인스타툰 작가</div>
+        <ul class="tutor-bullets">
+          <li>• 비전공자 창작자 출신, 일상 속 딴짓과 시간관리의 결핍을 깊이 공감</li>
+          <li>• 인스타툰 연재 및 다수의 감성 디지털 문구·굿즈 기획 프로젝트 진행</li>
+        </ul>
+        <div class="tutor-quote">"초보자의 눈높이에서 막히는 기획과 디자인 고민을 찰떡같이 풀어드릴게요!"</div>
+      </div>
+
+      <div class="tutor-card">
+        <span class="tutor-role">CHIEF TECH OFFICER</span>
+        <div class="tutor-name">시연 튜터</div>
+        <div class="tutor-sub">기술 총괄 &amp; 트러블슈터 / 시니어 소프트웨어 엔지니어</div>
+        <ul class="tutor-bullets">
+          <li>• 10년 차 풀스택 소프트웨어 엔지니어, 대규모 웹앱 아키텍처 설계</li>
+          <li>• 코드 깨짐, 사내 보안망 차단, 무료 배포 호스팅 에러 전문 해결</li>
+        </ul>
+        <div class="tutor-quote">"어떤 기술적 장벽이나 에러가 발생해도 뒤에서 든든하게 함께 풀어갑니다."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 7 : Pricing & Comparison
+       ============================================================ -->
+  <!-- ═══ [8] 수강권 & 환급 ═══ -->
+  <section id="pricing" class="section">
+    <span class="sec-eyebrow">07 / TUITION &amp; PAYBACK</span>
+    <h2 class="sec-heading">수강권 선택 &amp; 완주 리워드</h2>
+    <p class="sec-lead">나의 목표와 상황에 맞는 최적의 트랙을 선택하세요.</p>
+
+    <!-- ═══ [8-1] 티켓 카드 2종 ═══ -->
+    <div class="tickets-wrap">
+      <!-- Basic -->
+      <div class="ticket-card">
+        <div class="ticket-tier">mytt 베이직 · 2주</div>
+        <div class="ticket-sub">시간관리 분석 &amp; 나만의 웹앱을 빠르게 완성하고 싶은 분 · 정원 20명</div>
+        <div class="ticket-price-box">
+          <span class="ticket-won">59,000원</span>
+          <div class="ticket-orig">1기 특별가</div>
+        </div>
+        <ul class="ticket-perks">
+          <li>정규 라이브 2회 + 목요 딥워크 2회</li>
+          <li>1회차: 나의 시간 농장 워크북 분석 &amp; 솔루션 기획</li>
+          <li>2회차: 바이브코딩 첫 기능 구현 웹앱 HTML 파일 소장</li>
+          <li>실습 교안집, 프롬프트 100선, 감성 에셋팩</li>
+          <li>디스코드 온라인 공방 평생 입장권</li>
+        </ul>
+        <div class="buy-guide basic">아래 <strong>[구매하기]</strong>에서<br />‘베이직 · 2주’ 옵션을 선택해주세요</div>
+      </div>
+
+      <!-- Pro -->
+      <div class="ticket-card pro">
+        <span class="ticket-recommended">추천 · 1:1 코칭 포함 · 정원 10명</span>
+        <div class="ticket-tier">mytt 프로 · 4주</div>
+        <div class="ticket-sub">베이직 전체 + 디자인·기능 확장 + 1:1 코칭 30분 + 웹 배포 &amp; 평생 소장 URL</div>
+        <div class="ticket-price-box">
+          <span class="ticket-won">129,000원</span>
+          <div class="ticket-net">완주 환급 30,000원 적용 시 실질 99,000원</div>
+          <div class="ticket-orig">1기 특별가</div>
+        </div>
+        <ul class="ticket-perks">
+          <li><strong>베이직 전체 포함</strong> (라이브 4회 + 딥워크 4회)</li>
+          <li>3회차: 웹 구성요소 파악 &amp; 나만의 심화 툴 제작</li>
+          <li>4회차: 감성 디자인 커스텀 &amp; 웹 배포 · 평생 소장 URL</li>
+          <li>모바일 홈화면 앱(PWA) 등록 가이드</li>
+          <li>튜터 1:1 밀착 코칭 30분 (맞춤 처방)</li>
+          <li><strong>완주 시 30,000원 현금 환급</strong></li>
+        </ul>
+        <div class="buy-guide pro">아래 <strong>[구매하기]</strong>에서<br />‘프로 · 4주’ 옵션을 선택해주세요</div>
+        <div class="seat-note">1:1 코칭 일정 때문에 <strong>정원 10명</strong>만 받습니다.</div>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <h3 style="font-family:var(--font-serif); font-size:17px; font-weight:700; margin:32px 0 14px; color:var(--brown-black);">50:50 상세 비교표</h3>
+    <!-- ═══ [8-2] 비교표 ═══ -->
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:25%;">구분</th>
+          <th style="width:37%;">베이직 (2주 완성)</th>
+          <th style="width:38%;">프로 (4주 + 1:1 코칭)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>추천 대상</td>
+          <td>시간도둑 진단 &amp; 첫 기능 툴을 완성할 분</td>
+          <td><strong>나만의 툴 심화 완성 &amp; GitHub 웹 배포까지 완주할 분</strong></td>
+        </tr>
+        <tr>
+          <td>완성 결과물</td>
+          <td>시간 농장 진단서 &amp; 맞춤 웹앱 1종</td>
+          <td><strong>나만의 맞춤 툴 + 배포 웹 URL + 모바일 등록 + 1:1 코칭</strong></td>
+        </tr>
+        <tr>
+          <td>실습 일정</td>
+          <td>2주 (라이브 2회 + 딥워크 2회) · 정원 20명</td>
+          <td>4주 (라이브 4회 + 딥워크 4회 + 코칭 30분) · 정원 10명</td>
+        </tr>
+        <tr>
+          <td>완주 환급</td>
+          <td>-</td>
+          <td><strong>완주 시 30,000원 현금 환급</strong></td>
+        </tr>
+        <tr>
+          <td>수강료</td>
+          <td><strong>59,000원</strong></td>
+          <td><strong>129,000원</strong><br />(완주 환급 시 실질 99,000원)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ═══ [8-3] 환급 조건 고지 ═══ -->
+    <div class="payback-terms">
+      <strong>[완주 환급 안내]</strong><br />
+      • 대상 : 프로 트랙 수강생<br />
+      • 조건 : 전 회차 <strong>출석 완주</strong> 및 <strong>결과물 인증</strong> (배포 URL 제출)<br />
+      • 금액 : 30,000원 · 현금 계좌 입금<br />
+      • 지급 : 4주차 종료 후 <strong>14일 이내</strong>, 수강생이 제출한 계좌로 입금<br />
+      • 환급금 지급을 위해 성명·연락처·계좌번호를 수집하며, 지급 완료 후 지체 없이 파기합니다.<br />
+      <span style="color:var(--brown-light);">※ 환급금은 당사가 자체 지급하는 지원금이며, Anthropic 등 외부 기업과 제휴 관계가 없습니다.</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 8 : FAQ
+       ============================================================ -->
+  <!-- ═══ [9] FAQ ═══ -->
+  <section id="faq" class="section">
+    <span class="sec-eyebrow">08 / FREQUENTLY ASKED QUESTIONS</span>
+    <h2 class="sec-heading">자주 묻는 질문 (FAQ)</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">Q. 진짜 코딩을 전혀 몰라도 따라갈 수 있나요?</div>
+      <div class="faq-a">A. 네, 가능합니다. 어려운 프로그래밍 언어를 외우는 전통적인 코딩이 아닙니다. 일상 한국어로 AI에게 말을 걸고 코드를 복사해 붙여넣는 직관적인 실습입니다. 파일럿 0기(6명) 수강생 전원이 문과생·비전공자였으며, 전원이 당일 웹 링크 배포에 성공했습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Q. 카메라나 마이크를 켜야 하나요? 야근 때문에 불참하면 어쩌죠?</div>
+      <div class="faq-a">A. 카메라와 마이크는 끄고 편안하게 참여하시면 됩니다! 화상 연결 부담 없이 채팅으로만 질문하고 소통합니다. 야근으로 라이브에 불참하시더라도 클릭 위치까지 꼼꼼히 캡처된 [단계별 실습 교안집]이 제공되어 혼자서도 주말에 따라오실 수 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Q. 매달 서버비나 호스팅 유지비가 드나요? 맥/윈도우 호환은요?</div>
+      <div class="faq-a">A. 추가 비용은 평생 0원입니다. 평생 무료 호스팅 서비스를 연결해 드리므로 월 구독료가 전혀 없습니다. 또한 브라우저 기반 웹앱이므로 맥, 윈도우, 아이폰, 갤럭시 어떤 기기든 호환되며, 사내망에서도 대부분 문제없이 열립니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Q. 튜터 1:1 밀착 코칭(30분)은 어떻게 진행되나요? (프로)</div>
+      <div class="faq-a">A. 내가 원하는 최애 캐릭터로 꾸미거나 내 업무에 특화된 기능을 넣고 싶을 때, 튜터가 1:1로 코드를 함께 다듬고 오류를 완벽히 해결해 드리는 개별 맞춤형 세션입니다. (4주차 중 편한 일정으로 조율)</div>
+    </div>
+
+    <!-- ═══ [9-1] 환불 정책 ═══ -->
+    <div class="legal-box">
+      <strong>[소비자 보호를 위한 환불 정책 고시]</strong><br />
+      • 개강 전일(10/11 23:59)까지 취소 시 : 100% 전액 환불<br />
+      • 1회차 수업 시작 전 취소 시 : 100% 전액 환불<br />
+      • 총 수업 시간의 1/3 경과 전 : 수강료의 2/3 환불 | 1/2 경과 전 : 수강료의 1/2 환불 | 1/2 경과 후 : 환불 불가<br />
+      • 디지털 교안 자료집은 <strong>구매 전 미리보기</strong>를 제공하며, 열람·다운로드 이후에는 교안 금액(베이직 10,000원 / 프로 30,000원)을 공제 후 환불됩니다.<br />• 환불 문의는 스마트스토어 문의하기 또는 디스코드 공방을 통해 접수해주세요.
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <!-- ═══ [10] 최종 마무리 ═══ -->
+  <section id="tickets" class="final-cta">
+    <h2>시간관리를 즐겁게,<br />나만의 mytt 만들기 클래스</h2>
+    <p>
+      10.12(월) 개강 · 1기 얼리버드 프로모션<br />
+      베이직 20명 · 프로 10명 모집
+    </p>
+    <div class="cta-guide">
+      아래 <strong>[구매하기]</strong> 버튼에서<br />
+      베이직 · 프로 트랙을 선택해주세요
+    </div>
+    <div class="cta-sub">베이직 59,000원 · 프로 129,000원</div>
+  </section>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#07090f" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="딥워크" />
+  <link rel="manifest" href='data:application/manifest+json,%7B%22name%22%3A%22Deepwork%20Timer%22%2C%22short_name%22%3A%22Deepwork%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307090f%22%2C%22theme_color%22%3A%22%2307090f%22%2C%22start_url%22%3A%22.%22%7D' />
+  <title>Deepwork Timer</title>
+  <style>
+    :root {
+      --bg: #07090f;
+      --panel: #10141d;
+      --panel-2: #151b26;
+      --line: rgba(255,255,255,.08);
+      --text: #f6f7fa;
+      --muted: #8f98a8;
+      --orange: #ff8a2a;
+      --orange-soft: rgba(255,138,42,.16);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+    button, input, select { font: inherit; color: inherit; }
+    input, select { font-size: 16px; }
+    button { border: 0; cursor: pointer; }
+
+    .app {
+      height: 100dvh;
+      min-height: 100svh;
+      padding-top: max(10px, var(--safe-top));
+      padding-bottom: calc(68px + max(8px, var(--safe-bottom)));
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at 88% -10%, rgba(255,138,42,.09), transparent 27%),
+        linear-gradient(180deg, #090c14 0%, #07090f 100%);
+      overflow: hidden;
+    }
+
+    .topbar {
+      flex: 0 0 auto;
+      height: 82px;
+      margin: 0 14px 10px;
+      border: 1px solid var(--line);
+      background: rgba(16,20,29,.88);
+      border-radius: 22px;
+      padding: 12px 12px 12px 15px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 14px 38px rgba(0,0,0,.22);
+      backdrop-filter: blur(12px);
+    }
+    .eyebrow { font-size: 11px; color: var(--muted); letter-spacing: .04em; margin-bottom: 2px; }
+    .timer-line { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+    #timerDisplay { font-size: 27px; font-weight: 760; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    #timerState { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .timer-btn {
+      width: 64px; height: 52px; border-radius: 17px;
+      background: var(--orange); color: #1b0d02; font-weight: 800; font-size: 15px;
+      box-shadow: 0 8px 24px rgba(255,138,42,.16);
+    }
+    .timer-btn.running { background: #222a36; color: var(--orange); border: 1px solid rgba(255,138,42,.35); }
+
+    main { flex: 1 1 auto; min-height: 0; margin: 0 14px; position: relative; }
+    .panel { position: absolute; inset: 0; display: none; min-height: 0; }
+    .panel.active { display: flex; flex-direction: column; }
+
+    .section-head { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: end; margin: 2px 2px 9px; }
+    .section-head h1 { margin: 0; font-size: 21px; letter-spacing: -.04em; }
+    .section-head p { margin: 0; font-size: 12px; color: var(--muted); }
+
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; }
+
+    /* Mountain */
+    .mountain-card { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+    .sky {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #07111e 0%, #122033 48%, #2b3340 100%);
+      overflow: hidden;
+    }
+    .morning {
+      position: absolute; inset: 0; opacity: 0;
+      background: linear-gradient(180deg, #7399ba 0%, #bdc9d4 48%, #e2b58d 100%);
+      transition: opacity .35s ease;
+    }
+    .stars { position: absolute; inset: 0; opacity: 1; transition: opacity .35s ease; }
+    .star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: rgba(255,255,255,.86); box-shadow: 0 0 5px rgba(255,255,255,.45); }
+    .moon { position: absolute; right: 24px; top: 22px; width: 28px; height: 28px; border-radius: 50%; background: #f1f0df; opacity: .88; box-shadow: 0 0 20px rgba(241,240,223,.2); transition: opacity .35s ease; }
+    .sun { position: absolute; right: 26px; top: 28px; width: 26px; height: 26px; border-radius: 50%; background: var(--orange); opacity: 0; box-shadow: 0 0 22px rgba(255,138,42,.26); transition: opacity .35s ease; }
+    .mountain-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .mountain-art .back { fill: #18222b; opacity: .72; }
+    .mountain-art .main { fill: #2a353e; }
+    .mountain-art .main-shadow { fill: #1b242c; opacity: .96; }
+    .mountain-art .ridge-shadow { fill: #222c34; opacity: .88; }
+    .mountain-art .snow-cap { fill: rgba(232,237,241,.88); }
+    .mountain-art .snow-shadow { fill: rgba(197,207,215,.6); }
+    .mountain-art .trail-line {
+      fill: none;
+      stroke: rgba(255,255,255,.28);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-dasharray: 3 7;
+      vector-effect: non-scaling-stroke;
+    }
+    .climber { position: absolute; z-index: 8; width: 25px; height: 30px; transform: translate(-58%, -88%); transition: left .35s ease, top .35s ease; }
+    .climber .head { position: absolute; left: 8px; top: 0; width: 10px; height: 10px; background: var(--orange); border-radius: 50%; }
+    .climber .body { position: absolute; left: 11px; top: 9px; width: 4px; height: 13px; background: var(--orange); border-radius: 3px; transform: rotate(-8deg); }
+    .climber .arm, .climber .leg { position: absolute; width: 3px; height: 10px; background: var(--orange); border-radius: 3px; transform-origin: top; }
+    .climber .arm.a { left: 12px; top: 11px; transform: rotate(54deg); }
+    .climber .arm.b { left: 12px; top: 11px; transform: rotate(-54deg); }
+    .climber .leg.a { left: 12px; top: 20px; transform: rotate(38deg); }
+    .climber .leg.b { left: 12px; top: 20px; transform: rotate(-38deg); }
+    .mountain-stats { position: absolute; z-index: 10; left: 15px; top: 15px; }
+    .big-progress { font-size: 33px; font-weight: 800; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+    .big-progress span { color: var(--orange); }
+    .goal-note { font-size: 12px; color: rgba(255,255,255,.72); margin-top: 3px; }
+    .progress-bar { position: absolute; z-index: 10; left: 15px; right: 15px; bottom: 15px; height: 48px; background: rgba(5,8,13,.56); border: 1px solid rgba(255,255,255,.1); border-radius: 16px; padding: 9px 11px; backdrop-filter: blur(8px); }
+    .progress-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,.68); margin-bottom: 7px; }
+    .track { height: 6px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; width: 0; background: var(--orange); border-radius: 99px; transition: width .35s ease; }
+
+    /* Deepwork */
+    .deep-layout { flex: 1; min-height: 0; display: grid; grid-template-rows: auto auto 1fr; gap: 8px; }
+    .goal-row { display: grid; grid-template-columns: 115px 1fr; gap: 8px; }
+    .select, .text-input {
+      width: 100%; height: 44px; background: var(--panel); border: 1px solid var(--line); border-radius: 15px; padding: 0 12px; outline: none;
+    }
+    .select:focus, .text-input:focus { border-color: rgba(255,138,42,.55); box-shadow: 0 0 0 3px rgba(255,138,42,.08); }
+    .weekday-list { display: grid; grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 7px; min-height: 0; }
+    .weekday-item { display: grid; grid-template-columns: 42px 1fr 28px; align-items: center; gap: 8px; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; min-height: 0; }
+    .day { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .day.today { color: var(--orange); }
+    .weekday-item input[type="text"] { width: 100%; min-width: 0; background: transparent; border: 0; outline: 0; font-size: 16px; }
+    .check { appearance: none; width: 21px; height: 21px; border-radius: 7px; border: 1px solid rgba(255,255,255,.2); background: #0b0f16; position: relative; }
+    .check:checked { border-color: var(--orange); background: var(--orange); }
+    .check:checked::after { content: ""; position: absolute; width: 7px; height: 4px; border-left: 2px solid #1b0d02; border-bottom: 2px solid #1b0d02; transform: rotate(-45deg); left: 5px; top: 6px; }
+
+    /* Basket */
+    .basket-layout { flex: 1; min-height: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 8px; }
+    .basket-add { display: grid; grid-template-columns: 1fr 92px 44px; gap: 7px; }
+    .add-btn { height: 44px; border-radius: 14px; background: var(--orange); color: #1b0d02; font-size: 24px; line-height: 1; font-weight: 700; }
+    .basket-list { min-height: 0; display: grid; grid-auto-rows: minmax(44px, 1fr); gap: 7px; align-content: start; }
+    .basket-item { display: grid; grid-template-columns: 24px 1fr auto 24px; align-items: center; gap: 8px; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 15px; min-height: 44px; }
+    .basket-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+    .basket-item.done .basket-text { text-decoration: line-through; color: var(--muted); }
+    .due { font-size: 11px; color: var(--orange); background: var(--orange-soft); padding: 5px 7px; border-radius: 999px; }
+    .delete-btn { background: transparent; color: #687080; padding: 0; font-size: 18px; }
+    .empty { height: 100%; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; line-height: 1.6; }
+    .basket-foot { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; min-height: 18px; font-size: 11px; color: var(--muted); }
+
+    /* Work */
+    .work-layout { flex: 1; min-height: 0; display: grid; grid-template-rows: auto 1fr; gap: 8px; }
+    .summary-card { padding: 12px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metric + .metric { border-left: 1px solid var(--line); padding-left: 12px; }
+    .metric-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .metric-value { font-size: 20px; font-weight: 760; font-variant-numeric: tabular-nums; }
+    .log-card { min-height: 0; padding: 8px 10px; display: flex; flex-direction: column; }
+    .log-head { height: 28px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--muted); padding: 0 2px 5px; }
+    .logs { flex: 1; min-height: 0; display: grid; grid-auto-rows: minmax(0, 1fr); gap: 5px; }
+    .log-row { display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 12px; background: #0d1119; border: 1px solid rgba(255,255,255,.05); min-height: 0; }
+    .log-day { font-size: 11px; color: var(--orange); font-weight: 700; }
+    .log-time { font-size: 12px; color: #c4cad4; font-variant-numeric: tabular-nums; }
+    .log-duration { font-size: 12px; font-weight: 760; font-variant-numeric: tabular-nums; }
+
+    nav {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      height: calc(68px + max(8px, var(--safe-bottom)));
+      padding: 0 8px max(8px, var(--safe-bottom));
+      background: rgba(7,9,15,.94);
+      border-top: 1px solid var(--line);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      backdrop-filter: blur(16px);
+    }
+    .tab { background: transparent; color: #737d8c; font-size: 12px; font-weight: 700; position: relative; }
+    .tab::before { content: ""; position: absolute; top: 8px; left: 50%; transform: translateX(-50%) scaleX(0); width: 20px; height: 2px; border-radius: 99px; background: var(--orange); transition: transform .18s ease; }
+    .tab.active { color: var(--orange); }
+    .tab.active::before { transform: translateX(-50%) scaleX(1); }
+
+    .toast { position: fixed; z-index: 99; left: 50%; bottom: calc(78px + var(--safe-bottom)); transform: translate(-50%, 12px); background: #171d27; color: #e8ebef; border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; font-size: 12px; opacity: 0; pointer-events: none; transition: .2s ease; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-height: 690px) {
+      .topbar { height: 72px; margin-bottom: 7px; }
+      #timerDisplay { font-size: 24px; }
+      .timer-btn { height: 46px; }
+      .section-head { margin-bottom: 6px; }
+      .section-head h1 { font-size: 19px; }
+      .select, .text-input, .add-btn { height: 40px; }
+      .weekday-item { padding: 5px 9px; }
+      .summary-card { padding: 9px 12px; }
+    }
+
+    @media (min-width: 560px) {
+      body { background: #020307; }
+      .app { max-width: 480px; margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+      nav { left: 50%; right: auto; transform: translateX(-50%); width: 480px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow" id="dateLabel">이번 주 · 월–금</div>
+        <div class="timer-line">
+          <span id="timerDisplay">00:00:00</span>
+          <span id="timerState">준비됨</span>
+        </div>
+      </div>
+      <button id="timerButton" class="timer-btn" aria-label="타이머 시작">시작</button>
+    </header>
+
+    <main>
+      <section class="panel active" data-panel="mountain">
+        <div class="section-head">
+          <h1>산 오르기</h1>
+          <p>하루 목표 4시간</p>
+        </div>
+        <div class="card mountain-card">
+          <div class="sky">
+            <div class="morning" id="morningLayer"></div>
+            <div class="stars" id="stars">
+              <i class="star" style="left:12%;top:16%"></i><i class="star" style="left:25%;top:11%"></i>
+              <i class="star" style="left:43%;top:18%"></i><i class="star" style="left:58%;top:9%"></i>
+              <i class="star" style="left:74%;top:20%"></i><i class="star" style="left:88%;top:11%"></i>
+              <i class="star" style="left:19%;top:33%"></i><i class="star" style="left:67%;top:31%"></i>
+            </div>
+            <div class="moon" id="moon"></div>
+            <div class="sun" id="sun"></div>
+            <svg class="mountain-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <path class="back" d="M-12 105.4 C1 97.4 9 90.4 18 83.4 L27 72.8 L34 76.3 L43 67.5 L50 73.7 L64 58.7 L75 71 L82 66.6 C93 78.1 102 90.4 112 104.5 Z"></path>
+              <path class="main" d="M-8 108 C0 103.6 4 101 8 98.3 C12 95.7 15 92.2 18 89.5 L25 83.4 L31 77.2 L36 73.7 L41 66.6 L46 62.2 L50 55.2 L54 50.8 L57 43.8 L60 48.2 L63 53.4 L67 57.8 L71 64 L76 68.4 L80 74.6 L86 79 L91 86.9 C98 93 104 100.1 110 108 Z"></path>
+              <path class="main-shadow" d="M57 43.8 L60 48.2 L63 53.4 L67 57.8 L71 64 L76 68.4 L80 74.6 L86 79 L91 86.9 C98 93 104 100.1 110 108 L57 108 Z"></path>
+              <path class="ridge-shadow" d="M57 43.8 L54 50.8 L50 55.2 L46 62.2 L41 66.6 L36 73.7 L31 77.2 L25 83.4 L18 89.5 C15 92.2 12 95.7 8 98.3 C4 101 0 103.6 -8 108 L26 108 L39 93 L48 82.5 L53 71 Z"></path>
+              <path class="snow-cap" d="M57 43.8 L60 48.2 L63 53.4 L61 52.6 L59 55.2 L57 51.7 L55 54.3 L53 51.7 L50 55.2 L51 50.8 L54 49.9 Z"></path>
+              <path class="snow-shadow" d="M57 43.8 L60 48.2 L63 53.4 L61 52.6 L59 55.2 L57 51.7 Z"></path>
+              <path id="climbTrail" class="trail-line" d="M8 98.3 C12 95.7 15 92.2 18 89.5 L25 83.4 L31 77.2 L36 73.7 L41 66.6 L46 62.2 L50 55.2 L54 50.8 L57 43.8"></path>
+            </svg>
+            <div class="climber" id="climber" aria-hidden="true">
+              <span class="head"></span><span class="body"></span>
+              <span class="arm a"></span><span class="arm b"></span><span class="leg a"></span><span class="leg b"></span>
+            </div>
+          </div>
+          <div class="mountain-stats">
+            <div class="big-progress"><span id="mountainPct">0</span>%</div>
+            <div class="goal-note" id="todayAccumulated">오늘 0분 쌓음</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-row"><span>베이스캠프</span><span id="remainingLabel">정상까지 4시간</span></div>
+            <div class="track"><div class="fill" id="mountainFill"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="deepwork">
+        <div class="section-head">
+          <h1>딥워크</h1>
+          <p>이번 주 목표</p>
+        </div>
+        <div class="deep-layout">
+          <div class="goal-row">
+            <select id="goalSelect" class="select" aria-label="이번 주 목표 선택"></select>
+            <input id="goalName" class="text-input" type="text" maxlength="26" placeholder="목표 이름" aria-label="목표 이름" />
+          </div>
+          <p style="margin:0 2px; font-size:11px; color:var(--muted);">목표를 고르면 월~금 할 일이 바뀝니다.</p>
+          <div class="weekday-list" id="weekdayList"></div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="basket">
+        <div class="section-head">
+          <h1>바구니</h1>
+          <p>마감 요일만 정하기</p>
+        </div>
+        <div class="basket-layout">
+          <div class="basket-add">
+            <input id="basketInput" class="text-input" type="text" maxlength="40" placeholder="할 일 넣기" aria-label="바구니 할 일" />
+            <select id="basketDue" class="select" aria-label="마감 요일">
+              <option value="월">월 마감</option><option value="화">화 마감</option><option value="수">수 마감</option><option value="목">목 마감</option><option value="금">금 마감</option>
+            </select>
+            <button id="basketAdd" class="add-btn" aria-label="바구니에 추가">+</button>
+          </div>
+          <div id="basketList" class="basket-list"></div>
+          <div class="basket-foot"><span id="basketCount">0개</span><span>최신 6개 표시</span></div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="worktime">
+        <div class="section-head">
+          <h1>업무시간</h1>
+          <p>멈출 때마다 자동 기록</p>
+        </div>
+        <div class="work-layout">
+          <div class="card summary-card">
+            <div class="metric"><div class="metric-label">오늘 누적</div><div class="metric-value" id="todayTotal">0분</div></div>
+            <div class="metric"><div class="metric-label">이번 주 누적</div><div class="metric-value" id="weekTotal">0분</div></div>
+          </div>
+          <div class="card log-card">
+            <div class="log-head"><span>최근 기록</span><span id="sessionCount">0건</span></div>
+            <div class="logs" id="logList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav aria-label="하단 탭">
+      <button class="tab active" data-tab="mountain">산 오르기</button>
+      <button class="tab" data-tab="deepwork">딥워크</button>
+      <button class="tab" data-tab="basket">바구니</button>
+      <button class="tab" data-tab="worktime">업무시간</button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    const STORAGE_KEY = 'deepwork_timer_singlefile_v1';
+    const DAILY_GOAL_MS = 4 * 60 * 60 * 1000;
+    const DAY_NAMES = ['일','월','화','수','목','금','토'];
+    const WEEKDAYS = ['월','화','수','목','금'];
+    const weekdayLong = ['월요일','화요일','수요일','목요일','금요일'];
+
+    const $ = (q) => document.querySelector(q);
+    const $$ = (q) => [...document.querySelectorAll(q)];
+
+    const defaultGoal = (i) => ({
+      name: `목표 ${i + 1}`,
+      tasks: WEEKDAYS.map(() => ({ text: '', done: false }))
+    });
+
+    function getMonday(date = new Date()) {
+      const d = new Date(date);
+      d.setHours(0,0,0,0);
+      const day = d.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    function dateKey(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function currentWeekKey() { return dateKey(getMonday()); }
+
+    function freshState() {
+      return {
+        weekKey: currentWeekKey(),
+        sessions: [],
+        timer: { running: false, startMs: null },
+        deep: { activeGoal: 0, goals: [defaultGoal(0), defaultGoal(1), defaultGoal(2)] },
+        basket: [],
+        activeTab: 'mountain'
+      };
+    }
+
+    function normalizeState(raw) {
+      const base = freshState();
+      if (!raw || raw.weekKey !== base.weekKey) return base;
+      const s = { ...base, ...raw };
+      s.sessions = Array.isArray(raw.sessions) ? raw.sessions.filter(x => Number.isFinite(x.start) && Number.isFinite(x.end) && x.end >= x.start) : [];
+      s.timer = raw.timer && typeof raw.timer === 'object' ? { running: !!raw.timer.running, startMs: Number(raw.timer.startMs) || null } : base.timer;
+      if (s.timer.running && (!s.timer.startMs || new Date(s.timer.startMs) < getMonday())) s.timer = { running: false, startMs: null };
+      s.deep = raw.deep && Array.isArray(raw.deep.goals) ? raw.deep : base.deep;
+      s.deep.goals = [0,1,2].map(i => {
+        const g = s.deep.goals[i] || defaultGoal(i);
+        return {
+          name: String(g.name || `목표 ${i+1}`).slice(0,26),
+          tasks: WEEKDAYS.map((_, j) => ({ text: String(g.tasks?.[j]?.text || '').slice(0,60), done: !!g.tasks?.[j]?.done }))
+        };
+      });
+      s.deep.activeGoal = Math.min(2, Math.max(0, Number(s.deep.activeGoal) || 0));
+      s.basket = Array.isArray(raw.basket) ? raw.basket.map(item => ({ id: String(item.id || cryptoId()), text: String(item.text || '').slice(0,40), due: WEEKDAYS.includes(item.due) ? item.due : '금', done: !!item.done, createdAt: Number(item.createdAt) || Date.now() })) : [];
+      s.activeTab = ['mountain','deepwork','basket','worktime'].includes(raw.activeTab) ? raw.activeTab : 'mountain';
+      return s;
+    }
+
+    function loadState() {
+      try { return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY))); }
+      catch { return freshState(); }
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function cryptoId() {
+      if (window.crypto?.randomUUID) return crypto.randomUUID();
+      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+
+    function dayBounds(date = new Date()) {
+      const start = new Date(date); start.setHours(0,0,0,0);
+      const end = new Date(start); end.setDate(end.getDate() + 1);
+      return [start.getTime(), end.getTime()];
+    }
+
+    function weekBounds() {
+      const start = getMonday().getTime();
+      const end = new Date(getMonday()); end.setDate(end.getDate() + 5); // Friday 24:00
+      return [start, end.getTime()];
+    }
+
+    function overlap(start, end, rangeStart, rangeEnd) {
+      return Math.max(0, Math.min(end, rangeEnd) - Math.max(start, rangeStart));
+    }
+
+    function isWeekdayDate(d) { const n = d.getDay(); return n >= 1 && n <= 5; }
+
+    function recordedInRange(rangeStart, rangeEnd) {
+      return state.sessions.reduce((sum, s) => sum + overlap(s.start, s.end, rangeStart, rangeEnd), 0);
+    }
+
+    function runningInRange(rangeStart, rangeEnd) {
+      if (!state.timer.running || !state.timer.startMs) return 0;
+      return overlap(state.timer.startMs, Date.now(), rangeStart, rangeEnd);
+    }
+
+    function todayMs() {
+      if (!isWeekdayDate(new Date())) return 0;
+      const [a,b] = dayBounds();
+      return recordedInRange(a,b) + runningInRange(a,b);
+    }
+
+    function weekMs() {
+      const [a,b] = weekBounds();
+      return recordedInRange(a,b) + runningInRange(a,b);
+    }
+
+    function fmtClock(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const h = String(Math.floor(total / 3600)).padStart(2,'0');
+      const m = String(Math.floor((total % 3600) / 60)).padStart(2,'0');
+      const s = String(total % 60).padStart(2,'0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function fmtCompact(ms) {
+      const mins = Math.max(0, Math.round(ms / 60000));
+      if (mins < 60) return `${mins}분`;
+      const h = Math.floor(mins / 60), m = mins % 60;
+      return m ? `${h}시간 ${m}분` : `${h}시간`;
+    }
+
+    function fmtTime(ms) {
+      return new Date(ms).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    function renderTimer() {
+      const btn = $('#timerButton');
+      if (state.timer.running && state.timer.startMs) {
+        $('#timerDisplay').textContent = fmtClock(Date.now() - state.timer.startMs);
+        $('#timerState').textContent = '집중 중';
+        btn.textContent = '멈춤'; btn.classList.add('running'); btn.setAttribute('aria-label','타이머 멈추고 기록');
+      } else {
+        $('#timerDisplay').textContent = '00:00:00';
+        $('#timerState').textContent = '준비됨';
+        btn.textContent = '시작'; btn.classList.remove('running'); btn.setAttribute('aria-label','타이머 시작');
+      }
+    }
+
+    function startTimer() {
+      if (state.timer.running) return;
+      const now = new Date();
+      if (!isWeekdayDate(now)) showToast('월~금 업무시간만 이번 주 기록에 저장돼요.');
+      state.timer = { running: true, startMs: Date.now() };
+      saveState();
+      renderAll();
+    }
+
+    function stopTimer() {
+      if (!state.timer.running || !state.timer.startMs) return;
+      const end = Date.now();
+      const start = state.timer.startMs;
+      if (end > start + 1000) {
+        const [wa, wb] = weekBounds();
+        const clippedStart = Math.max(start, wa);
+        const clippedEnd = Math.min(end, wb);
+        if (clippedEnd > clippedStart) state.sessions.push({ id: cryptoId(), start: clippedStart, end: clippedEnd });
+      }
+      state.timer = { running: false, startMs: null };
+      saveState();
+      renderAll();
+      showToast('업무시간에 한 줄 기록했어요.');
+    }
+
+    function renderMountain() {
+      const t = todayMs();
+      const p = Math.max(0, Math.min(1, t / DAILY_GOAL_MS));
+      const pct = Math.floor(p * 100);
+      $('#mountainPct').textContent = pct;
+      $('#todayAccumulated').textContent = `오늘 ${fmtCompact(t)} 쌓음`;
+      $('#mountainFill').style.width = `${pct}%`;
+      const remain = Math.max(0, DAILY_GOAL_MS - t);
+      $('#remainingLabel').textContent = remain ? `정상까지 ${fmtCompact(remain)}` : '오늘 정상 도착';
+      $('#morningLayer').style.opacity = String(p);
+      $('#stars').style.opacity = String(1 - p);
+      $('#moon').style.opacity = String(.88 * (1 - p));
+      $('#sun').style.opacity = String(p);
+      const climber = $('#climber');
+      // The visible dotted route is the exact same ridge geometry the climber follows.
+      // This prevents the route from cutting through the mountain or skipping the summit.
+      const climbPath = $('#climbTrail');
+      const totalLength = climbPath.getTotalLength();
+      const point = climbPath.getPointAtLength(totalLength * p);
+      climber.style.left = `${point.x}%`;
+      climber.style.top = `${point.y}%`;
+    }
+
+    function refreshGoalSelect() {
+      const select = $('#goalSelect');
+      select.innerHTML = state.deep.goals.map((g,i) => `<option value="${i}">${escapeHtml(g.name || `목표 ${i+1}`)}</option>`).join('');
+      select.value = String(state.deep.activeGoal);
+    }
+
+    function renderDeep() {
+      refreshGoalSelect();
+      const idx = state.deep.activeGoal;
+      const goal = state.deep.goals[idx];
+      $('#goalName').value = goal.name;
+      const today = new Date().getDay();
+      $('#weekdayList').innerHTML = goal.tasks.map((task, i) => `
+        <label class="weekday-item">
+          <span class="day ${today === i + 1 ? 'today' : ''}">${weekdayLong[i]}</span>
+          <input type="text" data-task-text="${i}" maxlength="60" placeholder="${weekdayLong[i]} 딥워크" value="${escapeAttr(task.text)}" />
+          <input class="check" type="checkbox" data-task-done="${i}" ${task.done ? 'checked' : ''} aria-label="${weekdayLong[i]} 완료" />
+        </label>`).join('');
+    }
+
+    function renderBasket() {
+      const list = [...state.basket].sort((a,b) => b.createdAt - a.createdAt);
+      $('#basketCount').textContent = `${state.basket.filter(x => !x.done).length}개 남음 · 총 ${state.basket.length}개`;
+      if (!list.length) {
+        $('#basketList').innerHTML = '<div class="empty">머릿속에 떠오른 일을 바구니에 넣고<br>마감 요일만 정해두세요.</div>';
+        return;
+      }
+      const visible = list.slice(0,6);
+      $('#basketList').innerHTML = visible.map(item => `
+        <div class="basket-item ${item.done ? 'done' : ''}" data-id="${escapeAttr(item.id)}">
+          <input class="check" type="checkbox" data-basket-check="${escapeAttr(item.id)}" ${item.done ? 'checked' : ''} aria-label="완료" />
+          <div class="basket-text" title="${escapeAttr(item.text)}">${escapeHtml(item.text)}</div>
+          <span class="due">${escapeHtml(item.due)} 마감</span>
+          <button class="delete-btn" data-basket-delete="${escapeAttr(item.id)}" aria-label="삭제">×</button>
+        </div>`).join('');
+    }
+
+    function renderWork() {
+      $('#todayTotal').textContent = fmtCompact(todayMs());
+      $('#weekTotal').textContent = fmtCompact(weekMs());
+      $('#sessionCount').textContent = `${state.sessions.length}건`;
+      const list = [...state.sessions].sort((a,b) => b.end - a.end).slice(0,7);
+      if (!list.length) {
+        $('#logList').innerHTML = '<div class="empty">타이머를 멈추면<br>여기에 기록이 쌓여요.</div>';
+        return;
+      }
+      $('#logList').innerHTML = list.map(s => {
+        const d = new Date(s.end);
+        const day = DAY_NAMES[d.getDay()] + '요일';
+        return `<div class="log-row"><span class="log-day">${day}</span><span class="log-time">${fmtTime(s.start)}–${fmtTime(s.end)}</span><strong class="log-duration">${fmtCompact(s.end - s.start)}</strong></div>`;
+      }).join('');
+    }
+
+    function renderDate() {
+      const now = new Date();
+      const mon = getMonday(now);
+      const fri = new Date(mon); fri.setDate(fri.getDate() + 4);
+      const range = `${mon.getMonth()+1}.${mon.getDate()}–${fri.getMonth()+1}.${fri.getDate()}`;
+      $('#dateLabel').textContent = `${range} · ${DAY_NAMES[now.getDay()]}요일`;
+    }
+
+    function renderTabs() {
+      $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === state.activeTab));
+      $$('.panel').forEach(p => p.classList.toggle('active', p.dataset.panel === state.activeTab));
+    }
+
+    function renderAll() {
+      renderDate(); renderTimer(); renderTabs(); renderMountain(); renderDeep(); renderBasket(); renderWork();
+    }
+
+    function showToast(msg) {
+      const el = $('#toast'); el.textContent = msg; el.classList.add('show');
+      clearTimeout(showToast.t); showToast.t = setTimeout(() => el.classList.remove('show'), 1700);
+    }
+
+    function escapeHtml(s='') { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function escapeAttr(s='') { return escapeHtml(s).replace(/`/g,'&#96;'); }
+
+    $('#timerButton').addEventListener('click', () => state.timer.running ? stopTimer() : startTimer());
+
+    $$('.tab').forEach(btn => btn.addEventListener('click', () => {
+      state.activeTab = btn.dataset.tab; saveState(); renderTabs();
+    }));
+
+    $('#goalSelect').addEventListener('change', e => {
+      state.deep.activeGoal = Number(e.target.value); saveState(); renderDeep();
+    });
+
+    $('#goalName').addEventListener('input', e => {
+      state.deep.goals[state.deep.activeGoal].name = e.target.value || `목표 ${state.deep.activeGoal + 1}`;
+      saveState(); refreshGoalSelect();
+    });
+
+    $('#weekdayList').addEventListener('input', e => {
+      if (e.target.matches('[data-task-text]')) {
+        state.deep.goals[state.deep.activeGoal].tasks[Number(e.target.dataset.taskText)].text = e.target.value;
+        saveState();
+      }
+    });
+    $('#weekdayList').addEventListener('change', e => {
+      if (e.target.matches('[data-task-done]')) {
+        state.deep.goals[state.deep.activeGoal].tasks[Number(e.target.dataset.taskDone)].done = e.target.checked;
+        saveState();
+      }
+    });
+
+    function addBasket() {
+      const input = $('#basketInput');
+      const text = input.value.trim();
+      if (!text) { showToast('바구니에 넣을 일을 적어주세요.'); input.focus(); return; }
+      state.basket.push({ id: cryptoId(), text, due: $('#basketDue').value, done: false, createdAt: Date.now() });
+      input.value = ''; saveState(); renderBasket();
+    }
+    $('#basketAdd').addEventListener('click', addBasket);
+    $('#basketInput').addEventListener('keydown', e => { if (e.key === 'Enter') addBasket(); });
+    $('#basketList').addEventListener('change', e => {
+      const id = e.target.dataset.basketCheck;
+      if (!id) return;
+      const item = state.basket.find(x => x.id === id);
+      if (item) { item.done = e.target.checked; saveState(); renderBasket(); }
+    });
+    $('#basketList').addEventListener('click', e => {
+      const id = e.target.dataset.basketDelete;
+      if (!id) return;
+      state.basket = state.basket.filter(x => x.id !== id); saveState(); renderBasket();
+    });
+
+    window.addEventListener('storage', e => {
+      if (e.key === STORAGE_KEY) { state = loadState(); renderAll(); }
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { state = loadState(); renderAll(); } });
+
+    // 같은 페이지를 켜둔 동안에는 표시만 갱신하고, 저장은 상태가 바뀔 때 즉시 수행합니다.
+    setInterval(() => {
+      renderTimer();
+      if (state.timer.running) { renderMountain(); renderWork(); }
+    }, 1000);
+
+    saveState();
+    renderAll();
+  })();
+  </script>
+</body>
+</html>

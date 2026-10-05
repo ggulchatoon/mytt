@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mytt — Instagram Grid v3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+
+    /* ─── TOKENS ──────────────────────────────────────── */
+    :root {
+      --red:    #DF4B18;
+      --oat:    #F5F4EF;   /* 이전보다 밝고 산뜻한 오트밀 */
+      --wbg:    #FAF9F6;   /* 화이트베이지 */
+      --ink:    #1A1A1A;
+      --mid:    #7A746E;
+      --frm:    #D8D3C8;   /* 이미지 프레임 박스 */
+      --frm-dk: #C4BDB2;
+      --f:      'Noto Serif KR', serif;
+
+      /* ── 비율 토큰 ──
+         카드 높이를 100으로 봤을 때
+         템플릿A : 이미지 60% / 텍스트 40%
+         템플릿B : 텍스트 38% / 이미지 58% (나머지 4%는 gap)
+      */
+      --img-a:  60%;
+      --txt-a:  38%;   /* 2% gap 여유 */
+      --txt-b:  36%;
+      --img-b:  60%;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #DAD5CD;
+      font-family: var(--f);
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px 80px;
+    }
+
+    /* ─── PHONE ───────────────────────────────────────── */
+    .phone {
+      width: 390px;
+      background: #fff;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 28px 72px rgba(0,0,0,.18);
+    }
+
+    /* ─── STATUS ──────────────────────────────────────── */
+    .status {
+      padding: 14px 28px 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .status-r { display:flex; gap:5px; align-items:center; }
+    .s-sig { width:13px; height:9px; background:var(--ink); clip-path:polygon(0 100%,22% 60%,50% 20%,78% 60%,100% 100%); }
+    .s-wifi { width:11px; height:8px; background:var(--ink); clip-path:polygon(50% 100%,5% 30%,95% 30%); }
+    .s-bat { width:21px; height:10px; border:1.5px solid var(--ink); border-radius:2px; position:relative; }
+    .s-bat::after { content:''; position:absolute; right:-4px; top:50%; transform:translateY(-50%); width:2px; height:5px; background:var(--ink); border-radius:1px; }
+    .s-bat::before { content:''; position:absolute; inset:2px 4px 2px 2px; background:var(--ink); border-radius:1px; }
+
+    /* ─── TOP NAV ─────────────────────────────────────── */
+    .topnav {
+      padding: 8px 18px 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #E5E0D8;
+    }
+    .topnav-handle { font-size:16px; font-weight:700; letter-spacing:-.01em; }
+    .topnav-icons { display:flex; gap:16px; }
+    .topnav-icons svg { width:22px; height:22px; fill:none; stroke:var(--ink); stroke-width:1.8; }
+
+    /* ─── PROFILE ─────────────────────────────────────── */
+    .profile { padding:16px 18px 0; }
+    .profile-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .avatar { width:74px; height:74px; border-radius:50%; border:2px solid var(--red); padding:3px; flex-shrink:0; }
+    .avatar-inner { width:100%; height:100%; border-radius:50%; background:var(--oat); display:flex; align-items:center; justify-content:center; }
+    .avatar-inner b { font-size:16px; font-weight:900; line-height:1; text-align:center; }
+    .avatar-inner b em { display:block; font-style:normal; color:var(--red); }
+    .stats { display:flex; gap:18px; flex:1; justify-content:space-around; }
+    .stat { text-align:center; }
+    .stat-n { display:block; font-size:17px; font-weight:700; line-height:1.1; }
+    .stat-l { font-size:11.5px; color:var(--mid); }
+    .bio-name { font-size:13.5px; font-weight:700; margin-bottom:4px; }
+    .bio-desc { font-size:12.5px; font-weight:300; line-height:1.65; }
+    .bio-link { font-size:12px; color:var(--red); font-weight:500; margin-top:3px; }
+    .profile-btns { display:flex; gap:8px; margin:12px 0 14px; }
+    .btn-f { flex:1; background:var(--red); color:#fff; border:none; border-radius:8px; padding:8px 0; font-family:var(--f); font-size:13px; font-weight:700; }
+    .btn-m { flex:1; background:var(--oat); color:var(--ink); border:none; border-radius:8px; padding:8px 0; font-family:var(--f); font-size:13px; font-weight:700; border: 1px solid #E0DAD1; }
+
+    /* ─── TABS ────────────────────────────────────────── */
+    .tabs { display:flex; border-top:1px solid #E5E0D8; border-bottom:1px solid #E5E0D8; }
+    .tab { flex:1; padding:11px 0; display:flex; justify-content:center; }
+    .tab svg { width:22px; height:22px; fill:none; stroke-width:1.8; }
+    .tab.on svg { stroke:var(--ink); }
+    .tab:not(.on) svg { stroke:#A8A09A; }
+    .tab.on { border-bottom:1.5px solid var(--ink); }
+
+    /* ─── GRID ────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: #C8C2BA;
+    }
+
+    /* ─── 카드 BASE ───────────────────────────────────── */
+    .card {
+      aspect-ratio: 1 / 1;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card.oat { background: var(--oat); }
+    .card.wbg { background: var(--wbg); }
+
+    /* ─── 이미지 박스 : 비율 고정 ────────────────────── */
+    /*
+      카드 aspect-ratio 1:1 → 카드 너비 = 카드 높이
+      이미지 박스 높이를 카드 너비 기준 % 로 고정
+      → 모든 카드에서 동일한 픽셀 높이로 렌더됨
+    */
+    .img-box {
+      border-radius: 7px;
+      background: var(--frm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .img-box.dk { background: var(--frm-dk); }
+
+    /* 템플릿 A : 이미지 위 60%, 텍스트 아래 */
+    .ta .img-box {
+      height: calc(var(--img-a) * 1%);  /* 60% of card */
+      /* aspect-ratio 1:1 이므로 카드 높이 = 카드 너비
+         실제로는 flex 로 처리 */
+      flex: 0 0 60%;
+    }
+    .ta .txt { flex: 0 0 auto; }
+
+    /* 템플릿 B : 텍스트 위, 이미지 아래 58% */
+    .tb { flex-direction: column; }
+    .tb .img-box {
+      flex: 0 0 58%;
+      order: 2;
+    }
+    .tb .txt {
+      order: 1;
+      flex: 0 0 auto;
+    }
+
+    /* 이미지 라벨 */
+    .img-lbl {
+      font-size: 7.5px;
+      color: #9A938C;
+      font-family: var(--f);
+      font-weight: 300;
+      text-align: center;
+      line-height: 1.6;
+      padding: 0 4px;
+    }
+
+    /* ─── 텍스트 블록 ─────────────────────────────────── */
+    .txt { display:flex; flex-direction:column; gap:2px; }
+
+    .ey {
+      font-size: 7.5px;
+      font-weight: 400;
+      color: var(--mid);
+      letter-spacing: .07em;
+    }
+    /* 대형: 강한 훅 카피 — 레드 카드에만 */
+    .h-lg {
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .h-lg.red { color: var(--red); }
+
+    /* 중형: 일반 카드 전부 */
+    .h-md {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .h-md.red { color: var(--red); }
+
+    /* 서브텍스트 */
+    .sub {
+      font-size: 8px;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-top: 1px;
+    }
+
+    /* 배지 */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--red);
+      color: #fff;
+      font-size: 7px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 2px;
+      letter-spacing: .04em;
+      width: fit-content;
+      margin-bottom: 1px;
+    }
+    .badge.dark { background: var(--ink); }
+    .badge.out { background: transparent; color: var(--red); border: 1px solid var(--red); }
+
+    /* 데코라인 */
+    .deco { width: 16px; height: 1.5px; background: var(--red); margin-bottom: 3px; flex-shrink:0; }
+
+    /* 워터마크 */
+    .wm {
+      position: absolute;
+      bottom: 8px; right: 8px;
+      z-index: 4;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wm span { font-size: 6.5px; font-weight: 900; color: #fff; line-height: 1; text-align: center; }
+    .wm.r  { background: var(--red); }
+    .wm.lt { background: #fff; }
+    .wm.lt span { color: var(--ink); }
+
+    /* ─── 5번 카드: 풀블리드 ──────────────────────────── */
+    .card.full { padding: 0; }
+    .card.full .img-box {
+      position: absolute; inset: 0;
+      border-radius: 0;
+      flex: none;
+      height: 100%;
+    }
+    .overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,26,26,.78) 0%, transparent 52%);
+      z-index: 1;
+    }
+    .card.full .txt {
+      position: relative; z-index: 2;
+      margin-top: auto;
+      padding: 0 10px 28px;
+      order: 2;
+    }
+    .card.full .txt .h-md { color: #fff; }
+    .card.full .txt .sub  { color: rgba(255,255,255,.6); }
+
+    /* ─── BOTTOM NAV ──────────────────────────────────── */
+    .botnav {
+      background: #fff;
+      border-top: 1px solid #E5E0D8;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 24px;
+    }
+    .botnav svg { width:24px; height:24px; fill:none; stroke:var(--ink); stroke-width:1.8; }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status -->
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <span class="s-sig"></span>
+      <span class="s-wifi"></span>
+      <span class="s-bat"></span>
+    </div>
+  </div>
+
+  <!-- Top Nav -->
+  <div class="topnav">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <span class="topnav-handle">mytt</span>
+    <div class="topnav-icons">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div class="profile">
+    <div class="profile-row">
+      <div class="avatar">
+        <div class="avatar-inner"><b>my<em>tt</em></b></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="stat-n">13</span><span class="stat-l">게시물</span></div>
+        <div class="stat"><span class="stat-n">241</span><span class="stat-l">팔로워</span></div>
+        <div class="stat"><span class="stat-n">12</span><span class="stat-l">팔로잉</span></div>
+      </div>
+    </div>
+    <div class="bio-name">mytt | 나만의 시간관리 툴</div>
+    <div class="bio-desc">코딩 몰라도, 10분 만에 나만의 웹앱 완성<br>1인 창작자를 위한 바이브코딩 클래스</div>
+    <div class="bio-link">→ 10월 1기 모집 중</div>
+    <div class="profile-btns">
+      <button class="btn-f">팔로우</button>
+      <button class="btn-m">메시지</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab on">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="tab">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+
+  <!-- ── GRID ─────────────────────────────────────────── -->
+  <div class="grid">
+
+    <!-- 1 / TA / oat ─ 이미지60 + 텍스트 -->
+    <div class="card ta oat">
+      <div class="img-box">
+        <span class="img-lbl">타이머<br>오브젝트</span>
+      </div>
+      <div class="txt">
+        <div class="h-md">내 취향껏<br>조립하는 툴</div>
+        <div class="sub">복잡한 시간관리가<br>즐거운 루틴으로</div>
+      </div>
+      <div class="wm"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 2 / TB / wbg ─ 텍스트(레드대형) + 이미지58 -->
+    <div class="card tb wbg">
+      <div class="txt">
+        <div class="deco"></div>
+        <div class="h-lg red">No tool<br>fits all.</div>
+        <div class="sub">남이 만든 시간표에<br>끼워 맞추지 마세요</div>
+      </div>
+      <div class="img-box">
+        <span class="img-lbl">라면 빈티지<br>사진</span>
+      </div>
+      <div class="wm lt"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 3 / TA / oat ─ 이미지60 + 텍스트 -->
+    <div class="card ta oat">
+      <div class="img-box">
+        <span class="img-lbl">조립 키트<br>일러스트</span>
+      </div>
+      <div class="txt">
+        <div class="badge">● 모집 중</div>
+        <div class="h-md">10월<br>오픈 일정</div>
+        <div class="sub">10. 12 (월) 정규 개강</div>
+      </div>
+      <div class="wm r"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 4 / TB / wbg ─ 텍스트 + 이미지58 -->
+    <div class="card tb wbg">
+      <div class="txt">
+        <div class="ey">Work Receipt</div>
+        <div class="h-md">오늘 일한 시간,<br>영수증으로</div>
+        <div class="sub">시간 메타인지 측정</div>
+      </div>
+      <div class="img-box dk">
+        <span class="img-lbl">앱 화면<br>스크린샷</span>
+      </div>
+      <div class="wm"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 5 / 풀블리드 / 다크오버레이 -->
+    <div class="card full" style="background:var(--frm-dk);">
+      <div class="img-box dk">
+        <span class="img-lbl">바디더블링<br>코워킹 사진</span>
+      </div>
+      <div class="overlay"></div>
+      <div class="txt">
+        <div class="badge out" style="color:#fff;border-color:rgba(255,255,255,.4);">Body Doubling</div>
+        <div class="h-md">함께 일하면<br>더 잘 되는 이유</div>
+        <div class="sub">심리학이 증명한 집중</div>
+      </div>
+      <div class="wm lt"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 6 / TB / oat ─ 텍스트(레드) + 이미지58 -->
+    <div class="card tb oat">
+      <div class="txt">
+        <div class="deco"></div>
+        <div class="h-lg red" style="font-size:13px;">잉 ㅠㅠ<br>오늘도 야근각</div>
+        <div class="sub">내 시간 구원할 툴,<br>이제 직접 만드세요</div>
+      </div>
+      <div class="img-box">
+        <span class="img-lbl">할머니<br>위트 사진</span>
+      </div>
+      <div class="wm r"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 7 / TA / wbg ─ 이미지60 + 텍스트 -->
+    <div class="card ta wbg">
+      <div class="img-box">
+        <span class="img-lbl">4각도<br>작업 콜라주</span>
+      </div>
+      <div class="txt">
+        <div class="h-md">바이브코딩으로<br>100억쯤 벌고 싶다</div>
+        <div class="sub">일단 오늘 툴부터</div>
+      </div>
+      <div class="wm"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 8 / TB / oat ─ 텍스트 + 이미지58 -->
+    <div class="card tb oat">
+      <div class="txt">
+        <div class="ey">Curriculum · 4-Week</div>
+        <div class="h-md">4주 만에 끝내는<br>나만의 툴 제작기</div>
+        <div class="sub">비전공자 완주율 100%</div>
+      </div>
+      <div class="img-box dk">
+        <span class="img-lbl">커리큘럼<br>일러스트</span>
+      </div>
+      <div class="wm"><span>my<br>tt</span></div>
+    </div>
+
+    <!-- 9 / TA / wbg ─ 이미지60 + 텍스트(CTA) -->
+    <div class="card ta wbg">
+      <div class="img-box">
+        <span class="img-lbl">잠봉뵈르<br>코워킹 사진</span>
+      </div>
+      <div class="txt">
+        <div class="badge dark">1기 얼리버드</div>
+        <div class="h-md">선착순 12명<br>잔여 4석</div>
+        <div class="sub" style="color:var(--red);font-weight:500;">프로필 링크에서 신청 →</div>
+      </div>
+      <div class="wm r"><span>my<br>tt</span></div>
+    </div>
+
+  </div>
+  <!-- /grid -->
+
+  <!-- Bottom Nav -->
+  <div class="botnav">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </div>
+
+</div>
+</body>
+</html>

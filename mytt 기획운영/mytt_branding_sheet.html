@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>mytt 브랜드 전략 & 고객 여정 시트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F9F9F9;
+  --bg-hover: #F2F2F2;
+  --text-main: #111111;
+  --text-sub: #555555;
+  --text-muted: #888888;
+  --border: #E5E5E5;
+  --border-strong: #111111;
+  --tag-bg: #111111;
+  --tag-txt: #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  line-height: 1.6;
+  padding: 48px 20px 100px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+header {
+  border-bottom: 2px solid var(--border-strong);
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+}
+.header-title-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+.header-desc {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 6px;
+  word-break: keep-all;
+}
+.header-meta {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ── Tab Navigation ── */
+.tab-navigation {
+  display: flex;
+  border-bottom: 2px solid var(--border-strong);
+  margin-bottom: 36px;
+  gap: 4px;
+}
+.tab-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 22px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+.tab-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-subtle);
+}
+.tab-btn.active {
+  color: var(--text-main);
+  font-weight: 700;
+  background: var(--bg-subtle);
+}
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--border-strong);
+}
+.tab-num {
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.6;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+
+/* ── Quick Nav / Summary Box ── */
+.quote-banner {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin-bottom: 40px;
+}
+.quote-banner p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+.quote-banner span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-sub);
+  margin-top: 6px;
+}
+
+/* ── Section Structure ── */
+section {
+  margin-bottom: 52px;
+}
+.section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 10px;
+  margin-bottom: 22px;
+}
+.section-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.section-title h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-main);
+}
+
+/* ── Content Blocks & Grids ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 680px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  background: var(--bg-card);
+}
+.card-header {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.badge.badge-black {
+  background: var(--tag-bg);
+  color: var(--tag-txt);
+  border-color: var(--tag-bg);
+}
+.badge.badge-gray {
+  background: var(--bg-subtle);
+  color: var(--text-sub);
+}
+
+/* ── Comparison Table ── */
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+thead {
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+}
+th {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none; }
+td.negative {
+  color: #777;
+  background: #FAFAFA;
+}
+td.positive {
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+/* ── List Elements ── */
+ul.bullet-list {
+  list-style: none;
+  font-size: 13.5px;
+  color: var(--text-sub);
+}
+ul.bullet-list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+ul.bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  color: var(--text-main);
+  font-weight: bold;
+}
+ul.bullet-list li strong {
+  color: var(--text-main);
+}
+
+/* ── Key Messages Box ── */
+.message-box {
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 20px 24px;
+  background: #FFFFFF;
+  margin-bottom: 16px;
+}
+.message-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+.message-content {
+  font-size: 13.5px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+/* ── Instagram Script Box ── */
+.insta-post {
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  border-radius: 6px;
+  padding: 20px;
+  margin-top: 14px;
+}
+.insta-post-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.insta-text {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-main);
+  white-space: pre-line;
+  font-family: inherit;
+}
+
+/* ── Persona Specific Styling (Tab 2) ── */
+.persona-card {
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 28px 24px;
+  background: #FFFFFF;
+  margin-bottom: 36px;
+}
+.persona-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.persona-name-wrap h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.persona-subtitle {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+.persona-quote {
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--border-strong);
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.timeline-step {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  background: #FFFFFF;
+  transition: all 0.15s ease;
+}
+.timeline-step:hover {
+  border-color: #999;
+  background: #FAFAFA;
+}
+.step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.step-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.step-body {
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+.step-trigger {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+.step-trigger span {
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-right: 4px;
+}
+
+/* ── Print / Utility Bar ── */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: #999999;
+}
+
+@media print {
+  body { padding: 0; }
+  .toolbar, .tab-navigation { display: none; }
+  .tab-content { display: block !important; margin-bottom: 60px; page-break-after: always; }
+  .quote-banner { border-left-color: #000; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="toolbar">
+    <button class="btn" onclick="window.print()">인쇄 / PDF 저장</button>
+  </div>
+
+  <header>
+    <div class="header-title-wrap">
+      <div>
+        <h1>mytt 브랜드 전략 & 고객 여정 시트</h1>
+        <p class="header-desc">1인 창작자 타겟의 브랜드 언어 정의와 인스타 구매 전환 설계</p>
+      </div>
+      <div class="header-meta">mytt 1기 기획 문서 · B&W Edition</div>
+    </div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button id="btn-about" class="tab-btn active" onclick="showTab('about')">
+      <span class="tab-num">01</span> 브랜드 정의 & 개요
+    </button>
+    <button id="btn-strategy" class="tab-btn" onclick="showTab('strategy')">
+      <span class="tab-num">02</span> 브랜드 전략 & 아이덴티티
+    </button>
+    <button id="btn-personas" class="tab-btn" onclick="showTab('personas')">
+      <span class="tab-num">03</span> 타겟 페르소나 & 구매 여정
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 1: 브랜드 정의 & 개요
+       ══════════════════════════════════════════ -->
+  <div id="tab-about" class="tab-content active">
+
+    <!-- Key Concept Banner -->
+    <div class="quote-banner">
+      <p>“매일 쓰는 작업 도구, 왜 남들과 똑같은 걸 써야 할까요? 내 개성을 담은 디자인에, 내 작업 습관에 맞춘 기능만 쏙 넣은 ‘나만의 작은 시간 도구’”</p>
+      <span>mytt(My Time, Tiny Tool)는 획일적인 기성 앱 대신, 오직 나만을 위한 도구를 직접 만들어 소유하는 브랜드입니다.</span>
+    </div>
+
+    <!-- SECTION 01 -->
+    <section id="about-01">
+      <div class="section-title">
+        <span class="section-num">01</span>
+        <h2>mytt는 어떤 브랜드인가?</h2>
+      </div>
+      <div class="message-box">
+        <div class="message-title">세상에 하나뿐인 나만의 작은 시간 도구 (My Time, Tiny Tool)</div>
+        <div class="message-content">
+          기성 생산성 앱의 획일적인 규격에서 벗어나, <b>내 취향과 작업 습관을 100% 반영한 ‘세상에 하나뿐인 나만의 작은 시간 도구’를 직접 만들어 소유하는 브랜드</b>입니다.
+        </div>
+      </div>
+      <div class="card" style="background: var(--bg-subtle);">
+        <div class="card-header">
+          <span>핵심 슬로건</span>
+          <span class="badge badge-black">Brand Slogan</span>
+        </div>
+        <p style="font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+          “100명의 창작자에겐 100개의 시간관리 도구가 필요하다.”
+        </p>
+        <p style="font-size: 13.5px; color: var(--text-sub);">
+          남이 정해둔 룰과 규격에 내 하루를 억지로 끼워 맞추지 않고, 내 방식에 꼭 맞는 시간관리 도구를 내 손으로 직접 쥐어줍니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section id="about-02">
+      <div class="section-title">
+        <span class="section-num">02</span>
+        <h2>사람들은 왜 '내 도구'를 갖고 싶어 할까?</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span>개성과 소유욕의 확장</span>
+            <span class="badge badge-black">Taste & Object</span>
+          </div>
+          <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.6;">
+            우리는 <b>폰꾸, 다꾸, 키보드 커스텀, 데스크테리어</b>처럼 매일 마주하는 공간과 물건에 내 개성을 담고 싶어 합니다. 내 손때가 묻고 내 취향이 드러나는 물건을 곁에 둘 때 큰 애착과 만족감을 느끼기 때문입니다.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>일 도구의 획일성 탈피</span>
+            <span class="badge badge-gray">Desktop Object</span>
+          </div>
+          <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.6;">
+            하지만 유독 일할 때 쓰는 타이머나 플래너만 앱스토어의 똑같이 생긴 흑백 앱을 참고 써왔습니다.<br/>
+            mytt는 내가 좋아하는 캐릭터, 따뜻한 색감, 취향을 온전히 담아 <b>매일 책상 위에 켜두고 바라만 봐도 기분 좋은 ‘나만의 디지털 데스크 소품’</b>을 소유하게 합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section id="about-03">
+      <div class="section-title">
+        <span class="section-num">03</span>
+        <h2>기성 앱엔 없는 '나만의 별난 기능'</h2>
+      </div>
+      <p style="font-size: 14px; color: var(--text-sub); margin-bottom: 16px;">
+        유명한 생산성 앱들은 안 쓰는 기능이 너무 많아 피로하거나, 정작 <b>나한테 진짜 필요한 단 하나의 디테일</b>이 없습니다. mytt는 내 현실 습관을 그대로 품어주는 핀포인트 기능을 만듭니다.
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span>사례 A. 딴짓 vs 순 집중 분리</span>
+            <span class="badge badge-black">Focus Tracker</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6;">
+            <b>“중간에 딴짓을 많이 하니까 딴짓한 시간과 순 집중 시간을 따로 재고 싶어.”</b><br/>
+            기성 앱은 무조건 25분 집중만 강요하지만, mytt 도구에서는 솔직하게 딴짓 버튼을 눌러 내 진짜 작업 패턴을 스스로 파악합니다.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>사례 B. 업무 딴생각 원천 차단</span>
+            <span class="badge badge-gray">Deep Work</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6;">
+            <b>“타이머 도는 동안은 산만해지지 않게 업무 변경을 아예 못 하게 묶어둘래.”</b><br/>
+            집중 타이머가 돌아가는 동안에는 다른 탭이나 업무 리스트를 조작할 수 없도록 잠가 산만해지는 마찰력을 원천 차단합니다.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>사례 C. 단일 업무 초집중판</span>
+            <span class="badge badge-gray">Minimal View</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6;">
+            <b>“할 일 10개가 눈앞에 보이면 숨 막히니까, 오직 지금 할 1개만 크게 보여줘.”</b><br/>
+            체크리스트의 압박감을 없애고, 지금 당장 시작할 단 하나의 태스크만 미니멀하게 띄웁니다.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>사례 D. 감정 보상형 알람 & 루틴</span>
+            <span class="badge badge-gray">Mood Repair</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6;">
+            <b>“스누즈를 누를 때마다 빵이 노릇노릇 구워지는 모닝 베이커리”</b><br/>
+            짜증 나는 기상 알람 대신, 아침에 일어나는 행위 자체가 귀여운 보상이 되도록 설계합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section id="about-04">
+      <div class="section-title">
+        <span class="section-num">04</span>
+        <h2>코딩 없이 어떻게 만들까?</h2>
+      </div>
+      <div class="message-box">
+        <div class="message-title">AI와의 편안한 일상어 대화 (Vibe Coding)</div>
+        <div class="message-content">
+          어려운 코딩 문법을 배울 필요가 전혀 없습니다. 친구에게 내 작업 습관과 고민을 털어놓듯 이야기하면 됩니다.<br/>
+          <i>“나 딴짓 많이 하니까 딴짓 버튼 누르면 그 시간만 따로 재주는 귀여운 핑크색 타이머 만들어줘.”</i><br/>
+          말 한마디로 내 아이디어와 취향이 담긴 실제 작동하는 웹 도구가 눈앞에 완성됩니다.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span>평생 내 맘대로 고쳐 쓰는 온전한 내 소유</span>
+          <span class="badge badge-black">Digital Autonomy</span>
+        </div>
+        <ul class="bullet-list">
+          <li><b>구독료 0원:</b> 매달 나가는 정기 결제 없이 단 하나의 가벼운 웹 파일(HTML)로 평생 소유합니다.</li>
+          <li><b>언제든 쉬운 업데이트:</b> 내 작업 루틴이나 취향이 바뀌면 AI에게 다시 말해 언제든 내 손으로 고쳐 씁니다.</li>
+          <li><b>나만의 자산:</b> 남의 플랫폼에 종속되지 않고, 내가 직접 통제하는 독립적인 디지털 작업대를 가집니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 05 -->
+    <section id="about-05">
+      <div class="section-title">
+        <span class="section-num">05</span>
+        <h2>남의 툴을 쓸 때 vs 내 도구를 쓸 때</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 20%;">구분</th>
+              <th style="width: 40%;">남의 툴을 쓸 때 (기성 앱, 노션 템플릿 등)</th>
+              <th style="width: 40%;">내 도구를 쓸 때 (mytt)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>소유감</b></td>
+              <td class="negative">남들과 똑같은 도구를 임대해 쓰는 느낌</td>
+              <td class="positive">내 손때와 개성이 묻어난 <b>세상 단 하나의 내 물건</b></td>
+            </tr>
+            <tr>
+              <td><b>디자인</b></td>
+              <td class="negative">차갑고 획일적인 IT SaaS / 무채색 인터페이스</td>
+              <td class="positive"><b>내 최애 캐릭터와 취향</b>을 100% 반영한 비주얼</td>
+            </tr>
+            <tr>
+              <td><b>기능 구성</b></td>
+              <td class="negative">불필요한 기능 90%로 인한 조작 및 관리 피로</td>
+              <td class="positive"><b>딴짓 시간 분리 등 내 현실 습관에 맞춘 핀포인트 기능</b></td>
+            </tr>
+            <tr>
+              <td><b>주도권</b></td>
+              <td class="negative">앱의 규칙과 프레임워크에 내 행동을 억지로 맞춤</td>
+              <td class="positive"><b>내 라이프스타일과 리듬에 도구가 유연하게 맞춰짐</b></td>
+            </tr>
+            <tr>
+              <td><b>지속성</b></td>
+              <td class="negative">업데이트되면 UI가 바뀌고 안 쓰면 구독료만 낭비</td>
+              <td class="positive">구독료 없이 <b>필요할 때마다 내 손으로 쉽게 수정</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 2: 브랜드 전략 & 아이덴티티
+       ══════════════════════════════════════════ -->
+  <div id="tab-strategy" class="tab-content">
+
+    <!-- Key Concept Banner -->
+    <div class="quote-banner">
+      <p>“100명의 프리랜서에게는 100개의 시간관리 툴이 필요하다.”</p>
+      <span>내 시간의 리듬을 가장 잘 아는 사람은 나 자신. 남이 만든 기성복 앱 대신, 나를 위해 직접 짓는 시간 지지대.</span>
+    </div>
+
+    <!-- SECTION 01 -->
+    <section id="section-01">
+      <div class="section-title">
+        <span class="section-num">01</span>
+        <h2>핵심 관점 전환 (창작자 중심 ➡️ 사용자 중심)</h2>
+      </div>
+      <p style="font-size: 14px; color: var(--text-sub); margin-bottom: 16px;">
+        지금까지 공급자의 관점(기술, 기능, 바이브코딩 설명)에서 보았던 방식을 사용자가 브랜드를 접했을 때 느끼는 <b>심리적 안도감</b> 중심으로 재설계합니다.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 25%;">구분</th>
+              <th style="width: 37%;">창작자 중심 (피해야 할 톤)</th>
+              <th style="width: 38%;">사용자 중심 (지향하는 톤)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>핵심 메시지</b></td>
+              <td class="negative">"바이브코딩으로 웹앱 만드는 법을 가르쳐 드립니다."</td>
+              <td class="positive">"당신의 의지력은 잘못이 없어요. 딱 맞는 지지대를 선물할게요."</td>
+            </tr>
+            <tr>
+              <td><b>사용자 감정</b></td>
+              <td class="negative">새로운 공부거리 / 코딩에 대한 막막함과 부담감</td>
+              <td class="positive"><b>안도감</b> ("나만 이런 게 아니었구나") + <b>자기주도적 설렘</b></td>
+            </tr>
+            <tr>
+              <td><b>접근 방식</b></td>
+              <td class="negative">생산성 극대화, 갓생 살기, 엄격한 시간표 준수</td>
+              <td class="positive">감정 조절(Mood Repair), 작은 시작 마찰력 제거, 다정한 동반</td>
+            </tr>
+            <tr>
+              <td><b>도구의 정의</b></td>
+              <td class="negative">노션/스프레드시트 같은 복잡한 관리 소프트웨어</td>
+              <td class="positive"><b>나만을 위한 맞춤 옷</b>처럼 내 하루에 꼭 맞는 작고 귀여운 도구</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section id="section-02">
+      <div class="section-title">
+        <span class="section-num">02</span>
+        <h2>타겟 페르소나 정의 (Overview)</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span>누구인가? (Demographics)</span>
+            <span class="badge badge-black">3040 창작자</span>
+          </div>
+          <ul class="bullet-list">
+            <li><b>직업군:</b> 디자이너, 일러스트레이터, 작가, 크리에이터, 1인 마케터</li>
+            <li><b>근무 환경:</b> 재택 또는 독립 작업실 (외적 통제 장치 부재)</li>
+            <li><b>성향:</b> 감각적이고 미적인 취향을 중시하며, 복잡한 테크 용어에 거부감 있음</li>
+            <li><b>특징:</b> 겉으로는 자유로워 보이나, 내적으로는 항상 일에 쫓김</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>그들의 고통과 결핍 (Pain Points)</span>
+            <span class="badge badge-gray">Brain Paralysis</span>
+          </div>
+          <ul class="bullet-list">
+            <li><b>자율성의 역설:</b> 일과 쉼의 경계가 없어 쉴 때도 만성 죄책감에 시달림</li>
+            <li><b>시작 지연 (과제 마비):</b> 시작 전 막막함과 불안으로 멍하니 휴대폰만 봄</li>
+            <li><b>도구 피로감:</b> 노션, 뽀모도로, 플래너를 샀다가 실패하고 자책함</li>
+            <li><b>결정 피로:</b> 출근 지지대가 없어 오전에 이미 의지력이 고갈됨</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section id="section-03">
+      <div class="section-title">
+        <span class="section-num">03</span>
+        <h2>브랜드 톤앤매너 & 무드 (Warm-Tech Atelier)</h2>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 16px;">
+        <div class="card">
+          <div class="card-header">
+            <span>브랜드 성격 (Brand Persona)</span>
+            <span class="badge badge-black">작업실 메이트</span>
+          </div>
+          <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.6;">
+            엄격한 선생님이나 똑똑한 개발자가 아닙니다.<br/>
+            <b>"작업실 옆자리에서 따뜻한 차를 건네며, 내 고민을 묵묵히 듣고 뚝딱 도구를 함께 만들어주는 다정하고 든든한 동료"</b>입니다.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>시각적 무드 & 키워드</span>
+            <span class="badge badge-gray">Sensible</span>
+          </div>
+          <ul class="bullet-list">
+            <li><b>Gentle:</b> 몰아세우지 않고 마음을 편안하게 해주는 톤</li>
+            <li><b>Tailored:</b> 기성복이 아닌 내 리듬에 맞춘 커스텀 느낌</li>
+            <li><b>Lightweight:</b> 군더더기 없이 가볍고 직관적인 UI</li>
+            <li><b>Sensible:</b> 감성적이면서도 정돈된 창작자의 취향 존중</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>비주얼 및 컬러 가이드라인</span>
+          <span class="badge badge-gray">Aesthetic</span>
+        </div>
+        <ul class="bullet-list">
+          <li><b>피해야 할 톤:</b> 차가운 테크 블루(IT SaaS), 쨍한 형광색, 과도하게 복잡한 다이어그램</li>
+          <li><b>지향하는 톤:</b> 종이와 먹의 질감(Black & White / Off-White), 따뜻한 리넨/우드 톤, 차분한 세이지 그린이나 모브 계열</li>
+          <li><b>사진/이미지 무드:</b> 정오의 자연광이 드는 나무 책상, 머그컵, 끄적이는 연필, 깔끔하게 정돈된 화면</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section id="section-04">
+      <div class="section-title">
+        <span class="section-num">04</span>
+        <h2>브랜드 명칭 및 워딩 정의 (mytt Naming)</h2>
+      </div>
+
+      <div class="message-box">
+        <div class="message-title">mytt = "나를 위한 작은 시간 도구 (My Time / Tiny Tool)"</div>
+        <div class="message-content">
+          사용자에게 '코딩'이라는 장벽을 허물고 <b>"말하듯 대화해서 만드는 나만의 도구"</b>로 정의합니다.<br/>
+          • <b>기존:</b> "바이브코딩으로 만드는 나만의 시간관리 툴"<br/>
+          • <b>사용자 언어:</b> <b>"나의 작업 리듬에 맞게 대화로 짓는 맞춤형 시간 지지대, mytt"</b>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>분류</th>
+              <th>기존 워딩</th>
+              <th>사용자 친화적 워딩 제안</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>프로그램 명</b></td>
+              <td>mytt 1기 모집</td>
+              <td><b>mytt 빌더스 1기</b> / <b>mytt 작업실 1기</b> (함께 짓는 크루의 느낌)</td>
+            </tr>
+            <tr>
+              <td><b>활동 정의</b></td>
+              <td>시간관리 앱 코딩하기</td>
+              <td><b>나만의 시간 지지대 맞춤 제작하기</b></td>
+            </tr>
+            <tr>
+              <td><b>핵심 슬로건</b></td>
+              <td>100명의 프리랜서에게는 100개의 툴</td>
+              <td><b>"남의 옷에 나를 맞추지 마세요. 100명의 창작자에겐 100개의 리듬이 있습니다."</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 05 -->
+    <section id="section-05">
+      <div class="section-title">
+        <span class="section-num">05</span>
+        <h2>프로필 이미지 & 로고 타이포그래피 가이드</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span>프로필 이미지 형태</span>
+            <span class="badge badge-black">추천: 감성 일러스트</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 10px;">
+            차가운 기업 로고나 복잡한 심볼 대신, <b>독립출판물 표지 같은 감각적인 라인 드로잉</b>을 추천합니다.
+          </p>
+          <ul class="bullet-list">
+            <li><b>모티프 1:</b> 책상 위 작은 머그컵과 간결한 타이머 시계</li>
+            <li><b>모티프 2:</b> 편안한 옷차림으로 턱을 괴고 화면을 바라보는 창작자의 담백한 라인 실루엣</li>
+            <li><b>스타일:</b> 굵기가 일정한 블랙 라인 드로잉 + 여백의 미</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>로고 및 메인 폰트 제안</span>
+            <span class="badge badge-gray">Typography</span>
+          </div>
+          <ul class="bullet-list">
+            <li><b>영문 로고:</b><br/>
+              - <i>Comfortaa / Quicksand:</i> 부드러운 라운드 산스로 친근함 부여<br/>
+              - <i>Cormorant Garamond / Playfair:</i> 우아하고 신뢰감 있는 아틀리에 감성
+            </li>
+            <li><b>한글 타이틀 & 본문:</b><br/>
+              - <i>마루부리:</i> 따뜻한 온기가 감도는 명조 (에세이적 깊이감)<br/>
+              - <i>고운돋움 / 프리텐다드:</i> 깔끔하고 단정한 가독성
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06 -->
+    <section id="section-06">
+      <div class="section-title">
+        <span class="section-num">06</span>
+        <h2>인스타그램 운영 보이스 (말투 & 카피 예시)</h2>
+      </div>
+
+      <p style="font-size: 13.5px; color: var(--text-sub); margin-bottom: 12px;">
+        카드뉴스 형식을 취하더라도, 말투는 마치 <b>'작업실에서 밤늦게 띄우는 담백한 에세이 편지'</b>처럼 다가갑니다.
+      </p>
+
+      <div class="insta-post">
+        <div class="insta-post-tag">Instagram Post Example : 슬라이드 카피 기획안</div>
+        <div class="insta-text">
+<b>[1장 - 표지]</b>
+남들이 다 좋다는 노션 템플릿,
+왜 나한테만 안 맞을까요?
+
+<b>[2장]</b>
+유명한 플래너를 사고, 생산성 앱을 깔고,
+작심삼일로 끝날 때마다 우리는 생각합니다.
+"난 왜 이렇게 의지력이 부족할까?"
+
+<b>[3장]</b>
+하지만 잘못된 건 당신의 의지가 아니라
+'남의 규격에 내 하루를 끼워 맞춘 도구'였어요.
+100명의 프리랜서에게는 100개의 다른 작업 리듬이 있으니까요.
+
+<b>[4장]</b>
+코딩을 몰라도 괜찮아요.
+AI에게 내 작업 습관과 고민을 이야기하듯 말하면
+오늘 나에게 딱 필요한 타이머가 내 손으로 만들어집니다.
+
+<b>[5장 - 아웃트로]</b>
+나의 시간 사용을 제일 잘 아는 사람은 나 자신.
+나를 위한 첫 번째 시간 지지대,
+mytt와 함께 만들어볼래요?
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 2: 타겟 페르소나 & 구매 여정
+       ══════════════════════════════════════════ -->
+  <div id="tab-personas" class="tab-content">
+
+    <div class="quote-banner">
+      <p>“우리의 고객은 ‘게으른 사람’이 아니라, ‘혼자 일하기에 너무 외롭고 지친 완벽주의 창작자’입니다.”</p>
+      <span>단순히 강의를 파는 것이 아니라, 오랫동안 짓눌려 온 자기 혐오와 죄책감에서 벗어나는 해방감을 선물합니다.</span>
+    </div>
+
+    <!-- PERSONA 01 -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-name-wrap">
+          <h3>이지은 (34세) <span class="badge badge-black">INFP</span></h3>
+          <div class="persona-subtitle">독립 4년차 브랜드 디자이너 & 일러스트레이터 | 재택근무 100%</div>
+        </div>
+        <div class="badge badge-gray">감성형 완벽주의자 & 과제 마비형</div>
+      </div>
+
+      <div class="persona-quote">
+        “내가 좋아하는 그림 그리고 디자인하려고 회사를 나왔는데, 왜 하루 24시간 내내 일에 갇혀 죄책감만 느끼고 있을까요?”
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 20px;">
+        <div class="card" style="background: var(--bg-subtle);">
+          <div class="card-header"><span>지은 님의 하루 일과 (Daily Loop)</span></div>
+          <ul class="bullet-list" style="font-size: 13px;">
+            <li><b>10:00:</b> 늦게 일어나 자책하며 커피를 탐. "오늘은 진짜 10시 반에 시작하자."</li>
+            <li><b>10:30~13:00:</b> 컴퓨터 앞에 앉았으나 핀터레스트, 인스타를 배회. 시작이 막막해 뇌가 얼어붙음(Task Paralysis).</li>
+            <li><b>14:00~19:00:</b> 방 청소, 군것질, 유튜브를 전전하며 극심한 자책감에 휩싸임.</li>
+            <li><b>21:00~02:00:</b> 마감 공포에 떠밀려 눈물을 머금고 밤샘 작업.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="background: var(--bg-subtle);">
+          <div class="card-header"><span>도구 실패 경험 & 결핍</span></div>
+          <ul class="bullet-list" style="font-size: 13px;">
+            <li><b>노션 템플릿(3만원):</b> 인스타 공구로 샀지만 이틀 꾸미고 셋째 날부터 방치.</li>
+            <li><b>뽀모도로 앱:</b> 25분 알람 소리가 독촉장 같아 강박과 불안만 가중.</li>
+            <li><b>핵심 결핍:</b> 내 감정을 부드럽게 달래주고 시작 장벽을 낮춰줄 '귀엽고 친근한 외적 지지대'의 부재.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+        이지은 님의 mytt 전환 여정 (인스타 발견부터 지갑을 열기까지)
+      </h4>
+
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 1</span> 발견 (새벽 1시 침대 속 릴스)</div>
+            <span class="step-tag">Discovery</span>
+          </div>
+          <div class="step-body">
+            야근 후 지친 몸으로 침대에 누워 인스타 피드를 넘기다 mytt 게시물을 마주침.<br/>
+            <b>“남들이 다 좋다는 노션 템플릿, 왜 나한테만 안 맞을까요?”</b>라는 문장을 보고 가슴이 쿵 내려앉음. "이거 완전 내 얘기인데?" 하고 저장 버튼을 누르고 프로필로 들어감.
+          </div>
+          <div class="step-trigger">
+            <span>💡 심리적 트리거:</span> "나만 이런 게 아니었구나" 하는 강렬한 위로와 호기심.
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 2</span> 공감 & 안도 (피드 정주행)</div>
+            <span class="step-tag">Relief</span>
+          </div>
+          <div class="step-body">
+            피드에 적힌 <b>[지지대 결핍 이론]</b>과 <b>[미루기는 의지가 아닌 감정 문제]</b> 카드뉴스를 1편부터 끝까지 정주행함.<br/>
+            지난 3년간 스스로를 '의지박약'이라 자책했던 상처가 씻겨 내려가는 듯한 해방감을 느끼며 즉시 '팔로우' 및 알림 설정을 누름.
+          </div>
+          <div class="step-trigger">
+            <span>💡 심리적 트리거:</span> 지긋지긋한 죄책감의 원인을 뇌과학적으로 명쾌하게 짚어준 것에 대한 전폭적인 신뢰.
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 3</span> 탐색 & 소유욕 (하이라이트 속 예시)</div>
+            <span class="step-tag">Curiosity</span>
+          </div>
+          <div class="step-body">
+            스토리 하이라이트에서 수강생들이 만든 <b>[잔망루피 타이머]</b>와 <b>[모닝 베이커리]</b> 웹앱 화면을 봄.<br/>
+            "딱딱한 엑셀이나 IT 앱이 아니라, 핑크색 루피가 산을 오르고 빵을 굽는 타이머잖아? 너무 귀엽다!" 디자이너로서의 시각적 취향을 완벽히 저격당함.
+          </div>
+          <div class="step-trigger">
+            <span>💡 심리적 트리거:</span> "코딩 몰라도 내 취향대로 나만의 귀여운 작업 도구를 가질 수 있겠구나!"
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 4</span> 결심 & 결제 (mytt 빌더스 1기 공지)</div>
+            <span class="step-tag">Purchase</span>
+          </div>
+          <div class="step-body">
+            <b>“100명의 프리랜서에겐 100개의 시간 도구가 필요합니다. mytt 빌더스 1기”</b> 모집 링크 오픈.<br/>
+            '또 사놓고 안 쓰면 어쩌지?' 30분 고민하다가 상세페이지의 문구를 봄: <i>"기성복 템플릿을 배우는 게 아닙니다. 평생 쓸 당신만의 맞춤 지지대를 직접 쥐고 퇴근합니다."</i><br/>
+            이번 달 외주 마감 정산금이 들어온 카드로 망설임 없이 결제 완료.
+          </div>
+          <div class="step-trigger">
+            <span>💡 지갑을 연 결정타:</span> "남이 만든 규격에 나를 맞추는 게 아니라, 내 리듬에 맞춘 도구를 완성해 가져간다."
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 5</span> 변화 & 자발적 전도 (수업 후 안착)</div>
+            <span class="step-tag">Advocacy</span>
+          </div>
+          <div class="step-body">
+            수업을 통해 나만의 파스텔톤 [집중 캐릭터 타이머]를 완성하고 실제로 작업 시작 마찰력이 0이 됨.<br/>
+            본인 인스타 스토리에 "인생 시간관리 툴 만났다"며 작업 화면을 올리고 동료 디자이너들에게 mytt를 자발적으로 추천함.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONA 02 -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-name-wrap">
+          <h3>박서연 (39세) <span class="badge badge-black">INFJ</span></h3>
+          <div class="persona-subtitle">독립 10년차 콘텐츠 기획자 & 번역 에디터 | 1인 출판사 준비 중</div>
+        </div>
+        <div class="badge badge-gray">전략적 다중 프로젝트 & 번아웃 위험형</div>
+      </div>
+
+      <div class="persona-quote">
+        “외주 미팅에 마감 일정까지 머릿속이 터질 것 같아요. 진짜 집중해서 글을 써야 하는 골든 타임 3시간을 자꾸 도구 세팅하다 날립니다.”
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 20px;">
+        <div class="card" style="background: var(--bg-subtle);">
+          <div class="card-header"><span>서연 님의 하루 일과 (Daily Loop)</span></div>
+          <ul class="bullet-list" style="font-size: 13px;">
+            <li><b>08:30:</b> 쏟아지는 클라이언트 카톡과 메일을 확인하며 시작부터 뇌 용량 과부하.</li>
+            <li><b>11:00:</b> 번역/원고 집필을 하려 하지만 머릿속에 떠오르는 잔여 태스크 때문에 딴짓.</li>
+            <li><b>15:00:</b> 구글 캘린더 일정이 하나 밀리자 도미노처럼 하루 계획 전체가 붕괴.</li>
+            <li><b>19:00:</b> 하루 종일 바빴는데 정작 본질적인 핵심 집필은 한 줄도 못 썼다는 깊은 허무감.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="background: var(--bg-subtle);">
+          <div class="card-header"><span>도구 실패 경험 & 결핍</span></div>
+          <ul class="bullet-list" style="font-size: 13px;">
+            <li><b>트렐로/투두이스트:</b> 라벨 달고 카테고리 분류하는 데 1시간을 써 '도구 관리 피로'에 질려버림.</li>
+            <li><b>타임 트래커 앱:</b> 조작이 복잡하고 손이 많이 가서 업무 흐름(Flow)이 자꾸 끊김.</li>
+            <li><b>핵심 결핍:</b> 불필요한 설정 없이 '오직 지금 하나의 글쓰기에만 뇌를 묶어둘 단단한 딥워크 시스템'.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+        박서연 님의 mytt 전환 여정 (인스타 발견부터 지갑을 열기까지)
+      </h4>
+
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 1</span> 발견 (동료 프리랜서의 스토리 공유)</div>
+            <span class="step-tag">Discovery</span>
+          </div>
+          <div class="step-body">
+            평소 신뢰하던 동료 출판 번역가의 인스타 스토리에서 mytt 계정이 태그된 글을 발견.<br/>
+            <b>“100명의 프리랜서에게는 100개의 시간관리 툴이 필요하다”</b>는 문구를 보고 '내 복잡한 워크플로우를 담아낼 툴이 진짜 있을까?' 하는 지적 호기심으로 프로필 클릭.
+          </div>
+          <div class="step-trigger">
+            <span>💡 심리적 트리거:</span> 동료의 검증된 추천 + 기존 기성 도구에 대한 누적된 환멸감.
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 2</span> 검증 & 지적 납득 (학술적 배경 확인)</div>
+            <span class="step-tag">Validation</span>
+          </div>
+          <div class="step-body">
+            단순 감성 마케팅이 아닌지 의심하며 아티클을 꼼꼼히 검토.<br/>
+            <b>[러셀 바클리 박사의 실행 기능 외주화 이론]</b>과 <b>[자율성의 역설]</b>을 다정하면서도 지적으로 명쾌하게 분석한 글을 읽고 무릎을 침. "이 사람은 프리랜서의 뇌 구조를 진짜 제대로 아는 사람이구나."
+          </div>
+          <div class="step-trigger">
+            <span>💡 심리적 트리거:</span> 근거 없는 낙관론이 아닌 탄탄한 뇌과학/심리학적 논리에 대한 깊은 지적 신뢰.
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 3</span> 솔루션 확인 (실제 디테일 기능에 매료)</div>
+            <span class="step-tag">Interest</span>
+          </div>
+          <div class="step-body">
+            계정에 올라온 숏폼 영상에서 <b>[방누_수정.html]</b>의 디테일을 목격함.<br/>
+            <i>‘타이머 진행 중 집중업무 변경 금지(산만함 원천 차단)’, ‘일시정지 대신 휴식 버튼’, ‘오늘 날짜만 깔끔히 뜨는 상단 미니멀 카드’</i>를 보고 전율. "이건 진짜 매일 혼자 일해본 사람만 구현할 수 있는 디테일이다."
+          </div>
+          <div class="step-trigger">
+            <span>💡 심리적 트리거:</span> 기성 앱에서는 찾아볼 수 없던 '1인 작업자만을 위한 세심한 통제 장치' 발견.
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 4</span> 결제 (기회비용 계산 후 즉시 결제)</div>
+            <span class="step-tag">Purchase</span>
+          </div>
+          <div class="step-body">
+            mytt 1기 워크숍 커리큘럼을 정독 후 이성적으로 기회비용을 계산.<br/>
+            <i>"내가 매일 도구 찾아 헤매고 산만하게 날리는 2시간만 아껴도 외주 원고 1건을 더 계약할 수 있다. 이 수업은 수강료의 10배를 뽑는 가장 확실한 생산성 투자다."</i> 결제창이 열리자마자 1초의 망설임 없이 일시불 결제.
+          </div>
+          <div class="step-trigger">
+            <span>💡 지갑을 연 결정타:</span> "내 집중 시간을 온전히 방어해 줄 평생의 커스텀 딥워크 시스템 구축."
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-header">
+            <div class="step-title"><span class="badge badge-black">STEP 5</span> 정착 & 앰버서더화 (출판 작업의 든든한 무기)</div>
+            <span class="step-tag">Loyalty</span>
+          </div>
+          <div class="step-body">
+            자신의 원고 집필 리듬에 맞춘 [원고 집필 전용 45분 딥워크 타이머]를 완성하여 1인 출판사 준비에 가속도를 붙임.<br/>
+            주변의 지친 프리랜서 작가/에디터 모임에 mytt를 적극적으로 알리는 열성적인 앰버서더가 됨.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARISON SUMMARY BOX -->
+    <div class="card" style="border: 2px solid var(--border-strong);">
+      <div class="card-header">
+        <span>두 페르소나의 전환 공통 공식 (Conversion Formula)</span>
+        <span class="badge badge-black">핵심 요약</span>
+      </div>
+      <div class="grid-2">
+        <div>
+          <b style="font-size: 13px; color: var(--text-main);">1. 진입 관문 (Hook)</b>
+          <p style="font-size: 12.5px; color: var(--text-sub); margin-top: 4px;">
+            "당신이 게으른 게 아닙니다. 기성 도구가 안 맞았을 뿐입니다." ➡️ <b>죄책감의 무장해제(안도감)</b>
+          </p>
+        </div>
+        <div>
+          <b style="font-size: 13px; color: var(--text-main);">2. 지갑을 여는 순간 (Trigger)</b>
+          <p style="font-size: 12.5px; color: var(--text-sub); margin-top: 4px;">
+            "또 하나의 공부거리가 아니라, 내 몸에 딱 맞춘 나만의 도구를 쥐고 끝나는 실체적인 결과물" ➡️ <b>자율성과 소유욕</b>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function showTab(tabName) {
+  // Hide all contents
+  document.getElementById('tab-about').classList.remove('active');
+  document.getElementById('tab-strategy').classList.remove('active');
+  document.getElementById('tab-personas').classList.remove('active');
+  
+  // Deactivate all buttons
+  document.getElementById('btn-about').classList.remove('active');
+  document.getElementById('btn-strategy').classList.remove('active');
+  document.getElementById('btn-personas').classList.remove('active');
+  
+  // Activate selected
+  if (tabName === 'about') {
+    document.getElementById('tab-about').classList.add('active');
+    document.getElementById('btn-about').classList.add('active');
+  } else if (tabName === 'strategy') {
+    document.getElementById('tab-strategy').classList.add('active');
+    document.getElementById('btn-strategy').classList.add('active');
+  } else if (tabName === 'personas') {
+    document.getElementById('tab-personas').classList.add('active');
+    document.getElementById('btn-personas').classList.add('active');
+  }
+}
+</script>
+
+</body>
+</html>

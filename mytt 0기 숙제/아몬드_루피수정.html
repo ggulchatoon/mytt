@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="루피의 갓생 등반">
+<meta name="theme-color" content="#FFF0F4">
+<title>루피의 갓생 등반 — 아몬드 딥워크 타이머</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF0F4;
+    --card:#FFFFFF;
+    --card-2:#FFF5F8;
+    --accent:#FF5E82;
+    --accent-hover:#FF4771;
+    --accent-text:#FFFFFF;
+    --accent-dim:rgba(255,94,130,0.15);
+    --text:#39222B;
+    --text-dim:#8E717B;
+    --text-dim2:#C4ABB4;
+    --line:rgba(255,94,130,0.2);
+    --shadow:0 10px 30px rgba(255,94,130,0.12);
+    --font-cute:'Jua', 'Gaegu', -apple-system, sans-serif;
+    --font-hand:'Gaegu', cursive, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",Roboto,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  *::-webkit-scrollbar{display:none;}
+  *{scrollbar-width:none;}
+  a{text-decoration:none;color:inherit;}
+  input,select,button{
+    font-family:inherit;
+    font-size:16px;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(ellipse at 50% 0%,#FFE4EC 0%,var(--bg) 75%);
+  }
+  .app{
+    width:100%;
+    max-width:420px;
+    height:100vh;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    padding-top:env(safe-area-inset-top);
+    background:var(--card);
+    box-shadow:0 0 50px rgba(255,94,130,0.2);
+    overflow:hidden;
+    position:relative;
+  }
+  .content{
+    flex:1;
+    min-height:0;
+    position:relative;
+    background:var(--bg);
+  }
+  .tab-panel{
+    display:none;
+    height:100%;
+    flex-direction:column;
+    padding:16px 18px 10px;
+  }
+  .tab-panel.active{display:flex;}
+
+  /* ---------- shared bits ---------- */
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+    flex:0 0 auto;
+  }
+  .panel-header h2{
+    margin:0;
+    font-family:var(--font-cute);
+    font-size:22px;
+    letter-spacing:0.02em;
+    color:#FF4771;
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .panel-header h2 svg{
+    color:#FF4771;
+    flex-shrink:0;
+  }
+  .empty-msg{
+    color:var(--text-dim);
+    font-family:var(--font-hand);
+    font-size:18px;
+    font-weight:700;
+    text-align:center;
+    margin-top:28px;
+    line-height:1.6;
+  }
+  .icon-btn{
+    background:var(--card);
+    border:1px solid var(--line);
+    color:var(--accent);
+    border-radius:12px;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    flex:0 0 auto;
+    cursor:pointer;
+    box-shadow:0 2px 6px rgba(255,94,130,0.1);
+  }
+  .icon-btn svg{
+    width:18px;
+    height:18px;
+  }
+  .icon-btn:active{background:var(--accent-dim);}
+
+  select{
+    background:var(--card);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 10px;
+    outline:none;
+    font-family:var(--font-cute);
+    font-size:15px;
+  }
+  select:focus{border-color:var(--accent);}
+
+  /* ---------- 산 오르기 ---------- */
+  #tab-mountain{padding:0;overflow:hidden;}
+  .mountain-illustration{
+    position:relative;
+    flex:0 0 37%;
+    width:100%;
+    overflow:hidden;
+    background:#FFF0F5;
+  }
+  .mountain-illustration svg{
+    display:block;
+    width:100%;
+    height:100%;
+  }
+
+  /* climber Loopy animation */
+  .walking #climberBody {
+    animation: loopyWaddle 0.5s ease-in-out infinite alternate;
+    transform-origin: 0 0;
+  }
+  @keyframes loopyWaddle {
+    0% { transform: translateY(0) rotate(-7deg); }
+    100% { transform: translateY(-5px) rotate(7deg); }
+  }
+
+  .climb-panel{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:11px;
+    padding:14px 18px calc(6px + env(safe-area-inset-bottom));
+    background:var(--card);
+    border-radius:24px 24px 0 0;
+    box-shadow:0 -6px 20px rgba(255,94,130,0.08);
+  }
+  .climb-timer{
+    font-family:var(--font-cute);
+    font-size:56px;
+    text-align:center;
+    letter-spacing:0.03em;
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum";
+    color:#FF4771;
+    text-shadow:0 3px 12px rgba(255,94,130,0.22);
+    line-height:1.1;
+  }
+  .mountain-time-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:var(--font-cute);
+    font-size:14px;
+    color:var(--text-dim);
+    letter-spacing:0.02em;
+  }
+  .mountain-percent{
+    color:var(--accent);
+    font-size:16px;
+  }
+  .progress-track{
+    height:8px;
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#FFA3B7,#FF5E82);
+    border-radius:99px;
+    transition:width 0.6s ease;
+  }
+  #climb-goal-select{
+    width:100%;
+    margin-top:2px;
+    border-radius:14px;
+    padding:11px 12px;
+  }
+  .climb-actions{
+    display:flex;
+    gap:10px;
+    margin-top:2px;
+  }
+  .climb-toggle-btn{
+    flex:1.4;
+    padding:14px;
+    border-radius:14px;
+    font-family:var(--font-cute);
+    font-size:18px;
+    border:none;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    transition:all 0.15s ease;
+  }
+  .climb-toggle-btn.state-idle,
+  .climb-toggle-btn.state-paused{
+    background:linear-gradient(135deg,#FF6B8B,#FF8DA1);
+    color:white;
+    box-shadow:0 4px 14px rgba(255,94,130,0.3);
+  }
+  .climb-toggle-btn.state-running{
+    background:#543343;
+    border:none;
+    color:#FFFFFF;
+    box-shadow:none;
+  }
+  .climb-toggle-btn:active{transform:translateY(1px);}
+  .climb-record-btn{
+    flex:1;
+    padding:14px;
+    border-radius:14px;
+    font-family:var(--font-cute);
+    font-size:17px;
+    background:transparent;
+    border:2px solid var(--accent);
+    color:var(--accent);
+    letter-spacing:0.02em;
+    cursor:pointer;
+  }
+  .climb-record-btn.disabled{
+    border-color:var(--line);
+    color:var(--text-dim2);
+    opacity:0.5;
+    pointer-events:none;
+  }
+
+  /* ---------- 딥워크 ---------- */
+  .goal-select-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+    flex:0 0 auto;
+  }
+  .goal-select-row select{
+    flex:1;
+    min-width:0;
+    background:var(--card);
+  }
+  .goal-tasks{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .task-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:9px 12px;
+    box-shadow:0 2px 8px rgba(255,94,130,0.06);
+  }
+  .task-day-label{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:var(--accent-dim);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    color:var(--accent);
+    font-family:var(--font-cute);
+    font-size:14px;
+  }
+  .task-input{
+    flex:1;
+    min-width:0;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    padding:4px 0;
+    font-size:15px;
+  }
+  .task-input:focus{outline:none;}
+  .task-input::placeholder{color:var(--text-dim2);font-size:13px;}
+
+  /* ---------- 바구니 ---------- */
+  .basket-add-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+    flex:0 0 auto;
+  }
+  .basket-add-row input[type="text"]{
+    flex:1;
+    min-width:0;
+    background:var(--card);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    outline:none;
+  }
+  .basket-add-row input[type="text"]:focus{border-color:var(--accent);}
+  .basket-add-row input[type="text"]::placeholder{color:var(--text-dim2);font-size:13px;}
+  .basket-add-row select{
+    flex:0 0 68px;
+    padding:10px 6px;
+    text-align:center;
+  }
+  .add-btn{
+    flex:0 0 44px;
+    background:linear-gradient(135deg,#FF6B8B,#FF8DA1);
+    color:white;
+    border:none;
+    border-radius:12px;
+    font-family:var(--font-cute);
+    font-size:22px;
+    line-height:1;
+    cursor:pointer;
+    box-shadow:0 3px 8px rgba(255,94,130,0.25);
+  }
+  .add-btn:active{transform:translateY(1px);}
+  .basket-list{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .basket-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+    box-shadow:0 2px 8px rgba(255,94,130,0.06);
+  }
+  .basket-item.done .basket-text{
+    color:var(--text-dim2);
+    text-decoration:line-through;
+  }
+  .basket-item input[type="checkbox"]{
+    width:20px;height:20px;
+    accent-color:var(--accent);
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .basket-text{
+    flex:1;
+    min-width:0;
+    font-size:14px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .basket-day-tag{
+    flex:0 0 auto;
+    font-family:var(--font-cute);
+    font-size:13px;
+    color:var(--accent);
+    background:var(--accent-dim);
+    border-radius:8px;
+    padding:3px 8px;
+  }
+  .basket-item .icon-btn{
+    width:30px;height:30px;
+    border:none;
+    color:var(--text-dim);
+    background:transparent;
+    box-shadow:none;
+  }
+
+  /* ---------- 업무시간 ---------- */
+  .worklog-list{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+  .worklog-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:9px 12px;
+    font-size:13px;
+    box-shadow:0 2px 8px rgba(255,94,130,0.06);
+  }
+  .worklog-date{
+    flex:0 0 auto;
+    color:var(--text-dim);
+    width:56px;
+    font-weight:600;
+  }
+  .worklog-time{
+    flex:1 1 auto;
+    min-width:0;
+    color:var(--text);
+  }
+  .worklog-goal{
+    flex:0 0 auto;
+    font-family:var(--font-cute);
+    font-size:12px;
+    color:var(--accent);
+    background:var(--accent-dim);
+    border-radius:8px;
+    padding:2px 8px;
+    max-width:90px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .worklog-duration{
+    flex:0 0 auto;
+    font-family:var(--font-cute);
+    color:#FF4771;
+    font-size:15px;
+  }
+
+  /* ---------- bottom nav ---------- */
+  .tabbar{
+    flex:0 0 auto;
+    display:flex;
+    border-top:1px solid var(--line);
+    background:rgba(255,255,255,0.96);
+    backdrop-filter:blur(10px);
+    padding-bottom:calc(6px + env(safe-area-inset-bottom));
+  }
+  .nav-btn{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--text-dim2);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:8px 4px 5px;
+    cursor:pointer;
+    transition:color 0.15s ease;
+  }
+  .nav-btn .nav-icon{
+    width:22px;
+    height:22px;
+    stroke:currentColor;
+  }
+  .nav-btn .nav-label{
+    font-family:var(--font-cute);
+    font-size:13px;
+    letter-spacing:0.02em;
+  }
+  .nav-btn.active{
+    color:var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="content">
+
+    <!-- 산 오르기 -->
+    <section id="tab-mountain" class="tab-panel active">
+      <div class="mountain-illustration">
+        <svg id="mountainScene" viewBox="0 0 400 300" width="100%" height="240">
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFE8EE"/>
+              <stop offset="100%" stop-color="#FFD1DF"/>
+            </linearGradient>
+            <linearGradient id="slopeGrad" x1="0" y1="0" x2="0.8" y2="1">
+              <stop offset="0%" stop-color="#FFA8BC"/>
+              <stop offset="100%" stop-color="#FF7597"/>
+            </linearGradient>
+            <linearGradient id="ridgeGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FF8DA5"/>
+              <stop offset="100%" stop-color="#EA5B7D"/>
+            </linearGradient>
+            <filter id="loopyShadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#FF4771" flood-opacity="0.3"/>
+            </filter>
+          </defs>
+
+          <!-- 딸기 마운틴 하늘 배경 -->
+          <rect width="400" height="300" fill="url(#skyGrad)"/>
+
+          <!-- 솜사탕 구름 & 스파클 -->
+          <g fill="#FFF" opacity="0.85">
+            <path d="M 30 70 q -8 0 -6 -5 q 1 -4 7 -4 q -1 -8 9 -9 q 9 -1 12 7 q 8 -5 13 3 q 8 0 8 5 q 0 4 -8 4 Z"/>
+            <path d="M 140 50 q -7 0 -6 -5 q 0 -4 6 -4 q 0 -8 8 -8 q 6 0 9 6 q 9 -3 11 5 q 8 0 6 6 Z"/>
+            <path d="M 320 85 q -9 0 -8 -5 q 0 -6 9 -6 q 0 -10 10 -10 q 9 0 13 8 q 10 -3 13 6 q 7 1 6 7 Z"/>
+          </g>
+          <g fill="#FF7096" opacity="0.7">
+            <polygon points="120,40 122,46 128,48 122,50 120,56 118,50 112,48 118,46"/>
+            <polygon points="260,35 261,39 265,40 261,41 260,45 259,41 255,40 259,39"/>
+            <polygon points="70,110 71,114 75,115 71,116 70,120 69,116 65,115 69,114"/>
+          </g>
+
+          <!-- 먼 산, 중간 산, 가까운 산 능선 (파스텔 핑크 레이어) -->
+          <path d="M -10 300 L -10 205 L 55 150 L 110 196 L 168 132 L 232 190 L 290 148 L 348 198 L 410 160 L 410 300 Z" fill="#F8B8CA" opacity="0.65"/>
+          <path d="M -10 300 L -10 232 L 70 186 L 140 228 L 205 176 L 268 220 L 340 178 L 410 224 L 410 300 Z" fill="#F096AE" opacity="0.8"/>
+          <path id="ridge" d="M -10 330 L 20 300 Q 60 286 100 268 T 176 196 Q 214 178 240 150 T 300 64 L 348 132 L 410 176 L 410 330 Z" fill="url(#ridgeGrad)"/>
+
+          <!-- 등산 코스 점선 -->
+          <path id="trail" d="M 20 300 Q 60 286 100 268 T 176 196 Q 214 178 240 150 T 300 64" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-dasharray="4 5"/>
+
+          <!-- 정상 깃발 (단색 분홍 픽토그램) -->
+          <g id="flag" transform="translate(300,64)">
+            <line x1="0" y1="0" x2="0" y2="-22" stroke="#FF4771" stroke-width="2" stroke-linecap="round"/>
+            <path id="flagCloth" d="M 0 -22 L 16 -16 L 0 -10 Z" fill="#FF4771"/>
+            <circle cx="0" cy="-22" r="2.5" fill="#FF5E82"/>
+          </g>
+
+          <!-- 등산객 잔망루피 (누끼 투명 캐릭터, 150% 크기) -->
+          <g id="climber" transform="translate(20, 300)">
+            <ellipse cx="0" cy="1" rx="14" ry="4" fill="#A83E58" opacity="0.25"/>
+            <g id="climberBody" filter="url(#loopyShadow)">
+              <!-- 투명 누끼 잔망루피 캐릭터 (높이 53px, 폭 30px) -->
+              <image href="./잔망루피_누끼.png" x="-15" y="-51" width="30" height="53" preserveAspectRatio="xMidYMid meet"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="climb-panel">
+        <div class="climb-timer" id="climb-timer">00:00:00</div>
+        <div class="mountain-time-row">
+          <span id="mountain-time">오늘 누적 0시간 0분 / 4시간</span>
+          <span class="mountain-percent" id="mountain-percent">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="mountain-progress-fill"></div></div>
+        <select id="climb-goal-select"></select>
+        <div class="climb-actions">
+          <button class="climb-toggle-btn state-idle" id="climb-toggle-btn">등반 시작</button>
+          <button class="climb-record-btn disabled" id="climb-record-btn">기록하기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 딥워크 -->
+    <section id="tab-deepwork" class="tab-panel">
+      <div class="panel-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+          <span>딥워크 목표 관리</span>
+        </h2>
+      </div>
+      <div class="goal-select-row">
+        <select id="goal-select"></select>
+        <button class="icon-btn" id="goal-delete" title="목표 삭제" aria-label="목표 삭제">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+      <div class="goal-tasks" id="goal-tasks"></div>
+    </section>
+
+    <!-- 바구니 -->
+    <section id="tab-basket" class="tab-panel">
+      <div class="panel-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 11 4-7h6l4 7"/><path d="M4 11h16l-2 10H6L4 11Z"/><line x1="12" y1="15" x2="12" y2="18"/></svg>
+          <span>할 일 바구니</span>
+        </h2>
+      </div>
+      <div class="basket-add-row">
+        <input type="text" id="basket-text" placeholder="루피와 함께할 할 일 입력">
+        <select id="basket-day">
+          <option value="mon">월</option>
+          <option value="tue">화</option>
+          <option value="wed">수</option>
+          <option value="thu">목</option>
+          <option value="fri">금</option>
+        </select>
+        <button class="add-btn" id="basket-add">+</button>
+      </div>
+      <div class="basket-list" id="basket-list"></div>
+    </section>
+
+    <!-- 업무시간 -->
+    <section id="tab-worktime" class="tab-panel">
+      <div class="panel-header">
+        <h2>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M12 2v3"/><path d="m19 5-2 2"/></svg>
+          <span>루피의 갓생 기록</span>
+        </h2>
+      </div>
+      <div class="worklog-list" id="worklog-list"></div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar">
+    <button class="nav-btn active" data-tab="mountain">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 19 6-11 4 7 3-5 5 9H3Z"/></svg>
+      <span class="nav-label">산 오르기</span>
+    </button>
+    <button class="nav-btn" data-tab="deepwork">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+      <span class="nav-label">딥워크</span>
+    </button>
+    <button class="nav-btn" data-tab="basket">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 11 4-7h6l4 7"/><path d="M4 11h16l-2 10H6L4 11Z"/><line x1="12" y1="15" x2="12" y2="18"/></svg>
+      <span class="nav-label">바구니</span>
+    </button>
+    <button class="nav-btn" data-tab="worktime">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M12 2v3"/><path d="m19 5-2 2"/></svg>
+      <span class="nav-label">업무시간</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "deepwork_app_v3";
+  var DAY_KEYS = ["mon","tue","wed","thu","fri"];
+  var DAY_LABELS = {mon:"월",tue:"화",wed:"수",thu:"목",fri:"금"};
+  var BREAK_LABELS = ["물 마시기","가벼운 스트레칭","기분 전환","심호흡 5초","먼 산 바라보기"];
+
+  function pad(n){ return n.toString().padStart(2,"0"); }
+
+  function fmtDate(d){
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+
+  function getMonday(date){
+    var d = new Date(date);
+    var day = d.getDay();
+    var diff = (day===0 ? -6 : 1-day);
+    d.setDate(d.getDate()+diff);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function todayKey(){ return fmtDate(new Date()); }
+
+  function defaultData(mondayStr){
+    return {
+      weekStart: mondayStr,
+      dailyTotals:{},
+      workLogs:[],
+      goals:[],
+      selectedGoalId:null,
+      basketItems:[],
+      climbStatus:"idle",
+      climbStartedAt:null,
+      climbAccumulatedSec:0,
+      climbSessionStart:null,
+      climbBreakIndex:0,
+      climbCurrentBreakLabel:null
+    };
+  }
+
+  var data;
+  function loadData(){
+    var mondayStr = fmtDate(getMonday(new Date()));
+    var loaded = null;
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) loaded = JSON.parse(raw);
+    }catch(e){ loaded = null; }
+    if(loaded && loaded.weekStart === mondayStr){
+      data = loaded;
+      if(!data.climbStatus) data.climbStatus = "idle";
+      if(typeof data.climbAccumulatedSec !== "number") data.climbAccumulatedSec = 0;
+      if(typeof data.climbBreakIndex !== "number") data.climbBreakIndex = 0;
+      if(typeof data.climbCurrentBreakLabel === "undefined") data.climbCurrentBreakLabel = null;
+    } else {
+      data = defaultData(mondayStr);
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+    }
+  }
+  function saveData(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+  }
+
+  /* ---------------- tab switching ---------------- */
+  function switchTab(name){
+    document.querySelectorAll(".tab-panel").forEach(function(p){ p.classList.remove("active"); });
+    document.getElementById("tab-"+name).classList.add("active");
+    document.querySelectorAll(".nav-btn").forEach(function(b){
+      b.classList.toggle("active", b.dataset.tab===name);
+    });
+    if(name==="mountain") renderMountain();
+    if(name==="deepwork") renderDeepwork();
+    if(name==="basket") renderBasket();
+    if(name==="worktime") renderWorktime();
+  }
+  document.querySelectorAll(".nav-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ switchTab(btn.dataset.tab); });
+  });
+
+  /* ---------------- shared: goal select ---------------- */
+  function populateGoalSelect(selectEl){
+    selectEl.innerHTML = "";
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = data.goals.length ? "목표 선택" : "목표가 없습니다";
+    selectEl.appendChild(placeholder);
+    data.goals.forEach(function(g){
+      var opt = document.createElement("option");
+      opt.value = g.id;
+      opt.textContent = g.name;
+      if(g.id === data.selectedGoalId) opt.selected = true;
+      selectEl.appendChild(opt);
+    });
+    var addOpt = document.createElement("option");
+    addOpt.value = "__add__";
+    addOpt.textContent = "+ 새 목표 추가";
+    selectEl.appendChild(addOpt);
+    if(!data.selectedGoalId) placeholder.selected = true;
+  }
+
+  function refreshGoalSelects(){
+    populateGoalSelect(document.getElementById("climb-goal-select"));
+    populateGoalSelect(document.getElementById("goal-select"));
+  }
+
+  function handleGoalSelectChange(selectEl){
+    var val = selectEl.value;
+    if(val === "__add__"){
+      var name = window.prompt("새 갓생 목표 이름을 입력해주세요:");
+      if(name && name.trim()){
+        var id = "g"+Date.now();
+        data.goals.push({ id:id, name:name.trim(), tasks:{mon:"",tue:"",wed:"",thu:"",fri:""} });
+        data.selectedGoalId = id;
+        saveData();
+      }
+      refreshGoalSelects();
+      if(document.getElementById("tab-deepwork").classList.contains("active")) renderGoalTasks();
+      return;
+    }
+    data.selectedGoalId = val || null;
+    saveData();
+    refreshGoalSelects();
+    if(document.getElementById("tab-deepwork").classList.contains("active")) renderGoalTasks();
+  }
+
+  document.getElementById("climb-goal-select").addEventListener("change", function(e){ handleGoalSelectChange(e.target); });
+  document.getElementById("goal-select").addEventListener("change", function(e){ handleGoalSelectChange(e.target); });
+
+  document.getElementById("goal-delete").addEventListener("click", function(){
+    if(!data.selectedGoalId) return;
+    if(window.confirm("정말 이 목표를 삭제하시겠습니까?")){
+      data.goals = data.goals.filter(function(g){ return g.id !== data.selectedGoalId; });
+      data.selectedGoalId = data.goals.length ? data.goals[0].id : null;
+      saveData();
+      refreshGoalSelects();
+      renderGoalTasks();
+    }
+  });
+
+  /* ---------------- 산 오르기 ---------------- */
+  var trailPathEl = document.getElementById("trail");
+  var climberEl = document.getElementById("climber");
+  var trailLen = trailPathEl.getTotalLength();
+
+  function currentProgress(){
+    var key = todayKey();
+    var sec = data.dailyTotals[key] || 0;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      sec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    var goalSec = 4*3600;
+    return Math.min(1, sec/goalSec);
+  }
+
+  function updateClimberPosition(progress){
+    var pt = trailPathEl.getPointAtLength(progress*trailLen);
+    climberEl.setAttribute("transform", "translate("+pt.x.toFixed(2)+","+pt.y.toFixed(2)+")");
+  }
+
+  function renderMountainGauge(){
+    var key = todayKey();
+    var baseSec = data.dailyTotals[key] || 0;
+    var liveSec = baseSec;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      liveSec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    var goalSec = 4*3600;
+    var progress = Math.min(1, liveSec/goalSec);
+
+    var hrs = Math.floor(liveSec/3600);
+    var mins = Math.floor((liveSec%3600)/60);
+    document.getElementById("mountain-time").textContent = "오늘 누적 "+hrs+"시간 "+mins+"분 / 4시간";
+    document.getElementById("mountain-percent").textContent = Math.round(progress*100)+"%";
+    document.getElementById("mountain-progress-fill").style.width = (progress*100)+"%";
+
+    updateClimberPosition(progress);
+    climberEl.classList.toggle("walking", data.climbStatus === "running");
+  }
+
+  function updateClimbTimerDisplay(){
+    var sec = data.climbAccumulatedSec || 0;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      sec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+    document.getElementById("climb-timer").textContent = pad(h)+":"+pad(m)+":"+pad(s);
+  }
+
+  function climbElapsedSec(){
+    var sec = data.climbAccumulatedSec || 0;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      sec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    return sec;
+  }
+
+  var climbInterval = null;
+  function startClimbInterval(){
+    if(climbInterval) clearInterval(climbInterval);
+    climbInterval = setInterval(function(){
+      updateClimbTimerDisplay();
+      renderMountainGauge();
+    }, 1000);
+  }
+  function stopClimbInterval(){
+    if(climbInterval){ clearInterval(climbInterval); climbInterval = null; }
+  }
+
+  function nextBreakLabel(){
+    var label = BREAK_LABELS[data.climbBreakIndex % BREAK_LABELS.length];
+    data.climbBreakIndex += 1;
+    return label;
+  }
+
+  function updateClimbButtons(){
+    var toggleBtn = document.getElementById("climb-toggle-btn");
+    var recordBtn = document.getElementById("climb-record-btn");
+    toggleBtn.classList.remove("state-idle","state-running","state-paused");
+    if(data.climbStatus === "running"){
+      toggleBtn.textContent = data.climbCurrentBreakLabel || BREAK_LABELS[0];
+      toggleBtn.classList.add("state-running");
+    } else if(data.climbStatus === "paused"){
+      toggleBtn.textContent = "계속 달리기";
+      toggleBtn.classList.add("state-paused");
+    } else {
+      toggleBtn.textContent = "등반 시작";
+      toggleBtn.classList.add("state-idle");
+    }
+    var hasTime = climbElapsedSec() > 0;
+    recordBtn.classList.toggle("disabled", !hasTime);
+  }
+
+  function toggleClimb(){
+    if(data.climbStatus === "idle"){
+      data.climbStatus = "running";
+      data.climbStartedAt = Date.now();
+      data.climbAccumulatedSec = 0;
+      data.climbSessionStart = Date.now();
+      data.climbCurrentBreakLabel = nextBreakLabel();
+      startClimbInterval();
+    } else if(data.climbStatus === "running"){
+      data.climbAccumulatedSec = climbElapsedSec();
+      data.climbStartedAt = null;
+      data.climbStatus = "paused";
+      stopClimbInterval();
+    } else if(data.climbStatus === "paused"){
+      data.climbStatus = "running";
+      data.climbStartedAt = Date.now();
+      data.climbCurrentBreakLabel = nextBreakLabel();
+      startClimbInterval();
+    }
+    saveData();
+    updateClimbTimerDisplay();
+    updateClimbButtons();
+    renderMountainGauge();
+  }
+  document.getElementById("climb-toggle-btn").addEventListener("click", toggleClimb);
+
+  function formatTime(d){ return pad(d.getHours())+":"+pad(d.getMinutes()); }
+
+  function recordClimb(){
+    var sec = climbElapsedSec();
+    if(sec <= 0) return;
+    var sessionStart = data.climbSessionStart || (Date.now()-sec*1000);
+    var startDateKey = fmtDate(new Date(sessionStart));
+
+    data.dailyTotals[startDateKey] = (data.dailyTotals[startDateKey]||0) + sec;
+
+    var goal = data.goals.find(function(g){ return g.id === data.selectedGoalId; });
+    data.workLogs.unshift({
+      date: startDateKey,
+      start: formatTime(new Date(sessionStart)),
+      end: formatTime(new Date()),
+      durationSec: sec,
+      goalName: goal ? goal.name : null
+    });
+
+    data.climbStatus = "idle";
+    data.climbStartedAt = null;
+    data.climbAccumulatedSec = 0;
+    data.climbSessionStart = null;
+    data.climbBreakIndex = 0;
+    data.climbCurrentBreakLabel = null;
+    saveData();
+    stopClimbInterval();
+
+    updateClimbTimerDisplay();
+    updateClimbButtons();
+    renderMountainGauge();
+  }
+  document.getElementById("climb-record-btn").addEventListener("click", recordClimb);
+
+  function renderMountain(){
+    populateGoalSelect(document.getElementById("climb-goal-select"));
+    renderMountainGauge();
+    updateClimbTimerDisplay();
+    updateClimbButtons();
+    if(data.climbStatus === "running") startClimbInterval(); else stopClimbInterval();
+  }
+
+  /* ---------------- 딥워크 ---------------- */
+  function renderDeepwork(){
+    populateGoalSelect(document.getElementById("goal-select"));
+    renderGoalTasks();
+  }
+
+  function renderGoalTasks(){
+    var container = document.getElementById("goal-tasks");
+    container.innerHTML = "";
+    var goal = data.goals.find(function(g){ return g.id === data.selectedGoalId; });
+    if(!goal){
+      container.innerHTML = '<p class="empty-msg">목표를 선택하거나 새 목표를 추가해주세요.</p>';
+      return;
+    }
+    DAY_KEYS.forEach(function(dk){
+      var row = document.createElement("div");
+      row.className = "task-row";
+
+      var label = document.createElement("span");
+      label.className = "task-day-label";
+      label.textContent = DAY_LABELS[dk];
+
+      var input = document.createElement("input");
+      input.type = "text";
+      input.className = "task-input";
+      input.placeholder = "루피와 함께할 할 일 입력";
+      input.value = goal.tasks[dk] || "";
+      input.addEventListener("input", function(){
+        goal.tasks[dk] = input.value;
+        saveData();
+      });
+
+      row.appendChild(label);
+      row.appendChild(input);
+      container.appendChild(row);
+    });
+  }
+
+  /* ---------------- 바구니 ---------------- */
+  function renderBasket(){
+    var list = document.getElementById("basket-list");
+    list.innerHTML = "";
+    if(data.basketItems.length === 0){
+      list.innerHTML = '<p class="empty-msg">바구니에 담긴 할 일이 없습니다.<br>위 입력창에서 할 일을 담아보세요.</p>';
+      return;
+    }
+    var sorted = data.basketItems.slice().sort(function(a,b){
+      return DAY_KEYS.indexOf(a.day) - DAY_KEYS.indexOf(b.day);
+    });
+    sorted.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "basket-item" + (item.done ? " done" : "");
+
+      var check = document.createElement("input");
+      check.type = "checkbox";
+      check.checked = item.done;
+      check.addEventListener("change", function(){
+        item.done = check.checked;
+        saveData();
+        renderBasket();
+      });
+
+      var text = document.createElement("span");
+      text.className = "basket-text";
+      text.textContent = item.text;
+
+      var day = document.createElement("span");
+      day.className = "basket-day-tag";
+      day.textContent = DAY_LABELS[item.day];
+
+      var del = document.createElement("button");
+      del.className = "icon-btn";
+      del.setAttribute("aria-label", "삭제");
+      del.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      del.addEventListener("click", function(){
+        data.basketItems = data.basketItems.filter(function(i){ return i.id !== item.id; });
+        saveData();
+        renderBasket();
+      });
+
+      row.appendChild(check);
+      row.appendChild(text);
+      row.appendChild(day);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById("basket-add").addEventListener("click", function(){
+    var textInput = document.getElementById("basket-text");
+    var daySelect = document.getElementById("basket-day");
+    var text = textInput.value.trim();
+    if(!text) return;
+    data.basketItems.push({ id:"b"+Date.now(), text:text, day:daySelect.value, done:false });
+    textInput.value = "";
+    saveData();
+    renderBasket();
+  });
+
+  /* ---------------- 업무시간 ---------------- */
+  function formatDuration(sec){
+    var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+    if(h>0) return h+"시간 "+m+"분";
+    if(m>0) return m+"분 "+s+"초";
+    return s+"초";
+  }
+
+  function formatLogDate(dateStr){
+    var d = new Date(dateStr+"T00:00:00");
+    var map = ["일","월","화","수","목","금","토"];
+    return (d.getMonth()+1)+"/"+d.getDate()+" ("+map[d.getDay()]+")";
+  }
+
+  function renderWorktime(){
+    var list = document.getElementById("worklog-list");
+    list.innerHTML = "";
+    if(data.workLogs.length === 0){
+      list.innerHTML = '<p class="empty-msg">아직 저장된 갓생 기록이 없습니다.<br>산 오르기에서 집중하고 기록해보세요.</p>';
+      return;
+    }
+    data.workLogs.forEach(function(log){
+      var row = document.createElement("div");
+      row.className = "worklog-row";
+
+      var dateSpan = document.createElement("span");
+      dateSpan.className = "worklog-date";
+      dateSpan.textContent = formatLogDate(log.date);
+
+      var timeSpan = document.createElement("span");
+      timeSpan.className = "worklog-time";
+      timeSpan.textContent = log.start + " - " + log.end;
+
+      row.appendChild(dateSpan);
+      row.appendChild(timeSpan);
+
+      if(log.goalName){
+        var goalSpan = document.createElement("span");
+        goalSpan.className = "worklog-goal";
+        goalSpan.textContent = log.goalName;
+        row.appendChild(goalSpan);
+      }
+
+      var durSpan = document.createElement("span");
+      durSpan.className = "worklog-duration";
+      durSpan.textContent = formatDuration(log.durationSec);
+      row.appendChild(durSpan);
+
+      list.appendChild(row);
+    });
+  }
+
+  /* ---------------- init ---------------- */
+  loadData();
+  switchTab("mountain");
+})();
+</script>
+</body>
+</html>

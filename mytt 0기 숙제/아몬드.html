@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="산오르기">
+<meta name="theme-color" content="#0D0F16">
+<title>딥워크 타이머</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D0F16;
+    --card:#171A26;
+    --card-2:#1E2231;
+    --accent:#F0A45C;
+    --accent-text:#231607;
+    --accent-dim:rgba(240,164,92,0.16);
+    --text:#F7EEE0;
+    --text-dim:#B9AE9E;
+    --text-dim2:#7E7566;
+    --line:#333A4F;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  *::-webkit-scrollbar{display:none;}
+  *{scrollbar-width:none;}
+  a{text-decoration:none;color:inherit;}
+  input,select,button{
+    font-family:inherit;
+    font-size:16px;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  .app{
+    width:100%;
+    max-width:420px;
+    height:100vh;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    padding-top:env(safe-area-inset-top);
+    background:var(--bg);
+    box-shadow:0 0 60px rgba(0,0,0,0.6);
+    overflow:hidden;
+  }
+  .content{
+    flex:1;
+    min-height:0;
+    position:relative;
+  }
+  .tab-panel{
+    display:none;
+    height:100%;
+    flex-direction:column;
+    padding:16px 18px 10px;
+  }
+  .tab-panel.active{display:flex;}
+
+  /* ---------- shared bits ---------- */
+  .panel-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:12px;
+    flex:0 0 auto;
+  }
+  .panel-header h2{
+    margin:0;
+    font-size:19px;
+    font-weight:700;
+    letter-spacing:0.02em;
+  }
+  .empty-msg{
+    color:var(--text-dim2);
+    font-size:14px;
+    text-align:center;
+    margin-top:24px;
+  }
+  .icon-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    border-radius:12px;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    flex:0 0 auto;
+  }
+  .icon-btn:active{background:var(--accent-dim);}
+
+  select{
+    background:var(--card-2);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 10px;
+  }
+
+  /* ---------- 산 오르기 ---------- */
+  #tab-mountain{padding:0;overflow:hidden;}
+  .mountain-illustration{
+    position:relative;
+    flex:0 0 34%;
+    width:100%;
+    overflow:hidden;
+    background:#171A26;
+  }
+  .mountain-illustration svg{
+    display:block;
+    width:100%;
+    height:100%;
+  }
+
+  /* climber walk animation (exact spec) */
+  .legs line { transform-box: fill-box; transform-origin: top center; }
+  .arm { transform-box: fill-box; transform-origin: top center; }
+  .walking .leg-f { animation: swingF 0.62s ease-in-out infinite; }
+  .walking .leg-b { animation: swingB 0.62s ease-in-out infinite; }
+  .walking .arm { animation: swingA 0.62s ease-in-out infinite; }
+  .walking #climberBody { animation: bob 0.31s ease-in-out infinite; }
+
+  @keyframes swingF { 0%, 100% { transform: rotate(24deg); } 50% { transform: rotate(-22deg); } }
+  @keyframes swingB { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(24deg); } }
+  @keyframes swingA { 0%, 100% { transform: rotate(-18deg); } 50% { transform: rotate(16deg); } }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+
+  .climb-panel{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:10px;
+    padding:14px 18px calc(6px + env(safe-area-inset-bottom));
+  }
+  .climb-timer{
+    font-size:52px;
+    font-weight:300;
+    text-align:center;
+    letter-spacing:0.02em;
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum";
+  }
+  .mountain-time-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:13px;
+    color:var(--text-dim);
+    letter-spacing:0.02em;
+  }
+  .mountain-percent{color:var(--accent);font-weight:700;}
+  .progress-track{
+    height:7px;
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--accent);
+    border-radius:99px;
+    transition:width 0.6s ease;
+  }
+  #climb-goal-select{
+    width:100%;
+    margin-top:2px;
+  }
+  .climb-actions{
+    display:flex;
+    gap:10px;
+    margin-top:2px;
+  }
+  .climb-toggle-btn{
+    flex:1.4;
+    padding:14px;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:700;
+    border:none;
+    letter-spacing:0.02em;
+  }
+  .climb-toggle-btn.state-idle,
+  .climb-toggle-btn.state-paused{
+    background:var(--accent);
+    color:var(--accent-text);
+  }
+  .climb-toggle-btn.state-running{
+    background:transparent;
+    border:2px solid var(--accent);
+    color:var(--accent);
+  }
+  .climb-record-btn{
+    flex:1;
+    padding:14px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:700;
+    background:transparent;
+    border:2px solid var(--accent);
+    color:var(--accent);
+    letter-spacing:0.02em;
+  }
+  .climb-record-btn.disabled{
+    border-color:var(--line);
+    color:var(--text-dim2);
+    opacity:0.6;
+    pointer-events:none;
+  }
+
+  /* ---------- 딥워크 ---------- */
+  .goal-select-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+    flex:0 0 auto;
+  }
+  .goal-select-row select{flex:1;min-width:0;}
+  .goal-tasks{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .task-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:9px 12px;
+  }
+  .task-day-label{
+    width:22px;
+    flex:0 0 auto;
+    color:var(--accent);
+    font-weight:700;
+    font-size:14px;
+    text-align:center;
+  }
+  .task-input{
+    flex:1;
+    min-width:0;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    padding:4px 0;
+  }
+  .task-input:focus{outline:none;}
+  .task-input::placeholder{color:var(--text-dim2);}
+
+  /* ---------- 바구니 ---------- */
+  .basket-add-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+    flex:0 0 auto;
+  }
+  .basket-add-row input[type="text"]{
+    flex:1;
+    min-width:0;
+    background:var(--card-2);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+  }
+  .basket-add-row input[type="text"]::placeholder{color:var(--text-dim2);}
+  .basket-add-row select{
+    flex:0 0 68px;
+    padding:10px 6px;
+    text-align:center;
+  }
+  .add-btn{
+    flex:0 0 44px;
+    background:var(--accent);
+    color:var(--accent-text);
+    border:none;
+    border-radius:12px;
+    font-size:20px;
+    font-weight:700;
+    line-height:1;
+  }
+  .add-btn:active{opacity:0.85;}
+  .basket-list{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .basket-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+  }
+  .basket-item.done .basket-text{
+    color:var(--text-dim2);
+    text-decoration:line-through;
+  }
+  .basket-item input[type="checkbox"]{
+    width:20px;height:20px;
+    accent-color:var(--accent);
+    flex:0 0 auto;
+  }
+  .basket-text{
+    flex:1;
+    min-width:0;
+    font-size:14px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .basket-day-tag{
+    flex:0 0 auto;
+    font-size:12px;
+    font-weight:700;
+    color:var(--accent);
+    background:var(--accent-dim);
+    border-radius:8px;
+    padding:3px 8px;
+  }
+  .basket-item .icon-btn{
+    width:30px;height:30px;
+    border:none;
+    font-size:13px;
+    color:var(--text-dim);
+  }
+
+  /* ---------- 업무시간 ---------- */
+  .worklog-list{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+  .worklog-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:9px 12px;
+    font-size:13px;
+  }
+  .worklog-date{
+    flex:0 0 auto;
+    color:var(--text-dim);
+    width:56px;
+  }
+  .worklog-time{
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .worklog-goal{
+    flex:0 0 auto;
+    font-size:11px;
+    color:var(--accent);
+    background:var(--accent-dim);
+    border-radius:8px;
+    padding:2px 7px;
+    max-width:80px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .worklog-duration{
+    flex:0 0 auto;
+    color:var(--accent);
+    font-weight:700;
+  }
+
+  /* ---------- bottom nav ---------- */
+  .tabbar{
+    flex:0 0 auto;
+    display:flex;
+    border-top:1px solid var(--line);
+    background:var(--card);
+    padding-bottom:calc(6px + env(safe-area-inset-bottom));
+  }
+  .nav-btn{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--text-dim2);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:8px 4px 4px;
+  }
+  .nav-btn .nav-icon{font-size:20px;}
+  .nav-btn .nav-label{font-size:11px;letter-spacing:0.02em;}
+  .nav-btn.active{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="content">
+
+    <!-- 산 오르기 -->
+    <section id="tab-mountain" class="tab-panel active">
+      <div class="mountain-illustration">
+        <svg id="mountainScene" viewBox="0 0 400 300" width="100%" height="240">
+          <!-- 밤하늘 배경 -->
+          <rect width="400" height="300" fill="#171A26"/>
+
+          <!-- 먼 산, 중간 산, 가까운 산 능선 -->
+          <path d="M -10 300 L -10 205 L 55 150 L 110 196 L 168 132 L 232 190 L 290 148 L 348 198 L 410 160 L 410 300 Z" fill="#3B4463" opacity="0.55"/>
+          <path d="M -10 300 L -10 232 L 70 186 L 140 228 L 205 176 L 268 220 L 340 178 L 410 224 L 410 300 Z" fill="#2A3149" opacity="0.8"/>
+          <path id="ridge" d="M -10 330 L 20 300 Q 60 286 100 268 T 176 196 Q 214 178 240 150 T 300 64 L 348 132 L 410 176 L 410 330 Z" fill="#1B2030"/>
+
+          <!-- 등산 코스 점선과 주황색 진행선 -->
+          <path id="trail" d="M 20 300 Q 60 286 100 268 T 176 196 Q 214 178 240 150 T 300 64" fill="none" stroke="rgba(247,238,224,0.15)" stroke-width="2" stroke-dasharray="3 5"/>
+
+          <!-- 정상 깃발 -->
+          <g id="flag" transform="translate(300,64)">
+            <line x1="0" y1="0" x2="0" y2="-18" stroke="#F7EEE0" stroke-width="1.6"/>
+            <path id="flagCloth" d="M 0 -18 L 13 -14 L 0 -10 Z" fill="#F0A45C"/>
+          </g>
+
+          <!-- 등산객 캐릭터 (타이머 작동 시 걸어감) -->
+          <g id="climber" transform="translate(20, 300)">
+            <g id="climberBody">
+              <!-- 팔 -->
+              <line class="arm" x1="0" y1="-9" x2="4" y2="-2" stroke="#F7EEE0" stroke-width="1.8" stroke-linecap="round"/>
+              <!-- 주황색 배낭 -->
+              <path d="M -4 -13 q -4 4 -3 9 l 4 0 z" fill="#F0A45C"/>
+              <!-- 몸통 및 머리 -->
+              <line x1="0" y1="-13" x2="0" y2="-5" stroke="#F7EEE0" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="0" cy="-16" r="3" fill="#F7EEE0"/>
+              <!-- 앞다리 / 뒷다리 -->
+              <g class="legs" stroke="#F7EEE0" stroke-width="2" stroke-linecap="round">
+                <line class="leg-b" x1="0" y1="-5" x2="0" y2="0"/>
+                <line class="leg-f" x1="0" y1="-5" x2="0" y2="0"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="climb-panel">
+        <div class="climb-timer" id="climb-timer">00:00:00</div>
+        <div class="mountain-time-row">
+          <span id="mountain-time">오늘 0시간 0분 / 4시간</span>
+          <span class="mountain-percent" id="mountain-percent">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="mountain-progress-fill"></div></div>
+        <select id="climb-goal-select"></select>
+        <div class="climb-actions">
+          <button class="climb-toggle-btn state-idle" id="climb-toggle-btn">등반 시작</button>
+          <button class="climb-record-btn disabled" id="climb-record-btn">기록하기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 딥워크 -->
+    <section id="tab-deepwork" class="tab-panel">
+      <div class="panel-header"><h2>딥워크</h2></div>
+      <div class="goal-select-row">
+        <select id="goal-select"></select>
+        <button class="icon-btn" id="goal-delete" title="목표 삭제">🗑</button>
+      </div>
+      <div class="goal-tasks" id="goal-tasks"></div>
+    </section>
+
+    <!-- 바구니 -->
+    <section id="tab-basket" class="tab-panel">
+      <div class="panel-header"><h2>바구니</h2></div>
+      <div class="basket-add-row">
+        <input type="text" id="basket-text" placeholder="할 일 입력">
+        <select id="basket-day">
+          <option value="mon">월</option>
+          <option value="tue">화</option>
+          <option value="wed">수</option>
+          <option value="thu">목</option>
+          <option value="fri">금</option>
+        </select>
+        <button class="add-btn" id="basket-add">+</button>
+      </div>
+      <div class="basket-list" id="basket-list"></div>
+    </section>
+
+    <!-- 업무시간 -->
+    <section id="tab-worktime" class="tab-panel">
+      <div class="panel-header"><h2>업무시간</h2></div>
+      <div class="worklog-list" id="worklog-list"></div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar">
+    <button class="nav-btn active" data-tab="mountain">
+      <span class="nav-icon">🏔️</span><span class="nav-label">산 오르기</span>
+    </button>
+    <button class="nav-btn" data-tab="deepwork">
+      <span class="nav-icon">🎯</span><span class="nav-label">딥워크</span>
+    </button>
+    <button class="nav-btn" data-tab="basket">
+      <span class="nav-icon">🧺</span><span class="nav-label">바구니</span>
+    </button>
+    <button class="nav-btn" data-tab="worktime">
+      <span class="nav-icon">⏱️</span><span class="nav-label">업무시간</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "deepwork_app_v3";
+  var DAY_KEYS = ["mon","tue","wed","thu","fri"];
+  var DAY_LABELS = {mon:"월",tue:"화",wed:"수",thu:"목",fri:"금"};
+  var BREAK_LABELS = ["물 마시기","일어나기","스트레칭 하기","심호흡 하기"];
+
+  function pad(n){ return n.toString().padStart(2,"0"); }
+
+  function fmtDate(d){
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+
+  function getMonday(date){
+    var d = new Date(date);
+    var day = d.getDay();
+    var diff = (day===0 ? -6 : 1-day);
+    d.setDate(d.getDate()+diff);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function todayKey(){ return fmtDate(new Date()); }
+
+  function defaultData(mondayStr){
+    return {
+      weekStart: mondayStr,
+      dailyTotals:{},
+      workLogs:[],
+      goals:[],
+      selectedGoalId:null,
+      basketItems:[],
+      climbStatus:"idle",       // idle | running | paused
+      climbStartedAt:null,      // ms timestamp of current running segment
+      climbAccumulatedSec:0,    // accumulated seconds before current running segment
+      climbSessionStart:null,   // ms timestamp when this climb session first started
+      climbBreakIndex:0,        // rotates through BREAK_LABELS
+      climbCurrentBreakLabel:null
+    };
+  }
+
+  var data;
+  function loadData(){
+    var mondayStr = fmtDate(getMonday(new Date()));
+    var loaded = null;
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) loaded = JSON.parse(raw);
+    }catch(e){ loaded = null; }
+    if(loaded && loaded.weekStart === mondayStr){
+      data = loaded;
+      if(!data.climbStatus) data.climbStatus = "idle";
+      if(typeof data.climbAccumulatedSec !== "number") data.climbAccumulatedSec = 0;
+      if(typeof data.climbBreakIndex !== "number") data.climbBreakIndex = 0;
+      if(typeof data.climbCurrentBreakLabel === "undefined") data.climbCurrentBreakLabel = null;
+    } else {
+      data = defaultData(mondayStr);
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+    }
+  }
+  function saveData(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+  }
+
+  /* ---------------- tab switching ---------------- */
+  function switchTab(name){
+    document.querySelectorAll(".tab-panel").forEach(function(p){ p.classList.remove("active"); });
+    document.getElementById("tab-"+name).classList.add("active");
+    document.querySelectorAll(".nav-btn").forEach(function(b){
+      b.classList.toggle("active", b.dataset.tab===name);
+    });
+    if(name==="mountain") renderMountain();
+    if(name==="deepwork") renderDeepwork();
+    if(name==="basket") renderBasket();
+    if(name==="worktime") renderWorktime();
+  }
+  document.querySelectorAll(".nav-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ switchTab(btn.dataset.tab); });
+  });
+
+  /* ---------------- shared: goal select ---------------- */
+  function populateGoalSelect(selectEl){
+    selectEl.innerHTML = "";
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = data.goals.length ? "목표 선택" : "목표가 없습니다";
+    selectEl.appendChild(placeholder);
+    data.goals.forEach(function(g){
+      var opt = document.createElement("option");
+      opt.value = g.id;
+      opt.textContent = g.name;
+      if(g.id === data.selectedGoalId) opt.selected = true;
+      selectEl.appendChild(opt);
+    });
+    var addOpt = document.createElement("option");
+    addOpt.value = "__add__";
+    addOpt.textContent = "+ 새 목표 추가";
+    selectEl.appendChild(addOpt);
+    if(!data.selectedGoalId) placeholder.selected = true;
+  }
+
+  function refreshGoalSelects(){
+    populateGoalSelect(document.getElementById("climb-goal-select"));
+    populateGoalSelect(document.getElementById("goal-select"));
+  }
+
+  function handleGoalSelectChange(selectEl){
+    var val = selectEl.value;
+    if(val === "__add__"){
+      var name = window.prompt("새 목표 이름을 입력하세요");
+      if(name && name.trim()){
+        var id = "g"+Date.now();
+        data.goals.push({ id:id, name:name.trim(), tasks:{mon:"",tue:"",wed:"",thu:"",fri:""} });
+        data.selectedGoalId = id;
+        saveData();
+      }
+      refreshGoalSelects();
+      if(document.getElementById("tab-deepwork").classList.contains("active")) renderGoalTasks();
+      return;
+    }
+    data.selectedGoalId = val || null;
+    saveData();
+    refreshGoalSelects();
+    if(document.getElementById("tab-deepwork").classList.contains("active")) renderGoalTasks();
+  }
+
+  document.getElementById("climb-goal-select").addEventListener("change", function(e){ handleGoalSelectChange(e.target); });
+  document.getElementById("goal-select").addEventListener("change", function(e){ handleGoalSelectChange(e.target); });
+
+  document.getElementById("goal-delete").addEventListener("click", function(){
+    if(!data.selectedGoalId) return;
+    if(window.confirm("이 목표를 삭제할까요?")){
+      data.goals = data.goals.filter(function(g){ return g.id !== data.selectedGoalId; });
+      data.selectedGoalId = data.goals.length ? data.goals[0].id : null;
+      saveData();
+      refreshGoalSelects();
+      renderGoalTasks();
+    }
+  });
+
+  /* ---------------- 산 오르기 ---------------- */
+  var trailPathEl = document.getElementById("trail");
+  var climberEl = document.getElementById("climber");
+  var trailLen = trailPathEl.getTotalLength();
+
+  function currentProgress(){
+    var key = todayKey();
+    var sec = data.dailyTotals[key] || 0;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      sec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    var goalSec = 4*3600;
+    return Math.min(1, sec/goalSec);
+  }
+
+  function updateClimberPosition(progress){
+    var pt = trailPathEl.getPointAtLength(progress*trailLen);
+    climberEl.setAttribute("transform", "translate("+pt.x.toFixed(2)+","+pt.y.toFixed(2)+")");
+  }
+
+  function renderMountainGauge(){
+    var key = todayKey();
+    var baseSec = data.dailyTotals[key] || 0;
+    var liveSec = baseSec;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      liveSec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    var goalSec = 4*3600;
+    var progress = Math.min(1, liveSec/goalSec);
+
+    var hrs = Math.floor(liveSec/3600);
+    var mins = Math.floor((liveSec%3600)/60);
+    document.getElementById("mountain-time").textContent = "오늘 "+hrs+"시간 "+mins+"분 / 4시간";
+    document.getElementById("mountain-percent").textContent = Math.round(progress*100)+"%";
+    document.getElementById("mountain-progress-fill").style.width = (progress*100)+"%";
+
+    updateClimberPosition(progress);
+    climberEl.classList.toggle("walking", data.climbStatus === "running");
+  }
+
+  function updateClimbTimerDisplay(){
+    var sec = data.climbAccumulatedSec || 0;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      sec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+    document.getElementById("climb-timer").textContent = pad(h)+":"+pad(m)+":"+pad(s);
+  }
+
+  function climbElapsedSec(){
+    var sec = data.climbAccumulatedSec || 0;
+    if(data.climbStatus === "running" && data.climbStartedAt){
+      sec += Math.floor((Date.now()-data.climbStartedAt)/1000);
+    }
+    return sec;
+  }
+
+  var climbInterval = null;
+  function startClimbInterval(){
+    if(climbInterval) clearInterval(climbInterval);
+    climbInterval = setInterval(function(){
+      updateClimbTimerDisplay();
+      renderMountainGauge();
+    }, 1000);
+  }
+  function stopClimbInterval(){
+    if(climbInterval){ clearInterval(climbInterval); climbInterval = null; }
+  }
+
+  function nextBreakLabel(){
+    var label = BREAK_LABELS[data.climbBreakIndex % BREAK_LABELS.length];
+    data.climbBreakIndex += 1;
+    return label;
+  }
+
+  function updateClimbButtons(){
+    var toggleBtn = document.getElementById("climb-toggle-btn");
+    var recordBtn = document.getElementById("climb-record-btn");
+    toggleBtn.classList.remove("state-idle","state-running","state-paused");
+    if(data.climbStatus === "running"){
+      toggleBtn.textContent = data.climbCurrentBreakLabel || BREAK_LABELS[0];
+      toggleBtn.classList.add("state-running");
+    } else if(data.climbStatus === "paused"){
+      toggleBtn.textContent = "오르기";
+      toggleBtn.classList.add("state-paused");
+    } else {
+      toggleBtn.textContent = "등반 시작";
+      toggleBtn.classList.add("state-idle");
+    }
+    var hasTime = climbElapsedSec() > 0;
+    recordBtn.classList.toggle("disabled", !hasTime);
+  }
+
+  function toggleClimb(){
+    if(data.climbStatus === "idle"){
+      data.climbStatus = "running";
+      data.climbStartedAt = Date.now();
+      data.climbAccumulatedSec = 0;
+      data.climbSessionStart = Date.now();
+      data.climbCurrentBreakLabel = nextBreakLabel();
+      startClimbInterval();
+    } else if(data.climbStatus === "running"){
+      data.climbAccumulatedSec = climbElapsedSec();
+      data.climbStartedAt = null;
+      data.climbStatus = "paused";
+      stopClimbInterval();
+    } else if(data.climbStatus === "paused"){
+      data.climbStatus = "running";
+      data.climbStartedAt = Date.now();
+      data.climbCurrentBreakLabel = nextBreakLabel();
+      startClimbInterval();
+    }
+    saveData();
+    updateClimbTimerDisplay();
+    updateClimbButtons();
+    renderMountainGauge();
+  }
+  document.getElementById("climb-toggle-btn").addEventListener("click", toggleClimb);
+
+  function formatTime(d){ return pad(d.getHours())+":"+pad(d.getMinutes()); }
+
+  function recordClimb(){
+    var sec = climbElapsedSec();
+    if(sec <= 0) return;
+    var sessionStart = data.climbSessionStart || (Date.now()-sec*1000);
+    var startDateKey = fmtDate(new Date(sessionStart));
+
+    data.dailyTotals[startDateKey] = (data.dailyTotals[startDateKey]||0) + sec;
+
+    var goal = data.goals.find(function(g){ return g.id === data.selectedGoalId; });
+    data.workLogs.unshift({
+      date: startDateKey,
+      start: formatTime(new Date(sessionStart)),
+      end: formatTime(new Date()),
+      durationSec: sec,
+      goalName: goal ? goal.name : null
+    });
+
+    data.climbStatus = "idle";
+    data.climbStartedAt = null;
+    data.climbAccumulatedSec = 0;
+    data.climbSessionStart = null;
+    data.climbBreakIndex = 0;
+    data.climbCurrentBreakLabel = null;
+    saveData();
+    stopClimbInterval();
+
+    updateClimbTimerDisplay();
+    updateClimbButtons();
+    renderMountainGauge();
+  }
+  document.getElementById("climb-record-btn").addEventListener("click", recordClimb);
+
+  function renderMountain(){
+    populateGoalSelect(document.getElementById("climb-goal-select"));
+    renderMountainGauge();
+    updateClimbTimerDisplay();
+    updateClimbButtons();
+    if(data.climbStatus === "running") startClimbInterval(); else stopClimbInterval();
+  }
+
+  /* ---------------- 딥워크 ---------------- */
+  function renderDeepwork(){
+    populateGoalSelect(document.getElementById("goal-select"));
+    renderGoalTasks();
+  }
+
+  function renderGoalTasks(){
+    var container = document.getElementById("goal-tasks");
+    container.innerHTML = "";
+    var goal = data.goals.find(function(g){ return g.id === data.selectedGoalId; });
+    if(!goal){
+      container.innerHTML = '<p class="empty-msg">목표를 선택하거나 추가해주세요</p>';
+      return;
+    }
+    DAY_KEYS.forEach(function(dk){
+      var row = document.createElement("div");
+      row.className = "task-row";
+
+      var label = document.createElement("span");
+      label.className = "task-day-label";
+      label.textContent = DAY_LABELS[dk];
+
+      var input = document.createElement("input");
+      input.type = "text";
+      input.className = "task-input";
+      input.placeholder = "할 일 입력";
+      input.value = goal.tasks[dk] || "";
+      input.addEventListener("input", function(){
+        goal.tasks[dk] = input.value;
+        saveData();
+      });
+
+      row.appendChild(label);
+      row.appendChild(input);
+      container.appendChild(row);
+    });
+  }
+
+  /* ---------------- 바구니 ---------------- */
+  function renderBasket(){
+    var list = document.getElementById("basket-list");
+    list.innerHTML = "";
+    if(data.basketItems.length === 0){
+      list.innerHTML = '<p class="empty-msg">담긴 항목이 없습니다</p>';
+      return;
+    }
+    var sorted = data.basketItems.slice().sort(function(a,b){
+      return DAY_KEYS.indexOf(a.day) - DAY_KEYS.indexOf(b.day);
+    });
+    sorted.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "basket-item" + (item.done ? " done" : "");
+
+      var check = document.createElement("input");
+      check.type = "checkbox";
+      check.checked = item.done;
+      check.addEventListener("change", function(){
+        item.done = check.checked;
+        saveData();
+        renderBasket();
+      });
+
+      var text = document.createElement("span");
+      text.className = "basket-text";
+      text.textContent = item.text;
+
+      var day = document.createElement("span");
+      day.className = "basket-day-tag";
+      day.textContent = DAY_LABELS[item.day];
+
+      var del = document.createElement("button");
+      del.className = "icon-btn";
+      del.textContent = "✕";
+      del.addEventListener("click", function(){
+        data.basketItems = data.basketItems.filter(function(i){ return i.id !== item.id; });
+        saveData();
+        renderBasket();
+      });
+
+      row.appendChild(check);
+      row.appendChild(text);
+      row.appendChild(day);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById("basket-add").addEventListener("click", function(){
+    var textInput = document.getElementById("basket-text");
+    var daySelect = document.getElementById("basket-day");
+    var text = textInput.value.trim();
+    if(!text) return;
+    data.basketItems.push({ id:"b"+Date.now(), text:text, day:daySelect.value, done:false });
+    textInput.value = "";
+    saveData();
+    renderBasket();
+  });
+
+  /* ---------------- 업무시간 ---------------- */
+  function formatDuration(sec){
+    var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+    if(h>0) return h+"시간 "+m+"분";
+    if(m>0) return m+"분 "+s+"초";
+    return s+"초";
+  }
+
+  function formatLogDate(dateStr){
+    var d = new Date(dateStr+"T00:00:00");
+    var map = ["일","월","화","수","목","금","토"];
+    return (d.getMonth()+1)+"/"+d.getDate()+" ("+map[d.getDay()]+")";
+  }
+
+  function renderWorktime(){
+    var list = document.getElementById("worklog-list");
+    list.innerHTML = "";
+    if(data.workLogs.length === 0){
+      list.innerHTML = '<p class="empty-msg">기록이 없습니다</p>';
+      return;
+    }
+    data.workLogs.forEach(function(log){
+      var row = document.createElement("div");
+      row.className = "worklog-row";
+
+      var dateSpan = document.createElement("span");
+      dateSpan.className = "worklog-date";
+      dateSpan.textContent = formatLogDate(log.date);
+
+      var timeSpan = document.createElement("span");
+      timeSpan.className = "worklog-time";
+      timeSpan.textContent = log.start + " - " + log.end;
+
+      row.appendChild(dateSpan);
+      row.appendChild(timeSpan);
+
+      if(log.goalName){
+        var goalSpan = document.createElement("span");
+        goalSpan.className = "worklog-goal";
+        goalSpan.textContent = log.goalName;
+        row.appendChild(goalSpan);
+      }
+
+      var durSpan = document.createElement("span");
+      durSpan.className = "worklog-duration";
+      durSpan.textContent = formatDuration(log.durationSec);
+      row.appendChild(durSpan);
+
+      list.appendChild(row);
+    });
+  }
+
+  /* ---------------- init ---------------- */
+  loadData();
+  switchTab("mountain");
+})();
+</script>
+</body>
+</html>

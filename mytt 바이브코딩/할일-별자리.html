@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>할일 별자리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ink:#EEF0FA; --mute:rgba(238,240,250,.64); --dim:rgba(238,240,250,.40); --faint:rgba(238,240,250,.10);
+  --glass:rgba(11,14,34,.58); --edge:rgba(255,255,255,.11); --field:rgba(255,255,255,.06);
+  --gold:#FFD37A; --star:#FFF6DC; --line:#BFD4FF; --mint:#8EE3C8;
+  --serif:"Hahmlet","Nanum Myeongjo",Georgia,serif;
+  --sans:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:#060918;color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;overflow:hidden}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.glass{background:var(--glass);border:1px solid var(--edge);border-radius:18px;backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);box-shadow:0 12px 50px rgba(0,0,0,.35)}
+
+.app{position:relative;height:100%;overflow:hidden}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+.top{position:absolute;left:0;right:0;top:0;padding:18px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+.top>*{pointer-events:auto}
+.brand .eyebrow{margin:0;font-size:11px;letter-spacing:.14em;color:var(--dim)}
+.brand h1{margin:2px 0 0;font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1.25;text-wrap:balance;max-width:min(560px,60vw)}
+.tagx{display:inline-block;vertical-align:middle;margin-left:8px;font-family:var(--sans);font-size:11px;font-weight:500;padding:1px 8px;border-radius:99px;border:1px dashed rgba(255,211,122,.55);color:var(--gold)}
+.nav{display:flex;gap:8px}
+.btn{height:38px;padding:0 14px;border-radius:11px;border:1px solid var(--edge);background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-weight:500;white-space:nowrap}
+.btn:hover{background:rgba(255,255,255,.12)}
+.btn b{font-family:var(--mono);font-weight:500;color:var(--gold);margin-left:4px}
+.btn.gold{background:var(--gold);color:#241A02;border-color:transparent;font-weight:600}
+.btn.gold:hover{filter:brightness(1.06)}
+
+/* 진행 */
+.list{position:absolute;right:22px;top:78px;bottom:22px;width:290px;padding:16px 14px 12px;display:flex;flex-direction:column;min-height:0}
+.list h2{margin:0 0 4px;font-size:11px;font-weight:500;letter-spacing:.12em;color:var(--mute);display:flex;justify-content:space-between}
+.list h2 span{font-family:var(--mono);letter-spacing:0}
+.steps{list-style:none;margin:6px 0 0;padding:0;overflow:auto;flex:1;min-height:0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:8px 6px;border-radius:10px;cursor:pointer}
+.steps li:hover{background:var(--field)}
+.steps .dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:500 10.5px var(--mono);border:1px solid rgba(191,212,255,.3);color:var(--dim)}
+.steps li.lit .dot{background:var(--gold);border-color:var(--gold);color:#241A02}
+.steps li.lit .tx{color:var(--dim);text-decoration:line-through;text-decoration-color:rgba(238,240,250,.3)}
+.steps li.cur{background:rgba(255,211,122,.08)}
+.steps li.cur .dot{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 3px rgba(255,211,122,.15)}
+.steps li.anchor .dot{background:var(--mint);border-color:var(--mint);color:#0B2A20}
+.steps li.anchor .tx{color:var(--mute)}
+.steps .tx{font-size:13px;overflow-wrap:anywhere}
+.listfoot{margin-top:8px;padding-top:10px;border-top:1px solid var(--edge);font-size:11.5px;color:var(--mute)}
+
+.now{position:absolute;left:50%;bottom:22px;transform:translateX(calc(-50% - 157px));width:min(600px,calc(100% - 44px - 314px - 16px));padding:20px 22px 16px}
+.now .meta{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.now .count{font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.04em}
+.now .nudge{font-size:12.5px;color:var(--mute)}
+.bar{height:3px;border-radius:9px;background:var(--faint);margin:10px 0 14px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--mint),var(--gold));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.steptext{margin:0;font-family:var(--serif);font-size:clamp(20px,2.3vw,27px);font-weight:600;line-height:1.35;letter-spacing:-.01em;text-wrap:balance;min-height:2.7em}
+.steptext.swap{animation:swap .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes swap{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.acts{display:flex;gap:8px;margin-top:16px;align-items:center}
+.acts .done{flex:1;height:52px;border-radius:14px;border:0;background:var(--gold);color:#241A02;font-weight:600;font-size:16px;box-shadow:0 10px 30px rgba(255,211,122,.25),inset 0 0 0 1px rgba(255,255,255,.35);transition:transform .12s}
+.acts .done:hover{transform:translateY(-1px)}
+.acts .done:active{transform:scale(.98)}
+.acts .ghost{height:52px;padding:0 14px;border-radius:14px;border:1px solid var(--edge);background:transparent;color:var(--mute)}
+.acts .ghost:hover{color:var(--ink);background:var(--field)}
+.acts .listbtn{display:none}
+.whyline{margin-top:12px;display:flex;gap:14px;flex-wrap:wrap}
+.why{border:0;background:transparent;padding:0;color:var(--dim);font-size:12px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(238,240,250,.25)}
+.why:hover{color:var(--gold)}
+.whybox{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--field);color:var(--mute);font-size:12.5px}
+.whybox b{color:var(--ink);font-weight:600}
+
+/* 모달형 카드 */
+.overlay{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(4,6,16,.45)}
+.card{width:min(600px,100%);max-height:100%;overflow:auto;padding:22px 24px;scrollbar-width:thin}
+.card h2{margin:0;font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.01em}
+.card .sub{margin:4px 0 0;color:var(--mute)}
+.chead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.x{width:34px;height:34px;border-radius:10px;border:1px solid var(--edge);background:transparent;font-size:18px;line-height:1;flex:none}
+.x:hover{background:var(--field)}
+.fld{margin-top:18px}
+.fld .lb{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:600}
+.fld .n{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:500 11px var(--mono);background:rgba(255,211,122,.14);color:var(--gold);flex:none}
+.fld .lb small{margin-left:auto;font-weight:400;color:var(--mute);font-size:12px}
+.in{width:100%;height:44px;border-radius:12px;border:1px solid var(--edge);background:var(--field);padding:0 14px;font-size:15px}
+.in:focus,textarea:focus{border-color:rgba(255,211,122,.5);outline:none}
+.prompt{position:relative;border-radius:12px;border:1px solid var(--edge);background:rgba(0,0,0,.25);padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.65;color:var(--mute);white-space:pre-wrap;max-height:150px;overflow:auto}
+.prompt mark{background:rgba(255,211,122,.18);color:var(--gold);border-radius:4px;padding:0 3px}
+.copyrow{display:flex;gap:8px;align-items:center;margin-top:8px}
+.copyrow span{color:var(--dim);font-size:12px}
+textarea{width:100%;min-height:150px;resize:vertical;border-radius:12px;border:1px solid var(--edge);background:var(--field);padding:12px 14px;font-size:13.5px;line-height:1.6}
+.parsed{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12.5px;color:var(--mute)}
+.parsed b{font-family:var(--mono);color:var(--gold);font-weight:500}
+.parsed .bad b{color:#F2A07B}
+.go{display:flex;gap:8px;margin-top:18px}
+.go .big{flex:1;height:50px;border-radius:14px;border:0;background:var(--gold);color:#241A02;font-weight:600;font-size:16px}
+.go .big[disabled]{opacity:.4;cursor:default}
+.go .btn{height:50px;border-radius:14px}
+
+/* 완성 */
+.finish{background:radial-gradient(ellipse at center,rgba(4,6,16,.15),rgba(4,6,16,.55))}
+.fcard{text-align:center;width:min(460px,100%);animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+.fcard .eyebrow{margin:0;font-size:11px;letter-spacing:.18em;color:var(--gold)}
+.fcard h2{font-size:30px;margin-top:6px}
+.fstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.fstats div{padding:10px 6px;border-radius:12px;background:var(--field)}
+.fstats b{display:block;font-family:var(--mono);font-size:17px;font-weight:500}
+.fstats span{font-size:11.5px;color:var(--mute)}
+.fcard label{display:block;text-align:left;font-size:12.5px;color:var(--mute);margin-bottom:6px}
+.fcard .in{text-align:center;font-family:var(--serif);font-size:18px}
+
+/* 내 하늘 */
+.skyhead{position:absolute;left:0;right:0;top:0;padding:18px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.skylabels{position:absolute;inset:0;pointer-events:none}
+.slab{position:absolute;transform:translate(-50%,0);text-align:center;white-space:nowrap}
+.slab b{display:block;font-family:var(--serif);font-size:15px;font-weight:600;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.slab span{font-size:11px;color:var(--mute);font-family:var(--mono)}
+.slab .tagx{margin:4px 0 0}
+.skyempty{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:var(--mute)}
+
+#tag{position:absolute;transform:translate(-50%,calc(-100% - 12px));pointer-events:none;max-width:260px;padding:6px 10px;border-radius:10px;background:rgba(11,14,34,.9);border:1px solid var(--edge);font-size:12px;white-space:normal;z-index:5}
+#toast{position:absolute;left:50%;top:22px;transform:translateX(-50%);padding:8px 16px;border-radius:99px;background:rgba(11,14,34,.9);border:1px solid rgba(255,211,122,.35);color:var(--gold);font-weight:500;z-index:9;white-space:nowrap;animation:tin .35s ease}
+@keyframes tin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+@media (max-width:900px){
+  .list{display:none;left:16px;right:16px;top:80px;bottom:auto;max-height:55%;width:auto;z-index:6}
+  .list.open{display:flex}
+  .now{left:16px;right:16px;bottom:16px;width:auto;transform:none;padding:16px 16px 12px}
+  .acts .listbtn{display:block}
+  .top{padding:14px 16px}
+  .brand h1{font-size:20px;max-width:none}
+  .brand .eyebrow{display:none}
+  .nav .btn{height:34px;padding:0 10px;font-size:13px}
+  .skyhead{padding:14px 16px}
+}
+@media (max-width:520px){
+  .top{flex-direction:column}
+  .nav{align-self:stretch}
+  .nav .btn{flex:1}
+  .acts .ghost{padding:0 10px;font-size:13px}
+  .card{padding:18px 16px}
+  .fstats b{font-size:15px}
+  .fld .lb{flex-wrap:wrap;row-gap:2px}
+  .fld .lb small{flex-basis:100%;margin-left:28px}
+  .copyrow{flex-wrap:wrap}
+}
+@media (max-height:640px){.whyline{display:none}.steptext{min-height:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <canvas id="cv" aria-hidden="true"></canvas>
+
+  <header class="top" id="top">
+    <div class="brand">
+      <p class="eyebrow">할일 별자리</p>
+      <h1 id="title"></h1>
+    </div>
+    <nav class="nav">
+      <button class="btn" id="skyBtn">내 하늘<b id="skyCount"></b></button>
+      <button class="btn gold" id="newBtn">새 별자리</button>
+    </nav>
+  </header>
+
+  <aside class="list glass" id="list" aria-labelledby="listH">
+    <h2 id="listH">전체 단계 <span id="listCount"></span></h2>
+    <ol class="steps" id="steps"></ol>
+    <div class="listfoot">단계를 눌러서 끝냄/안 끝냄을 바꿀 수 있어요. 순서대로 안 해도 괜찮아요.</div>
+  </aside>
+
+  <section class="now glass" id="now" aria-live="polite">
+    <div class="meta"><span class="count" id="count"></span><span class="nudge" id="nudge"></span></div>
+    <div class="bar"><i id="barFill"></i></div>
+    <p class="steptext" id="stepText"></p>
+    <div class="acts">
+      <button class="ghost listbtn" id="listBtn">전체 단계</button>
+      <button class="ghost" id="undoBtn">되돌리기</button>
+      <button class="done" id="doneBtn">끝냈어요 · 별 켜기</button>
+    </div>
+    <div class="whyline">
+      <button class="why" data-why="whyA">왜 별 하나가 이미 켜져 있죠?</button>
+      <button class="why" data-why="whyB">왜 끝으로 갈수록 빨라질까?</button>
+    </div>
+    <p class="whybox" id="whyA" hidden><b>이미 시작된 일은 끝까지 가기 쉬워요.</b> 도장 10칸 중 2칸이 찍혀 있는 쿠폰을 받은 사람이 더 많이, 더 빨리 완성했어요(Nunes &amp; Drèze, 2006). 할일을 나눈 것 자체가 첫 걸음이라서, 첫 별은 처음부터 켜져 있어요.</p>
+    <p class="whybox" id="whyB" hidden><b>목표가 가까워질수록 사람은 빨라져요.</b> 목표 기울기 효과(Kivetz 외, 2006)예요. 그래서 남은 별 개수를 계속 보여줘요.</p>
+  </section>
+
+  <div class="overlay" id="setup" hidden>
+    <div class="card glass" role="dialog" aria-modal="true" aria-labelledby="setupH">
+      <div class="chead">
+        <div><h2 id="setupH">새 별자리 만들기</h2><p class="sub">큰 일을 작은 단계로 나누면, 단계마다 별이 하나씩 켜져요.</p></div>
+        <button class="x" id="setupX" aria-label="닫기">×</button>
+      </div>
+
+      <div class="fld">
+        <div class="lb"><span class="n">1</span>무엇을 해낼 건가요?</div>
+        <input class="in" id="goal" placeholder="예: 포트폴리오 사이트 완성하기" maxlength="60">
+      </div>
+
+      <div class="fld">
+        <div class="lb"><span class="n">2</span>이 글을 복사해서 AI에게 보내요<small>ChatGPT · Claude · Gemini 다 돼요</small></div>
+        <div class="prompt" id="prompt"></div>
+        <div class="copyrow"><button class="btn" id="copyBtn">프롬프트 복사</button><span id="copyMsg">AI 답에서 번호 목록만 복사해 오면 돼요</span></div>
+      </div>
+
+      <div class="fld">
+        <div class="lb"><span class="n">3</span>AI 답을 붙여넣어요<small>직접 적어도 돼요 · 한 줄에 한 단계</small></div>
+        <textarea id="paste" placeholder="1. 노트북 열고 폴더 하나 만들기&#10;2. 참고할 사이트 3개 찾기&#10;3. ..."></textarea>
+        <div class="parsed" id="parsed"></div>
+      </div>
+
+      <div class="go">
+        <button class="big" id="makeBtn" disabled>별자리 만들기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay finish" id="finish" hidden>
+    <div class="card glass fcard" role="dialog" aria-modal="true" aria-labelledby="finH">
+      <p class="eyebrow">CONSTELLATION COMPLETE</p>
+      <h2 id="finH">별자리 완성</h2>
+      <p class="sub" id="finSub"></p>
+      <div class="fstats">
+        <div><b id="fsSteps"></b><span>켠 별</span></div>
+        <div><b id="fsTime"></b><span>걸린 시간</span></div>
+        <div><b id="fsDate"></b><span>완성한 날</span></div>
+      </div>
+      <label for="cname">이 별자리의 이름</label>
+      <input class="in" id="cname" maxlength="30">
+      <div class="go">
+        <button class="btn" id="finBack">조금 더 볼래요</button>
+        <button class="big" id="hangBtn">내 하늘에 걸기</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="skyview" hidden>
+    <div class="skylabels" id="skyLabels"></div>
+    <div class="skyhead">
+      <div class="brand"><p class="eyebrow">내 하늘</p><h1 id="skyTitle"></h1></div>
+      <nav class="nav"><button class="btn" id="skyBack">돌아가기</button><button class="btn gold" id="skyNew">새 별자리</button></nav>
+    </div>
+    <p class="skyempty" id="skyEmpty" hidden>아직 걸린 별자리가 없어요.<br>할일 하나를 끝내면 여기에 걸려요.<br><br><button class="btn gold" id="emptyNew" style="pointer-events:auto">첫 별자리 만들기</button></p>
+  </div>
+
+  <div id="tag" hidden></div>
+  <div id="toast" hidden></div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const cv=$('#cv'), ctx=cv.getContext('2d');
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const KEY='byeol.v1';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtDur=ms=>{const m=Math.max(1,Math.round(ms/60000));const h=Math.floor(m/60);return h?`${h}시간 ${m%60}분`:`${m}분`};
+const fmtDate=t=>{const d=new Date(t);return `${d.getMonth()+1}.${d.getDate()}`};
+
+/* ---------- 데이터 ---------- */
+let S=null;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||typeof S!=='object') S={current:null,sky:[]};
+if(!Array.isArray(S.sky)) S.sky=[];
+S.sky=S.sky.filter(x=>!x.sample);
+if(S.current&&(S.current.sample||!Array.isArray(S.current.steps))) S.current=null;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+/* ---------- 모양 만들기 ---------- */
+function makeShape(seed,n){
+  const R=mulberry32(seed), pts=[];
+  const stepLen=1/Math.max(2,n-1);
+  let x=0,y=0,a=(R()-.5)*.6;
+  pts.push({x,y});
+  for(let i=1;i<n;i++){
+    let ok=false;
+    for(let k=0;k<40&&!ok;k++){
+      const na=a+(R()-.5)*(1.5+k*.05);
+      const len=stepLen*(.75+R()*.6);
+      const nx=x+Math.cos(na)*len, ny=y+Math.sin(na)*len*1.3;
+      if(Math.abs(ny)>.45) continue;
+      if(pts.some(p=>Math.hypot(p.x-nx,p.y-ny)<stepLen*.6)) continue;
+      x=nx;y=ny;a=na*.55;pts.push({x,y});ok=true;
+    }
+    if(!ok){x+=stepLen;y+=(R()-.5)*.1;pts.push({x,y})}
+  }
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+  for(const p of pts){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y)}
+  const sx=x1-x0||1, sy=y1-y0||1;
+  return pts.map((p,i)=>({x:(p.x-x0)/sx,y:(p.y-y0)/sy,ar:sy/sx,mag:.75+R()*.5,tw:R()*6.28}));
+}
+
+/* ---------- 캔버스 ---------- */
+let W=0,H=0,dpr=1, skyImg=null, twinkles=[], box={x:0,y:0,w:1,h:1};
+let view='run';
+function resize(){
+  const r=cv.getBoundingClientRect(); W=r.width; H=r.height; dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  paintSky(); computeBox();
+}
+function paintSky(){
+  const c=document.createElement('canvas'); c.width=cv.width; c.height=cv.height;
+  const g=c.getContext('2d'); g.scale(dpr,dpr);
+  const gr=g.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,'#050817');gr.addColorStop(.55,'#0D1231');gr.addColorStop(.85,'#211A45');gr.addColorStop(1,'#35224F');
+  g.fillStyle=gr;g.fillRect(0,0,W,H);
+  const R=mulberry32(7);
+  // 은하수
+  for(let i=0;i<90;i++){
+    const t=R(), x=t*W, y=H*(.85-t*.75)+(R()-.5)*H*.18, r=40+R()*120;
+    const rg=g.createRadialGradient(x,y,0,x,y,r);
+    const col=R()<.5?'150,140,255':'255,180,210';
+    rg.addColorStop(0,`rgba(${col},${.035+R()*.03})`);rg.addColorStop(1,`rgba(${col},0)`);
+    g.fillStyle=rg;g.fillRect(x-r,y-r,r*2,r*2);
+  }
+  for(let i=0;i<Math.round(W*H/900);i++){
+    const t=R(), x=t*W, y=H*(.85-t*.75)+(R()+R()-1)*H*.12;
+    g.fillStyle=`rgba(230,228,255,${R()*.35})`;g.fillRect(x,y,.8,.8);
+  }
+  // 별
+  const n=Math.round(W*H/2600);
+  for(let i=0;i<n;i++){
+    const x=R()*W,y=R()*H*.95,s=R()<.08?1.4+R():.4+R()*.8,a=.2+R()*.7;
+    const tint=R();g.fillStyle=tint<.15?`rgba(190,210,255,${a})`:tint<.25?`rgba(255,225,180,${a})`:`rgba(255,255,255,${a})`;
+    g.beginPath();g.arc(x,y,s*.6,0,7);g.fill();
+  }
+  // 지평선
+  const hz=H*.97;
+  g.fillStyle='#04050D';g.beginPath();g.moveTo(0,H);
+  for(let x=0;x<=W+10;x+=10){g.lineTo(x,hz-18*Math.sin(x*.004+1)-10*Math.sin(x*.013)-6*Math.sin(x*.031))}
+  g.lineTo(W,H);g.fill();
+  const hg=g.createLinearGradient(0,hz-60,0,hz);hg.addColorStop(0,'rgba(120,90,180,0)');hg.addColorStop(1,'rgba(120,90,180,.12)');
+  g.fillStyle=hg;g.fillRect(0,hz-60,W,60);
+  skyImg=c;
+  twinkles=Array.from({length:50},()=>({x:R()*W,y:R()*H*.9,s:.8+R()*1.2,p:R()*6.28,v:.6+R()*1.6}));
+}
+function computeBox(){
+  const now=$('#now').getBoundingClientRect(), top=$('#top').getBoundingClientRect(), list=$('#list');
+  const wide=W>900;
+  const x0=wide?W*.05:24, x1=wide?list.getBoundingClientRect().left-40:W-24;
+  const y0=top.bottom+30, y1=now.top-30;
+  box={x:x0,y:y0,w:Math.max(80,x1-x0),h:Math.max(60,y1-y0)};
+}
+
+let shape=[], lit=[], anim={line:null,ignite:{}}, particles=[], shooters=[], celebrate=null;
+function starPos(i){
+  const p=shape[i], sh=shape[0];
+  const ar=sh.ar||.5;
+  let w=box.w, h=w*ar*.9;
+  if(h>box.h){h=box.h;w=Math.min(box.w,h/(ar*.9||1))}
+  if(h<box.h*.5) h=Math.min(box.h,box.h*.5);
+  const ox=box.x+(box.w-w)/2, oy=box.y+(box.h-h)/2;
+  return {x:ox+p.x*w,y:oy+p.y*h};
+}
+function drawStar(x,y,state,t,mag=1,ig=0){
+  if(state==='off'||state==='cur'){
+    ctx.fillStyle='rgba(191,212,255,.09)';ctx.strokeStyle='rgba(191,212,255,.42)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(x,y,3.4,0,7);ctx.fill();ctx.stroke();
+    if(state==='cur'){
+      const p=RM?.5:(Math.sin(t*.004)+1)/2;
+      ctx.strokeStyle=`rgba(255,211,122,${.35+.4*p})`;ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.arc(x,y,8+p*4,0,7);ctx.stroke();
+      ctx.strokeStyle=`rgba(255,211,122,${.12*(1-p)})`;ctx.beginPath();ctx.arc(x,y,16+p*10,0,7);ctx.stroke();
+    }
+    return;
+  }
+  const mint=state==='anchor';
+  const col=mint?'142,227,200':'255,214,140';
+  const tw=RM?1:.85+.15*Math.sin(t*.003+x);
+  const r=(18+ig*30)*mag*tw;
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,`rgba(${col},${.55+ig*.3})`);g.addColorStop(.25,`rgba(${col},.18)`);g.addColorStop(1,`rgba(${col},0)`);
+  ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);
+  ctx.strokeStyle=`rgba(255,248,225,${.45*tw})`;ctx.lineWidth=.8;
+  const L=(9+ig*14)*mag;
+  ctx.beginPath();ctx.moveTo(x-L,y);ctx.lineTo(x+L,y);ctx.moveTo(x,y-L);ctx.lineTo(x,y+L);ctx.stroke();
+  ctx.fillStyle='#FFF8E6';ctx.beginPath();ctx.arc(x,y,2.6*mag+ig*1.5,0,7);ctx.fill();
+  if(ig>0){ctx.strokeStyle=`rgba(${col},${.6*(1-ig)})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,6+ig*46,0,7);ctx.stroke()}
+}
+function burst(x,y,n=26,col='255,214,140'){
+  if(RM) return;
+  for(let i=0;i<n;i++){const a=Math.random()*6.28,s=.6+Math.random()*2.6;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0,max:50+Math.random()*50,size:.8+Math.random()*1.8,col})}
+}
+function shoot(){
+  const x=W*(.2+Math.random()*.7), y=H*(.05+Math.random()*.3), a=Math.PI*(.72+Math.random()*.12), s=9+Math.random()*6;
+  shooters.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0,max:50});
+}
+
+function frame(t){
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(skyImg){ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(skyImg,0,0);ctx.setTransform(dpr,0,0,dpr,0,0)}
+  for(const s of twinkles){const a=RM?.5:(Math.sin(t*.001*s.v+s.p)+1)/2;ctx.fillStyle=`rgba(255,255,255,${a*.8})`;ctx.beginPath();ctx.arc(s.x,s.y,s.s*.7,0,7);ctx.fill()}
+  ctx.globalCompositeOperation='lighter';
+  if(view==='sky') drawSky(t); else if(S.current) drawConstellation(t);
+  // 입자
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];p.life++;p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy=p.vy*.97+.02;
+    const a=1-p.life/p.max; if(a<=0){particles.splice(i,1);continue}
+    ctx.fillStyle=`rgba(${p.col},${a})`;ctx.beginPath();ctx.arc(p.x,p.y,p.size*a+.3,0,7);ctx.fill();
+  }
+  for(let i=shooters.length-1;i>=0;i--){
+    const s=shooters[i];s.life++;s.x+=s.vx;s.y+=s.vy;const a=1-s.life/s.max;if(a<=0){shooters.splice(i,1);continue}
+    const g=ctx.createLinearGradient(s.x,s.y,s.x-s.vx*12,s.y-s.vy*12);g.addColorStop(0,`rgba(255,250,230,${a})`);g.addColorStop(1,'rgba(255,250,230,0)');
+    ctx.strokeStyle=g;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*12,s.y-s.vy*12);ctx.stroke();
+  }
+  ctx.globalCompositeOperation='source-over';
+  if(celebrate&&!RM){const e=t-celebrate;if(e<9000&&Math.random()<.035)shoot()}
+  else if(!RM&&Math.random()<.0015) shoot();
+  requestAnimationFrame(frame);
+}
+function drawConstellation(t){
+  const cur=S.current, n=shape.length, pos=shape.map((_,i)=>starPos(i));
+  const curIdx=cur.steps.findIndex(s=>!s.done)+1;
+  const glow=celebrate?Math.min(1,(t-celebrate)/1500):0;
+  // 선
+  ctx.lineCap='round';
+  for(let i=1;i<n;i++){
+    const a=pos[i-1],b=pos[i], on=lit[i-1]&&lit[i];
+    if(on){
+      let p=1;
+      if(anim.line&&anim.line.i===i){p=clamp((t-anim.line.t0)/650,0,1);if(p>=1)anim.line=null}
+      const ex=a.x+(b.x-a.x)*p, ey=a.y+(b.y-a.y)*p;
+      ctx.strokeStyle=`rgba(191,212,255,${.18+glow*.2})`;ctx.lineWidth=6+glow*4;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.strokeStyle=`rgba(225,235,255,${.75+glow*.25})`;ctx.lineWidth=1.3+glow*.6;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(ex,ey);ctx.stroke();
+    } else {
+      ctx.setLineDash([2,6]);ctx.strokeStyle='rgba(191,212,255,.16)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.setLineDash([]);
+    }
+  }
+  // 별
+  for(let i=0;i<n;i++){
+    const p=pos[i];
+    let ig=0; const it=anim.ignite[i];
+    if(it){ig=clamp(1-(t-it)/900,0,1);if(ig<=0)delete anim.ignite[i]}
+    if(celebrate){const d=t-celebrate-i*110;if(d>0&&d<700)ig=Math.max(ig,1-d/700)}
+    const state=i===0?'anchor':lit[i]?'on':i===curIdx?'cur':'off';
+    drawStar(p.x,p.y,state,t,shape[i].mag*(1+glow*.15),ig);
+  }
+  // 번호
+  ctx.globalCompositeOperation='source-over';
+  ctx.font='500 10px "IBM Plex Mono", monospace';ctx.textAlign='center';
+  for(let i=1;i<n;i++){const p=pos[i];ctx.fillStyle=lit[i]?'rgba(255,230,180,.75)':i===curIdx?'rgba(255,211,122,.9)':'rgba(191,212,255,.38)';ctx.fillText(String(i),p.x,p.y+22)}
+  ctx.globalCompositeOperation='lighter';
+}
+
+/* ---------- 내 하늘 ---------- */
+let skyLayout=[];
+function layoutSky(){
+  const list=S.sky.slice(-12);
+  const n=list.length; skyLayout=[];
+  $('#skyEmpty').hidden=n>0;
+  $('#skyTitle').textContent=n?`별자리 ${S.sky.length}개를 켰어요`:'아직 비어 있어요';
+  if(!n){$('#skyLabels').innerHTML='';return}
+  const top=110, bottom=H-40, aspect=W/(bottom-top);
+  const cols=Math.max(1,Math.min(n,Math.round(Math.sqrt(n*aspect*.8)))), rows=Math.ceil(n/cols);
+  const cw=W/cols, rh=(bottom-top)/rows;
+  list.forEach((c,k)=>{
+    const col=k%cols,row=Math.floor(k/cols);
+    const R=mulberry32(c.seed+1);
+    const cx=cw*(col+.5)+(R()-.5)*cw*.12, cy=top+rh*(row+.42)+(R()-.5)*rh*.08;
+    skyLayout.push({c,shape:makeShape(c.seed,c.n+1),cx,cy,w:Math.min(cw*.72,360),h:Math.min(rh*.55,200)});
+  });
+  $('#skyLabels').innerHTML=skyLayout.map(L=>`<div class="slab" style="left:${L.cx}px;top:${L.cy+L.h/2+14}px"><b>${esc(L.c.name)}</b><span>${fmtDate(L.c.doneAt)} · 별 ${L.c.n}개 · ${fmtDur(L.c.took)}</span>${L.c.sample?'<br><span class="tagx">예시</span>':''}</div>`).join('');
+}
+function drawSky(t){
+  for(const L of skyLayout){
+    const sh=L.shape, ar=sh[0].ar||.5;
+    let w=L.w, h=w*ar; if(h>L.h){h=L.h;w=Math.min(L.w,h/ar)}
+    const ox=L.cx-w/2, oy=L.cy-h/2;
+    const P=sh.map(p=>({x:ox+p.x*w,y:oy+p.y*h}));
+    ctx.lineCap='round';
+    ctx.strokeStyle='rgba(191,212,255,.14)';ctx.lineWidth=5;ctx.beginPath();P.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();
+    ctx.strokeStyle='rgba(225,235,255,.6)';ctx.lineWidth=1.1;ctx.beginPath();P.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();
+    P.forEach((p,i)=>drawStar(p.x,p.y,i===0?'anchor':'on',t,.7*sh[i].mag,0));
+  }
+}
+
+/* ---------- 화면 갱신 ---------- */
+const NUDGE=(done,n)=>{
+  const left=n-done;
+  if(left===0) return '모든 별이 켜졌어요.';
+  if(done===0) return '첫 단계는 가볍게. 시작만 해도 별이 켜져요.';
+  if(left===1) return '마지막 별 하나. 이것만 켜면 완성이에요.';
+  if(left<=3) return `별 ${left}개만 더 켜면 별자리가 완성돼요.`;
+  if(done>=n/2) return '절반을 넘었어요. 여기서부터는 빨라져요.';
+  return `벌써 ${done}개 켰어요. 이 흐름 그대로.`;
+};
+const CHEERS=['한 칸 전진!','별 하나 켜졌어요','좋아요, 이 속도','하나 끝. 숨 한 번 쉬고','잘하고 있어요','또 하나!'];
+function syncShape(){
+  const c=S.current; if(!c){shape=[];lit=[];return}
+  shape=makeShape(c.seed,c.steps.length+1);
+  lit=[true,...c.steps.map(s=>s.done)];
+}
+function render(swap){
+  const c=S.current;
+  $('#skyCount').textContent=S.sky.length?S.sky.length:'';
+  const has=!!c;
+  $('#now').hidden=!has||view!=='run'; $('#list').hidden=!has||view!=='run';
+  $('#top').hidden=view==='sky';
+  if(!has){$('#title').textContent='새 별자리를 만들어 보세요';return}
+  $('#title').innerHTML=`${esc(c.title)}${c.sample?'<span class="tagx">예시</span>':''}`;
+  const n=c.steps.length, done=c.steps.filter(s=>s.done).length;
+  const idx=c.steps.findIndex(s=>!s.done);
+  $('#count').textContent=idx<0?`${n} / ${n} 완료`:`${idx+1} / ${n} 단계`;
+  $('#nudge').textContent=NUDGE(done,n);
+  $('#barFill').style.width=((done+1)/(n+1)*100)+'%';
+  const st=$('#stepText');
+  st.textContent=idx<0?'모든 단계를 끝냈어요. 별자리를 하늘에 걸어요.':c.steps[idx].text;
+  if(swap){st.classList.remove('swap');void st.offsetWidth;st.classList.add('swap')}
+  $('#doneBtn').textContent=idx<0?'완성 화면 보기':'끝냈어요 · 별 켜기';
+  $('#undoBtn').disabled=done===0;
+  $('#listCount').textContent=`${done}/${n}`;
+  $('#steps').innerHTML=`<li class="anchor"><span class="dot">✓</span><span class="tx">할일을 단계로 나누기 (이미 끝!)</span></li>`+
+    c.steps.map((s,i)=>`<li class="${s.done?'lit':''} ${i===idx?'cur':''}" data-i="${i}"><span class="dot">${s.done?'★':i+1}</span><span class="tx">${esc(s.text)}</span></li>`).join('');
+  const curLi=$('#steps .cur'); if(curLi) curLi.scrollIntoView({block:'nearest'});
+}
+let tt=null;
+function toast(m){const e=$('#toast');e.textContent=m;e.hidden=false;e.style.animation='none';void e.offsetWidth;e.style.animation='';clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,1800)}
+
+/* ---------- 진행 동작 ---------- */
+function lightStep(i){
+  const c=S.current, s=c.steps[i]; if(!c||s.done) return;
+  s.done=true; s.at=Date.now();
+  lit[i+1]=true;
+  const t=performance.now();
+  anim.ignite[i+1]=t;
+  if(lit[i]) anim.line={i:i+1,t0:t};
+  const p=starPos(i+1); burst(p.x,p.y);
+  save();
+  if(c.steps.every(x=>x.done)){render(true);setTimeout(complete,RM?0:700)}
+  else {toast(CHEERS[Math.floor(Math.random()*CHEERS.length)]);render(true)}
+}
+function unlight(i){const c=S.current;c.steps[i].done=false;c.steps[i].at=null;lit[i+1]=false;save();render(true)}
+$('#doneBtn').addEventListener('click',()=>{
+  const c=S.current; if(!c) return;
+  const idx=c.steps.findIndex(s=>!s.done);
+  if(idx<0){complete();return}
+  lightStep(idx);
+});
+$('#undoBtn').addEventListener('click',()=>{
+  const c=S.current; if(!c) return;
+  let last=-1,lt=-1; c.steps.forEach((s,i)=>{if(s.done&&(s.at||0)>=lt){lt=s.at||0;last=i}});
+  if(last>=0){unlight(last);toast('별 하나를 다시 껐어요')}
+});
+$('#steps').addEventListener('click',e=>{
+  const li=e.target.closest('li[data-i]'); if(!li) return;
+  const i=+li.dataset.i; if(S.current.steps[i].done) unlight(i); else lightStep(i);
+});
+$('#listBtn').addEventListener('click',()=>$('#list').classList.toggle('open'));
+document.addEventListener('click',e=>{const w=e.target.closest('[data-why]');if(!w)return;const b=$('#'+w.dataset.why);const o=b.hidden;document.querySelectorAll('.whybox').forEach(x=>x.hidden=true);b.hidden=!o;computeBox()});
+
+/* 별 위에 올리면 단계 보기 */
+cv.addEventListener('pointermove',e=>{
+  if(view!=='run'||!S.current){$('#tag').hidden=true;return}
+  const r=cv.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  let best=-1,bd=18;
+  for(let i=0;i<shape.length;i++){const p=starPos(i),d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;best=i}}
+  const tag=$('#tag');
+  if(best<0){tag.hidden=true;cv.style.cursor='default';return}
+  const p=starPos(best);
+  tag.hidden=false;tag.style.left=clamp(p.x,140,W-140)+'px';tag.style.top=p.y+'px';
+  tag.textContent=best===0?'할일을 단계로 나누기 · 이미 끝!':`${best}. ${S.current.steps[best-1].text}${S.current.steps[best-1].done?' · 끝':''}`;
+  cv.style.cursor=best>0?'pointer':'default';
+});
+cv.addEventListener('pointerleave',()=>$('#tag').hidden=true);
+cv.addEventListener('click',e=>{
+  if(view!=='run'||!S.current) return;
+  const r=cv.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  for(let i=1;i<shape.length;i++){const p=starPos(i);if(Math.hypot(p.x-x,p.y-y)<16){if(S.current.steps[i-1].done)unlight(i-1);else lightStep(i-1);return}}
+});
+
+/* ---------- 완성 ---------- */
+function complete(){
+  const c=S.current; if(!c) return;
+  celebrate=performance.now();
+  if(!RM){shape.forEach((_,i)=>setTimeout(()=>{const p=starPos(i);burst(p.x,p.y,18,i%2?'255,214,140':'142,227,200')},i*110));for(let k=0;k<4;k++)setTimeout(shoot,300+k*450)}
+  const ends=c.steps.map(s=>s.at||Date.now());
+  const took=Math.max(...ends)-c.startedAt;
+  $('#finSub').textContent=`"${c.title}"를 끝까지 해냈어요.`;
+  $('#fsSteps').textContent=c.steps.length+1;
+  $('#fsTime').textContent=fmtDur(took);
+  $('#fsDate').textContent=fmtDate(Date.now());
+  $('#cname').value=c.name||suggestName(c.title);
+  setTimeout(()=>{$('#finish').hidden=false;$('#now').hidden=true;$('#list').hidden=true},RM?0:1700);
+}
+function suggestName(t){const w=t.replace(/[^\p{L}\p{N}\s]/gu,'').trim().split(/\s+/)[0]||'나의';return `${w.slice(0,6)}자리`}
+$('#finBack').addEventListener('click',()=>{$('#finish').hidden=true;render()});
+$('#hangBtn').addEventListener('click',()=>{
+  const c=S.current;
+  const name=$('#cname').value.trim()||suggestName(c.title);
+  const ends=c.steps.map(s=>s.at||Date.now());
+  S.sky.push({id:c.id,title:c.title,name,sample:!!c.sample,seed:c.seed,n:c.steps.length+1,doneAt:Date.now(),took:Math.max(...ends)-c.startedAt});
+  S.current=null; celebrate=null; save();
+  $('#finish').hidden=true;
+  openSky(true);
+});
+
+/* ---------- 내 하늘 열기 ---------- */
+function openSky(fresh){
+  view='sky'; $('#skyview').hidden=false; $('#tag').hidden=true;
+  render(); layoutSky();
+  $('#skyBack').hidden=!S.current;
+  if(fresh&&!RM){const L=skyLayout[skyLayout.length-1];if(L){setTimeout(()=>{L.shape.forEach((p,i)=>{const w=Math.min(L.w,L.h/(L.shape[0].ar||.5));burst(L.cx-w/2+p.x*w,L.cy,10)})},200)}toast('하늘에 걸었어요')}
+}
+function closeSky(){view='run';$('#skyview').hidden=true;render();computeBox()}
+$('#skyBtn').addEventListener('click',()=>openSky(false));
+$('#skyBack').addEventListener('click',closeSky);
+$('#skyNew').addEventListener('click',()=>{if(S.current)closeSky();openSetup()});
+$('#emptyNew').addEventListener('click',openSetup);
+
+/* ---------- 만들기 ---------- */
+const PROMPT=g=>`나는 "${g}"을(를) 해내고 싶어. 이걸 10단계로 나눠줘.
+
+규칙:
+- 1단계는 2분 안에 끝나는 아주 쉬운 행동으로
+- 각 단계는 25분 안에 끝낼 수 있는 크기로
+- 동사로 끝나는 구체적인 행동으로 (예: "~ 찾기", "~ 쓰기")
+- 설명 없이 번호 목록만 (1. ~ 10.)`;
+function renderPrompt(){
+  const g=$('#goal').value.trim()||'할일 이름';
+  $('#prompt').innerHTML=esc(PROMPT('@@GOAL@@')).replace('@@GOAL@@',`<mark>${esc(g)}</mark>`);
+}
+function parseSteps(txt){
+  const lines=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  let out=[];
+  for(const l of lines){
+    const m=l.match(/^(?:step\s*)?(\d{1,2})\s*(?:[.)\]:]|단계\s*[.:)]?)\s*(.+)$/i)||l.match(/^[-*•·]\s+(?:\[.\]\s*)?(.+)$/);
+    if(m){const t=(m[2]!==undefined?m[2]:m[1]).replace(/\*\*/g,'').replace(/^[:：\-–]\s*/,'').trim();if(t)out.push(t)}
+  }
+  if(out.length<2) out=lines.map(l=>l.replace(/\*\*/g,'').replace(/^#+\s*/,'').trim()).filter(l=>l.length>1);
+  return out;
+}
+function checkPaste(){
+  const steps=parseSteps($('#paste').value), n=steps.length, goal=$('#goal').value.trim();
+  const el=$('#parsed');
+  if(!$('#paste').value.trim()){el.innerHTML='<span>붙여넣으면 단계를 자동으로 찾아요</span>';$('#makeBtn').disabled=true;return}
+  const ok=n>=2&&n<=15;
+  el.innerHTML=ok?`<span>찾은 단계 <b>${n}개</b> · 첫 단계: ${esc(steps[0].slice(0,28))}${steps[0].length>28?'…':''}</span>`:`<span class="bad">찾은 단계 <b>${n}개</b> · ${n<2?'두 단계 이상 적어주세요':'15단계까지만 돼요'}</span>`;
+  $('#makeBtn').disabled=!ok||!goal;
+  $('#makeBtn').textContent=goal?'별자리 만들기':'1번에 할일 이름을 적어주세요';
+}
+function openSetup(){
+  $('#setup').hidden=false; $('#list').classList.remove('open');
+  if(!$('#goal').value) $('#goal').focus();
+  renderPrompt(); checkPaste();
+}
+$('#newBtn').addEventListener('click',openSetup);
+$('#setupX').addEventListener('click',()=>$('#setup').hidden=true);
+$('#setup').addEventListener('click',e=>{if(e.target.id==='setup')$('#setup').hidden=true});
+$('#goal').addEventListener('input',()=>{renderPrompt();checkPaste()});
+$('#paste').addEventListener('input',checkPaste);
+$('#copyBtn').addEventListener('click',async()=>{
+  const g=$('#goal').value.trim();
+  if(!g){$('#goal').focus();$('#copyMsg').textContent='먼저 1번에 할일 이름을 적어주세요';return}
+  const text=PROMPT(g);
+  let ok=false;
+  try{await navigator.clipboard.writeText(text);ok=true}catch(e){}
+  if(!ok){const r=document.createRange();r.selectNodeContents($('#prompt'));const s=getSelection();s.removeAllRanges();s.addRange(r)}
+  $('#copyMsg').textContent=ok?'복사했어요. AI 창에 붙여넣고 답을 받아오세요':'선택해뒀어요. Ctrl/⌘+C로 복사하세요';
+  $('#copyBtn').textContent=ok?'복사됨 ✓':'프롬프트 복사';
+  setTimeout(()=>$('#copyBtn').textContent='프롬프트 복사',2000);
+});
+$('#makeBtn').addEventListener('click',()=>{
+  const goal=$('#goal').value.trim(), steps=parseSteps($('#paste').value);
+  if(!goal||steps.length<2) return;
+  if(view==='sky') closeSky();
+  S.current={id:uid(),title:goal,sample:false,seed:hash(goal+Date.now()),startedAt:Date.now(),steps:steps.slice(0,15).map(t=>({text:t,done:false,at:null}))};
+  celebrate=null; save();
+  $('#setup').hidden=true; $('#goal').value=''; $('#paste').value='';
+  syncShape(); render(true); computeBox();
+  const t=performance.now();
+  if(!RM) shape.forEach((_,i)=>{anim.ignite[i]=t+i*60});
+  const p=starPos(0); burst(p.x,p.y,30,'142,227,200');
+  toast('첫 별은 이미 켜졌어요. 나누기 완료!');
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(!$('#setup').hidden)$('#setup').hidden=true;else if(view==='sky'&&S.current)closeSky();$('#list').classList.remove('open')}
+});
+
+/* ---------- 시작 ---------- */
+new ResizeObserver(()=>{resize();if(view==='sky')layoutSky()}).observe(cv);
+syncShape(); render(); resize();
+if(!S.current){openSky(false);openSetup()}
+requestAnimationFrame(frame);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>computeBox());
+})();
+</script>
+
+</body>
+</html>

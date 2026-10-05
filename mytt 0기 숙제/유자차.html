@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f6f4eb"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Deep Climb"><meta name="description" content="과목별 집중 타이머와 일간·주간·월간 공부 리포트. 나의 공부 리듬을 기록하세요."><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icons/icon-192.png"><title>Deep Climb — 나의 공부 리듬</title><style>:root{--bg:#f3efe5;--paper:#fffdf8;--ink:#17291f;--muted:#727a71;--accent:#315840;--orange:#bd7852;--line:rgba(32,54,39,.11);--soft:#e7ecdf;--shadow:0 14px 45px rgba(35,51,33,.055);--safe-bottom:env(safe-area-inset-bottom,0px);--radius:24px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg);color-scheme:light}body{margin:0;color:var(--ink);background:radial-gradient(ellipse at 100% 0%,#eee4d3 0,transparent 38%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;font-size:14px;line-height:1.5}button,input,select{font:inherit;color:inherit}button{cursor:pointer;border:0;background:transparent}button:disabled{opacity:.42;cursor:not-allowed}input,select{min-width:0}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a38c60;outline-offset:3px}button:active:not(:disabled){transform:translateY(1px)}[hidden]{display:none!important}svg{display:block}h1,h2,h3,p{margin:0}h1{font-size:28px;letter-spacing:-1.1px;line-height:1.28}h2{font-size:17px;letter-spacing:-.55px}h3{font-size:16px;letter-spacing:-.3px}small{font-size:12px}a{color:var(--accent)}.app{width:min(100%,540px);margin:0 auto;min-height:100dvh;padding:max(22px,env(safe-area-inset-top)) 22px calc(110px + var(--safe-bottom))}.topbar{display:flex;align-items:center;justify-content:space-between;margin:0 1px 25px;gap:10px}.brand{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:2.1px;font-weight:800}.brand svg{width:24px;height:24px}.date{font-size:11px;color:var(--muted);white-space:nowrap}.view{display:none;animation:appear .18s ease}.view.active{display:block}@keyframes appear{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 1px 22px}.eyebrow{font-size:10px;font-weight:750;letter-spacing:1.8px;color:var(--muted);margin-bottom:8px}.sub{color:var(--muted);font-size:12px;margin-top:7px;line-height:1.6}.text-btn{font-size:12px;font-weight:700;color:var(--accent);min-height:44px;padding:7px 4px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.text-btn svg{width:16px;height:16px}.icon-btn{width:44px;height:44px;display:inline-grid;place-items:center;border:1px solid var(--line);border-radius:14px;flex-shrink:0;background:rgba(255,253,248,.75)}.icon-btn svg{width:19px;height:19px}.card{border:1px solid rgba(53,73,46,.1);border-radius:var(--radius);background:rgba(255,253,248,.85);box-shadow:var(--shadow);padding:21px;margin-bottom:14px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 1px 12px}.section-head .muted{font-size:11px}.muted{color:var(--muted)}.note{font-size:11px;line-height:1.7;color:var(--muted)}.notice{padding:12px 14px;border:1px solid #e2c79c;border-radius:15px;background:#fff1d9;color:#6b512d;font-size:12px;line-height:1.6;margin-bottom:16px}.notice button{text-decoration:underline;font-weight:700;margin-left:6px}.notice.error{border-color:#d4a7a0;background:#fae7e2;color:#823f34}.hero{position:relative;overflow:hidden;padding:20px 20px 18px}.hero-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin-bottom:15px}.status-dot{width:7px;height:7px;display:inline-block;border-radius:50%;background:#9ba69f;margin-right:6px;vertical-align:1px}.status-dot.on{background:var(--orange);box-shadow:0 0 0 4px #bd785216}.subject-picker{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:14px;padding:0 13px;background:#f5f4eb;min-height:48px}.subject-picker select{border:0;background:transparent;flex:1;min-height:48px;max-width:100%;font-weight:700;font-size:16px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0;background:var(--accent)}.task-wrap{display:flex;gap:9px;align-items:center;margin:10px 0 0;padding:0 3px}.task-wrap span{font-size:11px;color:var(--muted);white-space:nowrap}.task-wrap input{border:0;border-bottom:1px solid var(--line);background:transparent;flex:1;min-height:42px;font-size:16px}.task-wrap input::placeholder{color:#9ba194;font-size:13px}.timer{font-size:clamp(62px,17.6vw,86px);line-height:1.05;letter-spacing:-5px;font-weight:650;font-variant-numeric:tabular-nums;text-align:center;margin:20px 0 4px}.timer-caption{font-size:11px;color:var(--muted);text-align:center;margin-bottom:13px}.preset-row{display:flex;justify-content:center;gap:6px;margin-bottom:18px}.preset{min-height:40px;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:650;color:var(--muted);background:#f0f0e8}.preset.active{background:var(--ink);color:white}.mountain-card{height:156px;border-radius:18px;overflow:hidden;position:relative;margin-bottom:16px;border:1px solid #3158400c;background:#dbe5da}.mountain-card>svg{width:100%;height:100%}.mountain-caption{position:absolute;left:13px;right:13px;bottom:11px;display:flex;align-items:flex-end;justify-content:space-between;color:#1d3524aa;font-size:10px;line-height:1.5;pointer-events:none}.mountain-caption strong{font-size:12px;color:var(--ink)}.action-row{display:grid;grid-template-columns:1fr 54px;gap:8px}.primary{min-height:52px;padding:12px 18px;border-radius:15px;background:var(--accent);color:white;font-weight:700;text-align:center;display:flex;justify-content:center;align-items:center;gap:9px}.primary svg{width:17px;height:17px}.primary.pause{background:var(--ink)}.secondary{min-height:52px;border-radius:15px;background:#ebeee4;display:flex;align-items:center;justify-content:center;font-size:16px}.daily-progress{margin-top:19px}.progress-meta{display:flex;justify-content:space-between;gap:9px;font-size:11px;color:var(--muted);margin-bottom:9px}.progress-meta strong{color:var(--ink);font-weight:650}.progress-track{height:5px;border-radius:99px;background:#e9ebe2;overflow:hidden}.progress-fill{height:100%;width:0;border-radius:inherit;background:var(--orange);transition:width .25s}.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.stat{padding:12px 5px 10px;text-align:center;border-right:1px solid var(--line)}.stat:last-child{border:0}.stat span{font-size:11px;color:var(--muted)}.stat b{display:block;margin-top:6px;font-size:19px;font-weight:700;letter-spacing:-.6px;font-variant-numeric:tabular-nums}.stats-card{padding:10px 6px;border-radius:20px}.focus-breakdown{margin-top:12px;padding:12px 3px 0;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 13px;color:var(--muted);font-size:11px}.focus-breakdown span{display:inline-flex;align-items:center;gap:5px}.focus-breakdown .dot{width:6px;height:6px}.segmented{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;background:#e8e9df;border-radius:14px;margin-bottom:15px}.segmented button{min-height:40px;border-radius:11px;color:var(--muted);font-weight:650;font-size:12px}.segmented button.active{background:var(--paper);color:var(--ink);box-shadow:0 2px 7px #1a2d1e09}.subjects-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:20px 2px 15px;font-size:12px;color:var(--muted)}.subjects-summary strong{color:var(--ink);font-size:16px}.subject-list{display:grid;gap:11px}.subject-card{position:relative;display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:20px;background:rgba(255,253,248,.9);padding:18px 18px 15px;box-shadow:var(--shadow)}.subject-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.subject-name{display:flex;align-items:center;gap:9px;min-width:0;font-weight:650;font-size:14px}.subject-name>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chevron{color:#9ca392;font-size:18px}.subject-card-time{font-size:27px;letter-spacing:-.9px;font-weight:650;margin:12px 0 7px;font-variant-numeric:tabular-nums}.subject-card-time small{font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;margin-left:7px}.subject-card-footer{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:var(--muted);margin:9px 0 0}.subject-card .progress-fill{background:var(--subject-color)}.add-card{min-height:53px;width:100%;border:1px dashed #aeb8a5;border-radius:17px;color:var(--accent);font-weight:650;font-size:13px;margin-top:12px}.helper-block{margin:18px 4px;font-size:11px;color:var(--muted);line-height:1.8}.period-nav{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;margin:4px 0 12px}.period-nav .icon-btn{background:transparent;border:0}.period-label{display:block;text-align:center;min-height:44px;font-size:16px;font-weight:700;letter-spacing:-.4px}.period-label small{display:block;font-size:10px;font-weight:400;color:var(--muted);letter-spacing:0}.filter-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.filter-row select{padding:8px 25px 8px 11px;max-width:70%;min-height:42px;border:1px solid var(--line);border-radius:12px;background:rgba(255,253,248,.75);font-size:13px}.report-hero{background:var(--accent);color:#fffdf8;border:0;position:relative;overflow:hidden}.report-hero::after{content:"";position:absolute;right:-30px;top:-40px;width:170px;height:170px;border:1px solid #ffffff18;border-radius:50%;pointer-events:none}.report-hero::before{content:"";position:absolute;right:-8px;top:-18px;width:126px;height:126px;border:1px solid #ffffff12;border-radius:50%;pointer-events:none}.report-hero .eyebrow{color:#d9e1ce;letter-spacing:.3px;font-size:12px}.report-total{font-size:38px;letter-spacing:-1.6px;font-weight:650;line-height:1.2;margin:12px 0 9px}.comparison{font-size:11px;color:#d2ddc9;min-height:18px}.report-hero .stats-grid{border-top:1px solid #ffffff1c;padding-top:12px;margin-top:18px;gap:2px}.report-hero .stat{border-color:#ffffff1c;padding:2px 0}.report-hero .stat span{color:#d2ddc9;font-size:10px}.report-hero .stat b{color:white;font-size:17px}.chart-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:15px}.chart-heading h2{font-size:15px}.chart-heading small{font-size:10px;color:var(--muted)}.chart-insight{display:flex;align-items:center;gap:7px;font-size:11px;margin-top:17px;padding-top:13px;border-top:1px solid var(--line);line-height:1.7}.chart-insight svg{height:16px;width:16px;flex-shrink:0;color:var(--orange)}.bar-chart{display:flex;align-items:stretch;gap:6px;height:135px;border-bottom:1px solid var(--line);padding-top:20px;position:relative;margin-bottom:26px}.bar-chart.dense{gap:3px}.bar-chart::before{content:"";position:absolute;top:50%;left:0;right:0;border-top:1px dashed #e6e8df;pointer-events:none}.bar-col{flex:1;min-width:0;position:relative;display:flex;align-items:center;justify-content:flex-end;flex-direction:column;height:100%;z-index:1}.bar{width:100%;max-width:33px;border-radius:5px 5px 0 0;background:#a9b9a1;min-height:2px}.bar.highlight{background:var(--accent)}.bar.future{background:#ecece3}.bar-label{position:absolute;top:calc(100% + 8px);font-size:10px;color:var(--muted);white-space:nowrap}.bar-value{font-size:9px;color:var(--muted);margin-bottom:5px;white-space:nowrap;letter-spacing:-.3px}.bar-chart.dense .bar{border-radius:3px 3px 0 0}.axis-caption{font-size:10px;color:var(--muted);text-align:right;margin-top:-8px}.hour-chart{height:109px;gap:3px}.heat-axis{display:flex;justify-content:space-between;margin-left:43px;font-size:9px;color:var(--muted);margin-bottom:4px}.heat-row{display:flex;align-items:center;gap:9px;width:100%;min-height:43px;padding:3px 0;text-align:left}.heat-row-label{width:34px;flex-shrink:0;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.3}.heat-grid{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:2px;flex:1}.heat-cell{height:17px;border-radius:3px;background:#edf0e6}.heat-future{opacity:.3}.heat-legend{display:flex;justify-content:flex-end;align-items:center;gap:4px;font-size:9px;color:var(--muted);margin:8px 0 2px}.heat-legend i{width:11px;height:11px;border-radius:3px}.month-heat{max-height:310px;overflow:auto;overscroll-behavior:contain;padding-right:2px}.allocation-track{display:flex;height:11px;gap:3px;border-radius:99px;overflow:hidden;margin:5px 0 19px;background:#edf0e6}.allocation-part{height:100%;min-width:1px}.allocation-list{display:grid;gap:17px}.allocation-item-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:12px}.allocation-item-head .subject-name{font-size:12px;flex:1}.allocation-time{font-weight:650;white-space:nowrap}.allocation-pct{width:37px;text-align:right;color:var(--muted);font-size:11px}.allocation-item .progress-track{height:4px}.log-list{display:grid;gap:8px}.log-item{display:flex;align-items:center;gap:11px;width:100%;padding:14px;border-radius:16px;border:1px solid var(--line);background:#fffdf8;text-align:left}.log-main{flex:1;min-width:0}.log-main strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:650}.log-main small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.log-main .log-subject{color:var(--subject-color);font-size:10px;font-weight:650;margin:0 0 4px}.log-min{font-weight:650;font-size:13px;white-space:nowrap;text-align:right}.log-min small{display:block;font-size:9px;font-weight:400;color:var(--muted)}.empty{padding:25px 15px;color:var(--muted);font-size:12px;text-align:center;line-height:1.9;border:1px dashed #c4ccba;border-radius:17px}.settings-group{padding:0;overflow:hidden}.settings-row{padding:15px 17px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid var(--line);min-height:73px}.settings-row:last-child{border-bottom:0}.settings-label{flex:1;min-width:0}.settings-label strong{display:block;font-size:13px;font-weight:650}.settings-label small{display:block;color:var(--muted);font-size:10px;line-height:1.6;margin-top:4px}.number-control{display:flex;align-items:center;gap:5px;flex-shrink:0}.number-control input{width:64px;min-height:44px;padding:8px 6px;border:1px solid var(--line);border-radius:12px;background:var(--paper);text-align:center;font-weight:650;font-size:16px}.number-control small{color:var(--muted);font-size:11px}.tiny-btn{min-height:42px;background:#edf0e6;border-radius:12px;font-size:11px;font-weight:650;padding:8px 12px;white-space:nowrap}.danger{color:#a34c3e}.switch{appearance:none;-webkit-appearance:none;width:43px;height:26px;background:#d7ddcf;border:0;border-radius:999px;position:relative;cursor:pointer;flex-shrink:0}.switch::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:white;box-shadow:0 1px 4px #00000012;transition:transform .16s}.switch:checked{background:var(--accent)}.switch:checked::after{transform:translateX(17px)}.switch-wrap{display:flex;align-items:center;justify-content:flex-end;min-width:48px;min-height:44px}.settings-presets{display:flex;gap:8px}.settings-presets input{width:58px;min-height:43px;text-align:center;font-size:16px;border:1px solid var(--line);border-radius:11px;background:var(--paper)}.version{text-align:center;color:#929986;font-size:10px;line-height:1.9;margin:24px 0 4px;letter-spacing:.4px}.bottom-nav{position:fixed;z-index:20;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,540px);padding:13px 18px max(15px,var(--safe-bottom));background:linear-gradient(180deg,#f3efe500 0,#f3efe5eb 35%,var(--bg) 75%)}.nav-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:5px;background:rgba(255,253,248,.96);border:1px solid #2235211a;border-radius:22px;box-shadow:0 9px 30px #1f332416;backdrop-filter:blur(20px)}.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;border-radius:16px;color:#858c7d;font-size:10px;font-weight:650}.nav-btn svg{width:20px;height:20px}.nav-btn.active{background:var(--ink);color:#fffdf8}.running-banner{position:sticky;top:8px;z-index:12;width:100%;padding:11px 13px;margin:0 0 17px;background:var(--ink);color:white;border-radius:14px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;text-align:left}.running-banner b{font-size:16px;font-variant-numeric:tabular-nums;flex-shrink:0}.running-banner span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.toast{position:fixed;z-index:80;left:50%;transform:translate(-50%,15px);bottom:calc(99px + var(--safe-bottom));max-width:calc(100% - 35px);width:max-content;max-width:min(470px,calc(100vw - 35px));background:var(--ink);color:white;padding:12px 16px;border-radius:14px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;box-shadow:0 8px 30px #0002}.toast.show{opacity:1;transform:translate(-50%,0)}dialog{position:fixed;inset:auto 0 0;width:min(540px,100%);max-width:100%;max-height:min(92dvh,900px);margin:0 auto;padding:0;border:0;border-radius:27px 27px 0 0;color:var(--ink);background:var(--paper);box-shadow:0 -10px 70px #17291f26;overscroll-behavior:contain}dialog::backdrop{background:#14201765;backdrop-filter:blur(3px)}.sheet{padding:12px 23px max(24px,env(safe-area-inset-bottom));}.sheet-handle{height:4px;width:35px;background:#d7ddcf;border-radius:4px;margin:0 auto 19px}.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.sheet-head h2{font-size:22px}.sheet-head .icon-btn{border:0;background:#eff0e9}.sheet-intro{font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:20px}.sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:23px}.sheet-actions .primary,.sheet-actions .ghost{min-height:50px;border-radius:14px;font-size:13px}.ghost{background:#ebeee4;font-weight:650;padding:11px 14px}.full-width{width:100%}.form-field{display:block;margin:16px 0;font-size:12px;font-weight:650}.form-field>span{display:block;margin-bottom:8px}.form-field input:not([type=radio]),.form-field select{display:block;width:100%;min-height:48px;padding:11px 12px;font-size:16px;background:#f6f5ee;border:1px solid var(--line);border-radius:12px}.form-field small{display:block;color:var(--muted);font-size:10px;font-weight:400;margin-top:6px}.two-fields{display:grid;grid-template-columns:1fr 1fr;gap:11px}.two-fields .form-field{margin:4px 0}.color-options{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}.color-choice{position:relative;display:grid;place-items:center;height:43px}.color-choice input{position:absolute;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;z-index:1}.color-choice span{height:25px;width:25px;border-radius:50%;background:var(--color)}.color-choice input:checked+span{outline:2px solid var(--color);outline-offset:4px}.color-choice input:focus-visible+span{outline:3px solid var(--ink);outline-offset:4px}.detail-times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#eef0e5;padding:15px 5px;border-radius:18px;margin:18px 0}.detail-times span{display:block;font-size:10px;color:var(--muted);text-align:center}.detail-times b{display:block;font-size:16px;text-align:center;margin-top:6px}.detail-goal{padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}.detail-goal>div:first-child{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}.subject-tools{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px}.subject-tools>div{display:flex;gap:6px}.subject-tools .tiny-btn{min-height:44px}.manage-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}.form-error{color:#a34c3e;background:#fae7e2;border-radius:10px;padding:10px;font-size:12px;margin:10px 0}.hour-detail-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}.interval-list{padding:10px 12px;background:#eff1e7;border-radius:12px;font-size:11px;line-height:2;max-height:160px;overflow:auto;margin:12px 0}.sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+@media(min-width:700px){body{background:radial-gradient(ellipse at 25% 20%,#e2e8d9 0,transparent 45%),var(--bg)}.app{border-left:1px solid #22352106;border-right:1px solid #22352106;padding-top:30px}.bottom-nav{padding-bottom:22px}dialog{bottom:22px;border-radius:27px;max-height:90dvh}.mountain-card{height:183px}}
+@media(max-width:360px){.app{padding-left:15px;padding-right:15px}.hero{padding:16px}.timer{font-size:64px}.preset{padding:8px 11px}.card{padding:17px}.stats-card{padding:8px 4px}.stat b{font-size:17px}.bottom-nav{padding-left:12px;padding-right:12px}.subject-card{padding:16px}.report-total{font-size:34px}.color-options{gap:1px}.sheet{padding-left:18px;padding-right:18px}.settings-row{padding:13px}.heat-grid{gap:1px}.heat-row{gap:5px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* 2.1 — soft meadow theme, live daily mountain and small white rabbit. */
+:root{--bg:#f6f4eb;--paper:#fffdf8;--ink:#253c34;--muted:#788075;--accent:#537e65;--orange:#ad895c;--soft:#e9eee0;--line:rgba(53,73,46,.10);--shadow:0 9px 30px rgba(48,68,36,.035)}
+body{background:radial-gradient(ellipse at 0 0,#e8edde88 0,transparent 44%),var(--bg)}
+.app{padding-top:max(19px,env(safe-area-inset-top));padding-bottom:calc(105px + var(--safe-bottom))}
+.topbar{margin-bottom:20px}.brand{font-size:10px;letter-spacing:2px;color:#5c7564}.brand svg{width:22px;height:22px}.date{font-size:10px}
+.hero{padding:0!important;border:0;box-shadow:none;overflow:visible;background:transparent;margin-bottom:12px}
+.focus-picker-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:9px;align-items:center}.subject-picker{min-height:46px;border:0;border-radius:999px;background:#eaece1;padding:0 14px}.subject-picker select{min-height:46px;font-size:15px;font-weight:650}.subject-picker .dot{width:12px;height:12px}.focus-settings{border:0;border-radius:50%;background:#edeee4}.focus-settings svg{width:20px;height:20px}
+.task-wrap{margin:10px 0 0;padding:0}.task-wrap input{width:100%;min-height:43px;padding:9px 14px;background:#fffdf761;border:1px solid #aeb5a15c;border-radius:999px;font-size:16px}.task-wrap input::placeholder{font-size:12px;color:#879080}
+.preset-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:13px 0 15px}.preset{min-height:40px;padding:8px 4px;font-weight:500;background:#eeeee3;color:#4c5c50;font-size:12px}.preset.active{background:linear-gradient(140deg,#638e71,#7e9d7e);color:#fff;box-shadow:0 3px 8px #55774716;font-weight:650}
+.timer{font-size:clamp(64px,18.8vw,80px);font-weight:650;letter-spacing:-3px;margin:2px 0 3px;line-height:1.08;color:#263e36}.timer-caption{margin-bottom:13px;font-size:11px;letter-spacing:.1px;color:#7c8578;min-height:17px}
+.action-row{grid-template-columns:minmax(0,1fr) 48px;gap:9px;width:74%;max-width:310px;margin:0 auto 3px}.action-row .primary{min-height:46px;border-radius:999px;background:linear-gradient(125deg,#547f64,#779775);box-shadow:0 5px 12px #56734f18;font-size:14px;white-space:nowrap;padding:10px 13px}.action-row .primary.pause{background:#426b56}.action-row .secondary{min-height:46px;background:#e9eddf;border-radius:50%}.action-row .secondary:disabled{opacity:.48}
+.mountain-card{height:auto!important;aspect-ratio:400/252;position:relative;width:100%;border:0;border-radius:0;margin:5px 0 -1px;overflow:visible;background:transparent}.mountain-card>svg{width:100%;height:100%;overflow:visible}.mountain-heading{position:absolute;left:3px;top:15px;display:flex;flex-direction:column;gap:3px;pointer-events:none}.mountain-heading span:first-child{font-size:11px;font-weight:650;color:#66805e}.mountain-heading span:last-child{font-size:9px;color:#8a9680}
+.summit-goal{position:absolute;right:5%;top:0;min-width:74px;min-height:44px;padding:5px 9px 7px;border:1px solid #cad5c580;border-radius:13px;background:#e9eee3;box-shadow:0 3px 9px #67825d08;text-align:center;line-height:1.25}.summit-goal::after{content:"";position:absolute;left:23px;bottom:-4px;width:7px;height:7px;background:#e9eee3;transform:rotate(45deg);border-right:1px solid #cad5c580;border-bottom:1px solid #cad5c580}.summit-goal small{display:block;font-size:9px;font-weight:500;color:#6e8068;margin-bottom:3px}.summit-goal strong{font-size:12px;font-weight:750;color:#365c45}.summit-goal:hover{background:#e1e8d9}.summit-goal{transition:right .4s ease}.mountain-card.near-summit .summit-goal{right:30%}
+.daily-progress{margin-top:0;padding:13px 14px 10px;border:1px solid #d9dfcf80;border-radius:18px;background:#fffef9d6;box-shadow:0 5px 15px #627b4607;position:relative}.daily-goal-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;margin-bottom:8px}.daily-goal-row>div{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;min-width:0}.daily-goal-row>div>span{color:#6d7968;font-size:10px}.daily-goal-row strong{font-size:12px;font-weight:650}.daily-goal-row>b{font-size:12px;white-space:nowrap;color:#567449}.daily-progress .progress-track{height:8px;background:#e9ebdf}.daily-progress .progress-fill{background:linear-gradient(90deg,#87a682,#afc29b)}.climb-message{display:flex;justify-content:space-between;gap:5px;margin-top:8px;min-height:14px;font-size:9px;line-height:1.5;color:#849078}.climb-message>span:first-child{min-width:0}.climb-message>span:last-child:not(:first-child){white-space:nowrap;color:#63805d}.summit-reached+.daily-progress .climb-message{color:#527641}.summit-reached .summit-goal{background:#e2ead5;border-color:#c5d4b9}
+#climber{will-change:transform}.is-climbing .rabbit-hop{animation:rabbitStep 1.8s ease-in-out infinite;transform-box:view-box;transform-origin:0 0}.summit-reached .rabbit-hop{animation:none}@keyframes rabbitStep{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-2px) rotate(1deg)}}
+.focus-summary{padding:12px 15px 11px!important;border-radius:19px;box-shadow:none;background:#fffdf7ba;margin:0 0 10px}.focus-summary .section-head{margin:0;min-height:30px;gap:10px}.focus-summary .section-head h2{font-size:12px;letter-spacing:-.1px}.focus-summary .text-btn{font-size:10px;min-height:32px}.focus-breakdown{margin:5px 0 0;padding:0;border:0;gap:10px 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));font-size:10px}.focus-breakdown .focus-subject{display:block;min-width:0}.focus-subject-name{display:flex;align-items:center;gap:5px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#4b6250}.focus-subject-name .dot{width:8px;height:8px}.focus-subject b{display:block;margin:3px 0 0 13px;font-weight:600;font-size:12px;color:var(--ink)}.focus-empty{grid-column:1/-1;color:#8a9383;font-size:11px;padding:6px 0 4px}.focus-saved-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:9px;color:#8a9383;margin-top:10px;padding-top:8px;border-top:1px solid #dfe3d573}.focus-saved-meta b{font-weight:500;color:#697b64}.focus-help{font-size:10px;margin:9px 5px 0;line-height:1.8}
+.segmented{background:#e8ecdf;border-radius:999px}.segmented button{border-radius:999px}.segmented button.active{background:#658b6d;color:#fff;box-shadow:none}
+.nav-inner{border:0;border-radius:0;box-shadow:none;background:transparent;padding:0;backdrop-filter:none}.bottom-nav{padding:8px 16px max(9px,var(--safe-bottom));background:rgba(248,247,239,.96);border-top:1px solid #d7ddcf80;backdrop-filter:blur(16px)}.nav-btn{min-height:52px;font-size:10px;gap:4px;color:#899083;font-weight:500;border-radius:12px}.nav-btn svg{width:21px;height:21px}.nav-btn.active{color:#3e6a4f;background:transparent;font-weight:750}.nav-btn.active svg{stroke-width:2.1}
+@media(min-width:700px){body{background:radial-gradient(ellipse at 20% 20%,#e2e8d9 0,transparent 50%),var(--bg)}.app{padding-top:26px}.bottom-nav{padding-bottom:14px}.timer{font-size:80px}}
+@media(max-width:360px){.app{padding-left:16px;padding-right:16px}.topbar{margin-bottom:17px}.timer{font-size:66px}.preset-row{gap:5px;margin-top:11px;margin-bottom:12px}.preset{padding:8px 4px;font-size:11px}.action-row{width:82%}.summit-goal{right:4%;min-width:68px;padding:4px 7px 6px}.summit-goal small{font-size:8px}.summit-goal strong{font-size:11px}.mountain-heading{top:10px}.mountain-heading span:last-child{font-size:8px}.daily-goal-row strong{font-size:11px}.climb-message{font-size:8px}.focus-breakdown{gap:10px}.focus-subject-name{font-size:9px}.focus-subject b{font-size:11px}.daily-progress{padding:12px}.bottom-nav{padding-left:12px;padding-right:12px}}
+@media(prefers-reduced-motion:reduce){.rabbit-hop{animation:none!important}#climber{will-change:auto}}
+
+</style></head><body><main class="app">
+  <header class="topbar"><div class="brand"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 18 6-11 4 7 3-5 5 9H3Z"/><path d="m7 11 2 2 2-2"/></svg><span>DEEP CLIMB</span></div><div id="dateLabel" class="date"></div></header>
+  <div id="storageWarning" class="notice error" role="alert" hidden></div>
+  <div id="migrationNotice" class="notice" hidden>기존 기록을 미분류 과목으로 가져왔어요. 리포트의 기록을 눌러 과목을 지정할 수 있어요.<button id="dismissMigration">확인</button></div>
+  <button id="runningBanner" class="running-banner" hidden aria-label="진행 중인 타이머로 돌아가기"><span id="runningSubject"></span><b id="runningClock"></b></button>
+  <section id="focusView" class="view active" aria-labelledby="focusTitle">
+    <h1 id="focusTitle" class="sr-only">지금은, 집중할 시간.</h1>
+    <article class="card hero">
+      <div class="hero-meta sr-only"><div><span id="statusDot" class="status-dot"></span><span id="statusText">집중 준비</span></div><span id="sessionLabel">50분 세션</span></div>
+      <div class="focus-picker-row"><label class="subject-picker"><span id="selectedSubjectDot" class="dot"></span><span class="sr-only">집중할 과목</span><select id="subjectSelect"></select></label><button class="icon-btn focus-settings" id="focusSettingsBtn" aria-label="집중 환경 설정으로 이동"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="var(--bg)"/><circle cx="16" cy="17" r="3" fill="var(--bg)"/></svg></button></div>
+      <label class="task-wrap"><span class="sr-only">할 일</span><input id="taskInput" type="text" maxlength="120" placeholder="예: 자료 읽고 핵심 정리하기" autocomplete="off"></label>
+      <div id="presetRow" class="preset-row" aria-label="집중 시간 선택"></div>
+      <div id="timer" class="timer" role="timer" aria-label="남은 집중 시간">50:00</div>
+      <p id="timerCaption" class="timer-caption">이번 세션 · 0분 / 50분</p>
+      <div class="action-row"><button id="startBtn" class="primary"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/></svg><span>집중 시작</span></button><button id="finishBtn" class="secondary" aria-label="집중 세션 종료" disabled><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor" stroke="none"/></svg></button></div>
+      
+      <figure class="mountain-card" id="mountainCard" aria-labelledby="mountainTitle mountainDesc">
+        <figcaption class="mountain-heading"><span id="mountainTitle">오늘의 등반</span><span>하루 목표를 향해 한 걸음씩</span></figcaption>
+        <svg id="mountainScene" viewBox="0 0 400 252" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="mountainSvgTitle mountainDesc">
+          <title id="mountainSvgTitle">작은 하얀 토끼가 오늘의 공부시간만큼 산을 올라가요.</title>
+          <desc id="mountainDesc">오늘 0분 집중. 하루 목표 4시간이 산 정상 100%예요.</desc>
+          <defs>
+            <linearGradient id="meadow" x1="0" y1="0" x2="0.8" y2="1"><stop stop-color="#c3d1a4"/><stop offset="1" stop-color="#9caf7e"/></linearGradient>
+            <linearGradient id="mountainSlope" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#aec095"/><stop offset="1" stop-color="#7f9b79"/></linearGradient>
+            <linearGradient id="foreground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bacb9a"/><stop offset="1" stop-color="#d9dec0"/></linearGradient>
+            <linearGradient id="fadeGround" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f6f4eb" stop-opacity="0"/><stop offset="1" stop-color="#f6f4eb"/></linearGradient>
+            <g id="pine">
+              <path d="M0 7V-32" stroke="#70816a" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M-14 0Q-18-1-13-8L-8-17Q-16-15-10-25L-5-35Q-9-34-5-42L-2-49Q0-54 3-49L8-39Q12-33 6-35L13-21Q17-14 10-17L17-5Q20 1 13 0L4-2Q0 3-4 0Z" fill="currentColor"/>
+              <path d="M1-42L0-4M0-12l-8-7M0-23l7-7" fill="none" stroke="#536c50" stroke-opacity=".16" stroke-width="1.3" stroke-linecap="round"/>
+            </g>
+            <g id="grass" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-4 0q3-2 4 0q0-5 3-7M0 0q4-3 7-3M0 0q-3-6-5-6"/></g>
+            <g id="daisy"><path d="M0 0v7" stroke="#829571" stroke-width="1.2"/><g fill="#fffcf1"><ellipse cy="-3" rx="1.9" ry="3"/><ellipse cy="-3" rx="1.9" ry="3" transform="rotate(72)"/><ellipse cy="-3" rx="1.9" ry="3" transform="rotate(144)"/><ellipse cy="-3" rx="1.9" ry="3" transform="rotate(216)"/><ellipse cy="-3" rx="1.9" ry="3" transform="rotate(288)"/></g><circle r="1.65" fill="#dec185"/></g>
+            <g id="pebble"><path d="M-8 2Q-6-7-1-6Q5-7 10 2Z" fill="#a6ad91"/><path d="M-8 2Q-5-6-1-6L2 2Z" fill="#cdd0b9"/></g>
+          </defs>
+          <g aria-hidden="true">
+            <!-- Clouds, rather than an unexplained sun or geometric marker. -->
+            <g fill="#e5ebe3" opacity=".85"><path d="M21 78q-8 0-6-5q1-4 7-4q-1-9 9-10q9-1 12 7q8-5 13 3q8 0 8 5q0 4-8 4Z"/><path d="M131 62q-7 0-6-5q0-4 6-4q0-8 8-8q6 0 9 6q9-3 11 5q8 0 6 6Z"/><path d="M359 103q-9 0-8-5q0-6 9-6q0-10 10-10q9 0 13 8q10-3 13 6q7 1 6 7Z"/></g>
+            <!-- Distant hills and woodland. -->
+            <path d="M0 186Q24 154 36 165Q51 139 61 152L92 124Q105 111 118 131L151 172Q177 143 192 165Q219 158 245 181L292 167Q310 147 327 163L364 126Q376 118 390 132L400 146V240H0Z" fill="#dce4d0"/>
+            <path d="M0 204Q35 177 64 177Q96 145 119 154Q148 164 163 190Q186 172 207 183L284 152Q306 152 323 167Q362 148 400 177V245H0Z" fill="#cbd9be"/>
+            <g color="#a9bba1"><use href="#pine" transform="translate(37 206) scale(.54)"/><use href="#pine" transform="translate(100 186) scale(.43)"/><use href="#pine" transform="translate(116 182) scale(.36)"/><use href="#pine" transform="translate(165 168) scale(.48)"/><use href="#pine" transform="translate(230 141) scale(.44)"/><use href="#pine" transform="translate(259 119) scale(.36)"/><use href="#pine" transform="translate(368 173) scale(.45)"/></g>
+            <!-- Main mountain and its lit, rounded slope. -->
+            <path d="M0 237Q36 218 73 220Q111 211 150 179Q177 159 208 151Q246 139 275 113Q298 69 317 73Q330 71 346 95Q364 132 400 156V252H0Z" fill="url(#mountainSlope)"/>
+            <path d="M0 239Q48 217 76 216Q114 206 151 180Q181 160 212 153Q249 139 278 110Q299 76 318 76Q304 91 309 113Q316 137 300 149Q284 168 287 191Q291 215 267 224Q221 240 204 225Q175 210 148 225Q86 245 0 252Z" fill="url(#meadow)"/>
+            <path d="M299 89Q308 73 317 74Q327 73 335 90L324 85L318 89L312 83Z" fill="#d8dfc8" opacity=".85"/>
+            <path d="M0 248Q45 237 75 239Q113 233 154 242Q199 236 220 242Q275 222 309 234Q356 221 400 232V252H0Z" fill="url(#foreground)"/>
+            <!-- An actual walking trail; its filled portion follows today's total. -->
+            <path d="M72 220 C104 224 133 204 170 199 S250 189 249 172 S218 152 258 141 S316 120 305 107 S304 95 316 84" fill="none" stroke="#95a77b" stroke-opacity=".3" stroke-width="13" stroke-linecap="round" transform="translate(0 2)"/>
+            <path id="climbPath" d="M72 220 C104 224 133 204 170 199 S250 189 249 172 S218 152 258 141 S316 120 305 107 S304 95 316 84" fill="none" stroke="#efe6c9" stroke-width="10" stroke-linecap="round"/>
+            <path d="M72 220 C104 224 133 204 170 199 S250 189 249 172 S218 152 258 141 S316 120 305 107 S304 95 316 84" fill="none" stroke="#fffcf0" stroke-opacity=".87" stroke-width="2" stroke-dasharray="3 8" stroke-linecap="round"/>
+            <path id="completedTrail" d="M72 220 C104 224 133 204 170 199 S250 189 249 172 S218 152 258 141 S316 120 305 107 S304 95 316 84" fill="none" stroke="#d5e6b8" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 1000"/>
+            <g color="#95ab7e"><use href="#grass" transform="translate(143 187) scale(.7)"/><use href="#grass" transform="translate(195 172) scale(.7)"/><use href="#grass" transform="translate(240 208) scale(.8)"/><use href="#grass" transform="translate(279 180) scale(.75)"/><use href="#grass" transform="translate(342 147) scale(.8)"/><use href="#grass" transform="translate(169 225) scale(.75)"/></g>
+            <g color="#7f9971"><use href="#grass" transform="translate(349 206) scale(.75)"/><use href="#grass" transform="translate(195 232) scale(.65)"/><use href="#grass" transform="translate(206 136) scale(.65)"/></g>
+            <!-- Little stones, daisies, and trees along the mountain. -->
+            <use href="#pebble" transform="translate(285 212) scale(1.5)"/><use href="#pebble" transform="translate(302 219) scale(.85)"/><use href="#pebble" transform="translate(328 132) scale(.67)"/>
+            <use href="#daisy" transform="translate(120 220) scale(.62)"/><use href="#daisy" transform="translate(130 225) scale(.5)"/><use href="#daisy" transform="translate(218 185) scale(.57)"/><use href="#daisy" transform="translate(333 172) scale(.58)"/><use href="#daisy" transform="translate(341 179) scale(.45)"/><use href="#daisy" transform="translate(44 234) scale(.6)"/>
+            <g color="#91a77e"><use href="#pine" transform="translate(48 224) scale(.75)"/><use href="#pine" transform="translate(111 202) scale(.54)"/><use href="#pine" transform="translate(168 166) scale(.57)"/><use href="#pine" transform="translate(245 130) scale(.36)"/><use href="#pine" transform="translate(356 235) scale(1.02)"/></g>
+            <g color="#6d8865"><use href="#pine" transform="translate(14 235) scale(.98)"/><use href="#pine" transform="translate(30 230) scale(.62)"/><use href="#pine" transform="translate(377 231) scale(.81)"/><use href="#pine" transform="translate(397 237) scale(1.04)"/><use href="#pine" transform="translate(155 176) scale(.7)"/></g>
+            <path d="M329 79V51" stroke="#6c7865" stroke-width="2" stroke-linecap="round"/>
+            <path class="summit-flag" d="M330 52C338 48 340 57 350 52L346 59L351 65C341 69 338 60 330 64Z" fill="#d99771"/>
+            <ellipse cx="329" cy="80" rx="4" ry="1.5" fill="#7b9170" opacity=".45"/>
+            <!-- Feet sit at the path point. All motion is limited to this live SVG group. -->
+            <g id="climber" transform="translate(72 220)">
+              <ellipse cx="0" cy="2" rx="15" ry="3.3" fill="#668258" opacity=".18"/>
+              <g class="rabbit-hop"><g transform="scale(.76)" stroke="#7e8876" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+                <!-- Backpack and round cotton tail. -->
+                <path d="M-10-34Q-21-35-22-26L-24-14Q-24-7-16-7L-7-10Z" fill="#77916c"/>
+                <path d="M-21-28Q-26-26-24-17Q-20-14-17-19L-15-26Z" fill="#98ab83"/>
+                <path d="M-20-27L-14-26M-19-22L-16-21" fill="none" stroke="#647e5c"/>
+                <circle cx="-18" cy="-10" r="5.5" fill="#fffdf7"/>
+                <!-- Body, one planted foot and one little climbing foot. -->
+                <path d="M-7-33C6-36 15-22 12-12C12-5 5-1-3-2C-14-2-17-15-11-27Z" fill="#fffdf7"/>
+                <path d="M-9-10Q-16-6-12-1Q-9 2-1 1Q4-1 0-5" fill="#fffdf7"/>
+                <path d="M6-8Q15-10 19-6Q21-2 14-1L8-2" fill="#fffdf7"/>
+                <!-- Long ears with pale pink linings. -->
+                <path d="M-6-43C-16-45-23-62-19-65C-15-69-4-55 0-45Z" fill="#fffdf7"/>
+                <path d="M4-43C-1-48-4-66 1-68C7-70 12-52 10-43Z" fill="#fffdf7"/>
+                <path d="M-7-49Q-19-64-17-61Q-16-54-9-49M5-48Q1-65 3-63Q7-55 7-49" fill="#efc9c0" stroke="none"/>
+                <!-- White round face, two tiny eyes, rosy cheek and a little nose. -->
+                <path d="M-10-46C-3-55 10-51 15-43C21-40 22-35 19-30C16-25 5-24-3-28C-13-30-17-40-10-46Z" fill="#fffdf7"/>
+                <ellipse cx="13.6" cy="-39" rx="1.55" ry="1.9" fill="#49594c" stroke="none"/>
+                <ellipse cx="4" cy="-40" rx="1.15" ry="1.5" fill="#49594c" stroke="none"/>
+                <ellipse cx="11" cy="-34" rx="3" ry="2.1" fill="#efc9bf" stroke="none"/>
+                <path d="M18-35Q22-36 21-33Q19-32 18-35Z" fill="#c28e7c" stroke="none"/>
+                <path d="M17-31Q14-29 12-31" fill="none" stroke="#a09b86" stroke-width=".8"/>
+                <!-- Front paw and backpack strap. -->
+                <path d="M9-23Q15-19 20-22Q24-24 23-20Q18-13 10-17" fill="#fffdf7"/>
+                <path d="M-11-30Q-11-19-1-17" fill="none" stroke="#8da27b" stroke-width="2.8"/>
+              </g></g>
+            </g>
+            <rect y="242" width="400" height="10" fill="url(#fadeGround)"/>
+          </g>
+        </svg>
+        <button class="summit-goal" id="mountainGoalBtn" aria-label="하루 목표 시간 설정으로 이동"><small>정상 · 100%</small><strong id="summitGoal">4시간</strong></button>
+      </figure>
+      <div class="daily-progress">
+        <div class="daily-goal-row"><div><span>오늘 누적</span><strong id="dailyProgressLabel">0분 / 4시간</strong></div><b id="dailyPercent">0%</b></div>
+        <div class="progress-track" id="dailyProgressTrack" role="progressbar" aria-label="오늘 목표 달성률" aria-valuemin="0" aria-valuemax="100"><div id="dailyProgressFill" class="progress-fill"></div></div>
+        <div class="climb-message"><span id="mountainStatus">토끼와 함께 첫 걸음을 시작해요.</span><span id="liveProgressNote" hidden>진행 중 포함</span></div>
+      </div>
+
+    </article>
+    <section class="card focus-summary" aria-labelledby="focusSummaryTitle">
+      <div class="section-head"><h2 id="focusSummaryTitle">오늘 과목별 집중</h2><button id="focusReportBtn" class="text-btn">전체 보기 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+      <div id="focusBreakdown" class="focus-breakdown"></div>
+      <div class="focus-saved-meta"><span>저장된 집중 <b id="statMinutes">0분</b></span><span id="statSessions">0회</span><span>목표 <b id="statPercent">0%</b></span></div>
+    </section>
+    <p class="helper-block focus-help">산은 오늘의 전체 공부시간을 보여줘요. 진행 중인 시간도 등반에 반영되며, 과목·리포트에는 세션 종료 후 저장돼요.</p>
+  </section>
+  <section id="subjectsView" class="view" aria-labelledby="subjectsTitle">
+    <div class="page-head"><div><div class="eyebrow">YOUR STUDY MAP</div><h1 id="subjectsTitle">과목</h1><p class="sub">무엇에 시간을 쌓고 있나요?</p></div><button id="addSubjectBtn" class="icon-btn" aria-label="과목 추가"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <div id="subjectPeriod" class="segmented" aria-label="과목 공부시간 집계 기간"><button data-mode="day" class="active" aria-pressed="true">오늘</button><button data-mode="week" aria-pressed="false">이번 주</button><button data-mode="month" aria-pressed="false">이번 달</button></div>
+    <div class="subjects-summary"><span id="subjectSummaryCount"></span><strong id="subjectSummaryTime"></strong></div>
+    <div id="subjectList" class="subject-list"></div>
+    <button id="addSubjectBottom" class="add-card">+ 새 과목 추가</button>
+    <div class="section-head"><p class="note">과목을 누르면 목표와 상세 기록을 볼 수 있어요.</p><button id="archivedSubjectsBtn" class="text-btn">보관함</button></div>
+  </section>
+  <section id="reportView" class="view" aria-labelledby="reportTitle">
+    <div class="page-head"><div><div class="eyebrow">FIND YOUR RHYTHM</div><h1 id="reportTitle">리포트</h1><p class="sub">시간의 흐름 속, 나의 공부 패턴.</p></div><button id="manualLogBtn" class="icon-btn" aria-label="공부 기록 직접 추가"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <div id="reportPeriod" class="segmented" aria-label="리포트 집계 기간"><button data-mode="day" class="active" aria-pressed="true">일간</button><button data-mode="week" aria-pressed="false">주간</button><button data-mode="month" aria-pressed="false">월간</button></div>
+    <div class="period-nav"><button id="prevPeriod" class="icon-btn" aria-label="이전 기간"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><button id="periodLabel" class="period-label" aria-label="기간 날짜 선택"></button><button id="nextPeriod" class="icon-btn" aria-label="다음 기간"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+    <div class="filter-row"><select id="reportSubjectFilter" aria-label="리포트 과목 필터"></select><button id="goTodayBtn" class="text-btn">오늘로</button></div>
+    <div class="card report-hero"><div class="eyebrow" id="reportTotalLabel">오늘의 집중</div><div id="reportTotal" class="report-total">0분</div><p id="reportComparison" class="comparison"></p><div class="stats-grid"><div class="stat"><span>저장 세션</span><b id="reportSessions">0회</b></div><div class="stat"><span>공부한 날</span><b id="reportDays">0일</b></div><div class="stat"><span>하루 평균</span><b id="reportAverage">0분</b></div></div></div>
+    <p id="reportMethod" class="note" style="margin:0 4px 17px"></p>
+    <div id="reportEmpty" class="empty" hidden>아직 이 기간의 기록이 없어요.<br>집중을 시작하거나, 오른쪽 위 +로 기록을 추가하세요.</div>
+    <div class="card"><div class="chart-heading"><div><h2 id="trendTitle">공부량의 흐름</h2><small id="trendSubtitle"></small></div><small id="trendUnit"></small></div><div id="trendChart" class="bar-chart" role="img" aria-label="공부량 차트"></div><div id="trendInsight" class="chart-insight"></div></div>
+    <div class="card"><div class="chart-heading"><div><h2>시간대별 집중</h2><small>선택 기간의 시간대별 누적 공부량</small></div><button id="hourDetailBtn" class="text-btn" style="min-height:30px;padding-top:0">자세히 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div><div id="hourChart" class="bar-chart dense hour-chart" role="img" aria-label="시간대별 공부량"></div><div id="hourInsight" class="chart-insight"></div></div>
+    <div class="card"><div class="chart-heading"><div><h2>공부 시간표</h2><small>진한 칸일수록 해당 1시간에 오래 집중했어요</small></div></div><div class="heat-axis" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div><div id="heatmap"></div><div class="heat-legend"><span>0분</span><i style="background:#edf0e6"></i><i style="background:#d8e3cf"></i><i style="background:#aec6a2"></i><i style="background:#799967"></i><i style="background:#315840"></i><span>60분</span></div><p class="note" style="margin-top:10px">날짜 행을 누르면 시간대별 상세 기록이 열려요.</p></div>
+    <div class="card"><div class="chart-heading"><div><h2>과목별 비율</h2><small id="allocationSubtitle">공부시간 기준</small></div></div><div id="allocation"></div></div>
+    <p id="legacyNote" class="notice" hidden>이전 버전 기록의 시간대는 종료 시각과 총 공부시간으로 역산한 추정치예요. 총 공부시간은 유지되지만, 쉬었던 시간의 위치는 알 수 없어요.</p>
+    <div class="section-head"><h2>세션 기록</h2><span id="logCount" class="muted"></span></div><div id="logList" class="log-list"></div><button id="moreLogsBtn" class="add-card" hidden>기록 더 보기</button>
+  </section>
+  <section id="settingsView" class="view" aria-labelledby="settingsTitle">
+    <div class="page-head"><div><div class="eyebrow">MAKE IT YOURS</div><h1 id="settingsTitle">설정</h1><p class="sub">나에게 맞는 집중 환경.</p></div></div>
+    <div class="section-head"><h2>목표와 타이머</h2></div>
+    <div class="card settings-group">
+      <label class="settings-row"><span class="settings-label"><strong>하루 공부 목표</strong><small>산 정상 100%의 기준 · 전체 과목 합계</small></span><span class="number-control"><input id="dailyGoalInput" type="number" min="0.5" max="24" step="0.5" inputmode="decimal" aria-label="하루 목표 시간"><small>시간</small></span></label>
+      <label class="settings-row"><span class="settings-label"><strong>주간 공부 목표</strong><small>월요일부터 일요일까지</small></span><span class="number-control"><input id="weeklyGoalInput" type="number" min="0.5" max="168" step="0.5" inputmode="decimal" aria-label="주간 목표 시간"><small>시간</small></span></label>
+      <label class="settings-row"><span class="settings-label"><strong>기본 집중시간</strong><small>다음 세션부터 적용</small></span><span class="number-control"><input id="defaultMinutesInput" type="number" min="1" max="720" inputmode="numeric" aria-label="기본 집중시간 분"><small>분</small></span></label>
+      <label class="settings-row"><span class="settings-label"><strong>사용자 지정 시간</strong><small>집중 탭 ‘직접’ 버튼</small></span><span class="number-control"><input id="customMinutesInput" type="number" min="1" max="720" inputmode="numeric" aria-label="사용자 지정 집중시간 분"><small>분</small></span></label>
+      <div class="settings-row" style="flex-wrap:wrap"><div class="settings-label"><strong>빠른 선택 시간</strong><small>분 단위, 왼쪽부터 표시</small></div><div class="settings-presets"><input id="preset1" type="number" min="1" max="720" inputmode="numeric" aria-label="첫 번째 프리셋 분"><input id="preset2" type="number" min="1" max="720" inputmode="numeric" aria-label="두 번째 프리셋 분"><input id="preset3" type="number" min="1" max="720" inputmode="numeric" aria-label="세 번째 프리셋 분"></div></div>
+      <div class="settings-row"><div class="settings-label"><strong>과목 관리</strong><small>추가·이름·색상·목표·순서·보관</small></div><button id="manageSubjectsBtn" class="tiny-btn">과목으로</button></div>
+    </div>
+    <div class="section-head"><h2>집중 환경</h2></div>
+    <div class="card settings-group">
+      <label class="settings-row"><span class="settings-label"><strong>완료음</strong><small>세션이 끝나면 소리로 알림</small></span><span class="switch-wrap"><input id="soundToggle" class="switch" type="checkbox" role="switch" aria-label="완료음 켜기"></span></label>
+      <label class="settings-row"><span class="settings-label"><strong>진동</strong><small id="vibrationHint">지원하는 기기에서만 작동</small></span><span class="switch-wrap"><input id="vibrateToggle" class="switch" type="checkbox" role="switch" aria-label="진동 켜기"></span></label>
+      <label class="settings-row"><span class="settings-label"><strong>화면 꺼짐 방지</strong><small id="wakeHint">집중 중 화면을 켜 둡니다</small></span><span class="switch-wrap"><input id="wakeToggle" class="switch" type="checkbox" role="switch" aria-label="화면 꺼짐 방지 켜기"></span></label>
+      <div class="settings-row"><div class="settings-label"><strong>완료 알림</strong><small id="notificationHint">브라우저 권한이 필요해요</small></div><button id="notifyBtn" class="tiny-btn">알림 허용</button></div>
+    </div>
+    <div class="section-head"><h2>기록과 데이터</h2></div>
+    <div class="card settings-group">
+      <div class="settings-row"><div class="settings-label"><strong>전체 데이터 백업</strong><small>과목·목표·기록을 JSON 파일로 저장</small></div><button id="exportBtn" class="tiny-btn">내보내기</button></div>
+      <div class="settings-row"><div class="settings-label"><strong>백업 가져오기</strong><small>확인 후 현재 데이터를 교체합니다</small></div><button id="importBtn" class="tiny-btn">가져오기</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
+      <div class="settings-row"><div class="settings-label"><strong>공부 기록 CSV</strong><small>세션별 시간·과목·메모를 표로 저장</small></div><button id="exportCsvBtn" class="tiny-btn">내보내기</button></div>
+      <div class="settings-row"><div class="settings-label"><strong>보관한 과목</strong><small>이전 기록은 리포트에 계속 남아요</small></div><button id="manageArchiveBtn" class="tiny-btn">보관함</button></div>
+      <div class="settings-row"><div class="settings-label"><strong>전체 데이터 초기화</strong><small>과목·설정·공부 기록을 모두 삭제</small></div><button id="resetBtn" class="tiny-btn danger">초기화</button></div>
+    </div>
+    <div class="section-head"><h2>알아두세요</h2></div>
+    <div class="card"><p class="note">기록은 현재 기기의 브라우저에 저장돼요. 브라우저 데이터를 지우거나 다른 기기로 옮기기 전에 백업해 주세요. 계정 간 자동 동기화는 제공하지 않아요.<br><br>일·주·월은 기기의 현지 시간 기준이며, 한 주는 월요일에 시작해요. 자정과 시간대 경계를 넘긴 집중은 실제 구간으로 나눠 계산해요.<br><br>홈 화면에 추가하면 앱처럼 열 수 있어요. 화면 잠금·앱 종료 시 완료음과 알림의 정확한 시점은 보장되지 않아요. 다시 열면 경과 시간을 반영해요.</p></div>
+    <div class="version">DEEP CLIMB · 2.1.0<br>조금씩, 꾸준히 쌓이는 시간.</div>
+  </section>
+</main>
+<nav class="bottom-nav" aria-label="하단 메뉴"><div class="nav-inner"><button class="nav-btn active" data-view="focusView" aria-current="page"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 18 6-11 4 7 3-5 5 9H3Z"/><path d="m7 11 2 2 2-2"/></svg><span>집중</span></button><button class="nav-btn" data-view="subjectsView"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Z"/><path d="M12 6v14"/></svg><span>과목</span></button><button class="nav-btn" data-view="reportView"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h17M8 15v-4m5 4V7m5 8V3"/></svg><span>리포트</span></button><button class="nav-btn" data-view="settingsView"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="var(--paper)"/><circle cx="16" cy="17" r="3" fill="var(--paper)"/></svg><span>설정</span></button></div></nav>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="appDialog" aria-labelledby="dialogTitle"></dialog>
+<noscript><p style="padding:24px">이 앱을 사용하려면 JavaScript를 켜 주세요.</p></noscript><script>/* Deep Climb 2.0 — local-time, interval-based study accounting. No dependencies. */
+(function(root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.DeepClimbCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function() {
+  'use strict';
+  const MIN = 60000, HOUR = 3600000;
+  const COLORS = ['#87A77A','#78A8D1','#D993A5','#ACA0D1','#BDB091','#AD6F79','#727B73','#647BAD'];
+  const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+  const num = (n, fallback) => Number.isFinite(Number(n)) ? Number(n) : fallback;
+  const uid = () => globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,12)}`;
+  const copy = x => JSON.parse(JSON.stringify(x));
+  function defaults() {
+    return { version: 2, sampleNamesVersion: 1, selectedMinutes: 50, defaultMinutes: 50, customMinutes: 60, presets: [25,50,90],
+      dailyGoalHours: 4, weeklyGoalHours: 20, task: '', selectedSubjectId: 'verbal',
+      soundEnabled: true, vibrateEnabled: true, wakeLockEnabled: true, notificationsEnabled: false,
+      subjects: [
+        {id:'verbal',name:'A project',color:COLORS[0],dailyGoalMinutes:0,weeklyGoalMinutes:0,archived:false},
+        {id:'math',name:'B project',color:COLORS[1],dailyGoalMinutes:0,weeklyGoalMinutes:0,archived:false},
+        {id:'writing',name:'C project',color:COLORS[2],dailyGoalMinutes:0,weeklyGoalMinutes:0,archived:false},
+        {id:'thesis',name:'D project',color:COLORS[3],dailyGoalMinutes:0,weeklyGoalMinutes:0,archived:false},
+        {id:'other',name:'Others',color:COLORS[4],dailyGoalMinutes:0,weeklyGoalMinutes:0,archived:false},
+        {id:'uncategorized',name:'미분류',color:COLORS[6],dailyGoalMinutes:0,weeklyGoalMinutes:0,archived:true,system:true}
+      ], logs: [], timer: null, migration: null };
+  }
+  function dayStart(ts = Date.now()) { const d = new Date(ts); d.setHours(0,0,0,0); return +d; }
+  function addDays(ts, n) { const d = new Date(ts); d.setDate(d.getDate()+n); return +d; }
+  function dayKey(ts = Date.now()) { const d=new Date(ts);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function bounds(mode, ts = Date.now()) {
+    let start = dayStart(ts), end;
+    if (mode === 'week') start = addDays(start, -((new Date(start).getDay()+6)%7));
+    if (mode === 'month') { const d = new Date(start);d.setDate(1);start=+d;d.setMonth(d.getMonth()+1);end=+d; }
+    else end = addDays(start, mode === 'week' ? 7 : 1);
+    return {start,end};
+  }
+  function shiftPeriod(mode, ts, step) {
+    const {start} = bounds(mode,ts), d=new Date(start);
+    if(mode==='month') d.setMonth(d.getMonth()+step); else d.setDate(d.getDate()+step*(mode==='week'?7:1));
+    return +d;
+  }
+  function validSegments(segs, strict = false) {
+    if (!Array.isArray(segs)) { if(strict) throw Error('시간 구간 형식이 올바르지 않습니다.'); return []; }
+    let previousEnd=-Infinity;
+    return segs.map(s => {
+      const start=Number(s.start),end=Number(s.end);
+      if (!Number.isFinite(start)||!Number.isFinite(end)||end<=start||start<0||end>8640000000000000||start<previousEnd)
+        throw Error('공부 시간 구간에 잘못된 값 또는 중복이 있습니다.');
+      previousEnd=end; return {start,end};
+    });
+  }
+  const duration = segs => segs.reduce((s,x)=>s+Math.max(0,x.end-x.start),0);
+  function effectiveSegments(timer, now = Date.now()) {
+    if (!timer) return [];
+    const segs=timer.segments.map(x=>({...x}));
+    if(timer.status==='running' && timer.startedAt != null) {
+      const left=Math.max(0,timer.targetMs-duration(segs));
+      const end=Math.min(Math.max(timer.startedAt,now),timer.startedAt+left);
+      if(end>timer.startedAt) segs.push({start:timer.startedAt,end});
+    }
+    return segs;
+  }
+  const elapsed = (timer, now=Date.now()) => timer ? Math.min(timer.targetMs,duration(effectiveSegments(timer,now))) : 0;
+  function snapshotTimer(timer, now=Date.now()) {
+    return timer ? {...timer, segments:effectiveSegments(timer,now),startedAt:null,status:'paused'} : null;
+  }
+  function recordFromTimer(timer, now=Date.now(), completed=false) {
+    if(!timer) return null;
+    const segments=effectiveSegments(timer,now);
+    if(!duration(segments)) return null;
+    return {id:timer.id, subjectId:timer.subjectId, task:timer.task||'', segments, endedAt:segments.at(-1).end,
+      targetMs:timer.targetMs, completed, estimated:!!timer.estimated, source:'timer'};
+  }
+  function migrate(old, now=Date.now()) {
+    const s=defaults();
+    s.selectedMinutes=clamp(num(old.selectedMinutes,50),1,720);
+    s.defaultMinutes=s.selectedMinutes;
+    s.customMinutes=clamp(num(old.customMinutes,60),1,720);
+    s.dailyGoalHours=clamp(num(old.dailyGoalHours,4),0.5,24);
+    s.task=String(old.task||'').slice(0,120);
+    s.logs=(Array.isArray(old.logs)?old.logs:[]).map((l,i)=>{
+      const end=Number(l.endedAt),ms=Number(l.seconds)*1000;
+      if(!Number.isFinite(end)||!Number.isFinite(ms)||ms<=0||end-ms<0) throw Error('이전 기록을 해석하지 못했습니다. 원본은 보존했습니다.');
+      return {id:String(l.id||`legacy-${i}-${end}`),subjectId:'uncategorized',task:String(l.task||''),segments:[{start:end-ms,end}],
+        endedAt:end,targetMs:ms,completed:false,estimated:true,source:'legacy',legacyDate:l.date||dayKey(end)};
+    });
+    const t=old.timer;
+    if(t && (t.running || Number(t.remainingSec)<Number(t.durationSec))) {
+      const targetMs=clamp(num(t.durationSec,s.selectedMinutes*60)*1000,1000,24*HOUR);
+      const before=clamp(targetMs-num(t.remainingSec,targetMs/1000)*1000,0,targetMs);
+      const anchor=Number.isFinite(t.startedAt)&&t.startedAt>0 ? t.startedAt : now;
+      s.timer={id:uid(),subjectId:'uncategorized',task:s.task,targetMs,
+        segments:before>0?[{start:Math.max(0,anchor-before),end:anchor}]:[],
+        startedAt:t.running?anchor:null,status:t.running?'running':'paused',estimated:before>0};
+    }
+    s.migration={from:1,at:now,count:s.logs.length};return s;
+  }
+  function normalize(raw, now=Date.now()) {
+    const input=raw?.app==='Deep Climb' ? raw.data : raw;
+    if(!input || typeof input !== 'object' || Array.isArray(input)) throw Error('Deep Climb 데이터 파일이 아닙니다.');
+    if(input.version !== 2) {
+      if(Array.isArray(input.logs) && (input.timer || 'selectedMinutes' in input)) return migrate(input,now);
+      throw Error('지원하지 않는 데이터 형식입니다.');
+    }
+    const d=defaults(),s={...d};
+    for(const k of ['selectedMinutes','defaultMinutes','customMinutes']) s[k]=clamp(num(input[k],d[k]),1,720);
+    s.dailyGoalHours=clamp(num(input.dailyGoalHours,4),0.5,24);
+    s.weeklyGoalHours=clamp(num(input.weeklyGoalHours,20),0.5,168);
+    s.presets=Array.isArray(input.presets)&&input.presets.length===3 ? input.presets.map(x=>clamp(Math.round(num(x,25)),1,720)) : d.presets;
+    s.task=String(input.task||'').slice(0,120);
+    for(const k of ['soundEnabled','vibrateEnabled','wakeLockEnabled','notificationsEnabled']) s[k]=typeof input[k]==='boolean'?input[k]:d[k];
+    if(!Array.isArray(input.subjects) || !Array.isArray(input.logs)) throw Error('과목 또는 기록 데이터가 없습니다.');
+    const ids=new Set();
+    s.subjects=input.subjects.map((x,i)=>{
+      const id=String(x.id||'');
+      if(!id||ids.has(id)) throw Error('과목 ID가 중복되거나 없습니다.');ids.add(id);
+      return {id,name:String(x.name||'이름 없는 과목').slice(0,40),color:/^#[0-9a-f]{6}$/i.test(x.color)?x.color:COLORS[i%COLORS.length],
+        dailyGoalMinutes:clamp(num(x.dailyGoalMinutes,0),0,1440),weeklyGoalMinutes:clamp(num(x.weeklyGoalMinutes,0),0,10080),
+        archived:!!x.archived,system:id==='uncategorized'};
+    });
+    // One-time cosmetic migration. Keep custom names, colors, goals, IDs and logs intact.
+    // The marker prevents a later deliberate rename to a legacy name from being changed again.
+    if (Number(input.sampleNamesVersion || 0) < 1) {
+      const oldNames = {verbal:'GRE Verbal',math:'GRE Math',writing:'GRE Writing',thesis:'논문',other:'기타'};
+      for (const subject of s.subjects) {
+        if (subject.name === oldNames[subject.id]) {
+          const sample = d.subjects.find(x => x.id === subject.id);
+          if (sample) subject.name = sample.name;
+        }
+      }
+    }
+    s.sampleNamesVersion = 1;
+    if(!ids.has('uncategorized')) {s.subjects.push(d.subjects.at(-1));ids.add('uncategorized');}
+    const logIds=new Set();
+    s.logs=input.logs.map(x=>{
+      const id=String(x.id||'');if(!id||logIds.has(id)) throw Error('기록 ID가 중복되거나 없습니다.');logIds.add(id);
+      const segments=validSegments(x.segments,true);if(!segments.length) throw Error('비어 있는 공부 기록이 있습니다.');
+      return {id,subjectId:ids.has(String(x.subjectId))?String(x.subjectId):'uncategorized',task:String(x.task||'').slice(0,120),
+        segments,endedAt:segments.at(-1).end,targetMs:Math.max(0,num(x.targetMs,duration(segments))),
+        completed:!!x.completed,estimated:!!x.estimated,source:['timer','manual','legacy'].includes(x.source)?x.source:'timer'};
+    });
+    const t=input.timer;
+    if(t) {
+      const targetMs=clamp(num(t.targetMs,50*MIN),1000,24*HOUR),segments=validSegments(t.segments,true);
+      if(duration(segments)>targetMs+1) throw Error('진행 중 타이머의 시간이 목표보다 큽니다.');
+      if(!['running','paused'].includes(t.status)) throw Error('타이머 상태가 올바르지 않습니다.');
+      const startedAt=t.status==='running'?Number(t.startedAt):null;
+      if(t.status==='running' && (!Number.isFinite(startedAt)||startedAt<=0|| (segments.length&&startedAt<segments.at(-1).end))) throw Error('타이머 시작 시각이 올바르지 않습니다.');
+      s.timer={id:String(t.id||uid()),subjectId:ids.has(String(t.subjectId))?String(t.subjectId):'uncategorized',task:String(t.task||'').slice(0,120),
+        targetMs,segments,startedAt,status:t.status,estimated:!!t.estimated};
+      if(logIds.has(s.timer.id)) s.timer=null; // Completion already committed by another tab.
+    }
+    s.selectedSubjectId=ids.has(input.selectedSubjectId)?input.selectedSubjectId:(s.subjects.find(x=>!x.archived)?.id||'uncategorized');
+    s.migration=input.migration||null;return s;
+  }
+  function overlapMs(segments,start,end) { return segments.reduce((sum,x)=>sum+Math.max(0,Math.min(end,x.end)-Math.max(start,x.start)),0); }
+  function aggregate(logs,start,end,subjectId='all') {
+    const bySubject={},byDay={},byHour=Array(24).fill(0),cells={},matched=[];
+    let total=0,estimatedMs=0;
+    for(const log of logs) {
+      if(subjectId!=='all'&&log.subjectId!==subjectId)continue;
+      const ms=overlapMs(log.segments,start,end);if(!ms)continue;
+      total+=ms;bySubject[log.subjectId]=(bySubject[log.subjectId]||0)+ms;
+      if(log.estimated)estimatedMs+=ms;matched.push({log,ms});
+      for(const seg of log.segments) {
+        let a=Math.max(start,seg.start),b=Math.min(end,seg.end);
+        while(a<b) {
+          const d=new Date(a),key=dayKey(a),hour=d.getHours();
+          // Epoch-based next hour boundary also handles repeated local hours on DST fallback.
+          const toHour=(60-d.getMinutes())*MIN-d.getSeconds()*1000-d.getMilliseconds();
+          const next=Math.min(b,a+toHour,addDays(dayStart(a),1));
+          const slice=next-a;if(slice<=0)break;
+          byDay[key]=(byDay[key]||0)+slice;byHour[hour]+=slice;
+          if(!cells[key])cells[key]=Array(24).fill(0);
+          cells[key][hour]+=slice;a=next;
+        }
+      }
+    }
+    return {total,bySubject,byDay,byHour,cells,matched,estimatedMs};
+  }
+  function intersects(logs,start,end) {return logs.some(l=>l.segments.some(s=>start<s.end&&end>s.start));}
+  return {MIN,HOUR,COLORS,clamp,uid,copy,defaults,dayStart,addDays,dayKey,bounds,shiftPeriod,duration,
+    effectiveSegments,elapsed,snapshotTimer,recordFromTimer,migrate,normalize,overlapMs,aggregate,intersects};
+});
+
+const ICON_PATHS={mountain:'<path d="m3 18 6-11 4 7 3-5 5 9H3Z"/><path d="m7 11 2 2 2-2"/>',book:'<path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Z"/><path d="M12 6v14"/>',chart:'<path d="M4 4v16h17M8 15v-4m5 4V7m5 8V3"/>',settings:'<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="var(--paper)"/><circle cx="16" cy="17" r="3" fill="var(--paper)"/>',plus:'<path d="M12 5v14M5 12h14"/>',right:'<path d="m9 5 7 7-7 7"/>',left:'<path d="m15 5-7 7 7 7"/>',play:'<path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/>',pause:'<path d="M8 5v14M16 5v14" stroke-width="3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor" stroke="none"/>',close:'<path d="m6 6 12 12M6 18 18 6"/>',spark:'<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/>',up:'<path d="m6 14 6-6 6 6"/>',down:'<path d="m6 10 6 6 6-6"/>'};
+const icon=(name)=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name]||''}</svg>`;
+
+(() => {
+  'use strict';
+  const C=DeepClimbCore, KEY='deepClimb.v2', OLD_KEY='deepClimb.v1';
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let warning='',readOnly=false,lastSaved='',toastId,wakeLock=null,audio=null,notificationRegistration=null;
+  let state=load(), view='focusView',subjectMode='day',reportMode='day',reportDate=Date.now(),reportSubject='all',logLimit=30;
+  let cachedReport=null,lastDay=C.dayKey(),lastStats=0,finishing=false;
+  let focusSavedTotal=0,focusSavedDay='',climbLength=0;
+  const dialog=$('#appDialog');
+  function load(){
+    try{
+      const raw=localStorage.getItem(KEY),old=raw?null:localStorage.getItem(OLD_KEY);
+      if(raw){lastSaved=raw;return C.normalize(JSON.parse(raw));}
+      if(old)return C.migrate(JSON.parse(old));
+    }catch(e){warning='저장 데이터를 읽지 못했어요. 원본 보호를 위해 덮어쓰기를 멈췄습니다. 설정에서 백업하거나 명시적으로 초기화해 주세요.';readOnly=true;}
+    return C.defaults();
+  }
+  function save(){
+    if(readOnly){renderWarning();return false;}
+    try{const raw=JSON.stringify(state);localStorage.setItem(KEY,raw);lastSaved=raw;return true;}
+    catch(e){warning='기기에 저장하지 못했어요. 현재 기록은 이 화면에만 남아 있으니, 닫기 전에 설정에서 백업해 주세요.';renderWarning();return false;}
+  }
+  function renderWarning(){$('#storageWarning').hidden=!warning;$('#storageWarning').textContent=warning;}
+  function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toastId);toastId=setTimeout(()=>$('#toast').classList.remove('show'),3600);}
+  const subj=id=>state.subjects.find(s=>s.id===id)||state.subjects.find(s=>s.id==='uncategorized')||C.defaults().subjects.at(-1);
+  const activeSubjects=()=>state.subjects.filter(s=>!s.archived&&!s.system);
+  function fmt(ms){const sec=Math.max(0,Math.round(ms/1000));if(sec===0)return '0분';if(sec<60)return `${sec}초`;const m=Math.floor(sec/60),h=Math.floor(m/60);return h?`${h}시간${m%60?` ${m%60}분`:''}`:`${m}분`;}
+  function compact(ms){const m=Math.floor(Math.max(0,ms)/60000);if(ms>0&&m<1)return '1분 미만';if(m<60)return `${m}분`;return `${Math.floor(m/60)}h${m%60?` ${m%60}m`:''}`;}
+  function clock(ms){const sec=Math.ceil(Math.max(0,ms)/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
+  const hh=ts=>new Intl.DateTimeFormat('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false}).format(ts);
+  const dateText=ts=>new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',weekday:'short'}).format(ts);
+  function periodText(mode,ts){const b=C.bounds(mode,ts),d=new Date(b.start);if(mode==='month')return `${d.getFullYear()}년 ${d.getMonth()+1}월`;if(mode==='day')return dateText(ts);const e=new Date(b.end-1);return `${d.getMonth()+1}.${d.getDate()} – ${e.getMonth()+1}.${e.getDate()}`;}
+  function aggregate(mode='day',date=Date.now(),filter='all'){const b=C.bounds(mode,date);return C.aggregate(state.logs,b.start,b.end,filter);}
+  const percent=(ms,goal)=>goal>0?Math.round(ms/goal*100):0;
+  const progress=(ms,goal,color)=>`<div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,percent(ms,goal))}%;background:${color}"></div></div>`;
+  function subjectOptions(selected,all=false){
+    const list=state.subjects.filter(s=>!s.archived||s.id===selected||(all&&state.logs.some(l=>l.subjectId===s.id)));
+    return (all?'<option value="all">모든 과목</option>':'')+list.map(s=>`<option value="${esc(s.id)}" ${s.id===selected?'selected':''}>${esc(s.name)}${s.archived&&!s.system?' · 보관':''}</option>`).join('');
+  }
+  function renderDate(){$('#dateLabel').textContent=dateText(Date.now());}
+  function renderFocusInputs(){
+    if(!state.timer && !state.subjects.some(s=>s.id===state.selectedSubjectId&&!s.archived))state.selectedSubjectId=activeSubjects()[0]?.id||'uncategorized';
+    const selected=state.timer?.subjectId||state.selectedSubjectId;
+    $('#subjectSelect').innerHTML=subjectOptions(selected);$('#subjectSelect').value=selected;
+    $('#selectedSubjectDot').style.background=subj(selected).color;
+    $('#taskInput').value=state.timer?.task??state.task;
+    $('#presetRow').innerHTML=state.presets.map(n=>`<button class="preset ${state.selectedMinutes===n?'active':''}" data-min="${n}" aria-pressed="${state.selectedMinutes===n}">${n}분</button>`).join('')+`<button id="customPreset" class="preset ${!state.presets.includes(state.selectedMinutes)?'active':''}" data-custom="true" aria-pressed="${!state.presets.includes(state.selectedMinutes)}">직접</button>`;
+  }
+  function renderTimer(now=Date.now()){
+    const t=state.timer,elapsed=C.elapsed(t,now),target=t?.targetMs||state.selectedMinutes*C.MIN,remaining=target-elapsed;
+    const running=t?.status==='running';
+    $('#timer').textContent=clock(remaining);$('#sessionLabel').textContent=`${Math.round(target/C.MIN)}분 세션`;
+    $('#statusText').textContent=t?(running?'집중 중':'잠시 멈춤'):'집중 준비';$('#statusDot').classList.toggle('on',running);
+    $('#startBtn').innerHTML=icon(running?'pause':'play')+`<span>${t?(running?'일시정지':'계속 집중'):'집중 시작'}</span>`;
+    $('#startBtn').classList.toggle('pause',running);$('#finishBtn').disabled=!t;
+    $('#subjectSelect').disabled=!!t;$('#taskInput').disabled=!!t;
+    $$('.preset').forEach(b=>b.disabled=!!t);
+    $('#timerCaption').textContent=`이번 세션 · ${fmt(elapsed)} / ${fmt(target)}${t&&!running?' · 일시정지':''}`;
+    renderDailyClimb(now);
+    $('#runningBanner').hidden=!t||view==='focusView';
+    if(t){$('#runningSubject').textContent=`${running?'집중 중':'일시정지'} · ${subj(t.subjectId).name}`;$('#runningClock').textContent=clock(remaining);}
+    document.title=t?`${clock(remaining)} · ${subj(t.subjectId).name} — Deep Climb`:'Deep Climb — 나의 공부 리듬';
+  }
+  function renderDailyClimb(now=Date.now()) {
+    const b=C.bounds('day',now),key=C.dayKey(now);
+    if(focusSavedDay!==key){focusSavedDay=key;focusSavedTotal=C.aggregate(state.logs,b.start,b.end).total;}
+    const live=state.timer?C.overlapMs(C.effectiveSegments(state.timer,now),b.start,b.end):0;
+    const total=focusSavedTotal+live,goal=state.dailyGoalHours*C.HOUR;
+    const ratio=total/goal,clamped=C.clamp(ratio,0,1),pct=Math.floor(ratio*100+1e-9),reached=total>=goal;
+    const goalText=fmt(goal),card=$('#mountainCard');
+    $('#summitGoal').textContent=goalText;
+    $('#mountainGoalBtn').setAttribute('aria-label',`정상 100%는 하루 ${goalText}. 목표 시간 설정으로 이동`);
+    $('#dailyProgressLabel').textContent=`${fmt(total)} / ${goalText}`;
+    $('#dailyPercent').textContent=`${pct}%`;
+    $('#dailyProgressFill').style.width=`${clamped*100}%`;
+    $('#dailyProgressTrack').setAttribute('aria-valuenow',Math.min(100,pct));
+    $('#dailyProgressTrack').setAttribute('aria-valuetext',`오늘 ${fmt(total)}, 하루 목표 ${goalText}의 ${pct}%${live>0?', 진행 중 시간 포함':''}`);
+    $('#liveProgressNote').hidden=live<=0;
+    let message=reached?'오늘 목표 달성! 정상에 도착했어요.':total>0?`정상까지 ${fmt(goal-total)} 남았어요.`:'토끼와 함께 첫 걸음을 시작해요.';
+    $('#mountainStatus').textContent=message;
+    $('#mountainDesc').textContent=`오늘 ${fmt(total)} 집중. 하루 목표 ${goalText}이 산 정상 100%예요. 현재 ${pct}%.${live>0?' 진행 중인 시간을 포함해요.':''}`;
+    card.classList.toggle('is-climbing',state.timer?.status==='running'&&!reached);
+    card.classList.toggle('summit-reached',reached);
+    card.classList.toggle('near-summit',clamped>=.8);
+    try{
+      const path=$('#climbPath');if(!climbLength)climbLength=path.getTotalLength();
+      const pt=path.getPointAtLength(climbLength*clamped);
+      $('#climber').setAttribute('transform',`translate(${pt.x.toFixed(3)} ${pt.y.toFixed(3)})`);
+      $('#completedTrail').setAttribute('stroke-dasharray',`${climbLength*clamped} ${climbLength+1}`);
+      $('#completedTrail').style.opacity=total>0?'1':'0';
+    }catch{}
+  }
+  function renderFocusStats(){
+    const a=aggregate(),goal=state.dailyGoalHours*C.HOUR,pct=Math.floor(a.total/goal*100+1e-9);
+    focusSavedTotal=a.total;focusSavedDay=C.dayKey();
+    $('#statMinutes').textContent=compact(a.total);$('#statSessions').textContent=`${a.matched.length}회`;
+    $('#statPercent').textContent=`${pct}%`;
+    const by=Object.entries(a.bySubject).sort((x,y)=>y[1]-x[1]);
+    $('#focusBreakdown').innerHTML=by.length?by.map(([id,ms])=>`<div class="focus-subject"><div class="focus-subject-name" title="${esc(subj(id).name)}"><i class="dot" style="background:${subj(id).color}"></i>${esc(subj(id).name)}</div><b>${compact(ms)}</b></div>`).join(''):'<p class="focus-empty">아직 기록이 없어요. 첫 집중을 시작해 보세요.</p>';
+    renderDailyClimb();
+  }
+  function renderSubjects(){
+    const a=aggregate(subjectMode);$('#subjectSummaryCount').textContent=`${activeSubjects().length}개 과목 · ${periodText(subjectMode,Date.now())}`;$('#subjectSummaryTime').textContent=fmt(a.total);
+    const list=state.subjects.filter(s=>!s.archived||(a.bySubject[s.id]||0)>0);
+    $('#subjectList').innerHTML=list.map(s=>{
+      const ms=a.bySubject[s.id]||0,goal=subjectMode==='day'?s.dailyGoalMinutes*C.MIN:subjectMode==='week'?s.weeklyGoalMinutes*C.MIN:0;
+      const pct=percent(ms,goal),text=goal?`목표 ${fmt(goal)}`:(subjectMode==='month'?'이번 달 누적':'목표 미설정');
+      return `<button class="subject-card" style="--subject-color:${s.color}" data-subject="${esc(s.id)}" aria-label="${esc(s.name)}, ${fmt(ms)}, 상세 보기"><div class="subject-card-head"><div class="subject-name"><i class="dot" style="background:${s.color}"></i><span>${esc(s.name)}${s.archived?' <small class="muted">보관</small>':''}</span></div><span class="chevron">›</span></div><div class="subject-card-time">${fmt(ms)}<small>${a.total?Math.round(ms/a.total*100):0}%</small></div>${progress(ms,goal,s.color)}<div class="subject-card-footer"><span>${text}</span><span>${goal?`${pct>=100?'목표 달성 · ':''}${pct}%`:'상세 보기'}</span></div></button>`;
+    }).join('')||'<div class="empty">공부할 과목을 추가해 주세요.</div>';
+  }
+  function barChart(el,values,labels,{dense=false,highlight=-1,unit='h',showValues=false}={}){
+    const max=Math.max(...values,1);el.classList.toggle('dense',dense);
+    el.innerHTML=values.map((value,i)=>`<div class="bar-col" title="${esc(labels[i]||String(i))}: ${fmt(value)}">${showValues&&value>0?`<span class="bar-value">${value>=C.HOUR?(value/C.HOUR).toFixed(1)+'h':Math.round(value/C.MIN)+'m'}</span>`:''}<div class="bar ${i===highlight?'highlight':''} ${value===0?'future':''}" style="height:${value>0?Math.max(3,value/max*90):2}%"></div><span class="bar-label">${esc(labels[i]||'')}</span></div>`).join('');
+    el.setAttribute('aria-label',values.map((v,i)=>`${labels[i]||i}: ${fmt(v)}`).join(', '));
+  }
+  function renderReport(){
+    const b=C.bounds(reportMode,reportDate),now=Date.now(),a=C.aggregate(state.logs,b.start,b.end,reportSubject);cachedReport={...a,...b};
+    const current=C.bounds(reportMode,now),isCurrent=b.start===current.start,prev=C.bounds(reportMode,C.shiftPeriod(reportMode,reportDate,-1)),p=C.aggregate(state.logs,prev.start,prev.end,reportSubject);
+    $('#periodLabel').innerHTML=`${periodText(reportMode,reportDate)}<small>${reportMode==='week'?new Date(b.start).getFullYear()+'년 · 월요일 시작':'날짜를 눌러 이동'}</small>`;
+    $('#nextPeriod').disabled=b.end>now;$('#goTodayBtn').textContent=reportMode==='day'?'오늘로':reportMode==='week'?'이번 주로':'이번 달로';
+    const options=subjectOptions(reportSubject,true);$('#reportSubjectFilter').innerHTML=options;$('#reportSubjectFilter').value=reportSubject;
+    if($('#reportSubjectFilter').value!==reportSubject){reportSubject='all';$('#reportSubjectFilter').value='all';}
+    $('#reportTotalLabel').textContent=`${reportSubject==='all'?'전체 과목':subj(reportSubject).name} · ${reportMode==='day'?'하루':reportMode==='week'?'한 주':'한 달'} 집중`;
+    $('#reportTotal').textContent=fmt(a.total);
+    const prevLabel={day:'전날',week:'지난주',month:'지난달'}[reportMode],diff=a.total-p.total;
+    $('#reportComparison').textContent=p.total?`${prevLabel} 전체 대비 ${diff>=0?'+':'−'}${fmt(Math.abs(diff))}${isCurrent?' · 현재 기간은 집계 중':''}`:`${prevLabel} 기록 없음${isCurrent?' · 현재 기간은 집계 중':''}`;
+    const allDays=[];for(let d=b.start;d<b.end;d=C.addDays(d,1))allDays.push(d);
+    const elapsedDays=Math.max(1,allDays.filter(d=>d<=C.dayStart(now)).length),studyDays=Object.values(a.byDay).filter(x=>x>0).length;
+    $('#reportSessions').textContent=`${a.matched.length}회`;$('#reportDays').textContent=`${studyDays}일`;$('#reportAverage').textContent=compact(a.total/elapsedDays);
+    let method=`저장된 세션만 집계 · 하루 평균은 ${elapsedDays}일 기준(공부하지 않은 날 포함)`;
+    const globalGoal=reportSubject==='all'?(reportMode==='day'?state.dailyGoalHours*C.HOUR:reportMode==='week'?state.weeklyGoalHours*C.HOUR:0):(reportMode==='day'?subj(reportSubject).dailyGoalMinutes*C.MIN:reportMode==='week'?subj(reportSubject).weeklyGoalMinutes*C.MIN:0);
+    if(globalGoal)method+=` · 기간 목표 ${fmt(globalGoal)}의 ${percent(a.total,globalGoal)}%`;
+    $('#reportMethod').textContent=method;$('#reportEmpty').hidden=a.total>0;
+    const values=reportMode==='day'?a.byHour:allDays.map(d=>a.byDay[C.dayKey(d)]||0);
+    const labels=reportMode==='day'?Array.from({length:24},(_,i)=>i%6===0?`${String(i).padStart(2,'0')}시`:i===23?'23':''):
+      allDays.map((d,i)=>reportMode==='week'?['월','화','수','목','금','토','일'][i]:[1,5,10,15,20,25,31].includes(new Date(d).getDate())||i===allDays.length-1?String(new Date(d).getDate()):'');
+    const max=Math.max(...values),maxIndex=values.indexOf(max);
+    $('#trendTitle').textContent=reportMode==='day'?'하루의 흐름':'공부량의 흐름';$('#trendSubtitle').textContent=reportMode==='day'?'00시부터 24시까지':reportMode==='week'?'월요일부터 일요일까지':'날짜별 누적 공부시간';$('#trendUnit').textContent=`최대 ${fmt(max)}`;
+    barChart($('#trendChart'),values,labels,{dense:reportMode!=='week',highlight:maxIndex,showValues:reportMode==='week'});
+    $('#trendInsight').innerHTML=icon('spark')+`<span>${a.total?reportMode==='day'?`${String(maxIndex).padStart(2,'0')}–${String(maxIndex+1).padStart(2,'0')}시에 가장 많이 집중했어요.`:`${new Date(allDays[maxIndex]).getMonth()+1}월 ${new Date(allDays[maxIndex]).getDate()}일, ${fmt(max)}으로 가장 많이 집중했어요.`:'기록이 쌓이면 나의 공부 흐름이 보여요.'}</span>`;
+    const hourLabels=Array.from({length:24},(_,i)=>i%6===0?String(i).padStart(2,'0'):i===23?'23':'');
+    const hourMax=Math.max(...a.byHour),bestHour=a.byHour.indexOf(hourMax);
+    barChart($('#hourChart'),a.byHour,hourLabels,{dense:true,highlight:bestHour});
+    $('#hourInsight').innerHTML=icon('spark')+`<span>${a.total?`가장 많이 공부한 시간대: ${String(bestHour).padStart(2,'0')}:00–${String(bestHour+1).padStart(2,'0')}:00 · 총 ${fmt(hourMax)}`:'공부한 시간이 1시간 단위로 나뉘어 표시돼요.'}</span>`;
+    $('#heatmap').className=reportMode==='month'?'month-heat':'';
+    $('#heatmap').innerHTML=allDays.map(d=>{
+      const key=C.dayKey(d),row=a.cells[key]||Array(24).fill(0),day=new Date(d),future=d>C.dayStart(now);
+      const label=reportMode==='day'?'오늘':reportMode==='week'?['일','월','화','수','목','금','토'][day.getDay()]:`${day.getDate()}일`;
+      return `<button class="heat-row ${future?'heat-future':''}" data-day="${d}" aria-label="${dateText(d)}, ${fmt(a.byDay[key]||0)}, 시간대 상세"><span class="heat-row-label">${reportMode==='day'?`${day.getMonth()+1}/${day.getDate()}`:label}<br>${reportMode==='week'?`${day.getMonth()+1}/${day.getDate()}`:''}</span><span class="heat-grid" aria-hidden="true">${row.map(ms=>`<i class="heat-cell" style="background:${heatColor(ms)}"></i>`).join('')}</span></button>`;
+    }).join('');
+    renderAllocation(a);$('#legacyNote').hidden=!a.estimatedMs;renderLogs(a.matched);
+  }
+  function heatColor(ms){return ms<=0?'#edf0e6':ms<=15*C.MIN?'#d8e3cf':ms<=30*C.MIN?'#aec6a2':ms<=45*C.MIN?'#799967':'#315840';}
+  function renderAllocation(a){
+    const rows=Object.entries(a.bySubject).sort((x,y)=>y[1]-x[1]);
+    $('#allocationSubtitle').textContent=`공부시간 기준 · ${reportSubject==='all'?'전체 과목':'선택한 과목만'} · 반올림으로 합계가 100%와 다를 수 있어요`;
+    $('#allocation').innerHTML=rows.length?`<div class="allocation-track" aria-hidden="true">${rows.map(([id,ms])=>`<div class="allocation-part" style="width:${ms/a.total*100}%;background:${subj(id).color}"></div>`).join('')}</div><div class="allocation-list">${rows.map(([id,ms])=>`<div class="allocation-item"><div class="allocation-item-head"><div class="subject-name"><i class="dot" style="background:${subj(id).color}"></i><span>${esc(subj(id).name)}</span></div><span class="allocation-time">${fmt(ms)}</span><span class="allocation-pct">${(ms/a.total*100).toFixed(1)}%</span></div>${progress(ms,a.total,subj(id).color)}</div>`).join('')}</div>`:'<p class="note">과목을 선택하고 공부하면 시간과 비율이 표시돼요.</p>';
+  }
+  function logHtml({log,ms},showDate=true){
+    const subject=subj(log.subjectId),start=log.segments[0].start,end=log.segments.at(-1).end;
+    const stamp=`${showDate?`${new Date(start).getMonth()+1}/${new Date(start).getDate()} `:''}${hh(start)}–${C.dayKey(start)!==C.dayKey(end)?`${new Date(end).getMonth()+1}/${new Date(end).getDate()} `:''}${hh(end)}`;
+    return `<button class="log-item" style="--subject-color:${subject.color}" data-log="${esc(log.id)}"><span class="dot" style="background:${subject.color}"></span><span class="log-main"><span class="log-subject">${esc(subject.name)}</span><strong>${esc(log.task||'집중 세션')}</strong><small>${stamp}${log.estimated?' · 시간대 추정':log.source==='manual'?' · 직접 입력':''}${log.segments.length>1?' · 휴식 제외':''}</small></span><span class="log-min">${fmt(ms)}${Math.abs(ms-C.duration(log.segments))>1000?'<small>선택 기간 내</small>':''}</span></button>`;
+  }
+  function renderLogs(matched){
+    const rows=[...matched].sort((a,b)=>b.log.endedAt-a.log.endedAt);$('#logCount').textContent=`${rows.length}개`;
+    $('#logList').innerHTML=rows.length?rows.slice(0,logLimit).map(x=>logHtml(x)).join(''):'<div class="empty">이 기간의 저장된 세션이 없어요.</div>';
+    $('#moreLogsBtn').hidden=rows.length<=logLimit;
+  }
+  function renderSettings(){
+    $('#dailyGoalInput').value=state.dailyGoalHours;$('#weeklyGoalInput').value=state.weeklyGoalHours;$('#defaultMinutesInput').value=state.defaultMinutes;$('#customMinutesInput').value=state.customMinutes;
+    state.presets.forEach((v,i)=>$('#preset'+(i+1)).value=v);
+    $('#soundToggle').checked=state.soundEnabled;$('#vibrateToggle').checked=state.vibrateEnabled;$('#wakeToggle').checked=state.wakeLockEnabled;
+    $('#vibrationHint').textContent='vibrate' in navigator?'지원 기기에서 세션 완료 시 진동':'이 브라우저는 진동을 지원하지 않아요';
+    $('#wakeHint').textContent='wakeLock' in navigator?'지원 환경에서 집중 중 화면 유지':'이 브라우저에서는 사용할 수 없어요';
+    if(!('Notification' in window)){$('#notifyBtn').textContent='지원 안 됨';$('#notificationHint').textContent='홈 화면 앱 또는 지원 브라우저를 이용해 주세요';}
+    else{$('#notifyBtn').textContent=Notification.permission==='denied'?'차단됨':state.notificationsEnabled&&Notification.permission==='granted'?'알림 켜짐':'알림 켜기';$('#notificationHint').textContent=Notification.permission==='denied'?'브라우저 설정에서 권한을 변경해 주세요':'권한 허용 후에도 화면 잠금 시 알림이 늦을 수 있어요';}
+  }
+  function renderAll(){renderDate();renderFocusInputs();renderFocusStats();renderTimer();renderSubjects();renderReport();renderSettings();renderWarning();$('#migrationNotice').hidden=!state.migration?.count||!!state.migration.dismissed;}
+  function setView(id){if(!['focusView','subjectsView','reportView','settingsView'].includes(id))return;view=id;$$('.view').forEach(e=>e.classList.toggle('active',e.id===id));$$('.nav-btn').forEach(b=>{b.classList.toggle('active',b.dataset.view===id);if(b.dataset.view===id)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(id==='subjectsView')renderSubjects();if(id==='reportView')renderReport();if(id==='settingsView')renderSettings();renderTimer();window.scrollTo({top:0,behavior:'instant'});}
+  async function requestWake(){if(wakeLock||!state.wakeLockEnabled||state.timer?.status!=='running'||document.hidden||!('wakeLock' in navigator))return;try{const lock=await navigator.wakeLock.request('screen');if(state.timer?.status!=='running'||!state.wakeLockEnabled||document.hidden){await lock.release();return;}wakeLock=lock;lock.addEventListener('release',()=>{if(wakeLock===lock)wakeLock=null;});}catch{}}
+  async function releaseWake(){const lock=wakeLock;wakeLock=null;try{await lock?.release();}catch{}}
+  function unlockAudio(){if(!state.soundEnabled)return;try{const Audio=window.AudioContext||window.webkitAudioContext;if(Audio){audio=audio||new Audio();if(audio.state==='suspended')audio.resume().catch(()=>{});}}catch{}}
+  async function signalDone(task){
+    if(state.vibrateEnabled)try{navigator.vibrate?.([180,80,180]);}catch{}
+    if(state.soundEnabled&&audio)try{for(let i=0;i<2;i++){const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime+i*.24;o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.08,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+.19);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.2);o.onended=()=>{o.disconnect();g.disconnect();};}}catch{}
+    if(state.notificationsEnabled&&'Notification' in window&&Notification.permission==='granted'){
+      const opts={body:task?`${task} — 집중 시간을 기록했어요.`:'집중 시간을 기록했어요.',icon:'./icons/icon-192.png',tag:'deep-climb-complete'};
+      try{const registration=notificationRegistration||await navigator.serviceWorker?.getRegistration();if(registration)await registration.showNotification('딥워크 세션 완료',opts);else new Notification('딥워크 세션 완료',opts);}catch{}
+    }
+  }
+  function syncLatest(){try{const raw=localStorage.getItem(KEY);if(raw&&raw!==lastSaved){state=C.normalize(JSON.parse(raw));lastSaved=raw;renderAll();}}catch{}}
+  function toggleTimer(){
+    syncLatest();unlockAudio();const now=Date.now();
+    if(state.timer?.status==='running'){
+      if(C.elapsed(state.timer,now)>=state.timer.targetMs){completeSession(now);return;}
+      state.timer=C.snapshotTimer(state.timer,now);releaseWake();
+    }else if(state.timer){state.timer.status='running';state.timer.startedAt=Math.max(now,state.timer.segments.at(-1)?.end||0);requestWake();}
+    else{const subjectId=state.selectedSubjectId;if(!state.subjects.some(s=>s.id===subjectId)){toast('먼저 과목을 추가해 주세요.');return;}state.timer={id:C.uid(),subjectId,task:state.task.trim(),targetMs:state.selectedMinutes*C.MIN,segments:[],status:'running',startedAt:now,estimated:false};requestWake();}
+    save();renderFocusInputs();renderTimer();
+  }
+  function completeSession(now=Date.now()){
+    if(finishing||!state.timer)return;finishing=true;
+    const timer=state.timer;const record=C.recordFromTimer(timer,now,true);
+    try{const saved=localStorage.getItem(KEY);if(saved&&saved!==lastSaved){const latest=C.normalize(JSON.parse(saved));if(latest.logs.some(l=>l.id===timer.id)||!latest.timer||latest.timer.id!==timer.id||latest.timer.status!=='running'){state=latest;lastSaved=saved;finishing=false;renderAll();return;}}}catch{}
+    if(record&&!state.logs.some(l=>l.id===record.id))state.logs.push(record);
+    state.timer=null;state.selectedMinutes=state.defaultMinutes;save();releaseWake();if(dialog.open)closeSheet();renderAll();signalDone(timer.task);toast('세션 완료. 집중 시간이 기록됐어요.');finishing=false;
+  }
+  function openSheet(title,content){
+    dialog.innerHTML=`<div class="sheet"><div class="sheet-handle" aria-hidden="true"></div><div class="sheet-head"><h2 id="dialogTitle">${title}</h2><button class="icon-btn" data-close aria-label="닫기">${icon('close')}</button></div>${content}</div>`;
+    if(!dialog.open)dialog.showModal();dialog.scrollTop=0;document.body.style.overflow='hidden';
+  }
+  function closeSheet(){dialog.close();document.body.style.overflow='';}
+  dialog.addEventListener('close',()=>document.body.style.overflow='');
+  dialog.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeSheet();if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeSheet();}});
+  function confirmAction(title,description,action,label='확인',danger=false){openSheet(title,`<p class="sheet-intro">${description}</p><div class="sheet-actions"><button class="ghost" data-close>취소</button><button id="confirmAction" class="primary" ${danger?'style="background:#9c5342"':''}>${label}</button></div>`);$('#confirmAction').onclick=()=>{closeSheet();action();};}
+  function finishPrompt(){
+    if(!state.timer)return;const now=Date.now();
+    if(C.elapsed(state.timer,now)>=state.timer.targetMs){completeSession(now);return;}
+    state.timer=C.snapshotTimer(state.timer,now);save();releaseWake();renderTimer();
+    const ms=C.elapsed(state.timer);openSheet('집중을 마칠까요?',`<p class="sheet-intro"><strong>${esc(subj(state.timer.subjectId).name)} · ${fmt(ms)}</strong> 집중했어요.<br>확인하는 동안 타이머는 일시정지돼요. 닫은 후 ‘계속 집중’으로 이어갈 수 있어요.</p><div class="sheet-actions"><button id="discardBtn" class="ghost">기록 없이 종료</button><button id="saveFinishBtn" class="primary" ${ms<1000?'disabled':''}>기록하고 종료</button></div>`);
+    $('#discardBtn').onclick=()=>endEarly(false);$('#saveFinishBtn').onclick=()=>endEarly(true);
+  }
+  function endEarly(keep){if(!state.timer){closeSheet();return;}const record=C.recordFromTimer(state.timer);if(keep&&record&&!state.logs.some(l=>l.id===record.id))state.logs.push(record);state.timer=null;state.selectedMinutes=state.defaultMinutes;save();releaseWake();closeSheet();renderAll();toast(keep?'집중 시간을 기록했어요.':'기록 없이 세션을 종료했어요.');}
+  function openCustom(){openSheet('집중시간 설정',`<form id="customForm"><label class="form-field"><span>집중할 시간 (분)</span><input id="customValue" type="number" inputmode="numeric" min="1" max="720" required value="${state.customMinutes}"><small>1분부터 720분까지 설정할 수 있어요.</small></label><button class="primary full-width" type="submit">이 시간으로 준비</button></form>`);$('#customForm').onsubmit=e=>{e.preventDefault();if(state.timer)return;const n=Number($('#customValue').value);if(!Number.isFinite(n)||n<1||n>720)return;state.customMinutes=n;state.selectedMinutes=n;save();closeSheet();renderAll();};}
+  function openSubjectDetail(id){
+    const s=subj(id),day=aggregate('day',Date.now(),id).total,week=aggregate('week',Date.now(),id).total,month=aggregate('month',Date.now(),id).total,total=state.logs.filter(l=>l.subjectId===id).reduce((sum,l)=>sum+C.duration(l.segments),0);
+    const i=state.subjects.findIndex(x=>x.id===id);
+    openSheet(esc(s.name),`<p class="sheet-intro">과목별 시간은 저장된 세션을 기준으로 계산해요.</p><div class="detail-times"><div><span>오늘</span><b>${compact(day)}</b></div><div><span>이번 주</span><b>${compact(week)}</b></div><div><span>이번 달</span><b>${compact(month)}</b></div></div><p class="note">전체 누적 ${fmt(total)}</p><div class="detail-goal"><div><span>하루 목표</span><strong>${s.dailyGoalMinutes?`${fmt(day)} / ${fmt(s.dailyGoalMinutes*C.MIN)}`:'미설정'}</strong></div>${progress(day,s.dailyGoalMinutes*C.MIN,s.color)}</div><div class="detail-goal"><div><span>주간 목표</span><strong>${s.weeklyGoalMinutes?`${fmt(week)} / ${fmt(s.weeklyGoalMinutes*C.MIN)}`:'미설정'}</strong></div>${progress(week,s.weeklyGoalMinutes*C.MIN,s.color)}</div><div class="sheet-actions"><button id="subjectReport" class="ghost">리포트 보기</button><button id="studySubject" class="primary" ${s.archived||state.timer?'disabled':''}>이 과목 집중</button></div>${state.timer?'<p class="note" style="margin-top:10px">진행 중인 세션을 끝내야 과목을 바꿀 수 있어요.</p>':''}<div class="subject-tools"><div>${!s.system?'<button id="editSubject" class="tiny-btn">이름·색상·목표</button>':''}<button id="moveUp" class="icon-btn" aria-label="과목 순서 위로" ${i<=0||s.system?'disabled':''}>${icon('up')}</button><button id="moveDown" class="icon-btn" aria-label="과목 순서 아래로" ${i>=state.subjects.length-2||s.system?'disabled':''}>${icon('down')}</button></div>${!s.system?`<button id="archiveSubject" class="text-btn">${s.archived?'복원':'보관'}</button>`:''}</div>`);
+    $('#subjectReport').onclick=()=>{reportSubject=id;reportDate=Date.now();closeSheet();setView('reportView');};
+    $('#studySubject').onclick=()=>{state.selectedSubjectId=id;save();closeSheet();renderFocusInputs();setView('focusView');};
+    if($('#editSubject'))$('#editSubject').onclick=()=>openSubjectForm(id);
+    $('#moveUp').onclick=()=>moveSubject(id,-1);$('#moveDown').onclick=()=>moveSubject(id,1);
+    if($('#archiveSubject'))$('#archiveSubject').onclick=()=>archiveSubject(id);
+  }
+  function moveSubject(id,delta){const i=state.subjects.findIndex(s=>s.id===id),j=i+delta;if(j<0||j>=state.subjects.length-1)return;[state.subjects[i],state.subjects[j]]=[state.subjects[j],state.subjects[i]];save();renderAll();openSubjectDetail(id);}
+  function openSubjectForm(id=null){
+    const s=id?subj(id):{name:'',color:C.COLORS[activeSubjects().length%C.COLORS.length],dailyGoalMinutes:0,weeklyGoalMinutes:0};
+    openSheet(id?'과목 수정':'새 과목',`<form id="subjectForm"><label class="form-field"><span>과목 이름</span><input id="subjectName" type="text" maxlength="40" required value="${esc(s.name)}" placeholder="예: GRE Verbal"></label><div class="form-field"><span>과목 색상</span><div class="color-options">${C.COLORS.map((color,i)=>`<label class="color-choice" style="--color:${color}"><input type="radio" name="subjectColor" value="${color}" aria-label="색상 ${i+1}" ${s.color===color?'checked':''}><span></span></label>`).join('')}</div></div><div class="two-fields"><label class="form-field"><span>하루 목표 (분)</span><input id="subjectDayGoal" type="number" inputmode="numeric" min="0" max="1440" value="${s.dailyGoalMinutes}"><small>0이면 목표 없음</small></label><label class="form-field"><span>주간 목표 (분)</span><input id="subjectWeekGoal" type="number" inputmode="numeric" min="0" max="10080" value="${s.weeklyGoalMinutes}"><small>월요일부터 일요일까지</small></label></div><div id="subjectError" class="form-error" hidden></div><div class="sheet-actions"><button class="ghost" type="button" data-close>취소</button><button class="primary" type="submit">${id?'저장':'과목 추가'}</button></div></form>`);
+    $('#subjectForm').onsubmit=e=>{e.preventDefault();const name=$('#subjectName').value.trim();if(!name){$('#subjectError').hidden=false;$('#subjectError').textContent='과목 이름을 입력해 주세요.';return;}if(state.subjects.some(x=>x.id!==id&&!x.archived&&x.name.toLocaleLowerCase()===name.toLocaleLowerCase())){$('#subjectError').hidden=false;$('#subjectError').textContent='같은 이름의 과목이 이미 있어요.';return;}const data={name,color:$('#subjectForm input[name="subjectColor"]:checked')?.value||s.color,dailyGoalMinutes:C.clamp(Number($('#subjectDayGoal').value)||0,0,1440),weeklyGoalMinutes:C.clamp(Number($('#subjectWeekGoal').value)||0,0,10080)};if(id)Object.assign(subj(id),data);else{const newSubject={...data,id:C.uid(),archived:false};state.subjects.splice(state.subjects.length-1,0,newSubject);}save();closeSheet();renderAll();toast('과목을 저장했어요.');};
+  }
+  function archiveSubject(id){
+    const s=subj(id);if(state.timer?.subjectId===id){toast('진행 중인 과목은 세션을 끝낸 뒤 보관해 주세요.');return;}
+    if(s.archived){s.archived=false;save();closeSheet();renderAll();toast('과목을 복원했어요.');return;}
+    confirmAction('과목을 보관할까요?',`${esc(s.name)} 과목은 선택 목록에서 숨겨지고, 기존 공부 기록은 리포트에 그대로 남아요. 보관함에서 다시 복원할 수 있어요.`,()=>{s.archived=true;if(state.selectedSubjectId===id)state.selectedSubjectId=activeSubjects()[0]?.id||'uncategorized';save();renderAll();toast('기록은 유지하고 과목을 보관했어요.');},'보관');
+  }
+  function openArchive(){const items=state.subjects.filter(s=>s.archived&&!s.system);openSheet('보관한 과목',`<p class="sheet-intro">보관은 기록을 삭제하지 않아요. 복원하면 다시 집중 과목으로 선택할 수 있어요.</p>${items.length?items.map(s=>`<div class="manage-row"><div class="subject-name"><i class="dot" style="background:${s.color}"></i><span>${esc(s.name)}</span></div><button class="tiny-btn" data-restore="${esc(s.id)}">복원</button></div>`).join(''):'<div class="empty">보관한 과목이 없어요.</div>'}`);dialog.querySelectorAll('[data-restore]').forEach(b=>b.onclick=()=>{subj(b.dataset.restore).archived=false;save();renderAll();openArchive();});}
+  function openHourDetails(day=null){
+    const b=day===null?C.bounds(reportMode,reportDate):C.bounds('day',day),a=C.aggregate(state.logs,b.start,b.end,reportSubject);
+    openSheet(day===null?'시간대별 공부시간':esc(dateText(day)),`<p class="sheet-intro">${day===null?periodText(reportMode,reportDate):dateText(day)} · ${reportSubject==='all'?'전체 과목':esc(subj(reportSubject).name)}<br>공부시간 합계 ${fmt(a.total)} · 일시정지 시간 제외</p>${a.byHour.some(x=>x>0)?a.byHour.map((ms,h)=>ms?`<div class="hour-detail-row"><span>${String(h).padStart(2,'0')}:00 – ${String(h+1).padStart(2,'0')}:00</span><strong>${fmt(ms)}</strong></div>`:'').join(''):'<div class="empty">이 기간의 기록이 없어요.</div>'}${a.estimatedMs?'<p class="notice" style="margin-top:16px">이전 기록의 시간대는 종료 시각에서 역산한 추정치가 포함돼요.</p>':''}${day!==null&&a.matched.length?`<div class="section-head"><h3>이날의 세션</h3></div><div class="log-list">${a.matched.slice().sort((x,y)=>y.log.endedAt-x.log.endedAt).map(x=>logHtml(x,false)).join('')}</div>`:''}`);
+    dialog.querySelectorAll('[data-log]').forEach(b=>b.onclick=()=>openLog(b.dataset.log));
+  }
+  function openLog(id){
+    const l=state.logs.find(x=>x.id===id);if(!l)return;
+    openSheet('세션 기록',`<p class="sheet-intro">집중시간 <strong>${fmt(C.duration(l.segments))}</strong> · ${l.completed?'목표 완료':l.source==='manual'?'직접 입력':'저장한 세션'}</p><form id="logForm"><label class="form-field"><span>과목</span><select id="logSubject">${subjectOptions(l.subjectId)}</select></label><label class="form-field"><span>공부한 내용</span><input id="logTask" maxlength="120" type="text" value="${esc(l.task)}" placeholder="공부한 내용을 남겨 보세요."></label><div class="interval-list">${l.segments.map(s=>`${esc(dateText(s.start))} ${hh(s.start)} → ${C.dayKey(s.start)!==C.dayKey(s.end)?esc(dateText(s.end))+' ':''}${hh(s.end)} · ${fmt(s.end-s.start)}`).join('<br>')}</div>${l.estimated?'<p class="note">이전 버전에서 가져온 기록으로, 표시된 시작 시각은 추정치예요.</p>':'<p class="note">각 줄은 실제 집중 구간이에요. 일시정지 시간은 포함하지 않아요.</p>'}<div class="sheet-actions"><button id="deleteLog" type="button" class="ghost danger">기록 삭제</button><button class="primary" type="submit">수정 저장</button></div></form>`);
+    $('#logForm').onsubmit=e=>{e.preventDefault();l.subjectId=$('#logSubject').value;l.task=$('#logTask').value.trim();save();closeSheet();renderAll();toast('기록을 수정했어요.');};
+    $('#deleteLog').onclick=()=>confirmAction('이 기록을 삭제할까요?',`${esc(subj(l.subjectId).name)} · ${fmt(C.duration(l.segments))} 기록을 삭제합니다. 삭제한 기록은 백업이 없으면 복구할 수 없어요.`,()=>{state.logs=state.logs.filter(x=>x.id!==id);save();renderAll();toast('기록을 삭제했어요.');},'삭제',true);
+  }
+  function localDatetime(ts){const d=new Date(ts);return `${C.dayKey(ts)}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+  function openManual(){
+    const end=Math.floor(Date.now()/C.MIN)*C.MIN,start=end-50*C.MIN;
+    openSheet('공부 기록 추가',`<p class="sheet-intro">타이머를 켜지 못했을 때 직접 기록하세요. 쉬는 시간이 있다면 집중한 구간을 나누어 추가해 주세요.</p><form id="manualForm"><label class="form-field"><span>과목</span><select id="manualSubject">${subjectOptions(state.selectedSubjectId)}</select></label><label class="form-field"><span>공부한 내용</span><input id="manualTask" maxlength="120" type="text" placeholder="예: 수학 Topic 33"></label><label class="form-field"><span>시작</span><input id="manualStart" type="datetime-local" required value="${localDatetime(start)}" max="${localDatetime(Date.now())}"></label><label class="form-field"><span>종료</span><input id="manualEnd" type="datetime-local" required value="${localDatetime(end)}" max="${localDatetime(Date.now())}"></label><div id="manualError" class="form-error" hidden></div><button class="primary full-width" type="submit">기록 추가</button></form>`);
+    $('#manualForm').onsubmit=e=>{e.preventDefault();const start=+new Date($('#manualStart').value),end=+new Date($('#manualEnd').value);let error='';if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start)error='종료 시각은 시작 시각보다 뒤여야 해요.';else if(end>Date.now())error='미래의 공부시간은 기록할 수 없어요.';else if(end-start>24*C.HOUR)error='한 번에 최대 24시간까지 입력할 수 있어요.';else if(C.intersects(state.logs,start,end)||state.timer&&(C.intersects([{segments:C.effectiveSegments(state.timer)}],start,end)))error='다른 공부 기록 또는 진행 중인 세션과 시간이 겹쳐요.';if(error){$('#manualError').hidden=false;$('#manualError').textContent=error;return;}const subjectId=$('#manualSubject').value;state.logs.push({id:C.uid(),subjectId,task:$('#manualTask').value.trim(),segments:[{start,end}],endedAt:end,targetMs:end-start,completed:false,estimated:false,source:'manual'});reportDate=start;reportSubject='all';save();closeSheet();renderAll();toast('공부 기록을 추가했어요.');};
+  }
+  function openDatePicker(){openSheet('기간 이동',`<form id="dateForm"><p class="sheet-intro">선택한 날짜가 포함된 ${reportMode==='day'?'일간':reportMode==='week'?'주간':'월간'} 리포트를 보여줘요.</p><label class="form-field"><span>날짜</span><input id="reportDateInput" type="date" required max="${C.dayKey()}" value="${C.dayKey(reportDate)}"></label><button class="primary full-width" type="submit">이동</button></form>`);$('#dateForm').onsubmit=e=>{e.preventDefault();const value=$('#reportDateInput').value,ts=+new Date(value+'T12:00:00');if(!Number.isFinite(ts)||C.dayStart(ts)>C.dayStart())return;reportDate=ts;logLimit=30;closeSheet();renderReport();};}
+  function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+  function exportData(){
+    if(readOnly){try{const raw=localStorage.getItem(KEY)||localStorage.getItem(OLD_KEY);if(raw){download(`deep-climb-original-${C.dayKey()}.json`,raw,'application/json');toast('읽지 못한 원본 데이터를 그대로 백업했어요.');return;}}catch{}}
+    const data=C.copy(state);data.timer=C.snapshotTimer(data.timer);download(`deep-climb-backup-${C.dayKey()}.json`,JSON.stringify({app:'Deep Climb',version:2,exportedAt:new Date().toISOString(),data},null,2),'application/json');toast('백업 파일을 내보냈어요. 진행 중 세션은 일시정지 상태로 저장돼요.');
+  }
+  function exportCsv(){const cell=v=>'"'+String(v).replace(/^[=+@\-]/,"'$&").replace(/"/g,'""')+'"';const rows=[['과목','공부 내용','시작 시각(현지)','종료 시각(현지)','집중 초','집중 분','집중 구간 수','시간대 추정','기록 방식'],...state.logs.slice().sort((x,y)=>x.endedAt-y.endedAt).map(l=>[subj(l.subjectId).name,l.task,localDatetime(l.segments[0].start),localDatetime(l.segments.at(-1).end),Math.round(C.duration(l.segments)/1000),(C.duration(l.segments)/C.MIN).toFixed(2),l.segments.length,l.estimated?'예':'아니요',l.source])];download(`deep-climb-sessions-${C.dayKey()}.csv`,'\ufeff'+rows.map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');toast('공부 기록을 CSV로 내보냈어요.');}
+  async function importData(file){
+    if(!file)return;if(file.size>20*1024*1024){toast('20MB 이하의 백업 파일을 선택해 주세요.');return;}
+    let next;try{next=C.normalize(JSON.parse(await file.text()));next.timer=C.snapshotTimer(next.timer);}catch(e){toast(`가져오기 실패: ${e.message||'파일 형식을 확인해 주세요.'}`);return;}
+    confirmAction('백업으로 교체할까요?',`현재 과목·설정·기록 전체를 교체합니다. 가져올 기록은 <strong>${next.logs.length}개</strong>예요. 현재 데이터가 필요하다면 먼저 내보내기를 해 주세요. 진행 중 세션은 일시정지 상태로 가져와요.`,()=>{try{localStorage.setItem('deepClimb.v2.preImport',JSON.stringify(state));}catch{}state=next;readOnly=false;warning='';releaseWake();save();renderAll();toast('백업을 가져왔어요.');},'교체');
+  }
+  function resetPrompt(){
+    openSheet('전체 데이터 초기화',`<p class="sheet-intro">모든 공부 기록, 과목, 목표와 설정을 삭제해요. 이전 버전의 저장 데이터도 삭제합니다. 필요한 기록을 먼저 백업해 주세요.</p><form id="resetForm"><label class="form-field"><span>계속하려면 ‘초기화’를 입력하세요.</span><input id="resetConfirm" type="text" required autocomplete="off" placeholder="초기화"></label><div class="sheet-actions"><button class="ghost" type="button" data-close>취소</button><button class="primary" style="background:#9c5342" type="submit">모두 삭제</button></div></form>`);
+    $('#resetForm').onsubmit=e=>{e.preventDefault();if($('#resetConfirm').value.trim()!=='초기화'){$('#resetConfirm').setCustomValidity('초기화라고 입력해 주세요.');$('#resetConfirm').reportValidity();return;}state=C.defaults();warning='';readOnly=false;try{for(const key of [KEY,OLD_KEY,'deepClimb.v2.preImport'])localStorage.removeItem(key);}catch{}save();releaseWake();reportSubject='all';reportDate=Date.now();closeSheet();renderAll();toast('데이터를 초기화했어요.');};$('#resetConfirm').oninput=()=>$('#resetConfirm').setCustomValidity('');
+  }
+  // Event wiring. All data-dependent markup is escaped; no inline event handlers.
+  $$('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));$('#runningBanner').onclick=()=>setView('focusView');
+  $('#startBtn').onclick=toggleTimer;$('#finishBtn').onclick=finishPrompt;
+  $('#focusSettingsBtn').onclick=()=>setView('settingsView');
+  $('#mountainGoalBtn').onclick=()=>{setView('settingsView');$('#dailyGoalInput').focus({preventScroll:true});};
+  $('#subjectSelect').onchange=e=>{if(state.timer)return;state.selectedSubjectId=e.target.value;save();$('#selectedSubjectDot').style.background=subj(e.target.value).color;};
+  $('#taskInput').oninput=e=>{if(!state.timer){state.task=e.target.value;save();}};
+  $('#presetRow').onclick=e=>{const b=e.target.closest('button');if(!b||state.timer)return;if(b.dataset.custom){openCustom();return;}state.selectedMinutes=Number(b.dataset.min);save();renderFocusInputs();renderTimer();};
+  $('#focusReportBtn').onclick=()=>{reportMode='day';reportDate=Date.now();reportSubject='all';updateSegments($('#reportPeriod'),'day');setView('reportView');};
+  $('#addSubjectBtn').onclick=$('#addSubjectBottom').onclick=()=>openSubjectForm();
+  $('#subjectList').onclick=e=>{const b=e.target.closest('[data-subject]');if(b)openSubjectDetail(b.dataset.subject);};
+  function updateSegments(el,mode){el.querySelectorAll('button').forEach(b=>{b.classList.toggle('active',b.dataset.mode===mode);b.setAttribute('aria-pressed',b.dataset.mode===mode);});}
+  $('#subjectPeriod').onclick=e=>{const b=e.target.closest('[data-mode]');if(!b)return;subjectMode=b.dataset.mode;updateSegments($('#subjectPeriod'),subjectMode);renderSubjects();};
+  $('#reportPeriod').onclick=e=>{const b=e.target.closest('[data-mode]');if(!b)return;reportMode=b.dataset.mode;logLimit=30;updateSegments($('#reportPeriod'),reportMode);renderReport();};
+  $('#prevPeriod').onclick=()=>{reportDate=C.shiftPeriod(reportMode,reportDate,-1);logLimit=30;renderReport();};
+  $('#nextPeriod').onclick=()=>{const next=C.shiftPeriod(reportMode,reportDate,1);if(next<=Date.now()){reportDate=next;logLimit=30;renderReport();}};
+  $('#goTodayBtn').onclick=()=>{reportDate=Date.now();logLimit=30;renderReport();};$('#periodLabel').onclick=openDatePicker;
+  $('#reportSubjectFilter').onchange=e=>{reportSubject=e.target.value;logLimit=30;renderReport();};
+  $('#hourDetailBtn').onclick=()=>openHourDetails();$('#heatmap').onclick=e=>{const b=e.target.closest('[data-day]');if(b)openHourDetails(Number(b.dataset.day));};
+  $('#logList').onclick=e=>{const b=e.target.closest('[data-log]');if(b)openLog(b.dataset.log);};$('#moreLogsBtn').onclick=()=>{logLimit+=30;if(cachedReport)renderLogs(cachedReport.matched);};
+  $('#manualLogBtn').onclick=openManual;$('#manageSubjectsBtn').onclick=()=>setView('subjectsView');
+  $('#archivedSubjectsBtn').onclick=$('#manageArchiveBtn').onclick=openArchive;
+  for(const [id,key,min,max] of [['dailyGoalInput','dailyGoalHours',.5,24],['weeklyGoalInput','weeklyGoalHours',.5,168],['defaultMinutesInput','defaultMinutes',1,720],['customMinutesInput','customMinutes',1,720]]){
+    $('#'+id).onchange=e=>{const n=Number(e.target.value);if(!Number.isFinite(n)||n<min||n>max){e.target.value=state[key];toast(`${min}–${max} 범위로 입력해 주세요.`);return;}state[key]=n;if(key==='defaultMinutes'&&!state.timer)state.selectedMinutes=n;save();renderFocusInputs();renderTimer();renderFocusStats();};
+  }
+  for(let i=0;i<3;i++)$('#preset'+(i+1)).onchange=e=>{const n=Number(e.target.value);if(!Number.isInteger(n)||n<1||n>720){e.target.value=state.presets[i];toast('1–720 사이의 정수로 입력해 주세요.');return;}state.presets[i]=n;save();renderFocusInputs();renderTimer();};
+  for(const [id,key] of [['soundToggle','soundEnabled'],['vibrateToggle','vibrateEnabled'],['wakeToggle','wakeLockEnabled']])$('#'+id).onchange=e=>{state[key]=e.target.checked;save();if(key==='wakeLockEnabled'){if(state[key])requestWake();else releaseWake();}if(key==='soundEnabled')unlockAudio();};
+  $('#notifyBtn').onclick=async()=>{if(!('Notification' in window)){toast('이 브라우저에서는 알림을 지원하지 않아요.');return;}if(Notification.permission==='denied'){toast('브라우저 설정에서 이 사이트의 알림 권한을 변경해 주세요.');return;}if(Notification.permission==='granted'){state.notificationsEnabled=!state.notificationsEnabled;}else{try{state.notificationsEnabled=(await Notification.requestPermission())==='granted';}catch{state.notificationsEnabled=false;}}save();renderSettings();};
+  $('#exportBtn').onclick=exportData;$('#exportCsvBtn').onclick=exportCsv;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{importData(e.target.files[0]);e.target.value='';};$('#resetBtn').onclick=resetPrompt;
+  $('#dismissMigration').onclick=()=>{if(state.migration)state.migration.dismissed=true;save();$('#migrationNotice').hidden=true;};
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){save();releaseWake();}else{syncLatest();tick();requestWake();}});
+  window.addEventListener('pagehide',()=>save());window.addEventListener('pageshow',()=>{tick();requestWake();});
+  window.addEventListener('storage',e=>{if(e.key!==KEY||e.newValue===lastSaved)return;try{state=e.newValue?C.normalize(JSON.parse(e.newValue)):C.defaults();lastSaved=e.newValue||'';if(dialog.open)closeSheet();renderAll();if(state.timer?.status==='running')requestWake();else releaseWake();}catch{toast('다른 탭의 저장 데이터를 읽지 못했어요.');}});
+  function tick(){const now=Date.now();if(state.timer&&C.elapsed(state.timer,now)>=state.timer.targetMs){completeSession(now);return;}if(document.hidden)return;renderTimer(now);const day=C.dayKey(now);if(day!==lastDay){lastDay=day;renderAll();}else if(now-lastStats>15000){lastStats=now;renderFocusStats();}}
+  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{notificationRegistration=reg;reg.update().catch(()=>{});}).catch(()=>{});});
+  renderAll();save();tick();requestWake();setInterval(()=>{if(!document.hidden||state.timer)tick();},500);
+})();
+</script></body></html>

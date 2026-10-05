@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROJECT COURT VISION - Director's Master Storyboard Deck</title>
+  <style>
+    :root {
+      --bg-base: #0c0d10;
+      --bg-surface: #14161b;
+      --bg-card: #1c1f26;
+      --accent-orange: #ff6b00;
+      --accent-neon: #ff944d;
+      --accent-green: #2ecc71;
+      --text-main: #f0f3f8;
+      --text-sub: #9aa5b8;
+      --border-color: #2b303c;
+      --rec-red: #ff3344;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+      line-height: 1.6;
+      padding-bottom: 80px;
+    }
+
+    /* Top Director Monitor HUD */
+    .director-hud {
+      background: #08090b;
+      border-bottom: 1px solid #232732;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+    .hud-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .rec-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 51, 68, 0.15);
+      color: var(--rec-red);
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--rec-red);
+    }
+    .rec-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--rec-red);
+      border-radius: 50%;
+      animation: blink 1s infinite alternate;
+    }
+    @keyframes blink { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+
+    .hud-meta {
+      color: var(--text-sub);
+      display: flex;
+      gap: 14px;
+    }
+    .hud-meta span b { color: var(--text-main); }
+    .hud-title {
+      font-weight: 700;
+      color: var(--accent-neon);
+      letter-spacing: 1px;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #181b22 0%, #101217 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255, 107, 0, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-block;
+      color: var(--accent-orange);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .hero-title {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .hero-slogan {
+      font-size: 18px;
+      color: var(--accent-neon);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .hero-desc {
+      color: var(--text-sub);
+      max-width: 840px;
+      font-size: 15px;
+    }
+
+    /* Master Board Image Container */
+    .board-section {
+      margin-bottom: 48px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 20px;
+      background: var(--accent-orange);
+      border-radius: 2px;
+    }
+    .board-frame {
+      background: #000;
+      border: 2px solid #333846;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      transition: border-color 0.2s;
+    }
+    .board-frame:hover {
+      border-color: var(--accent-orange);
+    }
+    .board-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Grid of Cut Cards */
+    .cuts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .cut-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .cut-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-orange);
+    }
+    .cut-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #252a35;
+    }
+    .cut-number {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--text-main);
+    }
+    .cut-timing {
+      font-family: monospace;
+      font-size: 12px;
+      background: rgba(255, 107, 0, 0.15);
+      color: var(--accent-neon);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .cut-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+    .spec-item {
+      font-size: 13px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 8px;
+    }
+    .spec-label {
+      color: var(--text-sub);
+      min-width: 52px;
+      font-weight: 600;
+    }
+    .spec-value {
+      color: #e1e7f0;
+    }
+    .spec-highlight {
+      color: #ffbb66;
+      font-weight: 600;
+    }
+
+    /* Prompt Button */
+    .prompt-btn {
+      margin-top: 14px;
+      background: #222630;
+      border: 1px solid #363c4c;
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .prompt-btn:hover {
+      background: var(--accent-orange);
+      color: #000;
+      border-color: var(--accent-orange);
+    }
+
+    /* Specs & Checklist */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 36px;
+    }
+    .specs-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 24px;
+    }
+    .specs-card h3 {
+      font-size: 17px;
+      margin-bottom: 16px;
+      color: var(--accent-neon);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .specs-list {
+      list-style: none;
+    }
+    .specs-list li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+    .specs-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent-orange);
+      font-weight: bold;
+    }
+    .specs-list li b {
+      color: var(--text-main);
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--accent-orange);
+      color: #000;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .specs-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 24px; }
+      .director-hud { flex-direction: column; gap: 8px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Director Monitor HUD -->
+  <header class="director-hud">
+    <div class="hud-left">
+      <div class="rec-badge"><div class="rec-dot"></div> REC</div>
+      <div class="hud-meta">
+        <span>FPS: <b>24.00</b></span>
+        <span>SHUTTER: <b>180°</b></span>
+        <span>RES: <b>4K UHD (9:16)</b></span>
+        <span>TC: <b>00:00:10:00</b></span>
+      </div>
+    </div>
+    <div class="hud-title">🎬 PROJECT COURT VISION (SUWON 2026)</div>
+  </header>
+
+  <div class="container">
+
+    <!-- Hero Header -->
+    <div class="hero-banner">
+      <div class="hero-tag">Official Teaser Storyboard Deck</div>
+      <h1 class="hero-title">프로젝트 코트비전 (PROJECT COURT VISION) 2026</h1>
+      <div class="hero-slogan">"우리의 코트는 계속 넓어진다."</div>
+      <p class="hero-desc">
+        가방 위 일체형 키링을 손가락으로 장난스럽게 툭툭 때리는 일상의 찰나에서 시작해, 진짜 농구공 쿵! 매치컷, 1대1 돌파와 스텝백 급제동, 수원화성 성곽 네온 코트 확장, 그리고 전율의 스위시와 하이파이브 축제 환호로 이어지는 완벽한 8컷 시네마틱 릴스/쇼츠 티저 연출 보드입니다.
+      </p>
+    </div>
+
+    <!-- Master Board Image Section -->
+    <section class="board-section">
+      <div class="section-header">
+        <h2 class="section-title">8컷 마스터 프로덕션 보드 (한글 연출 박스 일체형)</h2>
+        <span style="color: var(--accent-neon); font-size: 13px; font-weight: 600;">Full 8-Cut Master Sheet</span>
+      </div>
+      <div class="board-frame">
+        <img src="./assets/court_vision_full_detailed_board.jpg" alt="Project Court Vision 8-Cut Detailed Storyboard">
+      </div>
+    </section>
+
+    <!-- Detailed 8 Cuts Grid -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">씬별 감독 연출 지시서 & AI 비디오 프롬프트</h2>
+        <span style="color: var(--text-sub); font-size: 13px;">클릭하여 AI 프롬프트 복사</span>
+      </div>
+
+      <div class="cuts-grid">
+
+        <!-- Cut 1 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 1]</span>
+              <span class="cut-timing">0.0s ~ 1.2s</span>
+            </div>
+            <img src="./assets/cut1_motion.gif" style="width:100%; border-radius:6px; margin-bottom:12px; border: 1px solid #363c4c;" alt="1컷 모션 애니메이션 프리뷰">
+            <div class="cut-title">개구리+농구공 키링 손가락 툭툭!</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">익스트림 클로즈업 (ECU 85mm Macro)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">가방에 걸린 개구리+농구공 일체형 키링을 검지손가락으로 툭! 툭! 장난스럽게 때리고 흔들기</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">찰랑- 톡! 톡! (메탈 링 & 가벼운 타격음)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">전환</span>
+              <span class="spec-value">농구공을 렌즈 앞으로 툭 튕기며 순간 암전!</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(1)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 2 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 2]</span>
+              <span class="cut-timing">1.2s ~ 2.4s</span>
+            </div>
+            <div class="cut-title">진짜 농구공 쿵! 매치컷</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">지면 밀착 로우앵글 (Low-Angle Floor)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">미니 공이 바닥에 닿는 순간 진짜 가죽 농구공으로 변신(Match-Cut)하며 바닥 쾅!</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">쾅! (심장을 강타하는 808 베이스 비트 드랍)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">효과</span>
+              <span class="spec-value">바닥에 퍼지는 충격파 파티클</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(2)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 3 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 3]</span>
+              <span class="cut-timing">2.4s ~ 3.6s</span>
+            </div>
+            <div class="cut-title">1대1 수비 돌파 (백뷰)</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">Dynamic Back View (선수 등 뒤 추적)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">포니테일 머리칼이 날리며 견고한 상대 여성 수비수를 폭풍 크로스오버로 제침</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">촥! 촥! (바람 가르는 드리블음 & 슈즈 스텝)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">속도감</span>
+              <span class="spec-value">급가속 패스트 템포 샷</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(3)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 4 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 4]</span>
+              <span class="cut-timing">3.6s ~ 4.8s</span>
+            </div>
+            <div class="cut-title">스텝백 급제동 접지음</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">농구화 접지 클로즈업 (Footwear Macro)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">슛 공간 확보를 위한 순간 스텝백 제동! 농구화 밑창이 코트 바닥을 짓이기며 멈춤</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">끼이익-! (가슴 찌릿한 스니커즈 마찰음)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">디테일</span>
+              <span class="spec-value">바닥에 미세한 마찰 잔향</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(4)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 5 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 5]</span>
+              <span class="cut-timing">4.8s ~ 6.0s</span>
+            </div>
+            <div class="cut-title">수원화성 네온 & 스페이싱</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">하이앵글 풀코트 (Bird's Eye / High Angle)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">발끝 충격파로 바닥에 수원화성 성곽 네온 라인이 켜지며 팀원들이 양 코너로 스페이싱</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">위이잉-! (웅장한 네온 가동음 & 체육관 울림)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">의미</span>
+              <span class="spec-value">1인의 드리블에서 팀 전체의 시야 확장!</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(5)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 6 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 6]</span>
+              <span class="cut-timing">6.0s ~ 7.2s</span>
+            </div>
+            <div class="cut-title">정점 체공 점프슛</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">Medium Back View (120fps 초슬로우)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">수비 위로 붕 떠오른 점프슛 릴리즈, 등판에 'PROJECT COURT VISION 26' 선명 노출</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">순간 무음 ➔ 슉- (공이 공기를 가르는 소리)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">포즈</span>
+              <span class="spec-value">완벽한 팔로우스루 손목 스냅</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(6)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 7 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 7]</span>
+              <span class="cut-timing">7.2s ~ 8.4s</span>
+            </div>
+            <div class="cut-title">클린샷 스위시!</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">Low-Angle Rim Extreme Close-Up</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">공이 백보드도 안 스치고 림 정중앙 통과, 순백색 그물이 위로 촥- 뒤집히는 쾌감</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">솨아악-! (가장 시원하고 묵직한 그물 소리)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">카타르시스</span>
+              <span class="spec-value">완벽한 득점 순간의 쾌감 극대화</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(7)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+        <!-- Cut 8 -->
+        <div class="cut-card">
+          <div>
+            <div class="cut-header">
+              <span class="cut-number">[컷 8]</span>
+              <span class="cut-timing">8.4s ~ 10.0s</span>
+            </div>
+            <div class="cut-title">하이파이브 환호 & 공식 타이틀</div>
+            <div class="spec-item">
+              <span class="spec-label">구도</span>
+              <span class="spec-value">주인공 등 뒤(Back View) & 림 주변 샷</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">액션</span>
+              <span class="spec-value spec-highlight">팀원들의 하이파이브 손뼉 릴레이 + 펄럭이는 벤치 타월 + 엔딩 공식 타이틀 등장</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">타이틀</span>
+              <span class="spec-value" style="color: #ffaa33; font-weight: 700;">"우리의 코트는 계속 넓어진다"<br>프로젝트 코트비전 2026 in 수원</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">사운드</span>
+              <span class="spec-value">손뼉 촥! 촥! & 환호성 ➔ 심판 호각 삑-! ➔ 808 쿵!</span>
+            </div>
+          </div>
+          <button class="prompt-btn" onclick="copyPrompt(8)">
+            <span>AI 비디오 프롬프트 복사</span>
+            <span>📋</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Specs & Checklist Grid -->
+    <div class="specs-grid">
+      <div class="specs-card">
+        <h3>🎯 핵심 연출 3대 원칙</h3>
+        <ul class="specs-list">
+          <li><b>얼굴 없는 세련미 (Back-view & Silhouette)</b>: 어색한 AI 얼굴 표정을 배제하고 역동적인 포니테일 실루엣과 등판 번호로 승부.</li>
+          <li><b>키링과 볼의 완벽한 인과관계</b>: 1컷의 미니 농구공 키링 튕김이 2컷의 진짜 가죽 농구공 쿵!으로 직결되는 쾌감의 매치컷.</li>
+          <li><b>지역성과 확장의 상징</b>: 스텝백 브레이크의 충격파가 수원화성 성곽 네온 라인으로 코트를 뒤덮으며 공간이 확장되는 비주얼.</li>
+        </ul>
+      </div>
+
+      <div class="specs-card">
+        <h3>🏀 공식 브랜딩 & 소품 체크리스트</h3>
+        <ul class="specs-list">
+          <li><b>소품 1 (키링)</b>: 단일 링에 매달린 '초록 개구리 봉제인형'과 '미니 오렌지 가죽 농구공'.</li>
+          <li><b>유니폼 등판</b>: 볼드한 화이트 폰트로 <b>PROJECT COURT VISION 26</b> 표기.</li>
+          <li><b>공식 대회 명칭</b>: <b>프로젝트 코트비전 2026 in 수원</b> (Project Court Vision 2026 in Suwon).</li>
+          <li><b>공식 슬로건</b>: <b>"우리의 코트는 계속 넓어진다"</b>.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast">비디오 프롬프트가 복사되었습니다!</div>
+
+  <script>
+    const prompts = {
+      1: "Extreme macro close-up of a stylish gym backpack with a single metal keychain ring holding a cute green frog plush doll and a mini orange basketball. An athletic woman's index finger playfully taps and flicks the mini basketball twice, making both charms swing and collide playfully. Crisp lighting, cinematic 85mm macro lens, 4K commercial style.",
+      2: "Floor-level low angle match-cut shot. The mini ball transitions seamlessly into a real full-sized official orange leather basketball slamming down hard onto the polished hardwood basketball court. Shockwave vibration ripples across the floor with slight dust particles, heavy bass impact feel, cinematic 4K.",
+      3: "Dynamic back view follow shot of a female basketball player with a high ponytail sprinting forward, performing a sharp ankle-breaking crossover dribble past a female defender in stance. Energetic camera tracking, intense focus, crisp court lighting, athletic commercial aesthetic.",
+      4: "Extreme close-up macro on the bottom sole of a modern basketball sneaker executing an aggressive step-back brake on the hardwood floor. Rubber outsole biting and gripping the wood with high friction, squeak vibration, cinematic slow motion.",
+      5: "High-angle full court wide shot. As the sneaker steps back, glowing orange and neon green lines radiate outward across the court floor, illuminating the architectural outline of Suwon Hwaseong fortress ramparts. Teammates sprint outward, spacing into the corners, cinematic stadium lighting.",
+      6: "Medium back view slow motion shot at 120fps. The female player elevates high into the air for a floating jump shot above the outstretched hand of a defender. Bold typography 'PROJECT COURT VISION 26' clearly visible across her jersey back. Perfect wrist release follow-through.",
+      7: "Low angle extreme close-up on the basketball rim. The orange basketball drops cleanly through the center of the hoop without touching the rim. Pure white nylon net snaps and flutters violently upward in slow-motion swish, satisfying motion blur.",
+      8: "Back view celebration shot. Multiple teammates' hands reach into the frame from all angles, high-fiving the shooter's raised hand in rapid succession. Towels wave in celebration from the bench in the background. Cinematic lighting, with bold centered typography reading: '우리의 코트는 계속 넓어진다' and '프로젝트 코트비전 2026 in 수원'."
+    };
+
+    function copyPrompt(cutNum) {
+      const text = prompts[cutNum];
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = `[${cutNum}컷] 비디오 프롬프트가 복사되었습니다!`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      });
+    }
+  </script>
+</body>
+</html>

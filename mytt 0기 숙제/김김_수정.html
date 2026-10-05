@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>딥워크 타이머</title>
+    <style>
+        :root {
+            --bg-color: #0c0f1d;
+            --card-bg: #151a30;
+            --accent-color: #ff7b00;
+            --accent-hover: #e06d00;
+            --text-main: #f0f2f5;
+            --text-sub: #8b949e;
+            --border-color: #212842;
+            --safe-top: env(safe-area-inset-top, 16px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding-top: max(var(--safe-top), 8px);
+            padding-bottom: max(var(--safe-bottom), 8px);
+        }
+
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            padding: 4px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        header .date-display {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .content-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            padding: 0 16px;
+        }
+
+        .tab-content {
+            position: absolute;
+            top: 0;
+            left: 16px;
+            right: 16px;
+            bottom: 0;
+            display: none !important;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .tab-content.active {
+            display: flex !important;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        nav {
+            height: 56px;
+            display: flex;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 0 4px;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 11px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 2px;
+            fill: currentColor;
+        }
+
+        /* 1. 산 오르기 탭 구조 */
+        #tab-mountain {
+            justify-content: flex-start;
+            padding-bottom: 8px;
+            gap: 12px;
+        }
+
+        .mountain-view {
+            flex: 1;
+            min-height: 200px;
+            max-height: 38vh;
+            border-radius: 18px;
+            background: linear-gradient(to bottom, #141933, #222c54);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: background 0.6s ease;
+        }
+
+        .mountain-svg-bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .mountain-header-overlay {
+            position: absolute;
+            top: 12px;
+            left: 14px;
+            right: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .mountain-status-label {
+            color: var(--text-sub);
+        }
+
+        .mountain-percent-label {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .climber-illustration {
+            position: absolute;
+            bottom: 15%;
+            left: 12%;
+            width: 36px;
+            height: 36px;
+            transition: bottom 0.6s ease, left 0.6s ease;
+            z-index: 3;
+            transform-origin: center center;
+        }
+
+        @keyframes broom-floating {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-6px) rotate(-4deg);
+            }
+            50% {
+                transform: translateY(-11px) rotate(-1deg);
+            }
+            75% {
+                transform: translateY(-4px) rotate(3deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        @keyframes magic-sparkle-glow {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.4);
+            }
+        }
+
+        .climber-illustration.climbing {
+            animation: broom-floating 2.2s ease-in-out infinite;
+        }
+
+        .climber-illustration.climbing .magic-sparkle {
+            animation: magic-sparkle-glow 1.2s ease-in-out infinite alternate;
+        }
+
+        .mountain-timer-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 18px 12px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .timer-main-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .mountain-timer-clock {
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .mountain-timer-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .timer-right-top {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .timer-right-bottom {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .card-inner-progress {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .card-inner-progress-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        @keyframes progress-pulse {
+            0%, 100% {
+                filter: brightness(1);
+                box-shadow: 0 0 4px rgba(255, 123, 0, 0.4);
+            }
+            50% {
+                filter: brightness(1.25);
+                box-shadow: 0 0 10px rgba(255, 123, 0, 0.85);
+            }
+        }
+
+        .card-inner-progress-fill.active {
+            animation: progress-pulse 1.4s ease-in-out infinite;
+            background: linear-gradient(90deg, #ff7b00, #ffaa44);
+        }
+
+        .goal-dropdown-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .goal-label-small {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            width: 100%;
+            background: transparent;
+            color: var(--text-main);
+            border: none;
+            padding: 2px 0;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        select:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        optgroup {
+            background-color: #151a30;
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        option {
+            background-color: #151a30;
+            color: var(--text-main);
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        .select-wrapper::after {
+            content: '↕';
+            font-size: 12px;
+            color: var(--text-sub);
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .mountain-footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-msg-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-sub);
+            padding: 0 4px;
+        }
+
+        .mountain-action-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-climb-toggle {
+            flex: 2;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            background-color: var(--accent-color);
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn-climb-toggle.paused {
+            background-color: #212842;
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+        }
+
+        .btn-record {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .btn-record:active, .btn-climb-toggle:active {
+            opacity: 0.85;
+        }
+
+        /* 2. 딥워크 탭 스타일 */
+        #tab-deepwork {
+            gap: 10px;
+            padding-bottom: 4px;
+        }
+
+        .deepwork-top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-sub);
+            padding: 0 2px;
+        }
+
+        .output-goal-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .output-goal-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .goal-btn-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .goal-sub-btn {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .goal-add-form {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .goal-add-form.active { display: flex; }
+
+        .goal-add-input {
+            width: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .goal-form-actions { display: flex; gap: 6px; }
+        .btn-goal-confirm { flex: 2; background-color: var(--accent-color); color: white; border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .btn-goal-cancel { flex: 1; background-color: var(--border-color); color: var(--text-sub); border: none; padding: 8px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+        .guide-dashed-box {
+            border: 1.5px dashed var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 13px;
+            line-height: 1.5;
+            background-color: rgba(21, 26, 48, 0.4);
+            margin-top: 4px;
+        }
+
+        .task-input-row { display: flex; gap: 8px; align-items: center; }
+        .deepwork-day-dropdown {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            width: auto;
+            min-width: 64px;
+        }
+        .deepwork-task-input {
+            flex: 1;
+            min-width: 0;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+        }
+        input[type="text"] { width: 100%; background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 12px; font-size: 16px; outline: none; }
+        .btn-accent { background-color: var(--accent-color); color: white; border: none; padding: 0 16px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; white-space: nowrap; height: 44px; }
+        .weekday-tasks-container { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 4px; }
+        .weekday-box { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 14px; }
+        .weekday-header { font-size: 13px; font-weight: bold; color: var(--accent-color); margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .weekday-item-list { display: flex; flex-direction: column; gap: 4px; }
+        .task-row-item { display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding: 2px 0; }
+        .task-row-item label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1; word-break: break-all; }
+        .task-row-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-color); }
+        .task-row-item.completed span { text-decoration: line-through; color: var(--text-sub); }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: color 0.2s, background-color 0.2s;
+        }
+        .delete-btn:hover {
+            color: #ff4d4d;
+            background-color: rgba(255, 77, 77, 0.12);
+        }
+
+        /* 3. 바구니 탭 스타일 */
+        #tab-basket {
+            gap: 10px;
+            padding-bottom: 4px;
+        }
+
+        .basket-header-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 2px 0;
+        }
+
+        .basket-main-title { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+        .basket-sub-desc { font-size: 11px; color: var(--text-sub); opacity: 0.8; }
+        .basket-list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; min-height: 120px; }
+        .basket-item { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .basket-item label { display: flex; align-items: center; gap: 10px; font-size: 14px; flex: 1; cursor: pointer; word-break: break-all; color: var(--text-main); }
+        .basket-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-color); }
+        .basket-item.completed label span:last-child { text-decoration: line-through; color: var(--text-sub); }
+        .due-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; background: rgba(255, 123, 0, 0.15); color: var(--accent-color); font-weight: 600; white-space: nowrap; }
+        .basket-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+            padding-bottom: 6px;
+        }
+
+        .basket-day-dropdown {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            width: auto;
+            min-width: 82px;
+            flex-shrink: 0;
+            height: 44px;
+        }
+
+        .basket-text-input {
+            flex: 1;
+            min-width: 0;
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            padding: 12px 14px !important;
+            border-radius: 12px !important;
+            font-size: 16px !important;
+            outline: none;
+            height: 44px;
+        }
+
+        .basket-text-input::placeholder { color: var(--text-sub); }
+        .btn-basket-add { background-color: var(--accent-color); color: white; border: none; padding: 0 16px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; white-space: nowrap; height: 44px; flex-shrink: 0; }
+
+        /* 4. 업무시간 탭 전면 개편 스타일 */
+        #tab-timer {
+            gap: 10px;
+            padding-bottom: 4px;
+        }
+
+        .timer-top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-sub);
+            padding: 0 2px;
+        }
+
+        .timer-three-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .timer-stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .timer-stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent-color);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-stat-label {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .timer-guide-box {
+            border: 1.5px dashed var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 13px;
+            line-height: 1.5;
+            background-color: rgba(21, 26, 48, 0.4);
+            margin-top: 4px;
+        }
+
+        .timer-logs-container {
+            width: 100%;
+            flex: 1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .timer-logs-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .timer-logs-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .log-item {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .log-item .log-time { color: var(--text-sub); font-size: 11px; }
+        .log-item .log-duration { font-weight: bold; color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- 헤더 -->
+    <header>
+        <span class="date-display" id="header-date">--월 --일</span>
+        <span id="week-indicator">이번 주</span>
+    </header>
+
+    <!-- 컨텐츠 영역 -->
+    <div class="content-area">
+
+        <!-- 1. 산 오르기 -->
+        <div id="tab-mountain" class="tab-content active">
+            <div class="mountain-view" id="mountain-bg">
+                <svg class="mountain-svg-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <circle cx="20" cy="15" r="0.8" fill="#ffffff" opacity="0.8" />
+                    <circle cx="50" cy="22" r="1" fill="#ffffff" opacity="0.6" />
+                    <circle cx="75" cy="12" r="0.7" fill="#ffffff" opacity="0.9" />
+                    <ellipse cx="40" cy="28" rx="10" ry="2.5" fill="#202a52" opacity="0.6" />
+                    <polygon points="0,100 28,45 65,100" fill="#141a36" />
+                    <polygon points="15,100 62,15 100,100" fill="#1a2347" />
+                    <line x1="62" y1="15" x2="62" y2="10" stroke="#ff7b00" stroke-width="1.2" />
+                    <polygon points="62,10 67,12 62,14" fill="#ff7b00" />
+                </svg>
+
+                <div class="mountain-header-overlay">
+                    <span class="mountain-status-label" id="mountain-status-text">쉬는 중</span>
+                    <span class="mountain-percent-label" id="mountain-progress-percent">0%</span>
+                </div>
+
+                <div class="climber-illustration" id="climber-char" style="left: 12%; bottom: 15%;">
+                    <svg viewBox="0 0 36 36" width="36" height="36">
+                        <!-- 마법 빗자루 솔 (뒤쪽) -->
+                        <polygon points="2,28 10,21 13,24 4,31" fill="#e5a958" />
+                        <path d="M3,28 L10,22 M4,30 L11,23 M6,31 L12,24" stroke="#c48332" stroke-width="0.8" stroke-linecap="round"/>
+                        <line x1="9" y1="21" x2="12" y2="24" stroke="#ff7b00" stroke-width="2" stroke-linecap="round"/>
+                        <!-- 빗자루 자루 -->
+                        <line x1="5" y1="27" x2="33" y2="11" stroke="#d69244" stroke-width="2.6" stroke-linecap="round"/>
+                        <!-- 탑승자 머리 -->
+                        <circle cx="21" cy="9" r="4" fill="#ff7b00" />
+                        <!-- 탑승자 몸통 -->
+                        <path d="M20 13 L17 21" stroke="#f0f2f5" stroke-width="2.6" stroke-linecap="round"/>
+                        <!-- 탑승자 팔 (빗자루 잡기) -->
+                        <path d="M19 16 L25 16" stroke="#f0f2f5" stroke-width="2.4" stroke-linecap="round"/>
+                        <!-- 탑승자 다리 (빗자루에 걸친 자세) -->
+                        <path d="M17 21 L15 25 L19 25" stroke="#f0f2f5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <!-- 마법 반짝이 효과 -->
+                        <circle class="magic-sparkle" cx="3" cy="24" r="1.2" fill="#ffe28a" opacity="0.8"/>
+                        <circle class="magic-sparkle" cx="7" cy="30" r="0.9" fill="#ffa742" opacity="0.7"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="mountain-timer-card">
+                <div class="timer-main-row">
+                    <span class="mountain-timer-clock" id="mountain-timer-clock">00:00:00</span>
+                    <div class="mountain-timer-right">
+                        <span class="timer-right-top" id="mountain-timer-percent">0%</span>
+                        <span class="timer-right-bottom">오늘 목표 4시간</span>
+                    </div>
+                </div>
+                <div class="card-inner-progress">
+                    <div class="card-inner-progress-fill" id="card-progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="goal-dropdown-section">
+                <span class="goal-label-small">지금 하는 일</span>
+                <div class="select-wrapper">
+                    <select id="mountain-goal-select" onchange="handleMountainGoalChange()">
+                        <option value="">아직 할 일이 없어요</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mountain-footer-section">
+                <div class="status-msg-row">
+                    <span id="mountain-action-status-msg">오늘 아직 안 올랐어요</span>
+                    <span id="mountain-remaining-budget">오늘 남은 목표 시간 4시간</span>
+                </div>
+                <div class="mountain-action-row">
+                    <button class="btn-climb-toggle" id="btn-climb-toggle" onclick="toggleClimbTimer()">다시 오르기</button>
+                    <button class="btn-record" id="btn-record" onclick="recordClimbTime()">기록하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 딥워크 -->
+        <div id="tab-deepwork" class="tab-content">
+            <div class="deepwork-top-header">
+                <span style="font-size: 11px; color: var(--text-sub);">딥워크</span>
+                <span style="font-size: 11px; color: var(--text-sub);">9/14-9/18</span>
+            </div>
+
+            <div class="output-goal-card">
+                <div class="output-goal-title">산출물 목표</div>
+                <div class="select-wrapper">
+                    <select id="deepwork-goal-select" onchange="handleGoalChange()">
+                        <!-- 동적 생성 -->
+                    </select>
+                </div>
+                
+                <div class="goal-btn-row" id="goal-action-btns">
+                    <button class="goal-sub-btn" onclick="deleteCurrentGoal()">목표 삭제</button>
+                    <button class="goal-sub-btn" onclick="toggleGoalAddForm(true)">목표 추가</button>
+                </div>
+
+                <div class="goal-add-form" id="goal-add-form">
+                    <input type="text" id="new-goal-input" class="goal-add-input" placeholder="이번 주 목표를 입력하세요">
+                    <div class="goal-form-actions">
+                        <button class="btn-goal-confirm" onclick="addNewGoal()">추가</button>
+                        <button class="btn-goal-cancel" onclick="toggleGoalAddForm(false)">취소</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-dashed-box" id="deepwork-guide-box">
+                먼저 이번주에 내놓을 것을 하나 적어보세요. 목표를 고르면 그 목표의 월~금 할 일이 여기에 나옵니다.
+            </div>
+
+            <div id="deepwork-active-container" style="display: none; flex-direction: column; flex: 1; gap: 8px; overflow: hidden;">
+                <div class="task-input-row">
+                    <select id="deepwork-day-select" class="deepwork-day-dropdown">
+                        <option value="월">월</option>
+                        <option value="화">화</option>
+                        <option value="수">수</option>
+                        <option value="목">목</option>
+                        <option value="금">금</option>
+                    </select>
+                    <input type="text" id="deepwork-task-input" class="deepwork-task-input" placeholder="할 일 입력 후 Enter">
+                    <button class="btn-accent" onclick="addDeepWorkTask()">추가</button>
+                </div>
+                <div class="weekday-tasks-container" id="weekday-tasks-container"></div>
+            </div>
+        </div>
+
+        <!-- 3. 바구니 -->
+        <div id="tab-basket" class="tab-content">
+            <div class="basket-header-area">
+                <span class="basket-main-title">할 일 바구니</span>
+                <span class="basket-sub-desc">딥워크와 별개로, 짬 나면 처리할 일들을 마감 요일만 정해주세요.</span>
+            </div>
+
+            <div class="basket-list-container" id="basket-list">
+                <!-- 동적 렌더링 -->
+            </div>
+
+            <div class="basket-input-row">
+                <select id="basket-day-select" class="basket-day-dropdown">
+                    <option value="월">월 마감</option>
+                    <option value="화">화 마감</option>
+                    <option value="수">수 마감</option>
+                    <option value="목">목 마감</option>
+                    <option value="금">금 마감</option>
+                </select>
+                <input type="text" id="basket-task-input" class="basket-text-input" placeholder="생각난 일 적어두기">
+                <button class="btn-basket-add" onclick="addBasketTask()">추가</button>
+            </div>
+        </div>
+
+        <!-- 4. 업무시간 -->
+        <div id="tab-timer" class="tab-content">
+            <div class="timer-top-header">
+                <span style="font-size: 11px; color: var(--text-sub);">업무시간</span>
+                <span style="font-size: 11px; color: var(--text-sub);" id="timer-week-budget-text">주간 목표 20시간 중 0분</span>
+            </div>
+
+            <div class="timer-three-grid">
+                <div class="timer-stat-card">
+                    <div class="timer-stat-value" id="stat-today-time">0분</div>
+                    <div class="timer-stat-label">오늘</div>
+                </div>
+                <div class="timer-stat-card">
+                    <div class="timer-stat-value" id="stat-today-remain">4시간</div>
+                    <div class="timer-stat-label">오늘 남은 목표</div>
+                </div>
+                <div class="timer-stat-card">
+                    <div class="timer-stat-value" id="stat-week-time">0분</div>
+                    <div class="timer-stat-label">이번 주</div>
+                </div>
+            </div>
+
+            <div class="timer-guide-box" id="timer-guide-box">
+                이번 주 기록이 없어요. 타이머를 돌리면 여기에 시간이 남습니다.
+            </div>
+
+            <div class="timer-logs-container" id="timer-logs-wrapper" style="display: none;">
+                <div class="timer-logs-title">
+                    <span>오늘의 기록</span>
+                    <span id="timer-total-today">총 0분</span>
+                </div>
+                <div class="timer-logs-list" id="timer-logs-list">
+                    <!-- 로그 항목 -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 하단 탭 네비게이션 -->
+    <nav>
+        <button class="nav-item active" onclick="switchTab(0)">
+            <svg viewBox="0 0 24 24"><path d="M14,6L10.25,11L13,14.5L10.5,16.5L6,11L1,18H23L14,6Z"/></svg>
+            산 오르기
+        </button>
+        <button class="nav-item" onclick="switchTab(1)">
+            <svg viewBox="0 0 24 24"><path d="M19,3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.89,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M10,17L5,12L6.41,10.59L10,14.17L17.59,6.58L19,8L10,17Z"/></svg>
+            딥워크
+        </button>
+        <button class="nav-item" onclick="switchTab(2)">
+            <svg viewBox="0 0 24 24"><path d="M19,6H16C16,3.79 14.21,2 12,2C9.79,2 8,3.79 8,6H5C3.89,6 3,6.89 3,8V20C3,21.1 3.89,22 5,22H19C20.1,22 21,21.1 21,20V8C21,6.89 20.1,6 19,6M12,4C13.1,4 14,4.9 14,6H10C10,4.9 10.9,4 12,4M19,20H5V8H8V10C8,10.55 8.45,11 9,11C9.55,11 10,10.55 10,10V8H14V10C14,10.55 14.45,11 15,11C15.55,11 16,10.55 16,10V8H19V20Z"/></svg>
+            바구니
+        </button>
+        <button class="nav-item" onclick="switchTab(3)">
+            <svg viewBox="0 0 24 24"><path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/></svg>
+            업무시간
+        </button>
+    </nav>
+</div>
+
+<script>
+    const WEEKDAYS = ['월', '화', '수', '목', '금'];
+    const STORAGE_KEY = 'deep_work_timer_v13';
+
+    function getWeekKey(date = new Date()) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(d.setDate(diff));
+        return `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
+    }
+
+    function getTodayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    let appData = {
+        weekKey: getWeekKey(),
+        goals: [],
+        selectedGoalId: '',
+        selectedTaskKey: '',
+        deepWorkTasks: {},
+        basketTasks: [],
+        timerLogs: {},
+        climberState: { isRunning: false, accumulatedSeconds: 0, lastStartTime: null }
+    };
+
+    function loadData() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed.weekKey === getWeekKey()) {
+                    appData = Object.assign({}, appData, parsed);
+                    if (!appData.climberState) {
+                        appData.climberState = { isRunning: false, accumulatedSeconds: 0, lastStartTime: null };
+                    }
+                    if (!appData.goals) appData.goals = [];
+                    if (!appData.selectedTaskKey) appData.selectedTaskKey = '';
+                    if (!appData.deepWorkTasks) appData.deepWorkTasks = {};
+                    if (!appData.basketTasks) appData.basketTasks = [];
+                    if (!appData.timerLogs) appData.timerLogs = {};
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadData();
+        updateHeaderDate();
+        
+        const dayMap = { 1: '월', 2: '화', 3: '수', 4: '목', 5: '금', 6: '금', 0: '월' };
+        const todayStr = dayMap[new Date().getDay()];
+        const deepDaySelect = document.getElementById('deepwork-day-select');
+        if (deepDaySelect) deepDaySelect.value = todayStr;
+
+        const deepInput = document.getElementById('deepwork-task-input');
+        if (deepInput) {
+            deepInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    if (e.isComposing || e.keyCode === 229) return;
+                    e.preventDefault();
+                    addDeepWorkTask();
+                }
+            });
+        }
+        const basketInput = document.getElementById('basket-task-input');
+        if (basketInput) {
+            basketInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    if (e.isComposing || e.keyCode === 229) return;
+                    e.preventDefault();
+                    addBasketTask();
+                }
+            });
+        }
+        const newGoalInput = document.getElementById('new-goal-input');
+        if (newGoalInput) {
+            newGoalInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    if (e.isComposing || e.keyCode === 229) return;
+                    e.preventDefault();
+                    addNewGoal();
+                }
+            });
+        }
+
+        refreshGoalDropdowns();
+        renderDeepWorkTasks();
+        renderBasketTasks();
+        renderTimerStats();
+        checkTimersOnLoad();
+        updateMountainProgress();
+
+        setInterval(onTick, 1000);
+    });
+
+    function updateHeaderDate() {
+        const now = new Date();
+        const m = now.getMonth() + 1;
+        const d = now.getDate();
+        const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+        const dateElem = document.getElementById('header-date');
+        if (dateElem) dateElem.innerText = `${m}월 ${d}일 (${dayNames[now.getDay()]})`;
+    }
+
+    function switchTab(index) {
+        const contents = document.querySelectorAll('.tab-content');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        contents.forEach((c, idx) => c.classList.toggle('active', idx === index));
+        navItems.forEach((n, idx) => n.classList.toggle('active', idx === index));
+    }
+
+    function refreshMountainTaskDropdown() {
+        const mountainSelect = document.getElementById('mountain-goal-select');
+        if (!mountainSelect) return;
+        mountainSelect.innerHTML = '';
+
+        const dayMap = { 1: '월', 2: '화', 3: '수', 4: '목', 5: '금', 6: '금', 0: '월' };
+        const todayStr = dayMap[new Date().getDay()];
+
+        if (!appData.goals || appData.goals.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = '아직 등록된 할 일이 없어요';
+            mountainSelect.appendChild(opt);
+            appData.selectedTaskKey = '';
+            return;
+        }
+
+        let hasAnyTasks = false;
+        const todayTasks = [];
+        const otherTasks = [];
+
+        appData.goals.forEach(goal => {
+            const goalTasks = appData.deepWorkTasks?.[goal.id] || {};
+            const tTasks = goalTasks[todayStr] || [];
+            tTasks.forEach((task, idx) => {
+                hasAnyTasks = true;
+                todayTasks.push({
+                    key: `${goal.id}|${todayStr}|${idx}`,
+                    text: task.text,
+                    done: task.done,
+                    goalTitle: goal.title,
+                    day: todayStr
+                });
+            });
+
+            WEEKDAYS.forEach(day => {
+                if (day !== todayStr) {
+                    const oTasks = goalTasks[day] || [];
+                    oTasks.forEach((task, idx) => {
+                        hasAnyTasks = true;
+                        otherTasks.push({
+                            key: `${goal.id}|${day}|${idx}`,
+                            text: task.text,
+                            done: task.done,
+                            goalTitle: goal.title,
+                            day: day
+                        });
+                    });
+                }
+            });
+        });
+
+        if (!hasAnyTasks) {
+            appData.goals.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = `${g.id}||`;
+                opt.textContent = `🎯 ${g.title} (할일 없음)`;
+                if (opt.value === appData.selectedTaskKey) opt.selected = true;
+                mountainSelect.appendChild(opt);
+            });
+            if (!appData.selectedTaskKey && mountainSelect.options.length > 0) {
+                appData.selectedTaskKey = mountainSelect.options[0].value;
+            }
+            return;
+        }
+
+        if (todayTasks.length > 0) {
+            const groupToday = document.createElement('optgroup');
+            groupToday.label = `📅 오늘(${todayStr}요일) 할 일`;
+            todayTasks.sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+            todayTasks.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.key;
+                opt.textContent = `${item.done ? '✓ ' : ''}[${item.goalTitle}] ${item.text}${item.done ? ' (완료)' : ''}`;
+                if (item.key === appData.selectedTaskKey) opt.selected = true;
+                groupToday.appendChild(opt);
+            });
+            mountainSelect.appendChild(groupToday);
+        }
+
+        if (otherTasks.length > 0) {
+            const groupOther = document.createElement('optgroup');
+            groupOther.label = `🗓️ 다른 요일 할 일`;
+            otherTasks.sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+            otherTasks.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.key;
+                opt.textContent = `${item.done ? '✓ ' : ''}[${item.day}][${item.goalTitle}] ${item.text}${item.done ? ' (완료)' : ''}`;
+                if (item.key === appData.selectedTaskKey) opt.selected = true;
+                groupOther.appendChild(opt);
+            });
+            mountainSelect.appendChild(groupOther);
+        }
+
+        let exists = false;
+        for (let i = 0; i < mountainSelect.options.length; i++) {
+            if (mountainSelect.options[i].value === appData.selectedTaskKey) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists && mountainSelect.options.length > 0) {
+            appData.selectedTaskKey = mountainSelect.options[0].value;
+            mountainSelect.value = appData.selectedTaskKey;
+        } else if (exists) {
+            mountainSelect.value = appData.selectedTaskKey;
+        }
+    }
+
+    function refreshGoalDropdowns() {
+        const deepSelect = document.getElementById('deepwork-goal-select');
+        if (deepSelect) {
+            deepSelect.innerHTML = '';
+            if (!appData.goals || appData.goals.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = '아직 목표가 없어요';
+                deepSelect.appendChild(opt);
+                appData.selectedGoalId = '';
+            } else {
+                appData.goals.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g.id;
+                    opt.textContent = `🎯 ${g.title}`;
+                    if (g.id === appData.selectedGoalId) opt.selected = true;
+                    deepSelect.appendChild(opt);
+                });
+                if (!appData.selectedGoalId && appData.goals.length > 0) {
+                    appData.selectedGoalId = appData.goals[0].id;
+                    deepSelect.value = appData.selectedGoalId;
+                }
+            }
+        }
+
+        refreshMountainTaskDropdown();
+
+        const guideBox = document.getElementById('deepwork-guide-box');
+        const activeContainer = document.getElementById('deepwork-active-container');
+
+        if (!appData.goals || appData.goals.length === 0 || !appData.selectedGoalId) {
+            if (guideBox) guideBox.style.display = 'block';
+            if (activeContainer) activeContainer.style.display = 'none';
+        } else {
+            if (guideBox) guideBox.style.display = 'none';
+            if (activeContainer) activeContainer.style.display = 'flex';
+        }
+    }
+
+    function handleGoalChange() {
+        const deepSelect = document.getElementById('deepwork-goal-select');
+        if (deepSelect) {
+            appData.selectedGoalId = deepSelect.value;
+            saveData();
+            refreshGoalDropdowns();
+            renderDeepWorkTasks();
+        }
+    }
+
+    function handleMountainGoalChange() {
+        const mountainSelect = document.getElementById('mountain-goal-select');
+        if (mountainSelect) {
+            appData.selectedTaskKey = mountainSelect.value;
+            saveData();
+        }
+    }
+
+    function toggleGoalAddForm(show) {
+        const form = document.getElementById('goal-add-form');
+        const btns = document.getElementById('goal-action-btns');
+        if (form && btns) {
+            if (show) {
+                form.classList.add('active');
+                btns.style.display = 'none';
+                const input = document.getElementById('new-goal-input');
+                if (input) input.focus();
+            } else {
+                form.classList.remove('active');
+                btns.style.display = 'flex';
+                const input = document.getElementById('new-goal-input');
+                if (input) input.value = '';
+            }
+        }
+    }
+
+    function addNewGoal() {
+        const input = document.getElementById('new-goal-input');
+        if (!input) return;
+        const title = input.value.trim();
+        if (!title) {
+            alert('목표 내용을 입력해주세요.');
+            return;
+        }
+
+        const newId = 'g_' + Date.now();
+        if (!appData.goals) appData.goals = [];
+        appData.goals.push({ id: newId, title: title });
+        appData.selectedGoalId = newId;
+
+        if (!appData.deepWorkTasks) appData.deepWorkTasks = {};
+        appData.deepWorkTasks[newId] = {};
+        WEEKDAYS.forEach(day => {
+            appData.deepWorkTasks[newId][day] = [];
+        });
+
+        input.value = '';
+        toggleGoalAddForm(false);
+        saveData();
+        refreshGoalDropdowns();
+        renderDeepWorkTasks();
+    }
+
+    function deleteCurrentGoal() {
+        if (!appData.selectedGoalId) {
+            alert('삭제할 목표가 없습니다.');
+            return;
+        }
+        if (confirm('현재 선택된 목표를 삭제하시겠습니까?')) {
+            const targetId = appData.selectedGoalId;
+            appData.goals = appData.goals.filter(g => g.id !== targetId);
+            delete appData.deepWorkTasks[targetId];
+
+            appData.selectedGoalId = (appData.goals && appData.goals.length > 0) ? appData.goals[0].id : '';
+            saveData();
+            refreshGoalDropdowns();
+            renderDeepWorkTasks();
+        }
+    }
+
+    function getCurrentClimbSeconds() {
+        let total = appData.climberState.accumulatedSeconds || 0;
+        if (appData.climberState.isRunning && appData.climberState.lastStartTime) {
+            total += Math.floor((Date.now() - appData.climberState.lastStartTime) / 1000);
+        }
+        return total;
+    }
+
+    function getTodayTotalSeconds() {
+        const todayKey = getTodayKey();
+        const logs = appData.timerLogs[todayKey] || [];
+        const loggedSeconds = logs.reduce((acc, cur) => acc + (cur.durationMinutes * 60), 0);
+        return loggedSeconds + getCurrentClimbSeconds();
+    }
+
+    function updateMountainProgress() {
+        const totalSeconds = getTodayTotalSeconds();
+        const currentClimbSec = getCurrentClimbSeconds();
+
+        const targetSeconds = 240 * 60; // 4시간 = 14400초
+        const percentFloat = Math.min(100, (totalSeconds / targetSeconds) * 100);
+        const percent = Math.floor(percentFloat);
+
+        const cardPercentElem = document.getElementById('mountain-timer-percent');
+        if (cardPercentElem) cardPercentElem.innerText = `${percent}%`;
+
+        const percentElem = document.getElementById('mountain-progress-percent');
+        const fillElem = document.getElementById('card-progress-fill');
+        if (percentElem) percentElem.innerText = `${percent}%`;
+        if (fillElem) {
+            fillElem.style.width = `${Math.max(percentFloat, totalSeconds > 0 ? 0.8 : 0)}%`;
+            if (appData.climberState.isRunning) {
+                fillElem.classList.add('active');
+            } else {
+                fillElem.classList.remove('active');
+            }
+        }
+
+        const remainSec = Math.max(0, targetSeconds - totalSeconds);
+        const remainH = Math.floor(remainSec / 3600);
+        const remainRm = Math.floor((remainSec % 3600) / 60);
+        const budgetElem = document.getElementById('mountain-remaining-budget');
+        if (budgetElem) budgetElem.innerText = `오늘 남은 목표 시간 ${remainH > 0 ? remainH + '시간 ' : ''}${remainRm}분`;
+
+        const statusMsgElem = document.getElementById('mountain-action-status-msg');
+        if (statusMsgElem) {
+            if (appData.climberState.isRunning) {
+                statusMsgElem.innerText = '열심히 오르는 중';
+            } else if (totalSeconds > 0) {
+                statusMsgElem.innerText = '기록 대기 중';
+            } else {
+                statusMsgElem.innerText = '오늘 아직 안 올랐어요';
+            }
+        }
+
+        const charElem = document.getElementById('climber-char');
+        const bgElem = document.getElementById('mountain-bg');
+
+        if (charElem) {
+            charElem.style.bottom = `${15 + (percentFloat * 0.55)}%`;
+            charElem.style.left = `${12 + (percentFloat * 0.65)}%`;
+        }
+
+        if (bgElem) {
+            if (percent === 0) {
+                bgElem.style.background = 'linear-gradient(to bottom, #141933, #222c54)';
+            } else if (percent < 50) {
+                bgElem.style.background = 'linear-gradient(to bottom, #19244d, #31427a)';
+            } else if (percent < 100) {
+                bgElem.style.background = 'linear-gradient(to bottom, #22326b, #4a63a8)';
+            } else {
+                bgElem.style.background = 'linear-gradient(to bottom, #2e438a, #7a9ec7)';
+            }
+        }
+
+        updateClimbClockDisplay(totalSeconds);
+    }
+
+    function checkTimersOnLoad() {
+        const btn = document.getElementById('btn-climb-toggle');
+        const statusText = document.getElementById('mountain-status-text');
+        const climberChar = document.getElementById('climber-char');
+        const cardProgressFill = document.getElementById('card-progress-fill');
+        const mountainSelect = document.getElementById('mountain-goal-select');
+
+        if (appData.climberState.isRunning) {
+            if (btn) {
+                btn.innerText = '잠깐 쉬기';
+                btn.className = 'btn-climb-toggle paused';
+            }
+            if (statusText) statusText.innerText = '오르는 중';
+            if (climberChar) climberChar.classList.add('climbing');
+            if (cardProgressFill) cardProgressFill.classList.add('active');
+            if (mountainSelect) mountainSelect.disabled = true;
+        } else {
+            if (btn) {
+                btn.innerText = '다시 오르기';
+                btn.className = 'btn-climb-toggle';
+            }
+            if (statusText) statusText.innerText = '쉬는 중';
+            if (climberChar) climberChar.classList.remove('climbing');
+            if (cardProgressFill) cardProgressFill.classList.remove('active');
+            if (mountainSelect) mountainSelect.disabled = false;
+        }
+        updateClimbClockDisplay(getTodayTotalSeconds());
+    }
+
+    function toggleClimbTimer() {
+        const now = Date.now();
+        const btn = document.getElementById('btn-climb-toggle');
+        const statusText = document.getElementById('mountain-status-text');
+        const climberChar = document.getElementById('climber-char');
+        const cardProgressFill = document.getElementById('card-progress-fill');
+        const mountainSelect = document.getElementById('mountain-goal-select');
+
+        if (!appData.climberState.isRunning) {
+            appData.climberState.isRunning = true;
+            appData.climberState.lastStartTime = now;
+            if (btn) {
+                btn.innerText = '잠깐 쉬기';
+                btn.className = 'btn-climb-toggle paused';
+            }
+            if (statusText) statusText.innerText = '오르는 중';
+            if (climberChar) climberChar.classList.add('climbing');
+            if (cardProgressFill) cardProgressFill.classList.add('active');
+            if (mountainSelect) mountainSelect.disabled = true;
+        } else {
+            const elapsed = Math.floor((now - appData.climberState.lastStartTime) / 1000);
+            appData.climberState.accumulatedSeconds = (appData.climberState.accumulatedSeconds || 0) + elapsed;
+            appData.climberState.isRunning = false;
+            appData.climberState.lastStartTime = null;
+
+            if (btn) {
+                btn.innerText = '다시 오르기';
+                btn.className = 'btn-climb-toggle';
+            }
+            if (statusText) statusText.innerText = '쉬는 중';
+            if (climberChar) climberChar.classList.remove('climbing');
+            if (cardProgressFill) cardProgressFill.classList.remove('active');
+            if (mountainSelect) mountainSelect.disabled = false;
+        }
+        saveData();
+        updateMountainProgress();
+    }
+
+    function recordClimbTime() {
+        const totalSec = getCurrentClimbSeconds();
+        const durationMinutes = Math.floor(totalSec / 60);
+
+        if (durationMinutes < 1 && totalSec < 5) {
+            alert('기록할 시간이 너무 짧습니다. (5초 이상 필요)');
+            return;
+        }
+
+        let taskText = '딥워크 집중';
+        let goalTitle = '';
+
+        if (appData.selectedTaskKey) {
+            const parts = appData.selectedTaskKey.split('|');
+            const gId = parts[0];
+            const day = parts[1];
+            const tIdx = parseInt(parts[2], 10);
+            const goal = appData.goals.find(g => g.id === gId);
+            if (goal) goalTitle = goal.title;
+            if (goal && day && !isNaN(tIdx)) {
+                const task = appData.deepWorkTasks[gId]?.[day]?.[tIdx];
+                if (task) taskText = task.text;
+            } else if (goal) {
+                taskText = goal.title;
+            }
+        }
+
+        const todayKey = getTodayKey();
+        if (!appData.timerLogs[todayKey]) appData.timerLogs[todayKey] = [];
+
+        const now = Date.now();
+        const startTime = now - (totalSec * 1000);
+        const sDate = new Date(startTime);
+        const eDate = new Date(now);
+        const timeStr = `${String(sDate.getHours()).padStart(2,'0')}:${String(sDate.getMinutes()).padStart(2,'0')} ~ ${String(eDate.getHours()).padStart(2,'0')}:${String(eDate.getMinutes()).padStart(2,'0')}`;
+
+        appData.timerLogs[todayKey].unshift({
+            timeRange: timeStr,
+            durationMinutes: Math.max(1, durationMinutes),
+            taskText: taskText,
+            goalTitle: goalTitle
+        });
+
+        appData.climberState = { isRunning: false, accumulatedSeconds: 0, lastStartTime: null };
+        
+        const btn = document.getElementById('btn-climb-toggle');
+        if (btn) {
+            btn.innerText = '다시 오르기';
+            btn.className = 'btn-climb-toggle';
+        }
+        const statusText = document.getElementById('mountain-status-text');
+        if (statusText) statusText.innerText = '쉬는 중';
+
+        const climberChar = document.getElementById('climber-char');
+        if (climberChar) climberChar.classList.remove('climbing');
+        const cardProgressFill = document.getElementById('card-progress-fill');
+        if (cardProgressFill) cardProgressFill.classList.remove('active');
+        const mountainSelect = document.getElementById('mountain-goal-select');
+        if (mountainSelect) mountainSelect.disabled = false;
+
+        saveData();
+        updateMountainProgress();
+        renderTimerStats();
+        alert(`딥워크 ${durationMinutes}분 [${taskText}] 기록이 완료되었습니다!`);
+    }
+
+    function onTick() {
+        const totalSec = getTodayTotalSeconds();
+        updateClimbClockDisplay(totalSec);
+        if (appData.climberState.isRunning) {
+            updateMountainProgress();
+            renderTimerStats();
+        }
+    }
+
+    function updateClimbClockDisplay(totalSeconds) {
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        const clockElem = document.getElementById('mountain-timer-clock');
+        if (clockElem) {
+            clockElem.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+    }
+
+    let isSubmittingDeepWork = false;
+    function addDeepWorkTask() {
+        if (isSubmittingDeepWork) return;
+        const input = document.getElementById('deepwork-task-input');
+        const daySelect = document.getElementById('deepwork-day-select');
+        if (!input || !appData.selectedGoalId) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        isSubmittingDeepWork = true;
+        input.value = '';
+
+        const selectedDay = daySelect ? daySelect.value : '월';
+
+        if (!appData.deepWorkTasks[appData.selectedGoalId]) appData.deepWorkTasks[appData.selectedGoalId] = {};
+        if (!appData.deepWorkTasks[appData.selectedGoalId][selectedDay]) appData.deepWorkTasks[appData.selectedGoalId][selectedDay] = [];
+
+        appData.deepWorkTasks[appData.selectedGoalId][selectedDay].push({ text, done: false });
+        saveData();
+        renderDeepWorkTasks();
+        refreshMountainTaskDropdown();
+
+        setTimeout(() => { isSubmittingDeepWork = false; }, 80);
+    }
+
+    function toggleDeepWorkTask(day, index) {
+        if (!appData.selectedGoalId) return;
+        const tasks = appData.deepWorkTasks[appData.selectedGoalId]?.[day];
+        if (tasks && tasks[index]) {
+            tasks[index].done = !tasks[index].done;
+            saveData();
+            renderDeepWorkTasks();
+            refreshMountainTaskDropdown();
+        }
+    }
+
+    function deleteDeepWorkTask(day, index) {
+        if (!appData.selectedGoalId) return;
+        const tasks = appData.deepWorkTasks[appData.selectedGoalId]?.[day];
+        if (tasks) {
+            tasks.splice(index, 1);
+            saveData();
+            renderDeepWorkTasks();
+            refreshMountainTaskDropdown();
+        }
+    }
+
+    function renderDeepWorkTasks() {
+        const container = document.getElementById('weekday-tasks-container');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!appData.selectedGoalId) return;
+
+        const goalTasks = appData.deepWorkTasks[appData.selectedGoalId] || {};
+
+        WEEKDAYS.forEach(day => {
+            const dayTasks = goalTasks[day] || [];
+            const box = document.createElement('div');
+            box.className = 'weekday-box';
+            
+            let html = `<div class="weekday-header"><span>${day}요일</span><span>${dayTasks.filter(t => t.done).length}/${dayTasks.length}</span></div><div class="weekday-item-list">`;
+            
+            if (dayTasks.length === 0) {
+                html += `<div style="font-size:12px; color:var(--text-sub);">할 일이 없습니다.</div>`;
+            } else {
+                dayTasks.forEach((t, idx) => {
+                    html += `
+                        <div class="task-row-item ${t.done ? 'completed' : ''}">
+                            <label>
+                                <input type="checkbox" ${t.done ? 'checked' : ''} onclick="toggleDeepWorkTask('${day}', ${idx})">
+                                <span>${escapeHtml(t.text)}</span>
+                            </label>
+                            <button class="delete-btn" onclick="deleteDeepWorkTask('${day}', ${idx})" title="삭제">✕</button>
+                        </div>
+                    `;
+                });
+            }
+            html += `</div>`;
+            box.innerHTML = html;
+            container.appendChild(box);
+        });
+    }
+
+    let isSubmittingBasket = false;
+    function addBasketTask() {
+        if (isSubmittingBasket) return;
+        const input = document.getElementById('basket-task-input');
+        const daySelect = document.getElementById('basket-day-select');
+        if (!input || !daySelect) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        isSubmittingBasket = true;
+        input.value = '';
+
+        if (!appData.basketTasks) appData.basketTasks = [];
+
+        appData.basketTasks.push({
+            id: 'b_' + Date.now(),
+            text: text,
+            dueDay: daySelect.value,
+            done: false
+        });
+
+        saveData();
+        renderBasketTasks();
+        setTimeout(() => { isSubmittingBasket = false; }, 80);
+    }
+
+    function toggleBasketTask(id) {
+        const item = appData.basketTasks.find(t => t.id === id);
+        if (item) {
+            item.done = !item.done;
+            saveData();
+            renderBasketTasks();
+        }
+    }
+
+    function deleteBasketTask(id) {
+        appData.basketTasks = (appData.basketTasks || []).filter(t => t.id !== id);
+        saveData();
+        renderBasketTasks();
+    }
+
+    function renderBasketTasks() {
+        const list = document.getElementById('basket-list');
+        if (!list) return;
+        list.innerHTML = '';
+
+        if (!appData.basketTasks || appData.basketTasks.length === 0) {
+            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:13px; margin-top:16px;">바구니가 비어 있습니다.</div>`;
+            return;
+        }
+
+        appData.basketTasks.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `basket-item ${item.done ? 'completed' : ''}`;
+            div.innerHTML = `
+                <label>
+                    <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleBasketTask('${item.id}')">
+                    <span class="due-badge">${item.dueDay} 마감</span>
+                    <span>${escapeHtml(item.text)}</span>
+                </label>
+                <button class="delete-btn" onclick="deleteBasketTask('${item.id}')" title="삭제">✕</button>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function formatMinutes(totalMins) {
+        if (totalMins === 0) return '0분';
+        const h = Math.floor(totalMins / 60);
+        const m = totalMins % 60;
+        if (h > 0 && m > 0) return `${h}시간 ${m}분`;
+        if (h > 0) return `${h}시간`;
+        return `${m}분`;
+    }
+
+    function renderTimerStats() {
+        const todayKey = getTodayKey();
+        const logs = appData.timerLogs[todayKey] || [];
+        const loggedTodayMins = logs.reduce((acc, cur) => acc + cur.durationMinutes, 0);
+
+        const currentClimbSec = getCurrentClimbSeconds();
+        const liveTodayMins = Math.floor(currentClimbSec / 60);
+        const totalTodayMins = loggedTodayMins + liveTodayMins;
+
+        let totalWeekMins = totalTodayMins;
+        Object.keys(appData.timerLogs).forEach(k => {
+            if (k !== todayKey) {
+                totalWeekMins += appData.timerLogs[k].reduce((acc, cur) => acc + cur.durationMinutes, 0);
+            }
+        });
+
+        const weekBudgetText = document.getElementById('timer-week-budget-text');
+        if (weekBudgetText) {
+            weekBudgetText.innerText = `주간 목표 20시간 중 ${formatMinutes(totalWeekMins)}`;
+        }
+
+        const statTodayTime = document.getElementById('stat-today-time');
+        const statTodayRemain = document.getElementById('stat-today-remain');
+        const statWeekTime = document.getElementById('stat-week-time');
+
+        if (statTodayTime) statTodayTime.innerText = formatMinutes(totalTodayMins);
+
+        const todayRemainMins = Math.max(0, 240 - totalTodayMins);
+        if (statTodayRemain) statTodayRemain.innerText = formatMinutes(todayRemainMins);
+
+        if (statWeekTime) statWeekTime.innerText = formatMinutes(totalWeekMins);
+
+        const guideBox = document.getElementById('timer-guide-box');
+        const logsWrapper = document.getElementById('timer-logs-wrapper');
+        const logsList = document.getElementById('timer-logs-list');
+        const totalTodayElem = document.getElementById('timer-total-today');
+
+        if (totalWeekMins === 0 && logs.length === 0) {
+            if (guideBox) guideBox.style.display = 'block';
+            if (logsWrapper) logsWrapper.style.display = 'none';
+        } else {
+            if (guideBox) guideBox.style.display = 'none';
+            if (logsWrapper) logsWrapper.style.display = 'flex';
+
+            if (logsList) {
+                logsList.innerHTML = '';
+                logs.forEach(log => {
+                    const div = document.createElement('div');
+                    div.className = 'log-item';
+                    const taskName = log.taskText ? escapeHtml(log.taskText) : '딥워크 집중';
+                    const goalInfo = log.goalTitle ? `<div style="font-size:11px; color:var(--text-sub); margin-top:2px;">🎯 ${escapeHtml(log.goalTitle)}</div>` : '';
+                    div.innerHTML = `
+                        <div style="flex:1; min-width:0; padding-right:8px;">
+                            <div style="font-weight:600; word-break:break-all;">${taskName}</div>
+                            <div class="log-time">${log.timeRange}</div>
+                            ${goalInfo}
+                        </div>
+                        <div class="log-duration">+${log.durationMinutes}분</div>
+                    `;
+                    logsList.appendChild(div);
+                });
+            }
+
+            if (totalTodayElem) {
+                const th = Math.floor(totalTodayMins / 60);
+                const tm = totalTodayMins % 60;
+                totalTodayElem.innerText = `총 ${th > 0 ? th + '시간 ' : ''}${tm}분`;
+            }
+        }
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+</script>
+
+</body>
+</html>

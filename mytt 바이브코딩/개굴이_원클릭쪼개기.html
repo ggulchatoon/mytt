@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>개굴이와 할일 쪼개기 - 할 일 분해 & 실행</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #FBF9F3;
+      --frog-green: #68B984;
+      --frog-green-dark: #2F6D47;
+      --frog-green-light: #EDF7F2;
+      --frog-green-subtle: #D8EFE2;
+      --frog-belly: #FFF8D6;
+      --frog-cheek: #FFAAA6;
+      --text-main: #2E4F3E;
+      --text-muted: #6B8B79;
+      --card-bg: #FFFFFF;
+      --border-color: #D2E7DC;
+      --shadow-soft: 0 8px 24px rgba(59, 122, 87, 0.08);
+      --shadow-hover: 0 12px 30px rgba(59, 122, 87, 0.14);
+      --font-heading: 'Gaegu', cursive, sans-serif;
+      --font-body: 'Nanum Gothic', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-body);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 90px;
+    }
+
+    /* 상단 헤더 */
+    .app-header {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      font-family: var(--font-heading);
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 18px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .icon-btn:hover {
+      background: var(--frog-green-light);
+      border-color: var(--frog-green);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* 메인 컨테이너 */
+    .main-container {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* 카드 기본 스타일 */
+    .card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 26px;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+
+    /* 할 일 입력 덤프 섹션 */
+    .dump-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-badge {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--frog-belly);
+      color: #8C6D1F;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid #EFE0A6;
+    }
+
+    .dump-textarea {
+      font-family: var(--font-body);
+      width: 100%;
+      height: 136px;
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 16px 18px;
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: var(--text-main);
+      background: #FAFCFA;
+      resize: vertical;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .dump-textarea:focus {
+      border-color: var(--frog-green);
+      background: #FFF;
+      box-shadow: 0 0 0 3px rgba(104, 185, 132, 0.15);
+    }
+
+    .dump-textarea::placeholder {
+      color: #9ABBB4;
+      line-height: 1.7;
+    }
+
+    .dump-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .dump-tip {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .primary-btn {
+      font-family: var(--font-heading);
+      background: var(--frog-green);
+      color: #FFFFFF;
+      border: none;
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 21px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(104, 185, 132, 0.4);
+    }
+
+    .primary-btn:hover {
+      background: var(--frog-green-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(104, 185, 132, 0.45);
+    }
+
+    .primary-btn:disabled {
+      background: #BACDC3;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .primary-btn svg {
+      width: 19px;
+      height: 19px;
+      stroke: #FFF;
+      fill: none;
+    }
+
+    /* 로딩 상태 */
+    .loading-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 20px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .frog-jumping {
+      animation: frogHop 0.8s infinite ease-in-out;
+    }
+
+    @keyframes frogHop {
+      0%, 100% { transform: translateY(0) scale(1, 1); }
+      50% { transform: translateY(-18px) scale(0.96, 1.04); }
+    }
+
+    .loading-text {
+      font-family: var(--font-heading);
+      font-size: 25px;
+      color: var(--frog-green-dark);
+      margin-top: 16px;
+      font-weight: 700;
+    }
+
+    .loading-subtext {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* 결과 섹션 (징검다리 스텝) */
+    .results-section {
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .results-close-btn {
+      font-family: var(--font-heading);
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .results-close-btn:hover {
+      background: #FFF5F5;
+      border-color: #EFA8A8;
+      color: #C53030;
+    }
+
+    /* 안심 응원 멘트 박스 */
+    .cheer-box {
+      background: var(--frog-green-subtle);
+      border-radius: 20px;
+      padding: 16px 20px;
+      border: 1.5px dashed var(--frog-green);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cheer-box svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--frog-green-dark);
+      flex-shrink: 0;
+    }
+
+    .cheer-text {
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      color: var(--frog-green-dark);
+      font-weight: 700;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    /* ========================================================
+       연잎 징검다리 시각화 & 진행률 (Pond Stepping Stones)
+       ======================================================== */
+    .pond-progress-card {
+      background: #EBF6F0;
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      padding: 16px 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(59, 122, 87, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pond-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pond-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pond-status-text {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      background: #FFFFFF;
+      padding: 3px 12px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border-color);
+    }
+
+    .pond-track-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 28px 10px 8px;
+      min-height: 100px;
+    }
+
+    .pond-water-line {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 58px;
+      height: 6px;
+      background: #D2EADC;
+      border-radius: 999px;
+      z-index: 1;
+    }
+
+    .pond-water-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--frog-green);
+      border-radius: 999px;
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .lilypad-spot {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.25s ease;
+    }
+
+    .lilypad-svg-wrap {
+      width: 72px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .lilypad-spot.active .lilypad-svg-wrap {
+      transform: scale(1.08);
+      filter: drop-shadow(0 6px 12px rgba(104, 185, 132, 0.4));
+    }
+
+    .lilypad-spot.done .lilypad-svg-wrap {
+      filter: drop-shadow(0 4px 8px rgba(47, 109, 71, 0.25));
+    }
+
+    .lilypad-label {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      line-height: 1;
+    }
+
+    .lilypad-subtext {
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* 징검다리를 건너는 여행자 개구리 */
+    .frog-traveler {
+      position: absolute;
+      top: 2px;
+      left: 16.6%;
+      width: 46px;
+      height: 46px;
+      z-index: 4;
+      transform: translateX(-50%);
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 8px rgba(47, 109, 71, 0.35));
+    }
+
+    .frog-traveler.hopping {
+      animation: frogPondHop 0.6s ease-in-out;
+    }
+
+    @keyframes frogPondHop {
+      0% { transform: translateX(-50%) translateY(0) scale(1, 1); }
+      40% { transform: translateX(-50%) translateY(-26px) scale(1.15, 0.95); }
+      75% { transform: translateX(-50%) translateY(-6px) scale(0.95, 1.05); }
+      100% { transform: translateX(-50%) translateY(0) scale(1, 1); }
+    }
+
+    /* ========================================================
+       3개의 징검다리 카드 (깔끔한 위계 & 폴짝! 시작해보자)
+       ======================================================== */
+    .stepping-stones {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .stone-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      padding: 22px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(59, 122, 87, 0.05);
+      position: relative;
+    }
+
+    .stone-card:hover {
+      border-color: var(--frog-green);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .stone-card.completed {
+      background: #F4F7F5;
+      border-color: #DDE7E1;
+    }
+
+    .stone-card.completed .stone-title {
+      text-decoration: line-through;
+      color: #7A9B89;
+    }
+
+    /* 1. 상단 메타 바 (단계 뱃지 & 소요 시간만 깔끔하게 유지) */
+    .stone-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #E5EFE9;
+    }
+
+    .stone-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stone-badge-pill {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      background: var(--frog-green-light);
+      padding: 3px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--frog-green);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      line-height: 1.2;
+    }
+
+    .stone-time-pill {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #F1F6F3;
+      padding: 3px 11px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .stone-time-pill svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+
+    /* 2. 본문 영역 (헤드라인 6단어 이하, 상식적인 쉬운 말) */
+    .stone-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stone-title {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.25;
+      letter-spacing: -0.3px;
+      word-break: keep-all;
+    }
+
+    .stone-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #4C6E5C;
+      line-height: 1.75;
+      letter-spacing: -0.2px;
+      word-break: keep-all;
+    }
+
+    /* 3. 하단 '폴짝! 시작해보자' 메인 아코디언 버튼 */
+    .stone-accordion {
+      margin-top: 6px;
+    }
+
+    .accordion-toggle-btn {
+      font-family: var(--font-heading);
+      width: 100%;
+      background: var(--frog-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(104, 185, 132, 0.35);
+    }
+
+    .accordion-toggle-btn:hover {
+      background: var(--frog-green-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(104, 185, 132, 0.45);
+    }
+
+    .accordion-toggle-btn .chevron-icon {
+      width: 19px;
+      height: 19px;
+      stroke: #FFF;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .stone-accordion.is-open .chevron-icon {
+      transform: rotate(180deg);
+    }
+
+    /* 펼쳐진 세부 스텝 패널 */
+    .substeps-panel {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 14px;
+      background: #FAFCFA;
+      border-radius: 20px;
+      border: 1.5px solid #E0EDE5;
+      animation: slideDown 0.22s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 각 세부 스텝 행 */
+    .substep-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: #FFFFFF;
+      border: 1.5px solid #EDF4F0;
+      transition: all 0.2s ease;
+    }
+
+    .substep-item:hover {
+      background: #F7FCF9;
+      border-color: #D2E7DC;
+    }
+
+    .substep-item.is-completed {
+      background: #F7FAF8;
+      border-color: #E2ECE5;
+    }
+
+    .substep-item.is-completed .substep-text {
+      text-decoration: line-through;
+      color: #8EAAA0;
+    }
+
+    .substep-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .substep-num {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      background: var(--frog-green-light);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border-color);
+    }
+
+    .substep-text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-main);
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .substep-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .substep-time {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #EDF5F1;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* 세부 스텝 전용 시작 버튼 */
+    .substep-start-btn {
+      font-family: var(--font-heading);
+      background: var(--frog-green-light);
+      border: 1.5px solid var(--frog-green);
+      color: var(--frog-green-dark);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .substep-start-btn:hover {
+      background: var(--frog-green);
+      color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+
+    .substep-start-btn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    .substep-start-btn.is-completed {
+      background: #E8F5EE;
+      border-color: #A9DDC0;
+      color: var(--frog-green-dark);
+      cursor: default;
+      pointer-events: none;
+      transform: none;
+    }
+
+    .substep-start-btn.is-completed svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+    }
+
+    /* 주의할 늪 */
+    .trap-card {
+      background: #FFF8F7;
+      border: 1.5px dashed #F8B4B4;
+      border-radius: 20px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .trap-card svg {
+      width: 22px;
+      height: 22px;
+      stroke: #D04F4F;
+      flex-shrink: 0;
+    }
+
+    .trap-text {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #A33A3A;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    /* 이전 기록 아코디언 */
+    .history-section {
+      margin-top: 10px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 10px 4px;
+    }
+
+    .history-header-title {
+      font-family: var(--font-heading);
+      font-size: 21px;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-header-title svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .history-list {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .history-item {
+      background: #FFF;
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .history-item:hover {
+      border-color: var(--frog-green);
+      background: var(--frog-green-light);
+    }
+
+    .history-item-text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 460px;
+    }
+
+    .history-item-date {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* 하단 고정 집중 타이머 바 */
+    .active-timer-card {
+      display: none;
+      background: #2E4F3E;
+      color: #FFF;
+      border-radius: 24px;
+      padding: 16px 24px;
+      box-shadow: 0 10px 30px rgba(46, 79, 62, 0.3);
+      position: sticky;
+      bottom: 20px;
+      z-index: 100;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .timer-info {
+      display: flex;
+      flex-direction: column;
+      max-width: 60%;
+    }
+
+    .timer-task-name {
+      font-family: var(--font-heading);
+      font-size: 21px;
+      color: #A8E6CF;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timer-clock {
+      font-family: var(--font-heading);
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .frog-timer-avatar {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      animation: frogTimerHop 0.7s infinite ease-in-out alternate;
+    }
+
+    @keyframes frogTimerHop {
+      0% { transform: translateY(0) scale(1, 1); }
+      100% { transform: translateY(-8px) scale(0.96, 1.05); }
+    }
+
+    .timer-ctrl-btn {
+      font-family: var(--font-heading) !important;
+      background: #3D6752;
+      border: 1.5px solid #558B70;
+      color: #FFF;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 19px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .timer-ctrl-btn:hover {
+      background: #558B70;
+    }
+
+    .timer-ctrl-btn.finish {
+      background: var(--frog-green);
+      border-color: var(--frog-green);
+    }
+
+    .timer-ctrl-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* 설정 모달 */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(46, 79, 62, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #FFF;
+      border-radius: 28px;
+      padding: 28px;
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid var(--border-color);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .close-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+    }
+
+    .modal-body {
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .api-input {
+      font-family: var(--font-body);
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 14.5px;
+      outline: none;
+    }
+
+    .api-input:focus {
+      border-color: var(--frog-green);
+    }
+
+    .info-callout {
+      background: var(--frog-green-light);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14.5px;
+      color: var(--frog-green-dark);
+      line-height: 1.5;
+    }
+
+    .info-callout a {
+      color: var(--frog-green-dark);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 헤더 -->
+  <header class="app-header">
+    <div class="brand-group">
+      <!-- 귀여운 미니 개구리 SVG 아이콘 -->
+      <svg width="44" height="44" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+        <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <circle cx="28" cy="26" r="10" fill="#FFFFFF"/>
+        <circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+        <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <circle cx="72" cy="26" r="10" fill="#FFFFFF"/>
+        <circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+        <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+        <ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+        <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div>
+        <h1 class="brand-title">개굴이와 할일 쪼개기</h1>
+        <p class="brand-subtitle">거대한 할 일을 개굴이와 징검다리처럼 폴짝폴짝 쪼개 건너가요</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="demoBtn" title="예시 바로 체험하기">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        예시 보기
+      </button>
+      <button class="icon-btn" id="settingsBtn" title="Gemini API 설정">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        AI 설정
+      </button>
+    </div>
+  </header>
+
+  <!-- 메인 영역 -->
+  <main class="main-container">
+
+    <!-- 1. 할 일 덤프 입력 섹션 -->
+    <section class="card dump-section">
+      <div class="card-title-row">
+        <h2 class="card-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          머릿속 생각 마구 털어놓기
+        </h2>
+      </div>
+
+      <textarea 
+        id="taskDumpInput" 
+        class="dump-textarea" 
+        placeholder="예) 이번 주까지 포트폴리오 노션 페이지 만들어야 하는데 레퍼런스도 찾아야 하고 프로젝트 뭐 넣을지도 정리 안 됐고 디자인도 막막해서 손도 못 대고 있어... 어디서부터 해야 하지?"
+      ></textarea>
+
+      <div class="dump-footer">
+        <span class="dump-tip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          팁: '하기 싫다, 막막하다' 같은 솔직한 감정도 다 적어보세요.
+        </span>
+        <button id="sliceBtn" class="primary-btn">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          머릿속을 가볍게 만들기
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. 로딩 상태 카드 -->
+    <div id="loadingWrap" class="card loading-wrap">
+      <div class="frog-avatar-wrap frog-jumping" style="width:80px; height:80px; margin:0 auto;">
+        <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
+          <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+          <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+          <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="28" cy="26" r="10" fill="#FFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+          <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="72" cy="26" r="10" fill="#FFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+          <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/><ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+          <path d="M 42 54 Q 50 62 58 54" stroke="#2E4F3E" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="loading-text" id="loadingMainText">개굴이가 거대한 할 일을 작게 쪼개는 중...</p>
+      <p class="loading-subtext">당장 5분 만에 끝낼 수 있는 가장 가벼운 첫 조각을 찾고 있어요!</p>
+    </div>
+
+    <!-- 3. 결과 섹션: 징검다리 스텝 -->
+    <section id="resultsSection" class="results-section">
+      <div class="results-header">
+        <h2 class="results-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          개굴이가 만든 징검다리
+        </h2>
+        <button class="results-close-btn" id="closeResultsBtn" title="결과 닫고 다시 작성하기">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          결과 닫기
+        </button>
+      </div>
+
+      <!-- 안심 응원 멘트 -->
+      <div class="cheer-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <p class="cheer-text" id="cheerMessage">"걱정 마 개굴! 딱 이 징검다리 3개만 건너면 끝나요!"</p>
+      </div>
+
+      <!-- 연잎 징검다리 시각화 & 진행률 -->
+      <div id="pondProgressCard" class="pond-progress-card">
+        <div class="pond-header">
+          <div class="pond-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+            연잎 징검다리
+          </div>
+          <div class="pond-status-text" id="pondStatusText">0 / 9 조각 완료 (0%)</div>
+        </div>
+
+        <div class="pond-track-container">
+          <!-- 연못 물길 게이지 -->
+          <div class="pond-water-line">
+            <div class="pond-water-fill" id="pondWaterFill"></div>
+          </div>
+
+          <!-- 폴짝 뛰는 개구리 캐릭터 -->
+          <div class="frog-traveler" id="frogTraveler" style="left: 17%;">
+            <svg viewBox="0 0 100 100" width="46" height="46" fill="none">
+              <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+              <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+              <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+              <circle cx="28" cy="26" r="10" fill="#FFFFFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+              <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+              <circle cx="72" cy="26" r="10" fill="#FFFFFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+              <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+              <ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+              <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+
+          <!-- 3개의 연잎 징검다리 스팟 -->
+          <div class="lilypad-spot active" id="lilypad1" data-step="1">
+            <div class="lilypad-svg-wrap">
+              <svg viewBox="0 0 80 60" width="68" height="50" fill="none">
+                <ellipse cx="40" cy="32" rx="34" ry="24" fill="#A8DFC1" stroke="#4C9C6C" stroke-width="3"/>
+                <ellipse cx="40" cy="30" rx="30" ry="20" fill="#BFE8D2"/>
+                <path d="M 40 30 L 72 26" stroke="#4C9C6C" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 40 30 L 12 24" stroke="#4C9C6C" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 40 30 L 40 50" stroke="#4C9C6C" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 40 30 L 24 44" stroke="#4C9C6C" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 40 30 L 58 42" stroke="#4C9C6C" stroke-width="1.5" stroke-linecap="round"/>
+                <polygon points="40,30 52,10 62,14" fill="#EBF6F0"/>
+              </svg>
+            </div>
+            <span class="lilypad-label">1단계 연잎</span>
+            <span class="lilypad-subtext" id="lilypad1Sub">0/3</span>
+          </div>
+
+          <div class="lilypad-spot" id="lilypad2" data-step="2">
+            <div class="lilypad-svg-wrap">
+              <svg viewBox="0 0 80 60" width="68" height="50" fill="none">
+                <ellipse cx="40" cy="32" rx="34" ry="24" fill="#A8DFC1" stroke="#4C9C6C" stroke-width="3"/>
+                <ellipse cx="40" cy="30" rx="30" ry="20" fill="#BFE8D2"/>
+                <path d="M 40 30 L 72 26" stroke="#4C9C6C" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 40 30 L 12 24" stroke="#4C9C6C" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 40 30 L 40 50" stroke="#4C9C6C" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 40 30 L 24 44" stroke="#4C9C6C" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 40 30 L 58 42" stroke="#4C9C6C" stroke-width="1.5" stroke-linecap="round"/>
+                <polygon points="40,30 52,10 62,14" fill="#EBF6F0"/>
+              </svg>
+            </div>
+            <span class="lilypad-label">2단계 연잎</span>
+            <span class="lilypad-subtext" id="lilypad2Sub">0/3</span>
+          </div>
+
+          <div class="lilypad-spot" id="lilypad3" data-step="3">
+            <div class="lilypad-svg-wrap">
+              <svg viewBox="0 0 80 60" width="68" height="50" fill="none">
+                <ellipse cx="40" cy="32" rx="34" ry="24" fill="#A8DFC1" stroke="#4C9C6C" stroke-width="3"/>
+                <ellipse cx="40" cy="30" rx="30" ry="20" fill="#BFE8D2"/>
+                <path d="M 40 30 L 72 26" stroke="#4C9C6C" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 40 30 L 12 24" stroke="#4C9C6C" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 40 30 L 40 50" stroke="#4C9C6C" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 40 30 L 24 44" stroke="#4C9C6C" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 40 30 L 58 42" stroke="#4C9C6C" stroke-width="1.5" stroke-linecap="round"/>
+                <polygon points="40,30 52,10 62,14" fill="#EBF6F0"/>
+              </svg>
+            </div>
+            <span class="lilypad-label">3단계 연잎</span>
+            <span class="lilypad-subtext" id="lilypad3Sub">0/3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 징검다리 카드 목록 -->
+      <div class="stepping-stones" id="stonesList">
+        <!-- 자바스크립트로 수직 위계 카드 렌더링 -->
+      </div>
+
+      <!-- 주의할 늪 (오버페이스 방지) -->
+      <div class="trap-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="trap-text" id="trapText">
+          <strong>오늘 조심할 늪:</strong> 오늘 안에 완벽하게 끝내려고 욕심내면 지쳐 쓰러져요. 딱 1단계만 끝내고 스스로 칭찬하기!
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 이전 기록 보기 아코디언 -->
+    <section class="history-section">
+      <div class="history-header" id="toggleHistoryBtn">
+        <span class="history-header-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          이전에 쪼갰던 징검다리 기록 보기
+        </span>
+        <svg id="historyArrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="history-list" id="historyList">
+        <!-- 로컬스토리지 기록 렌더링 -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 하단 고정 집중 타이머 바 -->
+  <div id="activeTimerCard" class="active-timer-card">
+    <div class="frog-timer-avatar">
+      <svg viewBox="0 0 100 100" width="44" height="44" fill="none">
+        <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+        <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <circle cx="28" cy="26" r="10" fill="#FFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+        <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <circle cx="72" cy="26" r="10" fill="#FFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+        <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/><ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+        <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="timer-info">
+      <span class="timer-task-name" id="timerTaskTitle">태스크 이름</span>
+      <span class="timer-clock" id="timerClock">25:00</span>
+    </div>
+    <div class="timer-controls">
+      <button class="timer-ctrl-btn" id="pauseTimerBtn">
+        <svg viewBox="0 0 24 24" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        <span id="pauseBtnText">일시정지</span>
+      </button>
+      <button class="timer-ctrl-btn finish" id="finishTimerBtn">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        완료!
+      </button>
+    </div>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68B984" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Gemini AI 설정
+        </h3>
+        <button class="close-btn" id="closeSettingsBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>Google에서 무료로 발급받은 <strong>Gemini API 키</strong>를 입력하세요.<br>이 키는 서버로 전송되지 않고 오직 본인 브라우저에만 안전하게 보관됩니다.</p>
+        
+        <div id="detectedModelBadge" style="display:none; font-size:13px; color:var(--frog-green-dark); background:var(--frog-green-light); padding:8px 12px; border-radius:12px; border:1.5px solid var(--border-color); align-items:center; gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span id="detectedModelText">현재 감지된 최우선 모델: <strong>gemini-3.1-flash-lite</strong></span>
+        </div>
+
+        <input type="password" id="apiKeyInput" class="api-input" placeholder="AIzaSy... 또는 AQ.Ab... 키 입력">
+
+        <div class="info-callout">
+          <strong>💡 API 키 발급 방법 (100% 무료):</strong><br>
+          1. <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio (무료 발급 링크)</a>에 로그인<br>
+          2. [Create API Key] 클릭 후 복사하여 붙여넣기<br>
+          3. <em>신용카드 불필요! Flash-Lite 모델로 매일 500회까지 완전 무료입니다.</em>
+        </div>
+
+        <div class="api-btn-row" style="display:flex; gap:8px; margin-top:10px;">
+          <button id="testApiKeyBtn" type="button" class="icon-btn" style="flex:1; justify-content:center; padding:10px; font-size:18px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            연결 테스트
+          </button>
+          <button id="saveApiKeyBtn" type="button" class="primary-btn" style="flex:1; justify-content:center; padding:10px; font-size:18px;">
+            저장하기 개굴!
+          </button>
+        </div>
+        <div id="apiTestStatus" style="display:none; font-size:13.5px; padding:10px 14px; border-radius:12px; line-height:1.5; margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State & DOM References ---
+    const STORAGE_KEY_API = 'mytt_frog_gemini_api_key';
+    const STORAGE_KEY_HISTORY = 'mytt_frog_task_history';
+    const STORAGE_KEY_CURRENT = 'mytt_frog_current_plan';
+    const STORAGE_KEY_DETECTED_MODELS = 'mytt_frog_detected_models';
+    const STORAGE_KEY_ACTIVE_MODEL = 'mytt_frog_active_model';
+
+    // 사용자 대시보드 권장 모델 우선순위
+    const PREFERRED_MODELS = [
+      'gemini-3.1-flash-lite',
+      'gemini-3.5-flash-lite',
+      'gemini-3.6-flash',
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-8b',
+      'gemini-1.5-pro'
+    ];
+
+    // 덤프 입력
+    const dumpInput = document.getElementById('taskDumpInput');
+    const sliceBtn = document.getElementById('sliceBtn');
+    const demoBtn = document.getElementById('demoBtn');
+
+    // 설정 모달
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+    const testApiKeyBtn = document.getElementById('testApiKeyBtn');
+    const apiTestStatus = document.getElementById('apiTestStatus');
+    const detectedModelBadge = document.getElementById('detectedModelBadge');
+    const detectedModelText = document.getElementById('detectedModelText');
+
+    // 로딩 & 결과
+    const loadingWrap = document.getElementById('loadingWrap');
+    const loadingMainText = document.getElementById('loadingMainText');
+    const resultsSection = document.getElementById('resultsSection');
+    const stonesList = document.getElementById('stonesList');
+    const cheerMessage = document.getElementById('cheerMessage');
+    const trapText = document.getElementById('trapText');
+    const closeResultsBtn = document.getElementById('closeResultsBtn');
+
+    // 연잎 징검다리 시각화 요소
+    const pondStatusText = document.getElementById('pondStatusText');
+    const pondWaterFill = document.getElementById('pondWaterFill');
+    const frogTraveler = document.getElementById('frogTraveler');
+    const lilypad1 = document.getElementById('lilypad1');
+    const lilypad2 = document.getElementById('lilypad2');
+    const lilypad3 = document.getElementById('lilypad3');
+    const lilypad1Sub = document.getElementById('lilypad1Sub');
+    const lilypad2Sub = document.getElementById('lilypad2Sub');
+    const lilypad3Sub = document.getElementById('lilypad3Sub');
+
+    // 히스토리
+    const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+    const historyList = document.getElementById('historyList');
+    const historyArrow = document.getElementById('historyArrow');
+
+    // 타이머
+    const activeTimerCard = document.getElementById('activeTimerCard');
+    const timerTaskTitle = document.getElementById('timerTaskTitle');
+    const timerClock = document.getElementById('timerClock');
+    const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+    const pauseBtnText = document.getElementById('pauseBtnText');
+    const finishTimerBtn = document.getElementById('finishTimerBtn');
+
+    let timerInterval = null;
+    let timerRemainingSeconds = 5 * 60;
+    let isTimerPaused = false;
+    let currentPlan = null;
+    let completedSubSteps = {}; // key: `${stepIdx}_${subIdx}` -> true
+    let activeTimerTarget = null; // { stepIdx, subIdx, btnEl, itemEl, cardEl }
+
+    // --- API Key & Model 헬퍼 ---
+    function sanitizeApiKey(rawKey) {
+      if (!rawKey) return '';
+      return String(rawKey).trim().replace(/^["']|["']$/g, '');
+    }
+
+    function getStoredApiKey() {
+      const raw = localStorage.getItem(STORAGE_KEY_API) || localStorage.getItem('gemini_api_key') || '';
+      return sanitizeApiKey(raw);
+    }
+
+    function updateDetectedModelUI(modelName, count) {
+      if (!detectedModelBadge || !detectedModelText) return;
+      if (!modelName) {
+        detectedModelBadge.style.display = 'none';
+        return;
+      }
+      detectedModelBadge.style.display = 'inline-flex';
+      detectedModelText.innerHTML = `현재 활성 모델: <strong>${escapeHtml(modelName)}</strong>${count ? ` (지원 모델 ${count}개 감지)` : ''}`;
+    }
+
+    // [핵심] models.list API를 통해 프로젝트에서 지원하는 모델 목록을 토큰 소모 없이 자동 감지
+    async function fetchAvailableGeminiModels(cleanKey) {
+      if (!cleanKey) return [];
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`;
+        const response = await fetch(url, { method: 'GET' });
+        if (!response.ok) {
+          console.warn(`models.list API error: HTTP ${response.status}`);
+          return [];
+        }
+        const data = await response.json();
+        const availableRaw = (data.models || [])
+          .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+          .map(m => m.name.replace(/^models\//, ''));
+
+        // PREFERRED_MODELS 우선순위에 따라 정렬
+        const matched = [];
+        for (const pref of PREFERRED_MODELS) {
+          if (availableRaw.includes(pref)) {
+            matched.push(pref);
+          }
+        }
+        // 기타 지원 가능한 생성 모델도 예비로 추가
+        for (const m of availableRaw) {
+          if (!matched.includes(m) && (m.includes('flash') || m.includes('gemini'))) {
+            matched.push(m);
+          }
+        }
+
+        if (matched.length > 0) {
+          localStorage.setItem(STORAGE_KEY_DETECTED_MODELS, JSON.stringify(matched));
+          localStorage.setItem(STORAGE_KEY_ACTIVE_MODEL, matched[0]);
+          updateDetectedModelUI(matched[0], matched.length);
+          return matched;
+        }
+        return [];
+      } catch (err) {
+        console.warn('fetchAvailableGeminiModels error:', err);
+        return [];
+      }
+    }
+
+    // --- Init ---
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = getStoredApiKey();
+      if (savedKey) {
+        apiKeyInput.value = savedKey;
+        const activeModel = localStorage.getItem(STORAGE_KEY_ACTIVE_MODEL);
+        if (activeModel) {
+          updateDetectedModelUI(activeModel);
+        }
+        // 첫 진입 시 토큰 소모 없이 백그라운드 모델 목록 갱신
+        fetchAvailableGeminiModels(savedKey).catch(() => {});
+      }
+
+      loadCurrentPlan();
+      renderHistory();
+      dumpInput.focus();
+    });
+
+    // --- Settings Modal ---
+    settingsBtn.addEventListener('click', () => {
+      const savedKey = getStoredApiKey();
+      if (savedKey) {
+        apiKeyInput.value = savedKey;
+        const activeModel = localStorage.getItem(STORAGE_KEY_ACTIVE_MODEL);
+        if (activeModel) {
+          updateDetectedModelUI(activeModel);
+        }
+        fetchAvailableGeminiModels(savedKey).catch(() => {});
+      }
+      apiTestStatus.style.display = 'none';
+      settingsModal.style.display = 'flex';
+      apiKeyInput.focus();
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+    });
+
+    saveApiKeyBtn.addEventListener('click', () => {
+      const key = sanitizeApiKey(apiKeyInput.value);
+      if (!key) {
+        alert('API 키를 입력해주세요 개굴!');
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY_API, key);
+      localStorage.setItem('gemini_api_key', key);
+      fetchAvailableGeminiModels(key).catch(() => {});
+      alert('성공적으로 저장되었습니다! 이제 마음껏 개굴이와 쪼개기를 해보세요.');
+      settingsModal.style.display = 'none';
+    });
+
+    testApiKeyBtn.addEventListener('click', async () => {
+      const key = sanitizeApiKey(apiKeyInput.value);
+      if (!key) {
+        showApiStatus('error', '테스트할 API 키를 먼저 입력해주세요 개굴!');
+        apiKeyInput.focus();
+        return;
+      }
+
+      testApiKeyBtn.disabled = true;
+      testApiKeyBtn.innerHTML = '지원 모델 감지 및 연결 중...';
+      showApiStatus('info', 'Google Gemini 서버에서 활성화된 모델 목록을 조회하고 있어요...');
+
+      const result = await testGeminiApiKey(key);
+      testApiKeyBtn.disabled = false;
+      testApiKeyBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        연결 테스트
+      `;
+
+      if (result.ok) {
+        showApiStatus('success', result.message);
+        localStorage.setItem(STORAGE_KEY_API, key);
+        localStorage.setItem('gemini_api_key', key);
+      } else {
+        showApiStatus('error', result.message);
+      }
+    });
+
+    function showApiStatus(type, msg) {
+      apiTestStatus.style.display = 'block';
+      if (type === 'success') {
+        apiTestStatus.style.background = '#EDF7F2';
+        apiTestStatus.style.border = '1.5px solid var(--frog-green)';
+        apiTestStatus.style.color = 'var(--frog-green-dark)';
+      } else if (type === 'info') {
+        apiTestStatus.style.background = '#F0F6FF';
+        apiTestStatus.style.border = '1.5px solid #ADC8FF';
+        apiTestStatus.style.color = '#1D39C4';
+      } else {
+        apiTestStatus.style.background = '#FFF2F0';
+        apiTestStatus.style.border = '1.5px solid #FFA39E';
+        apiTestStatus.style.color = '#CF1322';
+      }
+      apiTestStatus.innerText = msg;
+    }
+
+    async function testGeminiApiKey(key) {
+      const cleanKey = sanitizeApiKey(key);
+      if (!cleanKey) {
+        return { ok: false, message: 'API 키가 비어있습니다 개굴!' };
+      }
+
+      // 1. models.list를 통한 프로젝트 지원 모델 자동 감지 (0 토큰 소모)
+      let detectedList = await fetchAvailableGeminiModels(cleanKey);
+
+      // 감지 실패 시 기본 우선순위 목록 사용
+      const candidateList = (detectedList && detectedList.length > 0) ? detectedList : PREFERRED_MODELS;
+
+      // 2. 최우선 후보 모델로 경량 핑 테스트
+      let workingModel = null;
+      let lastErrMsg = '';
+
+      for (const model of candidateList.slice(0, 4)) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'Respond with: {"status":"ok"}' }] }],
+              generationConfig: {
+                temperature: 0.1,
+                responseMimeType: "application/json"
+              }
+            })
+          });
+
+          if (response.ok) {
+            workingModel = model;
+            break;
+          } else {
+            const errData = await response.json().catch(() => ({}));
+            lastErrMsg = errData.error?.message || `HTTP ${response.status}`;
+            if (response.status === 400 && lastErrMsg.includes('API key not valid')) {
+              return { ok: false, message: 'Google에서 발급받은 API 키가 올바르지 않습니다. AI Studio에서 키를 다시 복사해주세요.' };
+            }
+            if (response.status === 429) {
+              return { ok: false, message: '무료 사용 한도(Rate Limit)를 일시 초과했습니다. 1~2분 뒤 다시 시도해주세요.' };
+            }
+          }
+        } catch (err) {
+          lastErrMsg = err.message;
+        }
+      }
+
+      if (workingModel) {
+        // workingModel을 최우선으로 재배치하여 캐싱
+        const finalOrder = [workingModel, ...candidateList.filter(m => m !== workingModel)];
+        localStorage.setItem(STORAGE_KEY_DETECTED_MODELS, JSON.stringify(finalOrder));
+        localStorage.setItem(STORAGE_KEY_ACTIVE_MODEL, workingModel);
+        updateDetectedModelUI(workingModel, finalOrder.length);
+
+        return {
+          ok: true,
+          message: `연결 성공 개굴! 사용 모델: ${workingModel} (프로젝트 지원 모델 ${finalOrder.length}개 자동 감지 완료)`
+        };
+      }
+
+      return {
+        ok: false,
+        message: `Gemini 연결 오류: ${lastErrMsg || '사용 가능한 모델을 확인하지 못했습니다.'}`
+      };
+    }
+
+    // --- [1. 원클릭 쪼개기 실행] ---
+    sliceBtn.addEventListener('click', async () => {
+      const userDump = dumpInput.value.trim();
+      if (!userDump) {
+        alert('머릿속에 맴도는 막막한 할 일을 적어주세요 개굴!');
+        dumpInput.focus();
+        return;
+      }
+
+      const apiKey = getStoredApiKey();
+      if (!apiKey) {
+        alert('Gemini API 키가 아직 등록되지 않았어요 개굴!\n상단의 [AI 설정]에서 무료 키를 등록해주세요.');
+        settingsModal.style.display = 'flex';
+        apiKeyInput.focus();
+        return;
+      }
+
+      loadingWrap.style.display = 'flex';
+      loadingMainText.innerText = '개굴이가 거대한 할 일을 작게 쪼개는 중...';
+      resultsSection.style.display = 'none';
+      sliceBtn.disabled = true;
+
+      try {
+        const plan = await callGeminiSlicer(apiKey, userDump);
+        renderPlan(plan);
+        savePlanToHistory(userDump, plan);
+      } catch (err) {
+        console.error(err);
+        const errMsg = err.message || '';
+        if (errMsg.includes('API key') || errMsg.includes('INVALID_ARGUMENT') || errMsg.includes('400')) {
+          alert('API 키가 올바르지 않거나 만료되었습니다 개굴!\n상단 [AI 설정]에서 키를 다시 확인해주세요.');
+          settingsModal.style.display = 'flex';
+          apiKeyInput.focus();
+        } else if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED')) {
+          alert('무료 사용 한도(Rate Limit)를 일시 초과했습니다 개굴!\n1~2분 뒤 다시 시도해주세요.');
+        } else {
+          alert(`Gemini 연결 중에 오류가 생겼어요 개굴:\n${errMsg}`);
+        }
+      } finally {
+        loadingWrap.style.display = 'none';
+        sliceBtn.disabled = false;
+      }
+    });
+
+    // --- 안전한 JSON 파싱 헬퍼 ---
+    function parseGeminiJson(rawText) {
+      if (!rawText) throw new Error('AI 응답이 비어있습니다.');
+      
+      // 1. 직접 파싱 시도
+      try {
+        return JSON.parse(rawText.trim());
+      } catch (e) {}
+
+      // 2. 마크다운 코드 블록 추출 (```json ... ``` 또는 ``` ... ```)
+      const match = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+      if (match) {
+        try {
+          return JSON.parse(match[1].trim());
+        } catch (e) {}
+      }
+
+      // 3. 첫 번째 { 와 마지막 } 사이 추출
+      const start = rawText.indexOf('{');
+      const end = rawText.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        const jsonSub = rawText.substring(start, end + 1);
+        try {
+          return JSON.parse(jsonSub);
+        } catch (e) {
+          // 트레일링 콤마 및 스마트 따옴표 정돈 후 재시도
+          const sanitized = jsonSub
+            .replace(/,\s*([}\]])/g, '$1')
+            .replace(/[\u201C\u201D]/g, '"')
+            .replace(/[\u2018\u2019]/g, "'");
+          try {
+            return JSON.parse(sanitized);
+          } catch (e2) {}
+        }
+      }
+
+      throw new Error('AI가 올바른 JSON 형식으로 응답하지 못했습니다. 다시 한 번 시도해주세요 개굴!');
+    }
+
+    // --- [2. Gemini API 호출 함수 (단어 6개 이하 & 3단계)] ---
+    async function callGeminiSlicer(apiKey, userDump) {
+      const cleanKey = sanitizeApiKey(apiKey);
+      const systemInstruction = `
+당신은 할 일 분해와 실행을 돕는 다정하고 명쾌한 개구리 코치 '개굴이'입니다.
+사용자가 털어놓은 할 일을 누구나 바로 행동할 수 있는 '딱 3개의 큰 징검다리 단계'와 '각 단계별 3개의 세부 작은 행동'으로 쪼개주세요.
+
+[매우 중요한 작성 원칙]
+1. 이모지(Emoji)는 UI 디자인 시스템을 위해 절대로 쓰지 마세요.
+2. 헤드라인(title) 규칙:
+   - 반드시 '단어 6개 이내'로 짧고 명확하게 쓰세요.
+   - 추상적이거나 뇌과학/심리학적 미사여구는 빼고, 초등학생도 즉시 알아듣는 '상식적이고 쉬운 일상어'를 쓰세요.
+   - 예: '결제창 빈 파일 생성 및 뼈대 코드 복사' 대신 -> '예제 결제창 코드 복사해두기'
+3. 설명(detail) 규칙:
+   - 복잡하지 않고 직관적으로 도움이 되는 현실적인 팁을 1~2줄로 쉬운 말로 설명하세요.
+4. 응원 멘트(cheerMessage) 규칙:
+   - 부담을 주거나 장황하지 않게, 60% 수준으로 1~2문장의 짤막하고 따뜻한 격려만 하세요 (~개굴 말투 사용).
+   - 예: "걱정 마 개굴! 딱 이 징검다리 3개만 폴짝 건너보자 개굴."
+5. 단계 구성:
+   - 0단계나 스타터 단계 없이, 오직 [1단계], [2단계], [3단계] 정확히 3개만 만드세요.
+   - 각 단계마다 1~5분 만에 끝낼 수 있는 '세부 조각(subSteps)'을 정확히 3개씩 만드세요.
+6. 오늘 조심할 늪(trapToAvoid):
+   - 오늘 하루에 완벽하게 다 끝내려다 방전되지 않도록 상식적인 조언 1문장.
+
+반드시 다음 JSON 형식으로만 응답하세요:
+{
+  "cheerMessage": "짧고 다정한 응원 1~2문장 (~개굴)",
+  "steps": [
+    {
+      "stepNum": 1,
+      "title": "단어 6개 이내의 쉬운 제목",
+      "duration": "15분",
+      "detail": "누구나 바로 알아들을 수 있는 쉬운 설명 1~2줄",
+      "subSteps": [
+        { "title": "구체적인 1~3분 실행 조각 1", "duration": "3분" },
+        { "title": "구체적인 1~3분 실행 조각 2", "duration": "5분" },
+        { "title": "구체적인 1~3분 실행 조각 3", "duration": "5분" }
+      ]
+    },
+    {
+      "stepNum": 2,
+      "title": "단어 6개 이내의 쉬운 제목",
+      "duration": "20분",
+      "detail": "누구나 바로 알아들을 수 있는 쉬운 설명 1~2줄",
+      "subSteps": [
+        { "title": "구체적인 1~3분 실행 조각 1", "duration": "5분" },
+        { "title": "구체적인 1~3분 실행 조각 2", "duration": "5분" },
+        { "title": "구체적인 1~3분 실행 조각 3", "duration": "5분" }
+      ]
+    },
+    {
+      "stepNum": 3,
+      "title": "단어 6개 이내의 쉬운 제목",
+      "duration": "25분",
+      "detail": "누구나 바로 알아들을 수 있는 쉬운 설명 1~2줄",
+      "subSteps": [
+        { "title": "구체적인 1~3분 실행 조각 1", "duration": "5분" },
+        { "title": "구체적인 1~3분 실행 조각 2", "duration": "5분" },
+        { "title": "구체적인 1~3분 실행 조각 3", "duration": "5분" }
+      ]
+    }
+  ],
+  "trapToAvoid": "오늘 다 끝내려다 지치지 않도록 방지하는 상식적 조언 1줄"
+}
+`;
+
+      const prompt = `사용자의 할 일 메모:\n${userDump}`;
+      // 캐시된 지원 모델 목록 불러오기 (우선순위: gemini-3.1-flash-lite 등 감지된 모델)
+      let modelsToTry = [];
+      try {
+        const cached = JSON.parse(localStorage.getItem(STORAGE_KEY_DETECTED_MODELS));
+        if (Array.isArray(cached) && cached.length > 0) {
+          modelsToTry = cached;
+        }
+      } catch (e) {}
+
+      if (modelsToTry.length === 0) {
+        modelsToTry = [...PREFERRED_MODELS];
+      } else {
+        // 혹시 모를 대비로 PREFERRED_MODELS의 예비 백업 모델들 추가
+        for (const m of PREFERRED_MODELS) {
+          if (!modelsToTry.includes(m)) modelsToTry.push(m);
+        }
+      }
+
+      let lastError = null;
+
+      for (const model of modelsToTry) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              systemInstruction: {
+                parts: [{ text: systemInstruction }]
+              },
+              contents: [{
+                role: 'user',
+                parts: [{ text: prompt }]
+              }],
+              generationConfig: {
+                temperature: 0.7,
+                responseMimeType: "application/json"
+              }
+            })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content) {
+            const blockReason = data.promptFeedback?.blockReason || '응답이 비어있습니다.';
+            throw new Error(`AI 안전 정책 등으로 응답이 차단되었습니다: ${blockReason}`);
+          }
+
+          const rawText = data.candidates[0].content.parts[0].text;
+
+          // 성공한 최우선 모델을 활성 모델로 기록
+          localStorage.setItem(STORAGE_KEY_ACTIVE_MODEL, model);
+          updateDetectedModelUI(model);
+
+          return parseGeminiJson(rawText);
+        } catch (err) {
+          console.warn(`Slicer model ${model} failed:`, err);
+          lastError = err;
+        }
+      }
+
+      throw lastError || new Error('모든 Gemini 모델 응답에 실패했습니다.');
+    }
+
+    // --- [3. 연잎 징검다리 진행률 업데이트 & 개구리 폴짝] ---
+    function updatePondProgress() {
+      if (!pondStatusText) return;
+
+      const s1Done = [0, 1, 2].filter(s => completedSubSteps[`1_${s}`]).length;
+      const s2Done = [0, 1, 2].filter(s => completedSubSteps[`2_${s}`]).length;
+      const s3Done = [0, 1, 2].filter(s => completedSubSteps[`3_${s}`]).length;
+      const totalDone = s1Done + s2Done + s3Done;
+      const percent = Math.min(100, Math.round((totalDone / 9) * 100));
+
+      pondStatusText.innerText = `${totalDone} / 9 조각 완료 (${percent}%)`;
+      pondWaterFill.style.width = `${percent}%`;
+
+      lilypad1Sub.innerText = `${s1Done}/3`;
+      lilypad2Sub.innerText = `${s2Done}/3`;
+      lilypad3Sub.innerText = `${s3Done}/3`;
+
+      lilypad1.classList.toggle('done', s1Done === 3);
+      lilypad2.classList.toggle('done', s2Done === 3);
+      lilypad3.classList.toggle('done', s3Done === 3);
+
+      // 개구리 위치 결정 (1단계: 17%, 2단계: 50%, 3단계: 83%, 전체완료: 92%)
+      let targetLeft = '17%';
+      if (s1Done < 3) {
+        targetLeft = '17%';
+        lilypad1.classList.add('active');
+        lilypad2.classList.remove('active');
+        lilypad3.classList.remove('active');
+      } else if (s2Done < 3) {
+        targetLeft = '50%';
+        lilypad1.classList.remove('active');
+        lilypad2.classList.add('active');
+        lilypad3.classList.remove('active');
+      } else if (s3Done < 3) {
+        targetLeft = '83%';
+        lilypad1.classList.remove('active');
+        lilypad2.classList.remove('active');
+        lilypad3.classList.add('active');
+      } else {
+        targetLeft = '92%';
+        lilypad1.classList.remove('active');
+        lilypad2.classList.remove('active');
+        lilypad3.classList.add('active');
+      }
+
+      frogTraveler.style.left = targetLeft;
+
+      // 폴짝 애니메이션 트리거
+      frogTraveler.classList.remove('hopping');
+      void frogTraveler.offsetWidth; // reflow
+      frogTraveler.classList.add('hopping');
+      setTimeout(() => {
+        frogTraveler.classList.remove('hopping');
+      }, 650);
+
+      // 현재 플랜 저장
+      if (currentPlan) {
+        currentPlan.completedSubSteps = { ...completedSubSteps };
+        localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(currentPlan));
+      }
+    }
+
+    // --- [4. 결과 렌더링 (3개 징검다리 카드 + 폴짝! 시작해보자 버튼)] ---
+    function renderPlan(plan) {
+      currentPlan = plan;
+      completedSubSteps = plan.completedSubSteps || {};
+
+      cheerMessage.innerText = plan.cheerMessage || '걱정 마 개굴! 딱 이 징검다리 3개만 폴짝 건너보자 개굴.';
+      trapText.innerHTML = `<strong>오늘 조심할 늪:</strong> ${escapeHtml(plan.trapToAvoid || '오늘 안에 완벽하게 끝내려다 지치지 마세요!')}`;
+      stonesList.innerHTML = '';
+
+      // 이전 데이터 호환 및 3개 단계 정리
+      let stepsToRender = [];
+      if (Array.isArray(plan.steps) && plan.steps.length > 0) {
+        stepsToRender = plan.steps.slice(0, 3);
+      } else if (plan.starterStep) {
+        stepsToRender = [plan.starterStep];
+      }
+
+      // 1~3단계 렌더링
+      stepsToRender.forEach((step, idx) => {
+        const stepNum = idx + 1;
+        const stepEl = createStoneElement({
+          stepIdx: stepNum,
+          num: String(stepNum),
+          title: step.title,
+          duration: step.duration || '20분',
+          desc: step.detail || '',
+          subSteps: ensureSubSteps(step.subSteps, step.title)
+        });
+        stonesList.appendChild(stepEl);
+      });
+
+      resultsSection.style.display = 'flex';
+      updatePondProgress();
+      localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(currentPlan));
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // 세부 스텝 보장 헬퍼 (AI가 혹시 누락했을 때의 안전장치)
+    function ensureSubSteps(existingList, parentTitle) {
+      if (Array.isArray(existingList) && existingList.length > 0) {
+        return existingList.slice(0, 3);
+      }
+      return [
+        { title: `${parentTitle} 관련 폴더나 창 열기`, duration: '2분' },
+        { title: `시작할 첫 줄이나 메모 적기`, duration: '3분' },
+        { title: `부담 없이 가볍게 착수해보기`, duration: '5분' }
+      ];
+    }
+
+    function createStoneElement(item) {
+      const stepIdx = item.stepIdx;
+      const isCardDone = [0, 1, 2].every(s => completedSubSteps[`${stepIdx}_${s}`]);
+
+      const card = document.createElement('div');
+      card.className = `stone-card ${isCardDone ? 'completed' : ''}`;
+      card.dataset.step = stepIdx;
+
+      // 세부 스텝 아이템 HTML 생성 (체크박스/완료칩 배제, [시작] 버튼 제공)
+      const subStepsHtml = item.subSteps.map((sub, sIdx) => {
+        const isDone = !!completedSubSteps[`${stepIdx}_${sIdx}`];
+        return `
+          <div class="substep-item ${isDone ? 'is-completed' : ''}" data-step="${stepIdx}" data-sub="${sIdx}">
+            <div class="substep-left">
+              <span class="substep-num">${sIdx + 1}</span>
+              <span class="substep-text">${escapeHtml(sub.title)}</span>
+            </div>
+            <div class="substep-right">
+              <span class="substep-time">${escapeHtml(sub.duration || '5분')}</span>
+              <button class="substep-start-btn ${isDone ? 'is-completed' : ''}" type="button" data-step="${stepIdx}" data-sub="${sIdx}" ${isDone ? 'disabled' : ''}>
+                ${isDone ? `
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>완료 ✓</span>
+                ` : `
+                  <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  <span>시작</span>
+                `}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      card.innerHTML = `
+        <!-- 1. 상단 바: 단계 뱃지 & 소요 시간만 깔끔하게 유지 (시작/완료 칩 제거) -->
+        <div class="stone-top-bar">
+          <div class="stone-meta-left">
+            <div class="stone-badge-pill">
+              <span>${item.num}단계</span>
+            </div>
+            <div class="stone-time-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>${escapeHtml(item.duration)}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 본문 영역: 6단어 이하 쉬운 제목 & 설명 -->
+        <div class="stone-body">
+          <h3 class="stone-title">${escapeHtml(item.title)}</h3>
+          <p class="stone-desc">${escapeHtml(item.desc || '')}</p>
+        </div>
+
+        <!-- 3. 하단 아코디언 버튼: '폴짝! 시작해보자' -->
+        <div class="stone-accordion">
+          <button class="accordion-toggle-btn" type="button">
+            <span>폴짝! 시작해보자</span>
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="substeps-panel">
+            ${subStepsHtml}
+          </div>
+        </div>
+      `;
+
+      // 아코디언 토글 이벤트
+      const accordion = card.querySelector('.stone-accordion');
+      const toggleBtn = card.querySelector('.accordion-toggle-btn');
+      const panel = card.querySelector('.substeps-panel');
+
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = accordion.classList.contains('is-open');
+        if (isOpen) {
+          accordion.classList.remove('is-open');
+          panel.style.display = 'none';
+        } else {
+          accordion.classList.add('is-open');
+          panel.style.display = 'flex';
+        }
+      });
+
+      // 세부 스텝 시작 버튼 이벤트
+      const subBtns = card.querySelectorAll('.substep-start-btn');
+      subBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const sStep = parseInt(btn.dataset.step, 10);
+          const sSub = parseInt(btn.dataset.sub, 10);
+          if (completedSubSteps[`${sStep}_${sSub}`]) return;
+
+          const subData = item.subSteps[sSub];
+          const itemEl = btn.closest('.substep-item');
+          startTaskTimer(subData.title, subData.duration, {
+            stepIdx: sStep,
+            subIdx: sSub,
+            btnEl: btn,
+            itemEl: itemEl,
+            cardEl: card
+          });
+        });
+      });
+
+      return card;
+    }
+
+    // 결과 닫기 버튼 이벤트
+    closeResultsBtn.addEventListener('click', () => {
+      resultsSection.style.display = 'none';
+      localStorage.removeItem(STORAGE_KEY_CURRENT);
+      currentPlan = null;
+      completedSubSteps = {};
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // --- [5. 풍성한 세부 스텝이 포함된 예시 보기 데모] ---
+    const DEMO_RESPONSE = {
+      cheerMessage: "걱정 마 개굴! 딱 이 징검다리 3개만 폴짝 건너보자 개굴.",
+      steps: [
+        {
+          stepNum: 1,
+          title: "노션 열고 제목 한 줄 쓰기",
+          duration: "10분",
+          detail: "멋지게 꾸미지 말고 빈 화면에 내 이름 석 자와 제목만 가볍게 적어보세요.",
+          subSteps: [
+            { title: "노션 열고 새 페이지 버튼 누르기", duration: "1분" },
+            { title: "제목에 '2026 포트폴리오' 적어두기", duration: "1분" },
+            { title: "기본 커버 이미지 중 하나 고르기", duration: "3분" }
+          ]
+        },
+        {
+          stepNum: 2,
+          title: "기억나는 프로젝트 3개 적기",
+          duration: "15분",
+          detail: "설명은 나중에 쓰고, 가장 보람찼던 프로젝트 이름만 3줄 툭툭 나열해 둡니다.",
+          subSteps: [
+            { title: "지난 1~2년 작업 폴더 훑어보기", duration: "5분" },
+            { title: "프로젝트 이름 3개 목록으로 적기", duration: "5분" },
+            { title: "프로젝트 옆에 연도만 붙여두기", duration: "5분" }
+          ]
+        },
+        {
+          stepNum: 3,
+          title: "제일 편한 것 성과 2줄 쓰기",
+          duration: "20분",
+          detail: "가장 쓰기 편한 프로젝트 하나만 골라 내가 한 일과 성과를 2줄만 메모하고 끝내요!",
+          subSteps: [
+            { title: "3개 중 가장 쉬운 프로젝트 하나 고르기", duration: "2분" },
+            { title: "내가 맡았던 핵심 역할 1줄 적기", duration: "8분" },
+            { title: "기억나는 결과물 1줄 쓰고 마무리하기", duration: "10분" }
+          ]
+        }
+      ],
+      trapToAvoid: "오늘 안에 포트폴리오를 다 완성하려고 하지 마세요. 뼈대만 만들면 성공입니다!"
+    };
+
+    demoBtn.addEventListener('click', () => {
+      renderPlan(DEMO_RESPONSE);
+    });
+
+    // --- [6. 하단 집중 타이머 기능 (세부 스텝 연동)] ---
+    function startTaskTimer(title, durationStr, targetInfo) {
+      activeTimerTarget = targetInfo;
+      let minutes = parseInt(durationStr) || 5;
+      timerRemainingSeconds = minutes * 60;
+
+      timerTaskTitle.innerText = title;
+      updateTimerDisplay();
+
+      activeTimerCard.style.display = 'flex';
+      isTimerPaused = false;
+      pauseBtnText.innerText = '일시정지';
+
+      if (timerInterval) clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        if (!isTimerPaused) {
+          timerRemainingSeconds--;
+          updateTimerDisplay();
+
+          if (timerRemainingSeconds <= 0) {
+            handleTimerComplete();
+          }
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timerRemainingSeconds / 60);
+      const s = timerRemainingSeconds % 60;
+      timerClock.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    pauseTimerBtn.addEventListener('click', () => {
+      isTimerPaused = !isTimerPaused;
+      pauseBtnText.innerText = isTimerPaused ? '계속하기' : '일시정지';
+    });
+
+    function handleTimerComplete() {
+      clearInterval(timerInterval);
+
+      if (activeTimerTarget) {
+        const { stepIdx, subIdx, btnEl, itemEl, cardEl } = activeTimerTarget;
+        completedSubSteps[`${stepIdx}_${subIdx}`] = true;
+
+        if (btnEl) {
+          btnEl.classList.add('is-completed');
+          btnEl.disabled = true;
+          btnEl.innerHTML = `
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>완료 ✓</span>
+          `;
+        }
+
+        if (itemEl) {
+          itemEl.classList.add('is-completed');
+        }
+
+        // 해당 카드 3개 세부 스텝 전체 완료 여부 체크
+        if ([0, 1, 2].every(s => completedSubSteps[`${stepIdx}_${s}`])) {
+          cardEl.classList.add('completed');
+        }
+
+        updatePondProgress();
+      }
+
+      activeTimerCard.style.display = 'none';
+      alert('참 잘했어요 개굴! 징검다리를 하나 건넜습니다!');
+    }
+
+    finishTimerBtn.addEventListener('click', () => {
+      handleTimerComplete();
+    });
+
+    // --- [6. 히스토리 저장 및 불러오기] ---
+    function savePlanToHistory(dumpText, plan) {
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+      } catch (e) { history = []; }
+
+      const newEntry = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }),
+        dump: dumpText,
+        plan: plan
+      };
+
+      history.unshift(newEntry);
+      if (history.length > 10) history = history.slice(0, 10);
+
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+      } catch (e) { history = []; }
+
+      historyList.innerHTML = '';
+      if (history.length === 0) {
+        historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 6px;">아직 저장된 징검다리가 없어요 개굴.</p>';
+        return;
+      }
+
+      history.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        row.innerHTML = `
+          <span class="history-item-text">${escapeHtml(item.dump)}</span>
+          <span class="history-item-date">${escapeHtml(item.date)}</span>
+        `;
+        row.addEventListener('click', () => {
+          renderPlan(item.plan);
+        });
+        historyList.appendChild(row);
+      });
+    }
+
+    function loadCurrentPlan() {
+      const saved = localStorage.getItem(STORAGE_KEY_CURRENT);
+      if (saved) {
+        try {
+          const plan = JSON.parse(saved);
+          renderPlan(plan);
+        } catch (e) {}
+      }
+    }
+
+    toggleHistoryBtn.addEventListener('click', () => {
+      const isOpen = historyList.style.display === 'flex';
+      historyList.style.display = isOpen ? 'none' : 'flex';
+      historyArrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+  </script>
+</body>
+</html>

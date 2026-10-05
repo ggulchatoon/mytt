@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mytt 오프라인 팝업 공방 0기 (양재) : 2시간 반 만에 내 손으로 깎는 나만의 생산성 툴</title>
+
+  <!-- Pretendard & JetBrains Mono Fonts -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       mytt oneday_sales_page_v1 : Offline Popup Atelier Edition
+       - Clean Editorial Monochrome Line Aesthetics
+       - Real Atmosphere Photo Integration (Yangjae Sunlit Atelier)
+       - 2.5-Hour Practical Workshop Timetable
+       - 1:2 Tutor Ratio (2 Tutors for 4 Students)
+       - Zero Financial Risk & Deposit Goods Reward Framing
+       ============================================================ */
+
+    :root {
+      --black: #111111;
+      --charcoal: #242528;
+      --dark-gray: #4a4d52;
+      --mid-gray: #6e7279;
+      --light-gray: #a2a6af;
+      --border-line: #e6e4df;
+      --border-dark: #111111;
+      --bg-page: #f5f4ef;
+      --bg-card: #ffffff;
+      --bg-sub: #faf9f6;
+      --bg-tag: #eeebe3;
+      --accent-black: #000000;
+
+      --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--black);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.7;
+      word-break: keep-all;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 100px;
+    }
+
+    /* Fixed Top Notification Bar */
+    .top-urgent-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--black);
+      color: #ffffff;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--charcoal);
+    }
+    .urgent-pulse {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #ffffff;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .urgent-link {
+      color: #ffffff;
+      text-decoration: underline;
+      margin-left: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Sticky Navigation Tabs */
+    .nav-tabs-bar {
+      position: sticky;
+      top: 41px;
+      z-index: 990;
+      background: rgba(245, 244, 239, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-line);
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-tabs-bar::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-tabs-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+    }
+    .nav-tab-item {
+      flex: 1;
+      text-align: center;
+      padding: 13px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark-gray);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .nav-tab-item:hover, .nav-tab-item.active {
+      color: var(--black);
+      border-bottom-color: var(--black);
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    /* Layout Wrapper */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Section Global */
+    .section-block {
+      border-bottom: 1px solid var(--border-line);
+      padding: 56px 0;
+    }
+
+    .sec-eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      margin-bottom: 12px;
+    }
+
+    .sec-heading {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      line-height: 1.35;
+      color: var(--black);
+      margin-bottom: 14px;
+    }
+
+    .sec-lead-text {
+      font-size: 15.5px;
+      color: var(--dark-gray);
+      line-height: 1.65;
+      margin-bottom: 30px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 50px 0 46px;
+      border-bottom: 1px solid var(--border-line);
+    }
+    .hero-meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-tag);
+      border: 1px solid var(--border-line);
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--black);
+      border-radius: 2px;
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-size: 33px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.035em;
+      margin-bottom: 18px;
+      color: var(--black);
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--charcoal);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* Hero Atelier Highlights */
+    .atelier-highlights-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .highlight-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 16px 14px;
+      border-radius: 2px;
+      text-align: center;
+    }
+    .highlight-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--mid-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    .highlight-val {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--black);
+    }
+    .highlight-sub {
+      font-size: 11.5px;
+      color: var(--mid-gray);
+      margin-top: 2px;
+    }
+
+    /* Hero Price Callout */
+    .hero-pricing-banner {
+      background: var(--bg-card);
+      border: 2px solid var(--black);
+      padding: 24px 22px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .hero-badge-tag {
+      align-self: flex-start;
+      background: var(--black);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      letter-spacing: 0.05em;
+    }
+    .hero-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .hero-price-huge {
+      font-size: 32px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      letter-spacing: -0.03em;
+    }
+    .hero-orig-price {
+      font-size: 16px;
+      color: var(--mid-gray);
+      text-decoration: line-through;
+    }
+    .hero-discount-pill {
+      background: var(--bg-tag);
+      border: 1px solid var(--border-line);
+      padding: 3px 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .hero-reward-callout {
+      background: var(--bg-sub);
+      border-left: 3px solid var(--black);
+      padding: 10px 14px;
+      font-size: 13.5px;
+      color: var(--dark-gray);
+      line-height: 1.55;
+    }
+
+    .btn-hero-cta {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      background: var(--black);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 18px 24px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      transition: background 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-hero-cta:hover {
+      background: var(--charcoal);
+    }
+
+    /* Photo Frame Component */
+    .photo-frame-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 12px;
+      margin-bottom: 24px;
+    }
+    .photo-frame-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--border-line);
+    }
+    .photo-caption {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--mid-gray);
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+    }
+
+    /* Feature Grid */
+    .atelier-features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .atelier-feat-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+    }
+    .feat-num-badge {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--mid-gray);
+      line-height: 1;
+      padding-top: 3px;
+    }
+    .feat-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .feat-desc {
+      font-size: 14px;
+      color: var(--dark-gray);
+      line-height: 1.6;
+    }
+
+    /* Problem Cards */
+    .pain-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pain-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 20px 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .pain-index {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--black);
+      color: #ffffff;
+      padding: 3px 7px;
+      border-radius: 2px;
+    }
+    .pain-title {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+    .pain-desc {
+      font-size: 13.5px;
+      color: var(--dark-gray);
+      line-height: 1.55;
+    }
+
+    /* Timetable Component */
+    .timetable-vertical {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .timetable-vertical::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      bottom: 25px;
+      left: 17px;
+      width: 1px;
+      background: var(--border-line);
+      z-index: 1;
+    }
+    .timetable-step-card {
+      position: relative;
+      z-index: 2;
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 20px 22px 20px 52px;
+    }
+    .step-circle-badge {
+      position: absolute;
+      left: 7px;
+      top: 20px;
+      width: 22px;
+      height: 22px;
+      background: var(--black);
+      color: #ffffff;
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-time-meta {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--mid-gray);
+      margin-bottom: 4px;
+    }
+    .step-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 14px;
+      color: var(--dark-gray);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .step-takeaway {
+      display: inline-block;
+      background: var(--bg-tag);
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--charcoal);
+      border-radius: 2px;
+    }
+
+    /* Output Showcase Preview */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .showcase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 18px;
+    }
+    .showcase-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--mid-gray);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .showcase-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .showcase-desc {
+      font-size: 13px;
+      color: var(--dark-gray);
+      line-height: 1.5;
+    }
+
+    /* Tutors Grid */
+    .tutors-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .tutor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 24px 20px;
+    }
+    .tutor-role {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      margin-bottom: 4px;
+    }
+    .tutor-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .tutor-desc-list {
+      list-style: none;
+      font-size: 13px;
+      color: var(--dark-gray);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .tutor-desc-list li {
+      margin-bottom: 4px;
+      position: relative;
+      padding-left: 12px;
+    }
+    .tutor-desc-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--light-gray);
+    }
+    .tutor-quote {
+      font-size: 12.5px;
+      color: var(--black);
+      background: var(--bg-sub);
+      padding: 10px 12px;
+      border-left: 2px solid var(--black);
+      font-style: italic;
+    }
+
+    /* Ticket Box Section */
+    .ticket-tier-box {
+      background: var(--bg-card);
+      border: 2px solid var(--black);
+      padding: 32px 28px;
+      margin-bottom: 24px;
+    }
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-line);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .ticket-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--black);
+    }
+    .ticket-sub {
+      font-size: 13.5px;
+      color: var(--dark-gray);
+      margin-top: 3px;
+    }
+    .ticket-badge {
+      background: var(--black);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 10px;
+    }
+    .ticket-pricing-large {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .ticket-amount {
+      font-family: var(--font-mono);
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .ticket-strike {
+      font-size: 16px;
+      color: var(--mid-gray);
+      text-decoration: line-through;
+    }
+    .ticket-benefits-list {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+    .ticket-benefits-list li {
+      font-size: 14.5px;
+      color: var(--charcoal);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .ticket-benefits-list li strong {
+      color: var(--black);
+    }
+    .ticket-benefits-list li::before {
+      content: '✓';
+      font-weight: 900;
+      color: var(--black);
+    }
+
+    /* Location Meta Box */
+    .location-info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .location-row {
+      display: flex;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-line);
+      font-size: 14px;
+    }
+    .location-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .loc-label {
+      width: 100px;
+      font-weight: 800;
+      color: var(--dark-gray);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+    .loc-val {
+      color: var(--black);
+      flex: 1;
+      line-height: 1.55;
+    }
+
+    /* FAQ */
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 20px 22px;
+      margin-bottom: 12px;
+    }
+    .faq-q {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .faq-a {
+      font-size: 13.5px;
+      color: var(--dark-gray);
+      line-height: 1.6;
+    }
+
+    /* Legal Notice Card */
+    .legal-card {
+      background: var(--bg-tag);
+      border: 1px solid var(--border-line);
+      padding: 18px 20px;
+      font-size: 12.5px;
+      color: var(--dark-gray);
+      line-height: 1.6;
+      margin-top: 24px;
+    }
+
+    /* Sticky Bottom Floating Dock */
+    .floating-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.98);
+      border-top: 1px solid var(--border-line);
+      padding: 12px 20px;
+      backdrop-filter: blur(10px);
+    }
+    .floating-dock-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .dock-meta-title {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: var(--mid-gray);
+      letter-spacing: 0.05em;
+    }
+    .dock-price {
+      font-family: var(--font-mono);
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--black);
+    }
+    .dock-sub-note {
+      font-size: 11.5px;
+      color: var(--dark-gray);
+    }
+    .btn-dock-action {
+      background: var(--black);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 13px 24px;
+      font-size: 14.5px;
+      font-weight: 800;
+      border-radius: 2px;
+      white-space: nowrap;
+      transition: background 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-dock-action:hover {
+      background: var(--charcoal);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero-title {
+        font-size: 26px;
+      }
+      .atelier-highlights-row {
+        grid-template-columns: 1fr;
+      }
+      .showcase-grid, .tutors-grid {
+        grid-template-columns: 1fr;
+      }
+      .sec-heading {
+        font-size: 22px;
+      }
+      .ticket-pricing-large {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Urgent Bar -->
+  <aside class="top-urgent-bar">
+    <div>
+      <span class="urgent-pulse"></span>
+      <span>[오프라인 팝업 0기] 2026. 10. 19 (토) 14:00 · 양재 서재 아틀리에</span>
+    </div>
+    <div>
+      <span style="font-family:var(--font-mono); background:#ffffff; color:#000000; padding:2px 6px; font-size:11px; font-weight:800;">선착순 4석 [잔여 4석]</span>
+      <a href="#tickets" class="urgent-link">신청 ➔</a>
+    </div>
+  </aside>
+
+  <!-- Sticky Nav Tabs -->
+  <nav class="nav-tabs-bar" aria-label="섹션 바로가기">
+    <div class="nav-tabs-inner">
+      <a href="#atmosphere" class="nav-tab-item">공방 분위기</a>
+      <a href="#problem" class="nav-tab-item">문제 공감</a>
+      <a href="#schedule" class="nav-tab-item">타임테이블</a>
+      <a href="#showcase" class="nav-tab-item">완성 툴</a>
+      <a href="#tutors" class="nav-tab-item">튜터 소개</a>
+      <a href="#tickets" class="nav-tab-item">티켓 신청</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- ============================================================
+         HERO SECTION
+         ============================================================ -->
+    <header class="hero-section">
+      <span class="hero-meta-tag">
+        <span>MYTT POP-UP ATELIER 0TH</span>
+        <span>//</span>
+        <span>YANGJAE</span>
+      </span>
+
+      <h1 class="hero-title">
+        집에서는 딴짓만 하던 내가,<br />
+        2시간 반 만에 내 손으로 깎아 들고 가는<br />
+        나만의 생산성 툴
+      </h1>
+
+      <p class="hero-desc">
+        혼자 방에서 하면 유튜브와 침대의 유혹에 뇌가 멈추지만,<br />
+        햇살 드는 양재 서재에서 꿀차·깨굴 튜터와 마주 앉으면 2시간 반 만에 무조건 끝납니다.<br />
+        <strong>단 4명만 초대하는 프라이빗 오프라인 바이브코딩 팝업 공방</strong>에 오신 것을 환영합니다.
+      </p>
+
+      <!-- Highlights Row -->
+      <div class="atelier-highlights-row">
+        <div class="highlight-card">
+          <div class="highlight-label">CAPACITY</div>
+          <div class="highlight-val">단 4명 선착순</div>
+          <div class="highlight-sub">소수정예 밀착 케어</div>
+        </div>
+        <div class="highlight-card">
+          <div class="highlight-label">TUTOR RATIO</div>
+          <div class="highlight-val">1:2 밀착 과외</div>
+          <div class="highlight-sub">기획 꿀차 + 기술 깨굴</div>
+        </div>
+        <div class="highlight-card">
+          <div class="highlight-label">LOCATION</div>
+          <div class="highlight-val">양재 서재 아틀리에</div>
+          <div class="highlight-sub">신분당선·3호선 역세권</div>
+        </div>
+      </div>
+
+      <!-- Pricing Callout Box -->
+      <div class="hero-pricing-banner">
+        <span class="hero-badge-tag">0기 팝업 런칭 특별 지원가</span>
+        <div class="hero-price-row">
+          <span class="hero-price-huge">29,000원</span>
+          <span class="hero-orig-price">정가 79,000원</span>
+          <span class="hero-discount-pill">63% OFF</span>
+        </div>
+        <div class="hero-reward-callout">
+          <strong>🎁 참석자 전원 100% 혜택:</strong> 25,000원 상당의 <strong>[꿀차툰 실물 굿즈 키트 (아크릴 키링 + 시간농장 스티커팩 + 메모패드)]</strong>와 따뜻한 웰컴 티·다과를 두 손 무겁게 선물로 안겨드립니다. (공간비 실비만 분담하는 수준으로 사실상 실부담 0원 체감!)
+        </div>
+        <a href="#tickets" class="btn-hero-cta">
+          0기 팝업 공방 신청하기 (선착순 4석) ➔
+        </a>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         SECTION 1: Atmosphere & Atelier Vibe
+         ============================================================ -->
+    <section id="atmosphere" class="section-block">
+      <span class="sec-eyebrow">[ 01 // ATELIER VIBE &amp; BODY DOUBLING ]</span>
+      <h2 class="sec-heading">딱딱한 강의실이 아닙니다.<br />햇살 드는 서재에서 함께 일하는 감각</h2>
+      <p class="sec-lead-text">
+        형광등 켜진 학원이 아닙니다. 편안한 음악과 원목 롱테이블, 차 한 잔을 곁들이며 각자 조용히 노트북을 열고 툴을 깎는 ‘바디더블링(Body Doubling)’의 공기를 느껴보세요.
+      </p>
+
+      <!-- Real Atmosphere Photo -->
+      <div class="photo-frame-box">
+        <img src="yangjae_atelier_popup.jpg" alt="양재 아틀리에 공방 모임 현장 사진" />
+        <div class="photo-caption">
+          <span>LOCATION // YANGJAE PRIVATE ATELIER</span>
+          <span>SUNLIT OAK TABLE &amp; LAPTOP WORKSHOP</span>
+        </div>
+      </div>
+
+      <div class="atelier-features-list">
+        <div class="atelier-feat-item">
+          <div class="feat-num-badge">01</div>
+          <div>
+            <div class="feat-title">바디더블링 (Body Doubling)의 강력한 몰입감</div>
+            <div class="feat-desc">
+              "누군가 곁에서 조용히 일하고 있다는 감각만으로도 딴짓이 멈춘다." 나처럼 시간관리와 미루기에 고민하던 동료 창작자들이 둘러앉아 자기 툴을 만드는 그 공기 자체가 뇌의 시동을 걸어줍니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="atelier-feat-item">
+          <div class="feat-num-badge">02</div>
+          <div>
+            <div class="feat-title">수강생 4명에 튜터 2명 (1:2 밀착 과외)</div>
+            <div class="feat-desc">
+              일방적으로 듣기만 하는 강의가 아닙니다. 기획과 비주얼은 꿀차 튜터가, 코드 에러와 브라우저 배포는 10년 차 풀스택 엔지니어 깨굴 튜터가 바로 옆에 앉아 1:1로 실시간 수술해 드립니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="atelier-feat-item">
+          <div class="feat-num-badge">03</div>
+          <div>
+            <div class="feat-title">퇴근할 때 내 손에 쥐어지는 확실한 완성품</div>
+            <div class="feat-desc">
+              "다음에 집 가서 해봐야지"는 99% 포기합니다. 모임이 끝나는 오후 4시 30분, 내 컴퓨터에서 진짜로 동작하는 내 맞춤형 툴 하나를 완벽하게 들고 문을 나섭니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 2: Realistic Pain Point
+         ============================================================ -->
+    <section id="problem" class="section-block">
+      <span class="sec-eyebrow">[ 02 // REALISTIC PAIN POINT ]</span>
+      <h2 class="sec-heading">솔직히, 집에서 혼자 하려면 이렇잖아요?</h2>
+      <p class="sec-lead-text">
+        노션 템플릿도, 유튜브 코딩 강의도 3일 만에 포기했던 이유는 당신의 의지력 때문이 아닙니다.
+      </p>
+
+      <div class="pain-cards-grid">
+        <div class="pain-card">
+          <span class="pain-index">01</span>
+          <div>
+            <div class="pain-title">과제 마비 (Task Freeze)</div>
+            <div class="pain-desc">"이번 주말엔 진짜 시간관리 툴 만들어봐야지!" 마음먹었지만, 막상 컴퓨터 앞에 앉으면 어디서부터 손대야 할지 몰라 침대로 도망칩니다.</div>
+          </div>
+        </div>
+
+        <div class="pain-card">
+          <span class="pain-index">02</span>
+          <div>
+            <div class="pain-title">가짜 작업과 시간 도둑</div>
+            <div class="pain-desc">유튜브 강의 켜놓고 10분 보다가 책상 청소하고, 펜 줄 맞추고, 시계 보려다 인스타 릴스 40분 보며 허무하게 자책합니다.</div>
+          </div>
+        </div>
+
+        <div class="pain-card">
+          <span class="pain-index">03</span>
+          <div>
+            <div class="pain-title">빨간 에러 글자의 공포</div>
+            <div class="pain-desc">혼자 코딩하다가 화면이 하얗게 깨지거나 버튼이 안 눌리면, 물어볼 사람도 없이 끙끙 앓다가 조용히 창을 닫아버립니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-card); border:1px solid var(--border-line); border-left:3px solid var(--black); padding:16px 20px; margin-top:20px; font-size:14px; color:var(--charcoal);">
+        <strong>그래서 우리는 오프라인에 모입니다.</strong> 오프라인에서는 딴짓을 할 수도 없고, 에러가 나면 1초 만에 깨굴 튜터가 손을 뻗어 해결해 주니까요!
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 3: 2.5-Hour Workshop Timetable
+         ============================================================ -->
+    <section id="schedule" class="section-block">
+      <span class="sec-eyebrow">[ 03 // 2.5-HOUR WORKSHOP TIMETABLE ]</span>
+      <h2 class="sec-heading">군더더기 없이 딱 2시간 반,<br />이렇게 흘러갑니다</h2>
+      <p class="sec-lead-text">
+        이론 설명만 주구장창 늘어놓지 않습니다. 2시간 30분 동안 손을 움직여 실시간으로 내 툴을 완성하는 컴팩트한 워크플로우입니다.
+      </p>
+
+      <div class="timetable-vertical">
+        <!-- Step 1 -->
+        <div class="timetable-step-card">
+          <div class="step-circle-badge">1</div>
+          <div class="step-time-meta">14:00 ~ 14:30 (30분) · STEP 01</div>
+          <div class="step-title">웰컴 티 &amp; 나의 시간 농장 기획 스케치</div>
+          <div class="step-desc">
+            따뜻한 차 한 잔을 마시며 『나의 시간 농장』 워크북으로 내 24시간 중 어디서 시간이 새는지 진단합니다. 오늘 내가 진짜 필요한 기능 1~2가지를 종이 위에 슥슥 그림으로 스케치합니다.
+          </div>
+          <span class="step-takeaway">손에 남는 것: 나의 시간 도둑 진단지 &amp; 나만의 툴 화면 스케치</span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="timetable-step-card">
+          <div class="step-circle-badge">2</div>
+          <div class="step-time-meta">14:30 ~ 15:10 (40분) · STEP 02</div>
+          <div class="step-title">제미나이 질문지 ➔ 클로드 10분 즉시 코딩</div>
+          <div class="step-desc">
+            어려운 코딩 문법은 0%! 제미나이와 대화하며 스케치를 프롬프트로 바꾸고, 클로드에 복사해 넣어 로컬 자동 저장 노스크롤 대시보드를 10분 만에 즉시 생성합니다.
+          </div>
+          <span class="step-takeaway">손에 남는 것: 내 컴퓨터에서 바로 돌아가는 첫 번째 웹앱 파일</span>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="timetable-step-card">
+          <div class="step-circle-badge">3</div>
+          <div class="step-time-meta">15:10 ~ 15:50 (40분) · STEP 03</div>
+          <div class="step-title">감성 디자인 옷 입히기 &amp; 1:1 코드 응급 처방</div>
+          <div class="step-desc">
+            꿀차 튜터의 감성 손글씨 폰트와 캐릭터 에셋팩을 얹어 내 취향대로 꾸밉니다. 레이아웃이 삐뚤어지거나 버그가 나면 깨굴 튜터가 옆에 앉아 1:1로 코드를 완벽히 잡아줍니다.
+          </div>
+          <span class="step-takeaway">손에 남는 것: 내 취향이 듬뿍 담긴 디자인 맞춤 완성 툴</span>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="timetable-step-card">
+          <div class="step-circle-badge">4</div>
+          <div class="step-time-meta">15:50 ~ 16:30 (40분) · STEP 04</div>
+          <div class="step-title">내 툴 동작 검증 &amp; 미니 쇼케이스 파티</div>
+          <div class="step-desc">
+            완성된 툴을 내 컴퓨터 화면 구석에 상시 띄워두고 셀프 QA를 마칩니다. 4명이 둘러앉아 각자 깎은 개성 넘치는 툴을 서로 자랑하고 축하하며 따뜻하게 하루를 마무리합니다.
+          </div>
+          <span class="step-takeaway">손에 남는 것: 평생 쓰는 완성품 소장 + 꿀차툰 실물 굿즈 선물팩</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 4: Real Output Showcase
+         ============================================================ -->
+    <section id="showcase" class="section-block">
+      <span class="sec-eyebrow">[ 04 // REAL OUTPUT SHOWCASE ]</span>
+      <h2 class="sec-heading">오늘 내가 직접 완성해 들고 갈 실물 툴</h2>
+      <p class="sec-lead-text">
+        시중에 파는 남의 앱이 아닙니다. 내 작업 습관과 고질적인 딴짓 패턴을 정확히 타격하는 나만의 애착 무기입니다.
+      </p>
+
+      <div class="showcase-grid">
+        <div class="showcase-card">
+          <div class="showcase-tag">TOOL 01 // PC SIDEBAR</div>
+          <div class="showcase-title">산오르기 딥워크 타이머</div>
+          <div class="showcase-desc">시간 확인하려다 스마트폰 쇼츠 40분 날리던 분들을 위한 툴. 모니터 구석 루피를 보며 4시간 초몰입을 사수합니다.</div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-tag">TOOL 02 // MORNING ROUTINE</div>
+          <div class="showcase-title">침대 탈출 모닝 베이커리</div>
+          <div class="showcase-desc">시끄러운 알람 끄고 자책하던 아침 대신, 갓 구운 빵과 커피 도장을 모으는 설레는 기상 인터랙션 웹앱입니다.</div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-tag">TOOL 03 // DONE LIST</div>
+          <div class="showcase-title">오늘의 성취 영수증 던리스트</div>
+          <div class="showcase-desc">"오늘 대체 뭐 했지?" 자책하며 잠들던 퇴근길. 오늘 해낸 작은 일들이 영수증처럼 찌이잉 출력되는 즉각적 보상 툴입니다.</div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-tag">TOOL 04 // CUSTOM WIDGET</div>
+          <div class="showcase-title">나만의 독창적인 맞춤 툴</div>
+          <div class="showcase-desc">작곡 레슨 일정표, 외주 마감 계산기, 하루 3줄 일기장 등 오직 나만의 업무 방식에 맞춘 자유 기획 툴을 만듭니다.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 5: The Tutors
+         ============================================================ -->
+    <section id="tutors" class="section-block">
+      <span class="sec-eyebrow">[ 05 // COMPANIONS &amp; TUTORS ]</span>
+      <h2 class="sec-heading">수강생 4명을 전담 케어하는<br />든든한 두 길잡이</h2>
+      <p class="sec-lead-text">
+        비전공자 창작자의 감성과 시니어 엔지니어의 기술력이 현장에서 만나 가장 편안하고 안전한 수업을 만듭니다.
+      </p>
+
+      <div class="tutors-grid">
+        <!-- Tutor 1 -->
+        <div class="tutor-card">
+          <div class="tutor-role">CREATIVE DIRECTOR // 기획 &amp; 비주얼</div>
+          <div class="tutor-name">꿀차 튜터</div>
+          <ul class="tutor-desc-list">
+            <li>비전공자 창작자 출신 (인스타툰 작가)</li>
+            <li>프리랜서의 고질적인 딴짓과 시간관리 결핍을 100% 공감</li>
+            <li>직관적인 화면 기획 &amp; 귀여운 에셋 디자인 디렉팅</li>
+          </ul>
+          <div class="tutor-quote">
+            "복잡한 기능 필요 없어요. 내 마음에 쏙 드는 귀여운 캐릭터와 손글씨 폰트 하나면 매일 켜게 됩니다!"
+          </div>
+        </div>
+
+        <!-- Tutor 2 -->
+        <div class="tutor-card">
+          <div class="tutor-role">CHIEF TECH OFFICER // 기술 총괄</div>
+          <div class="tutor-name">깨굴 튜터</div>
+          <ul class="tutor-desc-list">
+            <li>10년 차 풀스택 소프트웨어 엔지니어</li>
+            <li>초보자 눈높이에 맞춘 프롬프트 엔지니어링 가이드</li>
+            <li>현장에서 발생하는 모든 코드 버그와 레이아웃 오류 1:1 즉시 처방</li>
+          </ul>
+          <div class="tutor-quote">
+            "어떤 에러가 발생해도 제가 바로 옆에서 1초 만에 뚫어드립니다. 여러분은 편안하게 상상만 하세요."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 6: Ticket & Location
+         ============================================================ -->
+    <section id="tickets" class="section-block">
+      <span class="sec-eyebrow">[ 06 // RESERVATION &amp; LOCATION ]</span>
+      <h2 class="sec-heading">0기 팝업 티켓 &amp; 장소 안내</h2>
+      <p class="sec-lead-text">
+        포트폴리오 및 현장 기록을 위해 선착순 딱 4분에게만 제공되는 특별 팝업 혜택입니다.
+      </p>
+
+      <!-- Ticket Box -->
+      <div class="ticket-tier-box">
+        <div class="ticket-header">
+          <div>
+            <div class="ticket-title">mytt 오프라인 팝업 공방 0기 (양재)</div>
+            <div class="ticket-sub">2시간 30분 실습 완성 · 튜터 1:2 밀착 과외 · 실물 굿즈 증정</div>
+          </div>
+          <span class="ticket-badge">선착순 4명 한정 [잔여 4석]</span>
+        </div>
+
+        <div class="ticket-pricing-large">
+          <span class="ticket-amount">29,000원</span>
+          <span class="ticket-strike">정가 79,000원</span>
+          <span style="font-family:var(--font-mono); font-size:14px; font-weight:800; background:var(--bg-tag); padding:4px 10px;">63% OFF</span>
+        </div>
+
+        <ul class="ticket-benefits-list">
+          <li><strong>2시간 30분 프라이빗 서재 아틀리에 이용</strong> (원목 롱테이블 &amp; 채광 작업실)</li>
+          <li><strong>꿀차 &amp; 깨굴 튜터 1:2 현장 밀착 코칭</strong> (화면 스케치 + 1:1 코드 수술)</li>
+          <li><strong>🎁 25,000원 상당 꿀차툰 실물 굿즈 키트 증정</strong> (아크릴 키링 + 스티커팩 + 메모패드)</li>
+          <li><strong>웰컴 드링크 &amp; 구움과자 다과 제공</strong> (스페셜티 커피 / 차)</li>
+          <li><strong>mytt 원본 클린 HTML 소스 코드 제공</strong> (로컬 자동 저장 영구 소장)</li>
+        </ul>
+
+        <a href="#tickets" class="btn-hero-cta" style="font-size:17px; padding:18px;">
+          팝업 공방 수강 신청하기 (선착순 4석) ➔
+        </a>
+      </div>
+
+      <!-- Location Info -->
+      <div class="location-info-card">
+        <div style="font-size:16px; font-weight:900; margin-bottom:14px; color:var(--black);">모임 상세 안내 &amp; 위치</div>
+        
+        <div class="location-row">
+          <span class="loc-label">DATE / TIME</span>
+          <span class="loc-val"><strong>2026. 10. 19 (토) 오후 14:00 ~ 16:30 (2시간 30분)</strong></span>
+        </div>
+
+        <div class="location-row">
+          <span class="loc-label">LOCATION</span>
+          <span class="loc-val">
+            <strong>서울 서초구 양재동 아틀리에 서재</strong><br />
+            • 신분당선 / 3호선 양재역 및 양재시민의숲역 인근<br />
+            <span style="font-size:12.5px; color:var(--mid-gray);">※ 쾌적하고 안전한 프라이빗 모임 운영을 위해, 결제 완료자 대상 네이버 톡톡으로 상세 도로명 주소를 개별 안내해 드립니다.</span>
+          </span>
+        </div>
+
+        <div class="location-row">
+          <span class="loc-label">SUPPLIES</span>
+          <span class="loc-val"><strong>개인 노트북 및 충전기 (충전 어댑터 필수 지참)</strong> · 마우스 (선택)</span>
+        </div>
+
+        <div class="location-row">
+          <span class="loc-label">CAPACITY</span>
+          <span class="loc-val">최소 3인 ~ 최대 4인 (소수정예 밀착 케어)</span>
+        </div>
+      </div>
+
+      <!-- Minimum Quota Notice -->
+      <div class="legal-card">
+        <strong style="color:var(--black); font-size:13px;">[최소 출발 인원 및 환불 보장 고시]</strong><br />
+        • 본 워크숍은 1:2 밀착 실습 환경을 위해 <strong>최소 3인 이상 신청 시 최종 진행</strong>됩니다.<br />
+        • 모집 마감일(모임 3일 전)까지 최소 인원 미달 시 모임이 취소되며 <strong>결제 금액 100% 전액 즉시 환불</strong>됩니다.<br />
+        • 모임 8일 전 취소 시 : 100% 전액 환불 | 7~4일 전 취소 시 : 50% 환불 | 3일 전~당일 취소 : 환불 불가 (공간 대관비 위약금 발생)
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 7: FAQ
+         ============================================================ -->
+    <section id="faq" class="section-block">
+      <span class="sec-eyebrow">[ 07 // FREQUENTLY ASKED QUESTIONS ]</span>
+      <h2 class="sec-heading">자주 묻는 질문 (FAQ)</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Q. 코딩을 1도 모르는 완전 문과생인데 2시간 반 만에 진짜 되나요?</div>
+        <div class="faq-a">
+          네, 100% 가능합니다! 어려운 프로그래밍 문법을 외우는 게 아닙니다. 제미나이와 일상 한국어로 대화해 코드를 뽑아내고, 모니터에 바로 띄우는 직관적인 바이브코딩입니다. 0기 파일럿 참가자의 90%가 문과생이었으며 전원이 당일 웹앱을 완성했습니다.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Q. 혼자 가는데 어색하거나 부담스럽지 않을까요?</div>
+        <div class="faq-a">
+          전혀 걱정하지 마세요! 4명이 둘러앉아 각자 조용히 자기 작업에 몰입하는 편안한 모각코(모여서 각자 코딩) 분위기입니다. 억지로 말을 많이 시키지 않으며, 꿀차·깨굴 튜터가 편안하고 다정하게 맞아드립니다.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Q. 맥북이나 윈도우 노트북 기종 상관없나요?</div>
+        <div class="faq-a">
+          네, 인터넷 브라우저(크롬, 사파리, 웨일 등)만 열리면 맥북이든 삼성/LG 윈도우 노트북이든 100% 상관없습니다. 배터리 방전을 위해 충전 어댑터만 꼭 챙겨와 주세요!
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Q. 2.5만 원 상당 꿀차툰 실물 굿즈는 언제 받나요?</div>
+        <div class="faq-a">
+          모임 당일 현장에 도착하시면 웰컴 드링크와 함께 예쁘게 포장된 실물 굿즈 키트(아크릴 키링, 시간농장 스티커팩, 메모패드 등)를 두 손 무겁게 직접 전해드립니다!
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sticky Bottom Floating Bar -->
+  <aside class="floating-dock">
+    <div class="floating-dock-inner">
+      <div>
+        <div class="dock-meta-title">mytt 오프라인 팝업 0기 (양재) · 잔여 4석</div>
+        <div style="display:flex; align-items:baseline; gap:8px;">
+          <span class="dock-price">29,000원</span>
+          <span class="dock-sub-note">(2.5만 원 상당 실물 굿즈 증정)</span>
+        </div>
+      </div>
+      <a href="#tickets" class="btn-dock-action">
+        얼리버드 신청하기 ➔
+      </a>
+    </div>
+  </aside>
+
+</body>
+</html>

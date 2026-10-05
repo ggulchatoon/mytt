@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>개굴 상담소 & 징검다리 - mytt 생각 디벨롭 툴</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #FBF9F3;
+      --frog-green: #68B984;
+      --frog-green-dark: #2F6D47;
+      --frog-green-light: #EDF7F2;
+      --frog-green-subtle: #D8EFE2;
+      --frog-belly: #FFF8D6;
+      --frog-cheek: #FFAAA6;
+      --text-main: #2E4F3E;
+      --text-muted: #6B8B79;
+      --card-bg: #FFFFFF;
+      --border-color: #D2E7DC;
+      --shadow-soft: 0 8px 24px rgba(59, 122, 87, 0.08);
+      --shadow-hover: 0 12px 30px rgba(59, 122, 87, 0.14);
+      --font-heading: 'Gaegu', cursive, sans-serif;
+      --font-body: 'Nanum Gothic', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-body);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 80px;
+    }
+
+    /* 상단 네비게이션 & 헤더 */
+    .app-header {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      font-family: var(--font-heading);
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 18px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .icon-btn:hover {
+      background: var(--frog-green-light);
+      border-color: var(--frog-green);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* 모드 전환 탭 (상담 모드 vs 바로 쪼개기) */
+    .tab-container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      background: #E8F3ED;
+      padding: 4px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+      border: 1.5px solid var(--border-color);
+    }
+
+    .tab-btn {
+      font-family: var(--font-heading);
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 999px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--card-bg);
+      color: var(--frog-green-dark);
+      box-shadow: 0 4px 12px rgba(59, 122, 87, 0.12);
+    }
+
+    .tab-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* 메인 컨테이너 */
+    .main-container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* 공통 카드 스타일 */
+    .card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 28px;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+
+    /* --- [1. 개굴 상담소 대화 모드] --- */
+    .chat-section {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .chat-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1.5px dashed var(--border-color);
+    }
+
+    .chat-frog-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-frog-title {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      line-height: 1.1;
+    }
+
+    .chat-frog-desc {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    .chat-reset-btn {
+      font-family: var(--font-heading);
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 16px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chat-reset-btn:hover {
+      border-color: var(--frog-green);
+      color: var(--frog-green-dark);
+    }
+
+    /* 메시지 목록 */
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-color) transparent;
+    }
+
+    .msg-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .msg-row.user {
+      flex-direction: row-reverse;
+    }
+
+    .msg-avatar {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .msg-bubble {
+      font-family: var(--font-body);
+      max-width: 82%;
+      padding: 12px 18px;
+      border-radius: 20px;
+      font-size: 13.5px;
+      line-height: 1.85;
+      letter-spacing: -0.2px;
+      word-break: keep-all;
+      position: relative;
+    }
+
+    .msg-row.frog .msg-bubble {
+      background: var(--frog-green-light);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      border-top-left-radius: 4px;
+    }
+
+    .msg-row.user .msg-bubble {
+      background: var(--frog-green);
+      color: #FFFFFF;
+      border-top-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(104, 185, 132, 0.25);
+    }
+
+    .msg-time {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--text-muted);
+      align-self: flex-end;
+      padding: 0 4px;
+    }
+
+    /* 채팅 입력 폼 (2~3줄 여유로운 높이) */
+    .chat-input-bar {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 4px;
+    }
+
+    .chat-input {
+      font-family: var(--font-body);
+      flex: 1;
+      min-height: 84px;
+      max-height: 160px;
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      line-height: 1.85;
+      color: var(--text-main);
+      outline: none;
+      resize: vertical;
+      background: #FAFCFA;
+    }
+
+    .chat-input:focus {
+      border-color: var(--frog-green);
+      background: #FFF;
+    }
+
+    .chat-input::placeholder {
+      color: #92B1A0;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    .chat-send-btn {
+      font-family: var(--font-heading);
+      width: 84px;
+      min-height: 84px;
+      background: var(--frog-green);
+      border: none;
+      border-radius: 20px;
+      color: #FFF;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(104, 185, 132, 0.35);
+    }
+
+    .chat-send-btn:hover {
+      background: var(--frog-green-dark);
+      transform: translateY(-1px);
+    }
+
+    .chat-send-btn:disabled {
+      background: #C4D8CC;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* 대화 선택지 칩 (Chat Chips) */
+    .chat-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chat-chip {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 700;
+      background: #FFFFFF;
+      border: 1.5px solid var(--frog-green);
+      color: var(--frog-green-dark);
+      padding: 7px 15px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(104, 185, 132, 0.12);
+      user-select: none;
+    }
+
+    .chat-chip:active {
+      transform: scale(0.95);
+      background: var(--frog-green-subtle);
+    }
+
+    .chat-chip:hover {
+      background: var(--frog-green-light);
+      border-color: var(--frog-green-dark);
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px rgba(104, 185, 132, 0.22);
+    }
+
+    .chat-chip.selected {
+      background: var(--frog-green);
+      color: #FFFFFF;
+      border-color: var(--frog-green-dark);
+    }
+
+    .chat-chip.disabled {
+      opacity: 0.55;
+      pointer-events: none;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* 연꽃잎 개구리 포커스 타이머 카드 (대화창 내부) */
+    .frog-focus-card {
+      background: #F4FAF6;
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      padding: 22px 18px;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      animation: fadeIn 0.4s ease;
+      width: 100%;
+    }
+
+    .frog-svg-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      width: 150px;
+      height: 130px;
+    }
+
+    .frog-svg-wrap.floating {
+      animation: frogLilyFloat 3s ease-in-out infinite;
+      filter: drop-shadow(0 8px 16px rgba(78, 126, 96, 0.16));
+    }
+
+    @keyframes frogLilyFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(1deg); }
+    }
+
+    .frog-svg-wrap.celebrating {
+      animation: frogCelebrateHop 0.8s ease-in-out infinite alternate;
+      filter: drop-shadow(0 10px 22px rgba(104, 185, 132, 0.28));
+    }
+
+    @keyframes frogCelebrateHop {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-12px) scale(1.04); }
+    }
+
+    .focus-cheer-title {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      line-height: 1.2;
+    }
+
+    .focus-task-target {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      color: #2E4F3E;
+      background: #FFFFFF;
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border-color);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      max-width: 90%;
+      word-break: keep-all;
+    }
+
+    .focus-clock {
+      font-family: var(--font-heading);
+      font-size: 46px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      letter-spacing: 2px;
+      line-height: 1;
+      margin: 4px 0;
+    }
+
+    .focus-subtext {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    /* --- [2. 원클릭 바로 쪼개기 모드] --- */
+    .quick-mode-section {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dump-textarea {
+      font-family: var(--font-body);
+      width: 100%;
+      height: 130px;
+      border: 2px solid var(--border-color);
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-main);
+      background: #FDFEFE;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .dump-textarea:focus {
+      border-color: var(--frog-green);
+      background: #FFF;
+    }
+
+    .dump-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .primary-btn {
+      font-family: var(--font-heading);
+      background: var(--frog-green);
+      color: #FFFFFF;
+      border: none;
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 21px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(104, 185, 132, 0.4);
+    }
+
+    .primary-btn:hover {
+      background: var(--frog-green-dark);
+      transform: translateY(-2px);
+    }
+
+    .primary-btn:disabled {
+      background: #BACDC3;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .primary-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: #FFF;
+      fill: none;
+    }
+
+    /* --- [3. 로딩 상태] --- */
+    .loading-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .frog-jumping {
+      animation: frogHop 0.8s infinite ease-in-out;
+    }
+
+    @keyframes frogHop {
+      0%, 100% { transform: translateY(0) scale(1, 1); }
+      50% { transform: translateY(-20px) scale(0.95, 1.05); }
+    }
+
+    .loading-text {
+      font-size: 22px;
+      color: var(--frog-green-dark);
+      margin-top: 16px;
+      font-weight: 700;
+    }
+
+    .loading-subtext {
+      font-size: 17px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* --- [4. 결과 섹션 (징검다리 스텝)] --- */
+    .results-section {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .results-close-btn {
+      font-family: var(--font-heading);
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 15px;
+      border-radius: 999px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .results-close-btn:hover {
+      background: #FFF5F5;
+      border-color: #EFA8A8;
+      color: #C53030;
+    }
+
+    .cheer-box {
+      background: var(--frog-green-subtle);
+      border-radius: 20px;
+      padding: 16px 20px;
+      border: 1.5px dashed var(--frog-green);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cheer-box svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--frog-green-dark);
+      flex-shrink: 0;
+    }
+
+    .cheer-text {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: var(--frog-green-dark);
+      font-weight: 700;
+      line-height: 1.85;
+      word-break: keep-all;
+    }
+
+    /* 징검다리 카드 목록 */
+    .stepping-stones {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .stone-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .stone-card:hover {
+      border-color: var(--frog-green);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .stone-card.starter {
+      background: #FFFDF4;
+      border-color: #EFE0A6;
+    }
+
+    .stone-card.completed {
+      opacity: 0.55;
+      background: #F4F7F5;
+      border-color: #DDE7E1;
+    }
+
+    .stone-card.completed .stone-title {
+      text-decoration: line-through;
+    }
+
+    .stone-badge-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .stone-number {
+      font-family: var(--font-heading);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--frog-green-light);
+      color: var(--frog-green-dark);
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--frog-green);
+    }
+
+    .stone-card.starter .stone-number {
+      background: var(--frog-belly);
+      color: #9C781E;
+      border-color: #E5CD75;
+    }
+
+    .stone-time {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      background: var(--frog-green-light);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .stone-content {
+      flex: 1;
+    }
+
+    .stone-tag {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: #B28322;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .stone-title {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .stone-desc {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+      letter-spacing: -0.2px;
+      word-break: keep-all;
+    }
+
+    .stone-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .timer-start-btn {
+      font-family: var(--font-heading);
+      background: var(--frog-green-light);
+      border: 1.5px solid var(--frog-green);
+      color: var(--frog-green-dark);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .timer-start-btn:hover {
+      background: var(--frog-green);
+      color: #FFF;
+    }
+
+    .timer-start-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .check-btn {
+      font-family: var(--font-heading);
+      background: transparent;
+      border: 1.5px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .check-btn:hover {
+      border-color: var(--frog-green);
+      color: var(--frog-green-dark);
+    }
+
+    .check-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+
+    /* 주의할 늪 */
+    .trap-card {
+      background: #FFF5F5;
+      border: 1.5px dashed #F8B4B4;
+      border-radius: 20px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .trap-card svg {
+      width: 22px;
+      height: 22px;
+      stroke: #D04F4F;
+      flex-shrink: 0;
+    }
+
+    .trap-text {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      color: #A33A3A;
+      line-height: 1.85;
+      word-break: keep-all;
+    }
+
+    /* 미니 집중 타이머 바 */
+    .active-timer-card {
+      display: none;
+      background: #2E4F3E;
+      color: #FFF;
+      border-radius: 24px;
+      padding: 18px 24px;
+      box-shadow: 0 10px 30px rgba(46, 79, 62, 0.25);
+      position: sticky;
+      bottom: 20px;
+      z-index: 100;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .timer-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timer-task-name {
+      font-family: var(--font-heading);
+      font-size: 21px;
+      color: #A8E6CF;
+      font-weight: 700;
+      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timer-clock {
+      font-family: var(--font-heading);
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .timer-ctrl-btn {
+      font-family: var(--font-heading);
+      background: #3D6752;
+      border: 1.5px solid #558B70;
+      color: #FFF;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .timer-ctrl-btn:hover {
+      background: #558B70;
+    }
+
+    .timer-ctrl-btn.finish {
+      background: var(--frog-green);
+      border-color: var(--frog-green);
+    }
+
+    .timer-ctrl-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* 설정 모달 */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(46, 79, 62, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #FFF;
+      border-radius: 28px;
+      padding: 28px;
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid var(--border-color);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--frog-green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .close-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+    }
+
+    .modal-body {
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .api-input {
+      font-family: var(--font-body);
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 14.5px;
+      outline: none;
+    }
+
+    .api-input:focus {
+      border-color: var(--frog-green);
+    }
+
+    .info-callout {
+      background: var(--frog-green-light);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 16px;
+      color: var(--frog-green-dark);
+      line-height: 1.4;
+    }
+
+    .info-callout a {
+      color: var(--frog-green-dark);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    /* 저장된 이전 기록 토글 */
+    .history-section {
+      margin-top: 10px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 10px 4px;
+    }
+
+    .history-header-title {
+      font-size: 20px;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-header-title svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .history-list {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .history-item {
+      background: #FFF;
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .history-item:hover {
+      border-color: var(--frog-green);
+      background: var(--frog-green-light);
+    }
+
+    .history-item-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 440px;
+    }
+
+    .history-item-date {
+      font-size: 15px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 헤더 -->
+  <header class="app-header">
+    <div class="brand-group">
+      <!-- 귀여운 미니 개구리 SVG 아이콘 -->
+      <svg width="42" height="42" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+        <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <circle cx="28" cy="26" r="10" fill="#FFFFFF"/>
+        <circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+        <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+        <circle cx="72" cy="26" r="10" fill="#FFFFFF"/>
+        <circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+        <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+        <ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+        <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div>
+        <h1 class="brand-title">개굴 상담소</h1>
+        <p class="brand-subtitle">막막한 생각을 다정하게 풀고, 징검다리로 퐁당 쪼개기</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="demoBtn" title="예시 바로 체험하기">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        예시 보기
+      </button>
+      <button class="icon-btn" id="settingsBtn" title="Gemini API 설정">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        AI 설정
+      </button>
+    </div>
+  </header>
+
+  <!-- 모드 선택 탭 -->
+  <nav class="tab-container">
+    <button class="tab-btn active" id="tabChat">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      개굴 상담소 (생각 디벨롭 대화)
+    </button>
+    <button class="tab-btn" id="tabQuick">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      원클릭 바로 쪼개기
+    </button>
+  </nav>
+
+  <!-- 메인 영역 -->
+  <main class="main-container">
+
+    <!-- [모드 1: 개굴 상담소 대화 섹션] -->
+    <section class="card chat-section" id="chatSection">
+      <div class="chat-header-bar">
+        <div class="chat-frog-profile">
+          <div style="width:36px; height:36px; background:var(--frog-green-light); border:1.5px solid var(--border-color); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3V6" stroke="var(--frog-green-dark)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M3 14C3 9 7 6 12 6C17 6 21 9 21 14C21 14.5 20.5 14.5 20 14.5C18.5 14.5 17.8 13.5 16.5 13.5C15.2 13.5 14.5 14.5 13 14.5C11.5 14.5 10.8 13.5 9.5 13.5C8.2 13.5 7.5 14.5 6 14.5C4.5 14.5 3.5 14.5 3 14Z" fill="var(--frog-green)" stroke="var(--frog-green-dark)" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M12 14.5V20C12 21.1 11.1 22 10 22C8.9 22 8 21.1 8 20" stroke="var(--frog-green-dark)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="chat-frog-title">개굴 멘토</h2>
+            <p class="chat-frog-desc">두서없이 편하게 주절거리면 매듭을 살살 풀어줘요</p>
+          </div>
+        </div>
+        <button class="chat-reset-btn" id="resetChatBtn" title="대화 새로 시작하기">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          새 상담 시작
+        </button>
+      </div>
+
+      <!-- 메시지 영역 -->
+      <div class="chat-messages" id="chatMessages">
+        <!-- 개구리의 Step 0 컨디션 체크 -->
+        <div class="msg-row frog">
+          <div class="msg-avatar">
+            <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none">
+              <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+              <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+              <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="28" cy="26" r="10" fill="#FFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+              <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="72" cy="26" r="10" fill="#FFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+              <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/><ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+              <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="msg-bubble">시작하기 전에 컨디션 체크 개굴! 지금 상태 어때?</div>
+            <div class="chat-chips-container">
+              <button type="button" class="chat-chip" data-choice="귀찮피곤해">귀찮피곤해</button>
+              <button type="button" class="chat-chip" data-choice="불안막막해">불안막막해</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 대화 입력창 -->
+      <form class="chat-input-bar" id="chatForm">
+        <textarea 
+          class="chat-input" 
+          id="chatInput" 
+          placeholder="선택지를 클릭하거나 개굴이에게 직접 고민을 말해보세요"
+          rows="2"
+        ></textarea>
+        <button class="chat-send-btn" id="chatSendBtn" type="submit">
+          전송
+        </button>
+      </form>
+    </section>
+
+    <!-- [모드 2: 원클릭 바로 쪼개기 섹션] -->
+    <section class="card quick-mode-section" id="quickSection">
+      <div class="card-title-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="font-size:24px; font-weight:700; color:var(--frog-green-dark); display:flex; align-items:center; gap:8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          머릿속 생각 마구 털어놓기
+        </h2>
+        <span style="font-size:15px; background:var(--frog-belly); color:#8C6D1F; padding:4px 10px; border-radius:999px; border:1px solid #EFE0A6;">원클릭 분해</span>
+      </div>
+
+      <textarea 
+        id="taskDumpInput" 
+        class="dump-textarea" 
+        placeholder="예) 이번 주까지 포트폴리오 노션 페이지 만들어야 하는데 레퍼런스도 찾아야 하고 프로젝트 뭐 넣을지도 정리 안 됐고 디자인도 막막해서 손도 못 대고 있어... 어디서부터 해야 하지?"
+      ></textarea>
+
+      <div class="dump-footer">
+        <span style="font-size:13.5px; color:var(--text-muted)">팁: '하기 싫다, 막막하다' 같은 솔직한 감정도 다 적어보세요.</span>
+        <button id="sliceBtn" class="primary-btn">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          머릿속을 가볍게 만들기
+        </button>
+      </div>
+    </section>
+
+    <!-- 로딩 상태 카드 -->
+    <div id="loadingWrap" class="card loading-wrap">
+      <div class="frog-avatar-wrap frog-jumping" style="width:80px; height:80px; margin:0 auto;">
+        <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
+          <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+          <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+          <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+          <circle cx="28" cy="26" r="10" fill="#FFF"/>
+          <circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+          <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+          <circle cx="72" cy="26" r="10" fill="#FFF"/>
+          <circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+          <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+          <ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+          <path d="M 42 54 Q 50 62 58 54" stroke="#2E4F3E" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="loading-text" id="loadingMainText">개굴이가 거대한 할 일을 작게 쪼개는 중...</p>
+      <p class="loading-subtext">당장 5분 만에 끝낼 수 있는 가장 가벼운 첫 조각을 찾고 있어요!</p>
+    </div>
+
+    <!-- [결과 섹션: 징검다리 스텝] -->
+    <section id="resultsSection" class="results-section">
+      <div class="results-header">
+        <h2 class="results-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          개굴이가 만든 징검다리
+        </h2>
+        <!-- 닫기 버튼 추가! -->
+        <button class="results-close-btn" id="closeResultsBtn" title="결과 닫고 다시 대화하기">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          결과 닫기
+        </button>
+      </div>
+
+      <!-- 개굴이의 안심 응원 멘트 -->
+      <div class="cheer-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <p class="cheer-text" id="cheerMessage">"걱정 마 개굴! 딱 이 징검다리 3개만 건너면 끝나요!"</p>
+      </div>
+
+      <!-- 징검다리 카드 목록 -->
+      <div class="stepping-stones" id="stonesList">
+        <!-- 자바스크립트로 동적 렌더링 -->
+      </div>
+
+      <!-- 오늘 피해야 할 늪(오버페이스 방지) -->
+      <div class="trap-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="trap-text" id="trapText">
+          <strong>오늘 조심할 늪:</strong> 오늘 안에 완벽하게 끝내려고 욕심내면 지쳐 쓰러져요. 딱 1단계만 끝내고 스스로 칭찬하기!
+        </div>
+      </div>
+    </section>
+
+    <!-- 이전 쪼개기 히스토리 아코디언 -->
+    <section class="history-section">
+      <div class="history-header" id="toggleHistoryBtn">
+        <span class="history-header-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          이전에 쪼갰던 징검다리 기록 보기
+        </span>
+        <svg id="historyArrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="history-list" id="historyList">
+        <!-- 로컬스토리지 기록 렌더링 -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 하단 고정 집중 타이머 바 -->
+  <div id="activeTimerCard" class="active-timer-card">
+    <div class="timer-info">
+      <span class="timer-task-name" id="timerTaskTitle">태스크 이름</span>
+      <span class="timer-clock" id="timerClock">25:00</span>
+    </div>
+    <div class="timer-controls">
+      <button class="timer-ctrl-btn" id="pauseTimerBtn">
+        <svg viewBox="0 0 24 24" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        <span id="pauseBtnText">일시정지</span>
+      </button>
+      <button class="timer-ctrl-btn finish" id="finishTimerBtn">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        완료!
+      </button>
+    </div>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#68B984" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Gemini AI 설정
+        </h3>
+        <button class="close-btn" id="closeSettingsBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>Google에서 무료로 발급받은 <strong>Gemini API 키</strong>를 입력하세요.<br>이 키는 서버로 전송되지 않고 오직 본인 브라우저에만 안전하게 보관됩니다.</p>
+        
+        <input type="password" id="apiKeyInput" class="api-input" placeholder="AIzaSy... 또는 AQ.Ab... 키 입력">
+        <div id="apiTestStatus" style="display:none; font-size:13.5px; padding:10px 14px; border-radius:12px; margin-top:8px; line-height:1.5;"></div>
+
+        <div class="info-callout">
+          <strong>💡 API 키 발급 방법 (100% 무료):</strong><br>
+          1. <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio (무료 발급 링크)</a>에 로그인<br>
+          2. [Create API Key] 클릭 후 복사하여 붙여넣기<br>
+          3. <em>신용카드 불필요! Flash-Lite 모델로 매일 500회까지 완전 무료입니다.</em>
+        </div>
+
+        <button id="saveApiKeyBtn" class="primary-btn" style="width: 100%; justify-content: center; margin-top: 10px;">
+          저장하기 개굴!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State & DOM References ---
+    const STORAGE_KEY_API = 'mytt_frog_gemini_api_key';
+    const STORAGE_KEY_HISTORY = 'mytt_frog_task_history';
+    const STORAGE_KEY_CURRENT = 'mytt_frog_current_plan';
+    const STORAGE_KEY_CHAT = 'mytt_frog_chat_messages';
+
+    // 탭 요소
+    const tabChat = document.getElementById('tabChat');
+    const tabQuick = document.getElementById('tabQuick');
+    const chatSection = document.getElementById('chatSection');
+    const quickSection = document.getElementById('quickSection');
+
+    // 채팅 요소
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const resetChatBtn = document.getElementById('resetChatBtn');
+
+    // 퀵 모드 요소
+    const dumpInput = document.getElementById('taskDumpInput');
+    const sliceBtn = document.getElementById('sliceBtn');
+    const demoBtn = document.getElementById('demoBtn');
+
+    // 설정 모달
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+    const apiTestStatus = document.getElementById('apiTestStatus');
+
+    // --- API Key 헬퍼 ---
+    function sanitizeApiKey(rawKey) {
+      if (!rawKey) return '';
+      return String(rawKey).trim().replace(/^["']|["']$/g, '');
+    }
+
+    function getStoredApiKey() {
+      const k = localStorage.getItem(STORAGE_KEY_API) || localStorage.getItem('gemini_api_key');
+      return sanitizeApiKey(k);
+    }
+
+    function showApiStatus(type, msg) {
+      if (!apiTestStatus) return;
+      apiTestStatus.style.display = 'block';
+      if (type === 'success') {
+        apiTestStatus.style.background = '#EDF7F2';
+        apiTestStatus.style.border = '1.5px solid var(--frog-green)';
+        apiTestStatus.style.color = 'var(--frog-green-dark)';
+      } else if (type === 'info') {
+        apiTestStatus.style.background = '#F0F6FF';
+        apiTestStatus.style.border = '1.5px solid #ADC8FF';
+        apiTestStatus.style.color = '#1D39C4';
+      } else {
+        apiTestStatus.style.background = '#FFF2F0';
+        apiTestStatus.style.border = '1.5px solid #FFA39E';
+        apiTestStatus.style.color = '#CF1322';
+      }
+      apiTestStatus.innerText = msg;
+    }
+
+    // --- Gemini 모델 우선순위 및 감지 ---
+    const PREFERRED_GEMINI_MODELS = [
+      'gemini-3.1-flash-lite',
+      'gemini-3.5-flash-lite',
+      'gemini-3.6-flash',
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-8b',
+      'gemini-1.5-pro'
+    ];
+    let discoveredGeminiModels = null;
+
+    async function fetchAvailableGeminiModels(apiKey) {
+      if (discoveredGeminiModels && discoveredGeminiModels.length > 0) {
+        return discoveredGeminiModels;
+      }
+      const cleanKey = sanitizeApiKey(apiKey);
+      if (!cleanKey) return PREFERRED_GEMINI_MODELS;
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.models && Array.isArray(data.models)) {
+            const genModels = data.models
+              .filter(m => !m.supportedGenerationMethods || m.supportedGenerationMethods.includes('generateContent'))
+              .map(m => m.name.replace(/^models\//, ''));
+            
+            if (genModels.length > 0) {
+              const sorted = [];
+              for (const pref of PREFERRED_GEMINI_MODELS) {
+                if (genModels.includes(pref)) sorted.push(pref);
+              }
+              for (const m of genModels) {
+                if (!sorted.includes(m) && (m.includes('flash') || m.includes('gemini'))) {
+                  sorted.push(m);
+                }
+              }
+              discoveredGeminiModels = sorted.length > 0 ? sorted : genModels;
+              try {
+                sessionStorage.setItem('detected_gemini_models', JSON.stringify(discoveredGeminiModels));
+              } catch (e) {}
+              return discoveredGeminiModels;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not auto-fetch models:', e);
+      }
+      return PREFERRED_GEMINI_MODELS;
+    }
+
+    function getGeminiModelsToTry() {
+      if (discoveredGeminiModels && discoveredGeminiModels.length > 0) {
+        return discoveredGeminiModels;
+      }
+      try {
+        const cached = sessionStorage.getItem('detected_gemini_models');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            discoveredGeminiModels = parsed;
+            return parsed;
+          }
+        }
+      } catch (e) {}
+      return PREFERRED_GEMINI_MODELS;
+    }
+
+    async function testGeminiApiKey(key) {
+      const cleanKey = sanitizeApiKey(key);
+      if (!cleanKey) {
+        return { ok: false, message: 'API 키를 입력해주세요 개굴!' };
+      }
+
+      // 1. 모델 목록 조회를 통해 API 키의 유효성을 안전하게 검증 (토큰 소모 없음)
+      const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`;
+      try {
+        const response = await fetch(listUrl);
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const errMsg = errData.error?.message || `HTTP ${response.status}`;
+          if (response.status === 400 || errMsg.includes('API_KEY_INVALID') || errMsg.includes('key not valid')) {
+            return { ok: false, message: 'API 키가 올바르지 않습니다. 키에 오타나 앞뒤 공백이 없는지 확인해주세요.' };
+          }
+          if (response.status === 429 || errMsg.includes('RESOURCE_EXHAUSTED')) {
+            return { ok: false, message: 'Google API 무료 할당량이 일시적으로 초과되었습니다. 잠시 후 다시 시도해주세요.' };
+          }
+          return { ok: false, message: `연결 실패: ${errMsg}` };
+        }
+
+        const data = await response.json();
+        let detectedNames = [];
+        if (data.models && Array.isArray(data.models)) {
+          const genModels = data.models
+            .filter(m => !m.supportedGenerationMethods || m.supportedGenerationMethods.includes('generateContent'))
+            .map(m => m.name.replace(/^models\//, ''));
+          
+          if (genModels.length > 0) {
+            const sorted = [];
+            for (const pref of PREFERRED_GEMINI_MODELS) {
+              if (genModels.includes(pref)) sorted.push(pref);
+            }
+            for (const m of genModels) {
+              if (!sorted.includes(m) && (m.includes('flash') || m.includes('gemini'))) {
+                sorted.push(m);
+              }
+            }
+            discoveredGeminiModels = sorted.length > 0 ? sorted : genModels;
+            try {
+              sessionStorage.setItem('detected_gemini_models', JSON.stringify(discoveredGeminiModels));
+            } catch (e) {}
+            detectedNames = discoveredGeminiModels.slice(0, 3);
+          }
+        }
+
+        const modelNote = detectedNames.length > 0 ? ` (${detectedNames[0]} 연결 확인)` : '';
+        return { ok: true, message: `Gemini AI 연결 성공 개굴!${modelNote} 키가 안전하게 등록되었습니다.` };
+      } catch (e) {
+        return { ok: false, message: `네트워크 연결 실패: ${e.message}` };
+      }
+    }
+
+    // --- 멀티턴 대화 구조 정상화 (롤 교대 보장) ---
+    function buildGeminiContents(historyList, fallbackUserMsg) {
+      const contents = [];
+      const recent = historyList.slice(-10);
+
+      for (const item of recent) {
+        const role = item.role === 'user' ? 'user' : 'model';
+        let text = typeof item.text === 'string' ? item.text : JSON.stringify(item.text);
+        if (!text || text.trim() === '' || text.includes('개굴이가 생각 중이야...')) continue;
+
+        if (contents.length === 0) {
+          if (role === 'user') {
+            contents.push({ role: 'user', parts: [{ text }] });
+          }
+        } else {
+          const last = contents[contents.length - 1];
+          if (last.role === role) {
+            last.parts[0].text += '\n' + text;
+          } else {
+            contents.push({ role, parts: [{ text }] });
+          }
+        }
+      }
+
+      if (contents.length === 0 && fallbackUserMsg) {
+        contents.push({ role: 'user', parts: [{ text: fallbackUserMsg }] });
+      }
+
+      return contents;
+    }
+
+    // 로딩 & 결과
+    const loadingWrap = document.getElementById('loadingWrap');
+    const loadingMainText = document.getElementById('loadingMainText');
+    const resultsSection = document.getElementById('resultsSection');
+    const stonesList = document.getElementById('stonesList');
+    const cheerMessage = document.getElementById('cheerMessage');
+    const trapText = document.getElementById('trapText');
+    const closeResultsBtn = document.getElementById('closeResultsBtn');
+
+    // 히스토리
+    const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+    const historyList = document.getElementById('historyList');
+    const historyArrow = document.getElementById('historyArrow');
+
+    // 타이머
+    const activeTimerCard = document.getElementById('activeTimerCard');
+    const timerTaskTitle = document.getElementById('timerTaskTitle');
+    const timerClock = document.getElementById('timerClock');
+    const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+    const pauseBtnText = document.getElementById('pauseBtnText');
+    const finishTimerBtn = document.getElementById('finishTimerBtn');
+
+    let timerInterval = null;
+    let timerRemainingSeconds = 25 * 60;
+    let isTimerPaused = false;
+    let currentTaskItem = null;
+
+    // 대화 메시지 상태 (Gemini Chat history)
+    let chatHistory = [];
+
+    // --- Init ---
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem(STORAGE_KEY_API) || localStorage.getItem('gemini_api_key');
+      if (savedKey) {
+        apiKeyInput.value = savedKey;
+        // 백그라운드에서 프로젝트 모델 목록 사전 조회
+        fetchAvailableGeminiModels(savedKey);
+      }
+
+      loadChatHistory();
+      loadCurrentPlan();
+      renderHistory();
+    });
+
+    // --- Tab Switching ---
+    tabChat.addEventListener('click', () => {
+      tabChat.classList.add('active');
+      tabQuick.classList.remove('active');
+      chatSection.style.display = 'flex';
+      quickSection.style.display = 'none';
+      chatInput.focus();
+    });
+
+    tabQuick.addEventListener('click', () => {
+      tabQuick.classList.add('active');
+      tabChat.classList.remove('active');
+      quickSection.style.display = 'flex';
+      chatSection.style.display = 'none';
+      dumpInput.focus();
+    });
+
+    // --- Settings Modal ---
+    settingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'flex';
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+    });
+
+    saveApiKeyBtn.addEventListener('click', async () => {
+      const rawKey = apiKeyInput.value.trim();
+      const cleanKey = sanitizeApiKey(rawKey);
+      if (!cleanKey) {
+        alert('API 키를 입력해주세요 개굴!');
+        apiKeyInput.focus();
+        return;
+      }
+
+      showApiStatus('info', 'Google AI 연결 확인 중입니다 개굴...');
+      saveApiKeyBtn.disabled = true;
+
+      const result = await testGeminiApiKey(cleanKey);
+      saveApiKeyBtn.disabled = false;
+
+      if (result.ok) {
+        localStorage.setItem(STORAGE_KEY_API, cleanKey);
+        localStorage.setItem('gemini_api_key', cleanKey);
+        showApiStatus('success', result.message);
+        setTimeout(() => {
+          settingsModal.style.display = 'none';
+        }, 1200);
+      } else {
+        showApiStatus('error', result.message);
+      }
+    });
+
+    // --- [1. 개굴 상담소 대화 로직] ---
+    // (엔터는 줄바꿈, [전송] 버튼이나 칩 클릭 시에 전송됩니다)
+
+    let focusTimerInterval = null;
+    let focusTimerSeconds = 5 * 60; // 5분 (300초)
+
+    let lastFocusAction = '';
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.isComposing) return; // 한글 조합 중 중복 전송 방지
+        e.preventDefault();
+        chatForm.requestSubmit();
+      }
+    });
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userText = chatInput.value.trim();
+      if (!userText) return;
+      handleUserSendMessage(userText);
+    });
+
+    async function handleUserSendMessage(userText) {
+      const apiKey = getStoredApiKey();
+      if (!apiKey) {
+        alert('Gemini API 키가 아직 등록되지 않았어요 개굴!\n우측 상단의 [AI 설정]에서 무료 키를 등록해주세요.');
+        settingsModal.style.display = 'flex';
+        return;
+      }
+
+      // 1. 사용자 메시지 화면 추가
+      appendChatMessage('user', userText);
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      chatSendBtn.disabled = true;
+
+      // 2. 개구리 생각 중 말풍선 띄우기
+      const frogThinkingEl = appendChatMessage('frog', '개굴이가 생각 중이야...');
+
+      try {
+        const replyData = await callGeminiChat(apiKey, userText);
+        frogThinkingEl.remove();
+
+        if (replyData.focusAction) {
+          lastFocusAction = replyData.focusAction;
+        }
+
+        appendChatMessage('frog', replyData.message, replyData.chips || []);
+        saveChatHistory();
+      } catch (err) {
+        console.error(err);
+        // 에러 발생 시 chatHistory 오염 방지 (마지막 실패한 user 메시지 제거)
+        if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === 'user') {
+          chatHistory.pop();
+        }
+        // 실패 시 비활성화되었던 칩들 다시 활성화하여 재클릭 가능하게 복구
+        document.querySelectorAll('.chat-chip.disabled').forEach(c => {
+          c.classList.remove('disabled');
+          c.classList.remove('selected');
+        });
+        let userFriendlyMsg = err.message || '네트워크 상태를 확인해주세요.';
+        if (userFriendlyMsg.includes('API_KEY_INVALID') || userFriendlyMsg.includes('key not valid')) {
+          userFriendlyMsg = '등록된 Gemini API 키가 올바르지 않아요 개굴! 우측 상단 [AI 설정]에서 키를 다시 확인해주세요.';
+        } else if (userFriendlyMsg.includes('RESOURCE_EXHAUSTED') || userFriendlyMsg.includes('429')) {
+          userFriendlyMsg = 'Google API 무료 할당량이 일시적으로 초과되었습니다 개굴! 15초 뒤에 다시 시도해주세요.';
+        } else if (userFriendlyMsg.includes('404')) {
+          userFriendlyMsg = '요청한 AI 모델을 찾을 수 없습니다 개굴. 다시 시도해주세요.';
+        }
+        frogThinkingEl.querySelector('.msg-bubble').innerHTML = `앗 개굴! 연결에 살짝 문제가 생겼어:<br><span style="color:#C53030; font-size:12.5px; font-weight:700;">${escapeHtml(userFriendlyMsg)}</span>`;
+      } finally {
+        chatSendBtn.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    function appendChatMessage(role, text, chips = []) {
+      const row = document.createElement('div');
+      row.className = `msg-row ${role}`;
+
+      if (role === 'frog') {
+        const avatarHtml = `
+          <div class="msg-avatar">
+            <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none">
+              <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+              <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+              <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="28" cy="26" r="10" fill="#FFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+              <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="72" cy="26" r="10" fill="#FFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+              <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/><ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+              <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+          </div>`;
+
+        const contentWrap = document.createElement('div');
+        contentWrap.style.display = 'flex';
+        contentWrap.style.flexDirection = 'column';
+        contentWrap.style.maxWidth = '85%';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble';
+        bubble.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+        contentWrap.appendChild(bubble);
+
+        if (chips && chips.length > 0) {
+          const chipsContainer = document.createElement('div');
+          chipsContainer.className = 'chat-chips-container';
+
+          chips.forEach(chipText => {
+            const chipBtn = document.createElement('button');
+            chipBtn.type = 'button';
+            chipBtn.className = 'chat-chip';
+            chipBtn.innerText = chipText;
+            chipBtn.setAttribute('data-choice', chipText);
+
+            chipBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              if (chipBtn.classList.contains('disabled')) return;
+              const isActionChip = chipText.includes('5분 타이머') || chipText.includes('타이머 켜기') || chipText.includes('5분만 더 해볼래') || chipText.includes('오늘은 여기까지');
+              if (!isActionChip) {
+                const apiKey = getStoredApiKey();
+                if (!apiKey) {
+                  alert('Gemini API 키가 아직 등록되지 않았어요 개굴!\n우측 상단의 [AI 설정]에서 무료 키를 등록해주세요.');
+                  settingsModal.style.display = 'flex';
+                  return;
+                }
+              }
+              chipsContainer.querySelectorAll('.chat-chip').forEach(b => b.classList.add('disabled'));
+              chipBtn.classList.add('selected');
+
+              if (chipText.includes('5분 타이머') || chipText.includes('타이머 켜기')) {
+                const actionToRun = lastFocusAction || extractTaskFromContext();
+                startFocusTimerCard(actionToRun);
+              } else if (chipText.includes('5분만 더 해볼래')) {
+                startFocusTimerCard(lastFocusAction || '5분 추가 집중!');
+              } else if (chipText.includes('오늘은 여기까지')) {
+                appendChatMessage('user', '오늘은 여기까지 할래!');
+                appendChatMessage('frog', '오늘 정말 고생 많았어 개굴! 아무런 부담 갖지 말고 푹 쉬어. 내일 또 가볍게 시작하자!', []);
+              } else {
+                handleUserSendMessage(chipText);
+              }
+            });
+
+            chipsContainer.appendChild(chipBtn);
+          });
+
+          contentWrap.appendChild(chipsContainer);
+        }
+
+        row.innerHTML = avatarHtml;
+        row.appendChild(contentWrap);
+
+      } else {
+        row.innerHTML = `<div class="msg-bubble">${escapeHtml(text).replace(/\n/g, '<br>')}</div>`;
+      }
+
+      chatMessages.appendChild(row);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      if (text !== '개굴이가 생각 중이야...') {
+        chatHistory.push({ role, text, chips });
+      }
+
+      return row;
+    }
+
+    // 대화 히스토리 중 가장 최근 개구리의 Step 6 메시지에서 [오늘의 첫 조각] 추출 시도
+    function extractTaskFromContext() {
+      for (let i = chatHistory.length - 1; i >= 0; i--) {
+        const item = chatHistory[i];
+        if (item.text && item.text.includes('오늘의 첫 조각:')) {
+          const match = item.text.match(/오늘의 첫 조각:\s*\[(.*?)\]/);
+          if (match && match[1]) return match[1];
+        }
+      }
+      return '5분 집중 첫 걸음';
+    }
+
+    // 연꽃잎 위에 앉아 둥실둥실 떠있는 개구리 SVG
+    function getFloatingFrogSvg() {
+      return `
+      <div class="frog-svg-wrap floating">
+        <svg viewBox="0 0 160 140" width="150" height="130" fill="none">
+          <!-- 물결 잔물결 효과 -->
+          <ellipse cx="80" cy="122" rx="72" ry="10" fill="none" stroke="#D8EFE2" stroke-width="2.5" opacity="0.8"/>
+          <!-- 연꽃잎 (Lilypad) -->
+          <path d="M 80 118 M 15 118 C 15 106 44 98 80 98 C 116 98 145 106 145 118 C 145 130 116 136 80 136 C 50 136 24 131 16 122 Z" fill="#52A772" stroke="#2F6D47" stroke-width="3"/>
+          <path d="M 80 117 L 140 116" stroke="#3D7D56" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 80 117 L 50 106" stroke="#3D7D56" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M 80 117 L 110 128" stroke="#3D7D56" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M 80 117 L 52 128" stroke="#3D7D56" stroke-width="1.8" stroke-linecap="round"/>
+          <!-- 연꽃 작은 핑크 꽃봉오리 -->
+          <circle cx="132" cy="110" r="6" fill="#FFAAA6"/>
+          <circle cx="132" cy="110" r="3" fill="#FFF8D6"/>
+
+          <!-- 개구리 접힌 뒷다리 -->
+          <ellipse cx="46" cy="94" rx="14" ry="10" fill="#58A873" stroke="#2F6D47" stroke-width="2.5"/>
+          <ellipse cx="38" cy="103" rx="8" ry="4" fill="#58A873" stroke="#2F6D47" stroke-width="2"/>
+          <ellipse cx="114" cy="94" rx="14" ry="10" fill="#58A873" stroke="#2F6D47" stroke-width="2.5"/>
+          <ellipse cx="122" cy="103" rx="8" ry="4" fill="#58A873" stroke="#2F6D47" stroke-width="2"/>
+
+          <!-- 개구리 몸통 & 배 -->
+          <ellipse cx="80" cy="84" rx="30" ry="25" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+          <ellipse cx="80" cy="89" rx="20" ry="16" fill="#FFF8D6"/>
+
+          <!-- 앞발 (배 위에 모음) -->
+          <ellipse cx="68" cy="94" rx="5" ry="7" fill="#68B984" stroke="#2F6D47" stroke-width="2"/>
+          <ellipse cx="92" cy="94" rx="5" ry="7" fill="#68B984" stroke="#2F6D47" stroke-width="2"/>
+
+          <!-- 머리 -->
+          <ellipse cx="80" cy="54" rx="28" ry="22" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+
+          <!-- 눈 (동글동글) -->
+          <circle cx="62" cy="38" r="14" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+          <circle cx="62" cy="38" r="9" fill="#FFF"/>
+          <circle cx="63" cy="38" r="4.5" fill="#2E4F3E"/>
+          <circle cx="65" cy="36" r="1.5" fill="#FFF"/>
+
+          <circle cx="98" cy="38" r="14" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+          <circle cx="98" cy="38" r="9" fill="#FFF"/>
+          <circle cx="97" cy="38" r="4.5" fill="#2E4F3E"/>
+          <circle cx="99" cy="36" r="1.5" fill="#FFF"/>
+
+          <!-- 볼터치 홍조 -->
+          <ellipse cx="58" cy="56" rx="6" ry="3.5" fill="#FFAAA6"/>
+          <ellipse cx="102" cy="56" rx="6" ry="3.5" fill="#FFAAA6"/>
+
+          <!-- 차분하고 다정한 미소 -->
+          <path d="M 72 58 Q 80 66 88 58" stroke="#2E4F3E" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>`;
+    }
+
+    // 양손을 번쩍 들고 환호하며 퐁퐁 뛰는 축하 개구리 SVG
+    function getCelebratingFrogSvg() {
+      return `
+      <div class="frog-svg-wrap celebrating">
+        <svg viewBox="0 0 160 140" width="150" height="130" fill="none">
+          <!-- 축하 반짝이 스파클 -->
+          <path d="M 32 30 L 34 22 L 36 30 L 44 32 L 36 34 L 34 42 L 32 34 L 24 32 Z" fill="#FFC93C"/>
+          <path d="M 124 24 L 126 18 L 128 24 L 134 26 L 128 28 L 126 34 L 124 28 L 118 26 Z" fill="#FFC93C"/>
+          <circle cx="28" cy="60" r="3" fill="#68B984"/>
+          <circle cx="136" cy="54" r="3" fill="#FFAAA6"/>
+
+          <!-- 연꽃잎 바닥 -->
+          <ellipse cx="80" cy="122" rx="66" ry="14" fill="#52A772" stroke="#2F6D47" stroke-width="3"/>
+          <ellipse cx="80" cy="128" rx="72" ry="7" fill="none" stroke="#D8EFE2" stroke-width="2"/>
+
+          <!-- 높이 뻗은 두 팔 (만세! / Hurray!) -->
+          <path d="M 60 72 Q 42 50 36 32" stroke="#68B984" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <path d="M 60 72 Q 42 50 36 32" stroke="#2F6D47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="36" cy="32" r="6" fill="#68B984" stroke="#2F6D47" stroke-width="2.5"/>
+
+          <path d="M 100 72 Q 118 50 124 32" stroke="#68B984" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <path d="M 100 72 Q 118 50 124 32" stroke="#2F6D47" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="124" cy="32" r="6" fill="#68B984" stroke="#2F6D47" stroke-width="2.5"/>
+
+          <!-- 개구리 발 (살짝 점프한 자세) -->
+          <ellipse cx="44" cy="98" rx="13" ry="9" fill="#58A873" stroke="#2F6D47" stroke-width="2.5"/>
+          <ellipse cx="36" cy="107" rx="8" ry="4" fill="#58A873" stroke="#2F6D47" stroke-width="2"/>
+          <ellipse cx="116" cy="98" rx="13" ry="9" fill="#58A873" stroke="#2F6D47" stroke-width="2.5"/>
+          <ellipse cx="124" cy="107" rx="8" ry="4" fill="#58A873" stroke="#2F6D47" stroke-width="2"/>
+
+          <!-- 개구리 몸통 & 배 -->
+          <ellipse cx="80" cy="80" rx="30" ry="25" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+          <ellipse cx="80" cy="84" rx="20" ry="16" fill="#FFF8D6"/>
+
+          <!-- 머리 -->
+          <ellipse cx="80" cy="50" rx="28" ry="22" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+
+          <!-- 방긋 웃는 눈 (^ ^) -->
+          <circle cx="62" cy="34" r="14" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+          <path d="M 54 35 Q 62 26 70 35" stroke="#2E4F3E" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+
+          <circle cx="98" cy="34" r="14" fill="#68B984" stroke="#2F6D47" stroke-width="3"/>
+          <path d="M 90 35 Q 98 26 106 35" stroke="#2E4F3E" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+
+          <!-- 볼터치 홍조 -->
+          <ellipse cx="56" cy="52" rx="6.5" ry="4" fill="#FFAAA6"/>
+          <ellipse cx="104" cy="52" rx="6.5" ry="4" fill="#FFAAA6"/>
+
+          <!-- 환호하는 벌린 입 -->
+          <path d="M 72 52 Q 80 66 88 52 Z" fill="#FFAAA6" stroke="#2E4F3E" stroke-width="2.5"/>
+        </svg>
+      </div>`;
+    }
+
+    function startFocusTimerCard(actionName = '초미세 5분 행동') {
+      if (focusTimerInterval) clearInterval(focusTimerInterval);
+      focusTimerSeconds = 5 * 60;
+
+      const cardRow = document.createElement('div');
+      cardRow.className = 'msg-row frog';
+      cardRow.innerHTML = `
+        <div class="msg-avatar">
+          <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none">
+            <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+            <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+            <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="28" cy="26" r="10" fill="#FFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+            <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="72" cy="26" r="10" fill="#FFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+            <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/><ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+            <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="frog-focus-card" id="activeFocusCard">
+          ${getFloatingFrogSvg()}
+          <div class="focus-cheer-title">개굴이가 곁에서 조용히 응원하고 있어!</div>
+          <div class="focus-task-target">당장 할 일 : ${escapeHtml(actionName)}</div>
+          <div class="focus-clock" id="focusClockDisplay">05:00</div>
+          <div class="focus-subtext">5분 동안 아무 부담 없이 가볍게 손만 대어봐 개굴...</div>
+        </div>
+      `;
+      chatMessages.appendChild(cardRow);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      const clockDisplay = cardRow.querySelector('#focusClockDisplay');
+      const cardEl = cardRow.querySelector('#activeFocusCard');
+
+      focusTimerInterval = setInterval(() => {
+        focusTimerSeconds--;
+        const m = Math.floor(focusTimerSeconds / 60);
+        const s = focusTimerSeconds % 60;
+        if (clockDisplay) {
+          clockDisplay.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        if (focusTimerSeconds <= 0) {
+          clearInterval(focusTimerInterval);
+          showTimerEndedCard(cardEl);
+        }
+      }, 1000);
+    }
+
+    function showTimerEndedCard(cardEl) {
+      cardEl.innerHTML = `
+        ${getCelebratingFrogSvg()}
+        <div class="focus-cheer-title">5분이 훌쩍 지났다 개굴!</div>
+        <div class="focus-subtext" style="font-size:13.5px; line-height:1.8; color:var(--text-main); margin:4px 0;">
+          조금이라도 손을 댔다면 이미 멋진 첫 걸음을 뗀 거야 개굴.<br>
+          혹시 딴짓을 했거나 멍때렸어도 전혀 자책하지 마!<br>
+          개굴이는 언제나 널 계속 응원하고 있어.
+        </div>
+        <div class="chat-chips-container" style="justify-content:center; margin-top:8px;">
+          <button class="chat-chip timer-chip" data-choice="5분만 더 해볼래">5분만 더 해볼래</button>
+          <button class="chat-chip timer-chip" data-choice="오늘은 여기까지 할래!">오늘은 여기까지 할래!</button>
+        </div>
+      `;
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      const chips = cardEl.querySelectorAll('.timer-chip');
+      chips.forEach(c => {
+        c.addEventListener('click', () => {
+          const choice = c.getAttribute('data-choice');
+          chips.forEach(btn => btn.classList.add('disabled'));
+          c.classList.add('selected');
+
+          if (choice === '5분만 더 해볼래') {
+            startFocusTimerCard(lastFocusAction || '5분 추가 집중!');
+          } else {
+            appendChatMessage('user', '오늘은 여기까지 할래!');
+            appendChatMessage('frog', '오늘 정말 고생 많았어 개굴! 아무런 부담 갖지 말고 푹 쉬어. 내일 또 가볍게 시작하자!', []);
+          }
+        });
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function bindInitialChips() {
+      const chips = document.querySelectorAll('#chatMessages .chat-chip');
+      chips.forEach(chip => {
+        chip.onclick = (e) => {
+          e.preventDefault();
+          if (chip.classList.contains('disabled')) return;
+          const choice = chip.getAttribute('data-choice');
+          const apiKey = getStoredApiKey();
+          if (!apiKey) {
+            alert('Gemini API 키가 아직 등록되지 않았어요 개굴!\n우측 상단의 [AI 설정]에서 무료 키를 등록해주세요.');
+            settingsModal.style.display = 'flex';
+            return;
+          }
+          chips.forEach(c => c.classList.add('disabled'));
+          chip.classList.add('selected');
+          handleUserSendMessage(choice);
+        };
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // 새 상담 시작(초기화)
+    resetChatBtn.addEventListener('click', () => {
+      if (confirm('대화 내용을 비우고 새로운 상담을 시작할까요 개굴?')) {
+        chatHistory = [];
+        localStorage.removeItem(STORAGE_KEY_CHAT);
+        if (focusTimerInterval) clearInterval(focusTimerInterval);
+        lastFocusAction = '';
+        chatMessages.innerHTML = `
+          <div class="msg-row frog">
+            <div class="msg-avatar">
+              <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none">
+                <circle cx="50" cy="54" r="38" fill="#68B984" stroke="#2F6D47" stroke-width="4"/>
+                <ellipse cx="50" cy="64" rx="26" ry="20" fill="#FFF8D6"/>
+                <circle cx="28" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="28" cy="26" r="10" fill="#FFF"/><circle cx="30" cy="26" r="5" fill="#2E4F3E"/>
+                <circle cx="72" cy="26" r="16" fill="#68B984" stroke="#2F6D47" stroke-width="4"/><circle cx="72" cy="26" r="10" fill="#FFF"/><circle cx="70" cy="26" r="5" fill="#2E4F3E"/>
+                <ellipse cx="26" cy="54" rx="7" ry="4" fill="#FFAAA6"/><ellipse cx="74" cy="54" rx="7" ry="4" fill="#FFAAA6"/>
+                <path d="M 40 54 Q 50 64 60 54" stroke="#2E4F3E" stroke-width="3.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="msg-bubble">시작하기 전에 컨디션 체크 개굴! 지금 상태 어때?</div>
+              <div class="chat-chips-container">
+                <button type="button" class="chat-chip" data-choice="귀찮피곤해">귀찮피곤해</button>
+                <button type="button" class="chat-chip" data-choice="불안막막해">불안막막해</button>
+              </div>
+            </div>
+          </div>
+        `;
+        bindInitialChips();
+      }
+    });
+
+    function saveChatHistory() {
+      localStorage.setItem(STORAGE_KEY_CHAT, JSON.stringify(chatHistory));
+    }
+
+    function loadChatHistory() {
+      const saved = localStorage.getItem(STORAGE_KEY_CHAT);
+      if (saved) {
+        try {
+          const list = JSON.parse(saved);
+          if (Array.isArray(list) && list.length > 0) {
+            chatHistory = list;
+            chatMessages.innerHTML = '';
+            list.forEach(m => {
+              appendChatMessage(m.role, m.text, m.chips || []);
+            });
+            return;
+          }
+        } catch (e) {}
+      }
+      bindInitialChips();
+    }
+
+    // --- 개굴이의 비공개 심리 상담 바이블 (System Instruction) ---
+    const FROG_COUNSELOR_GUIDELINE = `
+당신은 작업 마비(Task Freeze)와 막막함에 빠진 사용자를 돕는 심리학 전공의 연두 개구리 멘토 '개굴이'입니다.
+
+[🎯 개굴이의 단 하나의 핵심 미션]
+정해진 각본에 사용자를 끼워 맞추지 마세요. 사용자의 막막한 이야기를 편안하게 들어주고 유연하게 티키타카를 주고받으며,
+"당장 5분 안에 부담 없이 시작할 수 있는 가장 가벼운 첫 조각"을 제안하고 선택하도록 돕는 것이 당신의 유일한 목표입니다.
+
+[🛑 핵심 대화 원칙 (절대 준수)]
+1. 유연한 티키타카 (단계 강제 절대 금지):
+   - 아래의 '대화 흐름 가이드'는 참고용 나침반일 뿐입니다. 절대로 순서를 억지로 밟으려 하지 마세요.
+   - 사용자가 한 번에 많은 상황을 털어놓았으면 앞단계를 건너뛰고 바로 핵심을 짚어주세요.
+   - 사용자가 "선택지 이상해", "더 자세히", "다른 거 줘" 등 피드백을 주면, 사과나 변명 없이 "아 맞네 개굴!" 하며 1초 만에 유연하게 눈치껏 맞춰주세요.
+2. 장소와 물리적 상황 맥락 파악:
+   - 사용자의 일이 '몸 쓰는 일(운동, 농구, 청소, 악기, 요리 등)'인지 '화면/책상 일(문서, 과제, 노션, 디자인 등)'인지 즉시 파악하세요.
+   - 농구 슛 연습인데 책상에 앉아 노트에 글 쓰라고 하지 마세요! 상황에 맞는 상식적인 행동을 제안하세요.
+3. 상황 맞춤형 선택지 칩(chips) 동적 생성:
+   - 고정된 보기는 절대 사용하지 마세요.
+   - 방금 사용자가 한 말의 맥락에 맞춰, 사용자가 손가락 하나로 툭 누르기 가장 편한 센스 있는 보기 2~3개를 매 턴 즉석에서 만들어 띄우세요.
+   - 예: 농구 슛 연습 ➡️ ["자세/슛 폼", "거리/타점 조절", "루틴/세트 구성"]
+4. 자기계발서 유행어 & 과잉 조력자 멘트 일체 금지:
+   - ❌ 금지 표현:
+     * "뇌를 속이는 마찰력 0% 첫 숟가락:"
+     * "복잡한 생각 끄고 손가락만 가볍게 까딱할 수 있게 도와줄게요."
+     * "네 탓이 아니라", "원인이 명확하다개굴!", "제가 마법처럼 쪼개드릴게요!"
+   - ⭕ 담백하고 직관적인 일상어 사용:
+     * "아하, [A]랑 [B]를 한꺼번에 잡으려니까 어디서부터 손댈지 헷갈렸던 거네!"
+     * 5분 행동을 제안할 때는 반드시 "오늘의 첫 조각:"이라는 담백한 표현을 사용하세요.
+5. 텍스트 다이어트:
+   - 모든 턴에서 개굴이의 말은 핵심 1~3줄을 넘지 마세요.
+   - 카카오톡 보내듯 핵심만 툭 던지고, 선택지 칩(chips)으로 부담 없이 넘어가게 하세요.
+6. 이모지 일체 사용 금지:
+   - 모든 종류의 이모지(아이콘)는 사용하지 마세요. 깔끔한 한글 텍스트와 기본 문장부호만 씁니다.
+7. 개굴이 톤앤매너:
+   - 시종일관 다정하고 쿨한 개구리 친구 말투(~개굴, ~다개, ~어, ~지?, ~해봐)를 유지하세요. 차가운 AI 비서 말투나 과장된 멘토 말투는 엄격히 금지합니다.
+
+[🗺️ 유연한 대화 흐름 참고 가이드 (상황에 맞게 생략/조절 가능)]
+- 탐색 & 공감: 컨디션(귀찮피곤/불안막막)을 묻고, 무슨 일을 하려는지 편안하게 듣기.
+- 엉킨 실타래 풀기: 무엇이 막히는지 핵심 고민을 짚고, 필요하면 전체 순서를 가볍게 2~3덩어리 트리로 묶어 보여주기.
+- 만만한 쪽 고르기: 둘 중 지금 더 가벼워 보이는 쪽을 2지선다로 툭 골라보게 하기.
+- 5분 첫 조각 제안 & 타이머:
+  * 사용자가 움직일 준비가 되었을 때, 당장 5분 만에 끝낼 수 있는 가장 가벼운 단 하나의 물리적 행동을 제안!
+  * 메시지 형식: "좋아! 그럼 오늘의 첫 조각: [구체적 5분 행동]부터 딱 5분만 해보자 개굴."
+  * 칩: ["5분 타이머 켜기", "다른 거 해볼래"]
+  * focusAction: "[구체적 5분 행동]" (타이머에 표시될 실제 행동)
+
+[반드시 순수 JSON 형식으로만 응답]
+반드시 다음 스키마의 JSON으로만 출력하세요:
+{
+  "message": "개굴이의 1~3줄 다정하고 직관적인 말 (필요시 순서 트리 포함)",
+  "chips": ["사용자가 툭 누르기 편한 선택지 1", "선택지 2"],
+  "focusAction": "5분 행동을 제안하는 턴일 때만 타이머에 들어갈 구체적 행동 텍스트 (그 외엔 null)"
+}
+`;
+
+    // --- Gemini 대화 API (상담 코칭) ---
+    async function callGeminiChat(apiKey, newUserMsg) {
+      const cleanKey = sanitizeApiKey(apiKey);
+      const contents = buildGeminiContents(chatHistory, newUserMsg);
+
+      let models = getGeminiModelsToTry();
+      if (!discoveredGeminiModels) {
+        fetchAvailableGeminiModels(cleanKey).then(fetched => {
+          if (fetched && fetched.length > 0) discoveredGeminiModels = fetched;
+        }).catch(() => {});
+      }
+
+      let lastError = null;
+
+      for (const model of models) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              systemInstruction: {
+                parts: [{ text: FROG_COUNSELOR_GUIDELINE }]
+              },
+              contents: contents,
+              generationConfig: {
+                temperature: 0.7,
+                responseMimeType: "application/json"
+              }
+            })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            const errMsg = errData.error?.message || `HTTP ${response.status}`;
+            throw new Error(errMsg);
+          }
+
+          const data = await response.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+          let parsed = null;
+          try {
+            const clean = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            parsed = JSON.parse(clean);
+          } catch (e) {
+            parsed = { message: rawText, chips: [] };
+          }
+          if (!parsed.chips || !Array.isArray(parsed.chips)) {
+            parsed.chips = [];
+          }
+
+          // 성공한 모델을 다음 호출 시 최우선 순위로 배치
+          if (discoveredGeminiModels && discoveredGeminiModels.includes(model)) {
+            discoveredGeminiModels = [model, ...discoveredGeminiModels.filter(m => m !== model)];
+          }
+
+          return parsed;
+        } catch (err) {
+          console.warn(`Chat model ${model} failed:`, err);
+          lastError = err;
+        }
+      }
+      throw lastError || new Error('개굴이와의 대화 연결에 실패했습니다.');
+    }
+
+    // --- [2. 원클릭 퀵 모드 쪼개기] ---
+    sliceBtn.addEventListener('click', async () => {
+      const userDump = dumpInput.value.trim();
+      if (!userDump) {
+        alert('머릿속에 맴도는 막막한 할 일을 적어주세요 개굴!');
+        dumpInput.focus();
+        return;
+      }
+
+      const apiKey = getStoredApiKey();
+      if (!apiKey) {
+        alert('Gemini API 키가 아직 등록되지 않았어요 개굴!\n상단의 [AI 설정]에서 등록해주세요.');
+        settingsModal.style.display = 'flex';
+        return;
+      }
+
+      loadingWrap.style.display = 'flex';
+      loadingMainText.innerText = '개굴이가 거대한 할 일을 작게 쪼개는 중...';
+      resultsSection.style.display = 'none';
+      sliceBtn.disabled = true;
+
+      try {
+        const plan = await callGeminiSlicerFromContext(apiKey, `사용자의 할 일 메모: ${userDump}`);
+        renderPlan(plan);
+        savePlanToHistory(userDump, plan);
+      } catch (err) {
+        console.error(err);
+        alert('Gemini 연결 중에 오류가 생겼어요 개굴:\n' + err.message);
+      } finally {
+        loadingWrap.style.display = 'none';
+        sliceBtn.disabled = false;
+      }
+    });
+
+    // 공통 Slicer 프롬프트 함수
+    async function callGeminiSlicerFromContext(apiKey, contextText) {
+      const systemInstruction = `
+당신은 시간관리와 뽀모도로 기법, 심리학에 능통한 귀여운 연두색 개구리 멘토 '개굴이'입니다.
+제공된 대화 또는 사용자의 생각을 분석하여, 당장 부담 없이 시작할 수 있는 최적의 징검다리 스텝으로 쪼개주세요.
+
+[필수 규칙]
+1. 이모지(Emoji)는 절대 쓰지 마세요.
+2. 친근하고 다정한 개구리 말투(~개굴, ~해요)를 사용하세요.
+3. 'starterStep': 당장 5분 안에 부담 없이 시작할 수 있는 가장 가벼운 첫 조각 1개 (예: 빈 파일 켜두기, 캡처 1개 하기 등).
+4. 'steps': 25분 이내로 끝낼 수 있는 구체적인 실행 단계 2~4개.
+5. 'trapToAvoid': 완벽주의에 빠져 오늘 다 하려다 지치는 것을 막는 현실적 조언 1개.
+
+반드시 다음 JSON 형식으로만 순수하게 반환하세요:
+{
+  "cheerMessage": "사용자의 부담을 덜어주는 따뜻한 개구리 응원 한마디",
+  "starterStep": {
+    "title": "5분 안에 끝낼 수 있는 초소형 시작 행동",
+    "duration": "5분",
+    "tag": "오늘의 첫 조각",
+    "detail": "부담 없이 가볍게 착수하는 구체적인 팁"
+  },
+  "steps": [
+    {
+      "title": "25분 뽀모도로 스텝 제목",
+      "duration": "25분",
+      "detail": "구체적인 행동 지침"
+    }
+  ],
+  "trapToAvoid": "오늘 피해야 할 완벽주의나 오버페이스 경고"
+}
+`;
+
+      const cleanKey = sanitizeApiKey(apiKey);
+      const prompt = `내용:\n${contextText}`;
+      let models = getGeminiModelsToTry();
+      let lastError = null;
+
+      for (const model of models) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: systemInstruction + "\n\n" + prompt }] }],
+              generationConfig: {
+                temperature: 0.7,
+                responseMimeType: "application/json"
+              }
+            })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          const rawText = data.candidates[0].content.parts[0].text;
+          const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+          // 성공한 모델을 최우선 순위로 배치
+          if (discoveredGeminiModels && discoveredGeminiModels.includes(model)) {
+            discoveredGeminiModels = [model, ...discoveredGeminiModels.filter(m => m !== model)];
+          }
+
+          return JSON.parse(cleanJson);
+        } catch (err) {
+          console.warn(`Slicer model ${model} failed:`, err);
+          lastError = err;
+        }
+      }
+
+      throw lastError || new Error('모든 Gemini 모델 응답에 실패했습니다.');
+    }
+
+    // --- [3. 결과 렌더링 & 닫기 버튼] ---
+    function renderPlan(plan) {
+      cheerMessage.innerText = plan.cheerMessage;
+      trapText.innerHTML = `<strong>오늘 조심할 늪:</strong> ${plan.trapToAvoid}`;
+      stonesList.innerHTML = '';
+
+      // 0번: 오늘의 첫 조각 스타터
+      if (plan.starterStep) {
+        const starterEl = createStoneElement({
+          num: '0',
+          title: plan.starterStep.title,
+          duration: plan.starterStep.duration || '5분',
+          tag: plan.starterStep.tag || '오늘의 첫 조각',
+          desc: plan.starterStep.detail,
+          isStarter: true
+        });
+        stonesList.appendChild(starterEl);
+      }
+
+      // 1~N번: 뽀모도로 스텝
+      plan.steps.forEach((step, idx) => {
+        const stepEl = createStoneElement({
+          num: String(idx + 1),
+          title: step.title,
+          duration: step.duration || '25분',
+          desc: step.detail,
+          isStarter: false
+        });
+        stonesList.appendChild(stepEl);
+      });
+
+      resultsSection.style.display = 'flex';
+      localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(plan));
+
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function createStoneElement(item) {
+      const card = document.createElement('div');
+      card.className = `stone-card ${item.isStarter ? 'starter' : ''}`;
+
+      card.innerHTML = `
+        <div class="stone-badge-col">
+          <div class="stone-number">${item.num}</div>
+          <span class="stone-time">${item.duration}</span>
+        </div>
+        <div class="stone-content">
+          ${item.tag ? `<div class="stone-tag">${item.tag}</div>` : ''}
+          <h3 class="stone-title">${item.title}</h3>
+          <p class="stone-desc">${item.desc}</p>
+        </div>
+        <div class="stone-actions">
+          <button class="timer-start-btn" data-title="${item.title}" data-duration="${item.duration}">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            시작
+          </button>
+          <button class="check-btn">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            완료
+          </button>
+        </div>
+      `;
+
+      // 완료 체크 버튼
+      const checkBtn = card.querySelector('.check-btn');
+      checkBtn.addEventListener('click', () => {
+        card.classList.toggle('completed');
+        if (card.classList.contains('completed')) {
+          checkBtn.style.color = 'var(--frog-green-dark)';
+          checkBtn.style.borderColor = 'var(--frog-green)';
+        } else {
+          checkBtn.style.color = '';
+          checkBtn.style.borderColor = '';
+        }
+      });
+
+      // 타이머 시작 버튼
+      const timerBtn = card.querySelector('.timer-start-btn');
+      timerBtn.addEventListener('click', () => {
+        startTaskTimer(item.title, item.duration, card);
+      });
+
+      return card;
+    }
+
+    // 결과 닫기 버튼 이벤트! (사용자 요청 해결)
+    closeResultsBtn.addEventListener('click', () => {
+      resultsSection.style.display = 'none';
+      localStorage.removeItem(STORAGE_KEY_CURRENT);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // --- [4. 예시 보기 버튼] ---
+    const DEMO_RESPONSE = {
+      cheerMessage: "걱정 마 개굴! 노션 포트폴리오는 완벽할 필요 없어. 딱 이 징검다리 3개만 건너면 오늘 할 일은 충분해!",
+      starterStep: {
+        title: "침대에서 핀터레스트 켜고 마음에 드는 디자인 2장 캡처하기",
+        duration: "5분",
+        tag: "오늘의 첫 조각",
+        detail: "의욕 없어도 괜찮아 개굴! 컴퓨터 안 켜도 돼. 핸드폰으로 눈팅만 하고 캡처 2장 건지면 0단계 완료!"
+      },
+      steps: [
+        {
+          title: "노션 빈 페이지 켜고 제목 '2026 포트폴리오' 딱 한 줄 쓰기",
+          duration: "10분",
+          detail: "멋지게 꾸미지 마 개굴! 커버 이미지 하나 고르고 내 이름 석 자만 적어두면 시작이 반이야."
+        },
+        {
+          title: "과거에 했던 대표 프로젝트 이름 3개만 bullet point로 나열",
+          duration: "20분",
+          detail: "설명 쓰지 말고 제목 3줄만 툭툭 던져놓기. 뼈대만 있으면 살은 나중에 붙이면 돼!"
+        },
+        {
+          title: "가장 편한 프로젝트 1개의 핵심 성과 2줄만 메모해 두기",
+          duration: "25분",
+          detail: "가장 기억에 남고 쓰기 편한 프로젝트 하나만 골라서 '내가 무엇을 했는지' 2줄만 메모하고 끝내기!"
+        }
+      ],
+      trapToAvoid: "오늘 안에 노션을 남들에게 공개할 만큼 완벽하게 꾸미려고 욕심내지 마라개! 뼈대만 잡는 게 오늘의 진짜 목표야."
+    };
+
+    demoBtn.addEventListener('click', () => {
+      renderPlan(DEMO_RESPONSE);
+    });
+
+    // --- [5. 타이머 기능] ---
+    function startTaskTimer(title, durationStr, cardElement) {
+      let minutes = parseInt(durationStr) || 25;
+      timerRemainingSeconds = minutes * 60;
+      currentTaskItem = cardElement;
+
+      timerTaskTitle.innerText = title;
+      updateTimerDisplay();
+
+      activeTimerCard.style.display = 'flex';
+      isTimerPaused = false;
+      pauseBtnText.innerText = '일시정지';
+
+      if (timerInterval) clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        if (!isTimerPaused) {
+          timerRemainingSeconds--;
+          updateTimerDisplay();
+
+          if (timerRemainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            alert(`개굴! '${title}' 시간이 다 되었습니다! 개구리처럼 높이 뛰어 칭찬해 주세요!`);
+            if (currentTaskItem) {
+              currentTaskItem.classList.add('completed');
+            }
+            activeTimerCard.style.display = 'none';
+          }
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timerRemainingSeconds / 60);
+      const s = timerRemainingSeconds % 60;
+      timerClock.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    pauseTimerBtn.addEventListener('click', () => {
+      isTimerPaused = !isTimerPaused;
+      pauseBtnText.innerText = isTimerPaused ? '계속하기' : '일시정지';
+    });
+
+    finishTimerBtn.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      if (currentTaskItem) {
+        currentTaskItem.classList.add('completed');
+      }
+      activeTimerCard.style.display = 'none';
+      alert('참 잘했어요 개굴! 징검다리를 하나 건넜습니다!');
+    });
+
+    // --- [6. 히스토리 저장 및 불러오기] ---
+    function savePlanToHistory(dumpText, plan) {
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+      } catch (e) { history = []; }
+
+      const newEntry = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }),
+        dump: dumpText,
+        plan: plan
+      };
+
+      history.unshift(newEntry);
+      if (history.length > 10) history = history.slice(0, 10);
+
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+      } catch (e) { history = []; }
+
+      historyList.innerHTML = '';
+      if (history.length === 0) {
+        historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 17px; padding: 6px;">아직 저장된 징검다리가 없어요 개굴.</p>';
+        return;
+      }
+
+      history.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        row.innerHTML = `
+          <span class="history-item-text">${item.dump}</span>
+          <span class="history-item-date">${item.date}</span>
+        `;
+        row.addEventListener('click', () => {
+          renderPlan(item.plan);
+        });
+        historyList.appendChild(row);
+      });
+    }
+
+    function loadCurrentPlan() {
+      const saved = localStorage.getItem(STORAGE_KEY_CURRENT);
+      if (saved) {
+        try {
+          const plan = JSON.parse(saved);
+          renderPlan(plan);
+        } catch (e) {}
+      }
+    }
+
+    toggleHistoryBtn.addEventListener('click', () => {
+      const isOpen = historyList.style.display === 'flex';
+      historyList.style.display = isOpen ? 'none' : 'flex';
+      historyArrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  </script>
+</body>
+</html>

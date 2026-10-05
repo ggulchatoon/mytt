@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=750" />
+  <title>MyTT — 내게 필요한 기능만 쏙 (30대 감성 에디션)</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Gowun+Batang:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 30대 여성 취향의 세련되고 따뜻한 '프렌치 아틀리에 / 포인트오브뷰' 팔레트 */
+      --bg-cream: #FAF7F2;
+      --bg-board: #FFFFFF;
+      --c-sage: #6B7F64;
+      --c-sage-light: #EEF3EB;
+      --c-french-blue: #A4BAC8;
+      --c-french-blue-light: #EDF3F7;
+      --c-apricot: #DE7D64;
+      --c-apricot-light: #FDF1ED;
+      --c-butter: #F7EBC3;
+      --c-linen: #EFECE6;
+      --c-tape: rgba(240, 230, 195, 0.8);
+      --ink-charcoal: #2A2A28;
+      --ink-sub: #6E6D68;
+      --ink-muted: #9E9C96;
+      --shadow-atelier: 0 4px 14px rgba(45, 40, 35, 0.08), 0 1px 3px rgba(45, 40, 35, 0.04);
+      --shadow-floating: 0 12px 30px rgba(45, 40, 35, 0.12), 0 2px 6px rgba(45, 40, 35, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 750px;
+      height: 1000px;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-cream);
+      overflow: hidden;
+      font-family: "Gowun Batang", "Pretendard", -apple-system, serif;
+      color: var(--ink-charcoal);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .poster-container {
+      width: 750px;
+      height: 1000px;
+      background: var(--bg-cream);
+      padding: 60px 48px 56px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Top Header: 시적이고 세련된 에디토리얼 타이포그래피 */
+    .poster-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--c-sage);
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .brand-eyebrow::before, .brand-eyebrow::after {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: var(--c-sage);
+      opacity: 0.4;
+    }
+
+    .poster-headline {
+      font-family: 'Gowun Batang', serif;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: var(--ink-charcoal);
+      margin-bottom: 8px;
+      word-break: keep-all;
+      line-height: 1.25;
+    }
+
+    .poster-sub {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--ink-sub);
+      letter-spacing: -0.2px;
+    }
+
+    /* Handcrafted Atelier Board */
+    .atelier-board {
+      background: var(--bg-board);
+      border-radius: 24px;
+      padding: 36px 32px 40px;
+      box-shadow: var(--shadow-floating);
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(220, 215, 205, 0.6);
+    }
+
+    /* Board Top Navigation Bar */
+    .board-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #F0ECE4;
+    }
+
+    .nav-macaron-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .macaron-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+    .m-dot-1 { background: var(--c-apricot); opacity: 0.85; }
+    .m-dot-2 { background: var(--c-butter); }
+    .m-dot-3 { background: var(--c-sage); opacity: 0.85; }
+
+    .nav-ticket-tag {
+      background: var(--c-linen);
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--ink-charcoal);
+      letter-spacing: 1px;
+    }
+
+    /* ── v4 Layout Structure (Elevated for 30s Women) ── */
+    
+    /* 1. Upper Hero: Wide Focus Timer Widget */
+    .timer-hero-card {
+      background: var(--c-linen);
+      border-radius: 20px;
+      padding: 26px 32px 24px;
+      box-shadow: var(--shadow-atelier);
+      position: relative;
+      margin-bottom: 26px;
+    }
+
+    .washi-tape-accent {
+      position: absolute;
+      top: -12px;
+      left: 48px;
+      width: 80px;
+      height: 22px;
+      background: var(--c-tape);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transform: rotate(-1.5deg);
+    }
+
+    .timer-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .timer-badge {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-style: italic;
+      font-weight: 600;
+      color: var(--c-sage);
+      letter-spacing: 1px;
+    }
+    .timer-state {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .timer-display-box {
+      background: #FFFFFF;
+      background-image: 
+        linear-gradient(to right, rgba(164, 186, 200, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(164, 186, 200, 0.15) 1px, transparent 1px);
+      background-size: 16px 16px;
+      border-radius: 12px;
+      padding: 16px 28px;
+      text-align: center;
+      margin-bottom: 18px;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .timer-numbers {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 58px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: var(--ink-charcoal);
+      line-height: 1;
+      display: inline-block;
+    }
+
+    .timer-slider-wrap {
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 24px;
+      padding: 0 4px;
+    }
+
+    .timer-slider-track {
+      width: 100%;
+      height: 6px;
+      background: #D8D2C5;
+      border-radius: 999px;
+      position: relative;
+    }
+    .timer-slider-fill {
+      width: 52%;
+      height: 100%;
+      background: var(--c-sage);
+      border-radius: 999px;
+    }
+
+    .timer-slider-knob {
+      position: absolute;
+      top: -9px;
+      left: 52%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      border: 2px solid var(--c-sage);
+      cursor: pointer;
+    }
+
+    /* 2. Lower Half: Split Left & Right */
+    .lower-split-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 22px;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    /* Left: Parisian Blue Calendar Note */
+    .calendar-card {
+      background: var(--c-french-blue-light);
+      border: 1px solid rgba(164, 186, 200, 0.4);
+      border-radius: 18px;
+      padding: 22px 18px 20px;
+      box-shadow: var(--shadow-atelier);
+      position: relative;
+    }
+
+    .calendar-tape-tag {
+      position: absolute;
+      top: -10px;
+      right: 28px;
+      width: 65px;
+      height: 20px;
+      background: var(--c-tape);
+      transform: rotate(2deg);
+    }
+
+    .cal-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(164, 186, 200, 0.3);
+    }
+    .cal-month-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: #4A6374;
+    }
+    .cal-year {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      color: #7B93A2;
+      font-weight: 500;
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7B93A2;
+      margin-bottom: 8px;
+    }
+
+    .cal-grid-dates {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+      font-family: 'Pretendard', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-charcoal);
+    }
+
+    .cal-d {
+      padding: 4px 0;
+      position: relative;
+    }
+    .cal-d.dim { opacity: 0.28; }
+    .cal-d.selected {
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    .cal-d.selected::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--c-apricot);
+      z-index: -1;
+      box-shadow: 0 2px 6px rgba(222, 125, 100, 0.35);
+    }
+
+    /* Right: Daily Ritual Memo & Progress Disc */
+    .lower-right-group {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+    }
+
+    .ritual-checklist-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow-atelier);
+      border: 1px solid #EAE5DC;
+      border-left: 4px solid var(--c-sage);
+      position: relative;
+    }
+
+    .checklist-eyebrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .cl-title-text {
+      font-family: 'Gowun Batang', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink-charcoal);
+    }
+    .cl-count {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--c-sage);
+      background: var(--c-sage-light);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .cl-task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-family: 'Pretendard', sans-serif;
+      font-size: 14.5px;
+      color: var(--ink-sub);
+    }
+
+    .cl-custom-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--c-sage-light);
+      border: 1.5px solid var(--c-sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--c-sage);
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .cl-task-title {
+      font-weight: 500;
+    }
+
+    /* Overlapping Progress Medal */
+    .progress-medal-card {
+      align-self: flex-end;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: var(--c-apricot-light);
+      box-shadow: var(--shadow-atelier);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-top: -10px;
+      border: 2px dashed rgba(222, 125, 100, 0.4);
+    }
+
+    .progress-inner-circle {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .progress-digits {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--c-apricot);
+      line-height: 1;
+    }
+
+    .progress-subtext {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-style: italic;
+      font-weight: 600;
+      color: var(--ink-muted);
+      margin-top: 3px;
+    }
+
+    /* Subtle Line Art Pointer */
+    .cursor-pointer-art {
+      position: absolute;
+      top: -20px;
+      right: 28px;
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 2px 4px rgba(45,40,35,0.15));
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="poster-container">
+
+    <!-- Header Typography: 성수동/한남동 라이프스타일 샵 감성 -->
+    <header class="poster-header">
+      <div class="brand-eyebrow">A T E L I E R &nbsp; M y T T</div>
+      <h1 class="poster-headline">내게 필요한 기능만 쏙</h1>
+      <p class="poster-sub">나의 하루를 다정하게 지켜주는 세상 단 하나의 시간 도구</p>
+    </header>
+
+    <!-- Handcrafted Atelier Board -->
+    <main class="atelier-board">
+      
+      <!-- Board Top Bar: 마카롱 컬러 펠트 도트 & 티켓 태그 -->
+      <div class="board-nav">
+        <div class="nav-macaron-dots">
+          <div class="macaron-dot m-dot-1"></div>
+          <div class="macaron-dot m-dot-2"></div>
+          <div class="macaron-dot m-dot-3"></div>
+        </div>
+        <div class="nav-ticket-tag">mytt.me</div>
+      </div>
+
+      <!-- ── v4 Layout Structure ── -->
+      
+      <!-- 1. Upper Half: Wide Focus Timer -->
+      <div class="timer-hero-card">
+        <div class="washi-tape-accent"></div>
+        
+        <div class="timer-label-row">
+          <span class="timer-badge">Deep Work Session</span>
+          <span class="timer-state">FOCUSING</span>
+        </div>
+
+        <div class="timer-display-box">
+          <span class="timer-numbers">02:00:00</span>
+        </div>
+
+        <div class="timer-slider-wrap">
+          <div class="timer-slider-track">
+            <div class="timer-slider-fill"></div>
+          </div>
+          <div class="timer-slider-knob"></div>
+        </div>
+      </div>
+
+      <!-- 2. Lower Half: Split Left & Right -->
+      <div class="lower-split-row">
+        
+        <!-- Left: French Sky Blue Calendar -->
+        <div class="calendar-card">
+          <div class="calendar-tape-tag"></div>
+          
+          <div class="cal-header-row">
+            <span class="cal-month-title">September</span>
+            <span class="cal-year">2026</span>
+          </div>
+
+          <div class="cal-weekdays">
+            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+          </div>
+
+          <div class="cal-grid-dates">
+            <span class="cal-d dim">30</span><span class="cal-d dim">31</span>
+            <span class="cal-d">1</span><span class="cal-d">2</span><span class="cal-d">3</span><span class="cal-d">4</span><span class="cal-d">5</span>
+            <span class="cal-d">6</span><span class="cal-d">7</span><span class="cal-d">8</span><span class="cal-d">9</span><span class="cal-d">10</span><span class="cal-d">11</span><span class="cal-d">12</span>
+            <span class="cal-d">13</span><span class="cal-d">14</span><span class="cal-d selected">15</span><span class="cal-d">16</span><span class="cal-d">17</span><span class="cal-d">18</span><span class="cal-d">19</span>
+            <span class="cal-d">20</span><span class="cal-d">21</span><span class="cal-d">22</span><span class="cal-d">23</span><span class="cal-d">24</span><span class="cal-d">25</span><span class="cal-d">26</span>
+            <span class="cal-d">27</span><span class="cal-d">28</span><span class="cal-d">29</span><span class="cal-d">30</span><span class="cal-d dim">1</span><span class="cal-d dim">2</span><span class="cal-d dim">3</span>
+          </div>
+        </div>
+
+        <!-- Right: Daily Rituals & Overlapping Progress Medal -->
+        <div class="lower-right-group">
+          
+          <!-- Delicate Line Art Cursor -->
+          <svg class="cursor-pointer-art" viewBox="0 0 24 24" fill="none">
+            <path d="M4 3L18 13L11.5 14L15.5 21L12.5 22.5L8.5 15.5L4 19V3Z" fill="#FFFFFF" stroke="#2A2A28" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+
+          <!-- Ritual Checklist Note -->
+          <div class="ritual-checklist-card">
+            <div class="checklist-eyebrow">
+              <span class="cl-title-text">오늘의 작은 몰입</span>
+              <span class="cl-count">3 Done</span>
+            </div>
+            <div class="cl-task-item">
+              <span class="cl-custom-check">✓</span>
+              <span class="cl-task-title">콘티 러프 스케치</span>
+            </div>
+            <div class="cl-task-item">
+              <span class="cl-custom-check">✓</span>
+              <span class="cl-task-title">2시간 딥워크 완주</span>
+            </div>
+            <div class="cl-task-item">
+              <span class="cl-custom-check">✓</span>
+              <span class="cl-task-title">따뜻한 차 마시기</span>
+            </div>
+          </div>
+
+          <!-- Circular Progress Medal -->
+          <div class="progress-medal-card">
+            <div class="progress-inner-circle">
+              <span class="progress-digits">75%</span>
+              <span class="progress-subtext">Achieved</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

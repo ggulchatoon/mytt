@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mytt. 카드뉴스 메이커 — 인스타 4:5 (1080×1350)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.cdnfonts.com/css/cooper-black" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  /* 캔버스 — 인스타그램 표준 4:5 */
+  --W: 1080px;
+  --H: 1350px;
+
+  /* 브랜드 팔레트 */
+  --oatmeal:   #E7D5B8;
+  --cream:     #FAF9F6;
+  --cream-alt: #F5EDE0;
+  --olive:     #799F4F;
+  --dark-olive:#444E1C;
+  --badge-bg:  #F0E4CD;
+  --espresso:  #3A2C29;
+  --vermilion: #F23A00;
+  --font-en:   'Cooper Black', serif;
+  --font-ko:   'Noto Serif KR', serif;
+
+  /* 공통 액자 */
+  --frame-radius: 28px;
+  --frame-border: 6px solid #3A2C29;
+
+  /* 미리보기 배율 */
+  --scale: 0.4;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #C4BAB0;
+  font-family: var(--font-ko);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 80px;
+  gap: 24px;
+  color: var(--espresso);
+}
+
+/* ─── HEADER ─────────────────────── */
+.hdr { text-align: center; }
+.hdr h1 {
+  font-family: var(--font-en);
+  font-size: 24px; font-weight: 900;
+  color: var(--espresso);
+}
+.hdr p { font-size: 12px; color: #665550; margin-top: 3px; }
+.badge-tag {
+  display: inline-block;
+  background: var(--espresso); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 10px; border-radius: 20px;
+  margin-left: 6px; vertical-align: middle;
+}
+
+/* ─── WORKSPACE ──────────────────── */
+.ws {
+  display: flex; gap: 32px; align-items: flex-start;
+  width: 100%; max-width: 1300px;
+}
+
+/* ─── LEFT PANEL ─────────────────── */
+.panel {
+  width: 330px; flex-shrink: 0;
+  background: #fff; border-radius: 20px;
+  padding: 22px 20px;
+  box-shadow: 0 8px 36px rgba(0,0,0,.13);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.sec { border-bottom: 1px solid #EDE5DB; padding-bottom: 14px; }
+.sec:last-child { border-bottom: none; padding-bottom: 0; }
+.sec h3 {
+  font-size: 10px; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: #9E8C82; margin-bottom: 10px;
+}
+
+/* 탭 */
+.card-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.ctab {
+  padding: 4px 11px; border-radius: 14px;
+  border: 1.5px solid #D8CFCA; background: none;
+  font-size: 12px; font-family: var(--font-ko);
+  cursor: pointer; color: #6B5B53; transition: all .15s;
+}
+.ctab.active { background: var(--espresso); border-color: var(--espresso); color: #fff; font-weight: 700; }
+.ctab:hover:not(.active) { border-color: var(--espresso); color: var(--espresso); }
+
+.tab-acts { display: flex; gap: 8px; }
+.bsm {
+  padding: 5px 12px; border-radius: 12px; border: none;
+  font-size: 12px; font-family: var(--font-ko);
+  cursor: pointer; font-weight: 600; transition: opacity .15s;
+}
+.bsm:hover { opacity: .85; }
+.bsm-add { background: #838F3B; color: #fff; }
+.bsm-del { background: #F0E8E0; color: #8A685A; }
+
+/* 레이아웃 picker */
+.lpick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lopt {
+  border: 2px solid #E2D9D0; border-radius: 12px;
+  padding: 10px 8px; cursor: pointer;
+  text-align: center; font-size: 11px;
+  font-family: var(--font-ko); color: #6E5C53;
+  transition: all .15s; line-height: 1.4;
+  background: #FAF8F5;
+}
+.lopt.active { border-color: var(--espresso); background: #F1E8DF; color: var(--espresso); font-weight: 700; }
+.lopt:hover:not(.active) { border-color: #B49E90; }
+.lopt .li { font-size: 17px; display: block; margin-bottom: 3px; }
+
+/* 배경 스와치 */
+.sw-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.sw {
+  width: 32px; height: 32px; border-radius: 50%;
+  cursor: pointer; border: 3px solid transparent; transition: transform .15s;
+}
+.sw.on { border-color: var(--espresso); transform: scale(1.18); }
+.sw:hover { transform: scale(1.1); }
+
+/* 입력 공통 */
+label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: #7D6B61; margin-bottom: 4px; margin-top: 10px;
+}
+label:first-of-type { margin-top: 0; }
+input[type="text"], textarea {
+  width: 100%; padding: 8px 11px;
+  border: 1.5px solid #DDD3C8; border-radius: 8px;
+  font-family: var(--font-ko); font-size: 13px;
+  color: var(--espresso); background: #FAF9F6; resize: vertical;
+}
+input[type="text"]:focus, textarea:focus {
+  outline: none; border-color: var(--espresso);
+}
+textarea { min-height: 58px; line-height: 1.4; }
+
+/* 업로드 존 */
+.upzone {
+  border: 2px dashed #D0C3B7; border-radius: 12px;
+  padding: 14px; text-align: center; cursor: pointer;
+  position: relative; background: #FAF8F5;
+}
+.upzone:hover { border-color: var(--espresso); }
+.upzone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0;
+  cursor: pointer; width: 100%;
+}
+.upzone p { font-size: 12px; color: #8C7A70; pointer-events: none; }
+.thumb { width: 100%; max-height: 100px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; }
+
+/* 다운 버튼 */
+.dbl {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 13px; border-radius: 12px; border: none;
+  background: var(--espresso); color: #fff;
+  font-size: 14px; font-weight: 700; font-family: var(--font-ko);
+  cursor: pointer; transition: opacity .15s;
+}
+.dbl:hover { opacity: .88; }
+.dbl-all { background: var(--vermilion); margin-top: 8px; }
+
+/* ─── RIGHT PREVIEW ──────────────── */
+.prev-area {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+}
+
+/* 줌 툴바 */
+.zoom-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; padding: 6px 14px; border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.09);
+  font-size: 12px; font-weight: 600; color: #6E5C53;
+}
+.zbtn {
+  padding: 4px 10px; border-radius: 12px;
+  border: 1px solid #DED4CA; background: none;
+  font-size: 11px; cursor: pointer; font-family: var(--font-ko);
+  transition: all .15s;
+}
+.zbtn.on { background: var(--espresso); color: #fff; border-color: var(--espresso); }
+
+/* 캐러셀 */
+.carousel-wrap { width: 100%; overflow: hidden; display: flex; justify-content: center; }
+.ctrack { display: flex; gap: 32px; transition: transform .35s cubic-bezier(.4,0,.2,1); }
+
+.cviewer { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.clabel { font-size: 12px; font-weight: 700; color: #554439; }
+
+/* 스케일 래퍼 */
+.scaler {
+  width: calc(var(--W) * var(--scale));
+  height: calc(var(--H) * var(--scale));
+  position: relative; flex-shrink: 0;
+  box-shadow: 0 14px 60px rgba(0,0,0,.22);
+}
+
+/* 내비 */
+.cnav { display: flex; align-items: center; gap: 14px; }
+.cnav button {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 2px solid var(--espresso); background: #fff;
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--espresso); transition: all .15s;
+}
+.cnav button:hover:not(:disabled) { background: var(--espresso); color: #fff; }
+.cnav button:disabled { opacity: .3; cursor: not-allowed; }
+.dots { display: flex; gap: 7px; }
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #B6A79B; cursor: pointer; transition: all .2s;
+}
+.dot.on { background: var(--espresso); width: 24px; border-radius: 5px; }
+
+/* ═══════════════════════════════════════════════
+   CARD CANVAS — 1080 × 1350px (인스타 표준 4:5)
+   transform-origin: top left; scale: var(--scale)
+═══════════════════════════════════════════════ */
+.card {
+  width: var(--W);
+  height: var(--H);
+  position: absolute; top: 0; left: 0;
+  transform: scale(var(--scale));
+  transform-origin: top left;
+  overflow: hidden;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAYOUT A — sample2-2 스타일
+   영문 Cooper Black 헤드라인 + 하단 사진 액자
+   비율 변환: 1064→1080 (×1.015), 1236→1350 (×1.092)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* 여백: 상단 패딩 140px, 좌우 130px */
+.card.LA .hn-en {
+  position: absolute;
+  top: 148px; left: 0; width: 1080px;
+  text-align: center;
+  font-family: var(--font-en); font-weight: 900;
+  font-size: 108px; line-height: 1.0;
+  color: var(--vermilion); letter-spacing: -2px;
+}
+.card.LA .sh-en {
+  position: absolute;
+  top: 286px; left: 0; width: 1080px;
+  text-align: center;
+  font-family: var(--font-en); font-weight: 700;
+  font-size: 34px; line-height: 1.0;
+  color: var(--espresso); letter-spacing: 0;
+}
+.card.LA .sh-kr {
+  position: absolute;
+  top: 342px; left: 0; width: 1080px;
+  text-align: center;
+  font-family: var(--font-ko); font-weight: 700;
+  font-size: 30px; line-height: 1.0;
+  color: var(--espresso); letter-spacing: -.5px;
+}
+/* 액자: 원본 left=134/1064 ≈ 12.6% → 12.6%*1080≈136, width=795/1064*1080≈807, top=427/1236*1350≈467 */
+/* 하단 마진을 더 주기 위해 살짝 키움 */
+.card.LA .frame {
+  position: absolute;
+  top: 468px; left: 136px;
+  width: 807px; height: 770px;
+  border: var(--frame-border);
+  border-radius: var(--frame-radius);
+  overflow: hidden; background: #C4BCB2;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAYOUT B — sample4 스타일 (올리브 배경)
+   한글 헤드라인 상단 + 중앙 오브젝트 + 하단 캡션
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.card.LB .hn-ko {
+  position: absolute;
+  top: 136px; left: 155px; width: 740px;
+  text-align: left;
+  font-family: var(--font-ko); font-weight: 900;
+  font-size: 72px; line-height: 1.32;
+  color: var(--espresso); letter-spacing: -1.5px;
+  white-space: pre-line;
+}
+/* 올리브 배경에선 흰 텍스트 */
+.card.LB.bg-olive .hn-ko,
+.card.LB.bg-dark-olive .hn-ko { color: var(--cream); }
+
+/* 오브젝트 컨테이너 */
+.card.LB .obj {
+  position: absolute;
+  top: 316px; left: 145px;
+  width: 790px; height: 720px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card.LB .obj img { width: 100%; height: 100%; object-fit: contain; }
+
+/* 하단 캡션: 1019/1236*1350 ≈ 1114px */
+.card.LB .cap {
+  position: absolute;
+  top: 1114px; left: 140px; width: 740px;
+  text-align: left;
+  font-family: var(--font-ko); font-weight: 700;
+  font-size: 40px; line-height: 1.45;
+  color: var(--espresso); letter-spacing: -.5px;
+  white-space: pre-line;
+}
+.card.LB.bg-olive .cap,
+.card.LB.bg-dark-olive .cap { color: var(--cream); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAYOUT C — sample5 스타일
+   ● 모집 뱃지 + 한글 빅 헤드라인 + 일러스트/이미지 + 하단 캡션
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.card.LC .bdg {
+  position: absolute;
+  top: 136px; left: 138px;
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--font-ko); font-weight: 900;
+  font-size: 44px; color: var(--vermilion);
+}
+.card.LC .bdg::before { content: '●'; font-size: 30px; }
+
+.card.LC .hn-ko {
+  position: absolute;
+  top: 218px; left: 136px; width: 780px;
+  font-family: var(--font-ko); font-weight: 900;
+  font-size: 90px; line-height: 1.18;
+  color: var(--espresso); letter-spacing: -2.5px;
+}
+/* 이미지/일러스트 프레임: 원본 top=438/1236*1350≈479, left=109/1064*1080≈111, w=846/1064*1080≈860, h=433/1236*1350≈473 */
+/* 4:5에서 공간이 더 생기므로 세로 여유분 반영 */
+.card.LC .frame {
+  position: absolute;
+  top: 430px; left: 110px;
+  width: 860px; height: 530px;
+  border-radius: 24px;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  /* 일러스트 타입은 border 없음 */
+}
+
+/* 하단 캡션: 964/1236*1350 ≈ 1052px */
+.card.LC .cap {
+  position: absolute;
+  top: 1058px; left: 128px; width: 740px;
+  font-family: var(--font-ko); font-weight: 700;
+  font-size: 39px; line-height: 1.62;
+  color: var(--espresso); letter-spacing: -.5px;
+  white-space: pre-line;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAYOUT D — sample1-6 스타일
+   말풍선 오버랩 + 대형 사진 액자 + 하단 캡션
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* 사진 액자: 원본 top≈230, 세로 여유 4:5에서 늘어남 → 더 크게 */
+.card.LD .frame {
+  position: absolute;
+  top: 230px; left: 136px;
+  width: 807px; height: 820px;
+  border: var(--frame-border);
+  border-radius: var(--frame-radius);
+  overflow: hidden; background: #3A3030;
+}
+/* 말풍선: 프레임 위에 걸쳐짐 */
+.card.LD .bubble {
+  position: absolute;
+  top: 88px; left: 72px; z-index: 10;
+  border: 6px solid var(--espresso);
+  border-radius: 56px;
+  background: #F5EDE0;
+  padding: 22px 40px;
+  text-align: center;
+  font-family: var(--font-ko); font-weight: 900;
+  font-size: 44px; line-height: 1.35;
+  color: var(--espresso); white-space: pre-line;
+  box-shadow: 0 6px 0 rgba(0,0,0,.05);
+}
+.card.LD .bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -33px; left: 84px;
+  width: 22px; height: 33px;
+  background: #F5EDE0;
+  border-right: 6px solid var(--espresso);
+  border-bottom: 6px solid var(--espresso);
+  border-radius: 0 0 14px 0;
+}
+/* 하단 캡션: 982/1236*1350 ≈ 1072px */
+.card.LD .cap {
+  position: absolute;
+  top: 1078px; left: 114px; width: 730px;
+  font-family: var(--font-ko); font-weight: 700;
+  font-size: 38px; line-height: 1.64;
+  color: var(--espresso); white-space: pre-line;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   공통: 우하단 mytt. 원형 뱃지
+   원본: top=998/1236*1350≈1090, left=829/1064*1080≈841, size≈205*1350/1236≈224px
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.mytt-badge {
+  position: absolute;
+  bottom: 36px; right: 42px;
+  width: 216px; height: 216px;
+  border-radius: 50%;
+  border: 6px solid var(--espresso);
+  background: var(--badge-bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 30;
+  line-height: 0.92;
+  box-shadow: 0 4px 14px rgba(0,0,0,.1);
+}
+.mytt-badge span {
+  font-family: var(--font-en);
+  font-weight: 900; font-size: 56px;
+  color: var(--espresso); letter-spacing: -1px;
+}
+/* layout-D 에선 액자 위에 걸침 */
+.card.LD .mytt-badge { bottom: 76px; right: 50px; }
+/* layout-A 에선 액자 위에 걸침 */
+.card.LA .mytt-badge { bottom: 50px; right: 48px; }
+
+/* 이미지 공통 */
+.frame img, .obj img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-ko); font-size: 26px;
+  font-weight: 700; color: rgba(80,65,58,.45);
+  background: rgba(0,0,0,.04);
+  text-align: center; padding: 20px;
+}
+
+/* 배경 */
+.bg-oatmeal    { background: #E7D5B8; }
+.bg-cream      { background: #FAF9F6; }
+.bg-cream-alt  { background: #F5EDE0; }
+.bg-olive      { background: #799F4F; }
+.bg-dark-olive { background: #444E1C; }
+
+@media (max-width: 900px) {
+  .ws { flex-direction: column; align-items: center; }
+  .panel { width: 100%; max-width: 520px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="hdr">
+  <h1>mytt. 카드뉴스 메이커 <span class="badge-tag">인스타그램 4:5 표준 1080×1350</span></h1>
+  <p>텍스트 입력 → 실시간 미리보기 → PNG 저장 한번에</p>
+</div>
+
+<div class="ws">
+
+  <!-- ═══ 좌측 패널 ═══ -->
+  <aside class="panel">
+
+    <!-- 카드 관리 -->
+    <div class="sec">
+      <h3>📄 카드 관리</h3>
+      <div class="card-tabs" id="tabs"></div>
+      <div class="tab-acts">
+        <button class="bsm bsm-add" onclick="addCard()">+ 카드 추가</button>
+        <button class="bsm bsm-del" onclick="delCard()">삭제</button>
+      </div>
+    </div>
+
+    <!-- 레이아웃 선택 -->
+    <div class="sec">
+      <h3>🎨 레이아웃</h3>
+      <div class="lpick">
+        <button class="lopt active" data-l="A" onclick="setLayout('A',this)">
+          <span class="li">📰</span><b>Layout A</b><br>영문 헤드라인<br>+ 하단 사진 액자
+        </button>
+        <button class="lopt" data-l="B" onclick="setLayout('B',this)">
+          <span class="li">🕐</span><b>Layout B</b><br>한글 헤드라인<br>+ 중앙 오브젝트
+        </button>
+        <button class="lopt" data-l="C" onclick="setLayout('C',this)">
+          <span class="li">📅</span><b>Layout C</b><br>뱃지 + 헤드라인<br>+ 일러스트
+        </button>
+        <button class="lopt" data-l="D" onclick="setLayout('D',this)">
+          <span class="li">💬</span><b>Layout D</b><br>말풍선 + 사진<br>+ 캡션
+        </button>
+      </div>
+    </div>
+
+    <!-- 배경 컬러 -->
+    <div class="sec">
+      <h3>🎨 배경 컬러</h3>
+      <div class="sw-row">
+        <div class="sw on" style="background:#E7D5B8;" data-bg="oatmeal"     title="Vintage Oatmeal"   onclick="setBg('oatmeal',this)"></div>
+        <div class="sw"    style="background:#FAF9F6;" data-bg="cream"       title="Soft White"        onclick="setBg('cream',this)"></div>
+        <div class="sw"    style="background:#F5EDE0;" data-bg="cream-alt"   title="Warm Cream"        onclick="setBg('cream-alt',this)"></div>
+        <div class="sw"    style="background:#799F4F;" data-bg="olive"       title="Acid Olive"        onclick="setBg('olive',this)"></div>
+        <div class="sw"    style="background:#444E1C;" data-bg="dark-olive"  title="Dark Olive"        onclick="setBg('dark-olive',this)"></div>
+      </div>
+    </div>
+
+    <!-- 텍스트 -->
+    <div class="sec">
+      <h3>✏️ 텍스트</h3>
+
+      <div class="tg tgA">
+        <label>영문 헤드라인 (Cooper Black 108px)</label>
+        <input type="text" id="i-hen" value="No tool fits all." oninput="render()">
+        <label>영문 서브카피</label>
+        <input type="text" id="i-sen" value="100 Freelancers, 100 Time Tools." oninput="render()">
+        <label>한글 서브카피</label>
+        <input type="text" id="i-skr" value="남들이 만든 시간표에 내 하루를 끼워 맞추지 마세요." oninput="render()">
+      </div>
+
+      <div class="tg tgB" style="display:none">
+        <label>한글 헤드라인 (줄바꿈 가능)</label>
+        <textarea id="i-hkb" oninput="render()">내 취향껏 조립하는
+나만의 시간관리 툴</textarea>
+        <label>하단 캡션</label>
+        <textarea id="i-cb" oninput="render()">복잡하고 어려운 시간관리가
+나만의 즐거운 루틴이 돼요.</textarea>
+      </div>
+
+      <div class="tg tgC" style="display:none">
+        <label>상단 뱃지 텍스트</label>
+        <input type="text" id="i-bdg" value="모집 중" oninput="render()">
+        <label>한글 헤드라인</label>
+        <input type="text" id="i-hkc" value="10월 오픈 일정" oninput="render()">
+        <label>하단 캡션 (줄바꿈 가능)</label>
+        <textarea id="i-cc" oninput="render()">바이브 코딩, 해본 적 없어도
+하나부터 열까지 차근차근
+쉽게 따라할 수 있어요.</textarea>
+      </div>
+
+      <div class="tg tgD" style="display:none">
+        <label>말풍선 텍스트 (줄바꿈 가능)</label>
+        <textarea id="i-bbl" oninput="render()">잉 ㅠ.ㅠ
+오늘도 야근각</textarea>
+        <label>하단 캡션 (줄바꿈 가능)</label>
+        <textarea id="i-cd" oninput="render()">노션, 뽀모도로, 투두리스트...
+좋다는 프로그램은 다 써봤지만
+나에게 안 맞았던 이유는 무엇일까요?</textarea>
+      </div>
+    </div>
+
+    <!-- 이미지 업로드 -->
+    <div class="sec">
+      <h3>🖼️ 이미지 업로드</h3>
+      <div class="upzone">
+        <input type="file" accept="image/*" onchange="uploadImg(event)">
+        <p>📎 클릭하거나 드래그해서 이미지 업로드<br><small style="color:#9B8A80;">JPG / PNG / GIF 지원</small></p>
+        <img class="thumb" id="thumb" alt="">
+      </div>
+    </div>
+
+    <!-- 다운로드 -->
+    <div class="sec">
+      <h3>💾 저장 (1080×1350 PNG)</h3>
+      <button class="dbl" onclick="dlNow()">⬇ 현재 카드 PNG 저장</button>
+      <button class="dbl dbl-all" onclick="dlAll()">⬇⬇ 전체 카드 일괄 저장</button>
+    </div>
+
+  </aside>
+
+  <!-- ═══ 우측 미리보기 ═══ -->
+  <main class="prev-area">
+    <div class="zoom-bar">
+      <span>배율:</span>
+      <button class="zbtn on" onclick="setZoom(0.4,this)">40%</button>
+      <button class="zbtn"    onclick="setZoom(0.55,this)">55%</button>
+      <button class="zbtn"    onclick="setZoom(0.7,this)">70%</button>
+      <button class="zbtn"    onclick="setZoom(1.0,this)">100%</button>
+    </div>
+
+    <div class="carousel-wrap">
+      <div class="ctrack" id="ctrack"></div>
+    </div>
+
+    <div class="cnav">
+      <button id="bprev" onclick="prev()">←</button>
+      <div class="dots" id="dots"></div>
+      <button id="bnext" onclick="next()">→</button>
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ── STATE ─────────────────────── */
+let cards = [{
+  l:'A', bg:'oatmeal',
+  hen:'No tool fits all.',
+  sen:'100 Freelancers, 100 Time Tools.',
+  skr:'남들이 만든 시간표에 내 하루를 끼워 맞추지 마세요.',
+  hkb:'내 취향껏 조립하는\n나만의 시간관리 툴',
+  cb:'복잡하고 어려운 시간관리가\n나만의 즐거운 루틴이 돼요.',
+  bdg:'모집 중', hkc:'10월 오픈 일정',
+  cc:'바이브 코딩, 해본 적 없어도\n하나부터 열까지 차근차근\n쉽게 따라할 수 있어요.',
+  bbl:'잉 ㅠ.ㅠ\n오늘도 야근각',
+  cd:'노션, 뽀모도로, 투두리스트...\n좋다는 프로그램은 다 써봤지만\n나에게 안 맞았던 이유는 무엇일까요?',
+  img:null
+}];
+let cur=0, slide=0, sc=0.4;
+
+/* ── ZOOM ─────────────────────── */
+function setZoom(v,btn){
+  sc=v;
+  document.documentElement.style.setProperty('--scale',v);
+  document.querySelectorAll('.zbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  goSlide(slide);
+}
+
+/* ── CARDS ─────────────────────── */
+function addCard(){ cards.push({...cards[cur],img:null}); cur=cards.length-1; refresh(); }
+function delCard(){
+  if(cards.length===1){return alert('최소 1장 이상 필요');}
+  cards.splice(cur,1); cur=Math.min(cur,cards.length-1); refresh();
+}
+function selCard(i){ cur=i; loadPanel(cards[i]); renderTabs(); goSlide(i); }
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=
+    cards.map((_,i)=>`<button class="ctab ${i===cur?'active':''}" onclick="selCard(${i})">카드 ${i+1}</button>`).join('');
+}
+
+/* ── PANEL SYNC ─────────────────── */
+function savePanel(){
+  const c=cards[cur];
+  c.hen=v('i-hen'); c.sen=v('i-sen'); c.skr=v('i-skr');
+  c.hkb=v('i-hkb'); c.cb=v('i-cb');
+  c.bdg=v('i-bdg'); c.hkc=v('i-hkc'); c.cc=v('i-cc');
+  c.bbl=v('i-bbl'); c.cd=v('i-cd');
+}
+function loadPanel(c){
+  sv('i-hen',c.hen||''); sv('i-sen',c.sen||''); sv('i-skr',c.skr||'');
+  sv('i-hkb',c.hkb||''); sv('i-cb',c.cb||'');
+  sv('i-bdg',c.bdg||''); sv('i-hkc',c.hkc||''); sv('i-cc',c.cc||'');
+  sv('i-bbl',c.bbl||''); sv('i-cd',c.cd||'');
+  document.querySelectorAll('.lopt').forEach(b=>b.classList.toggle('active',b.dataset.l===c.l));
+  showTG(c.l);
+  document.querySelectorAll('.sw').forEach(s=>s.classList.toggle('on',s.dataset.bg===c.bg));
+  const th=document.getElementById('thumb');
+  if(c.img){th.src=c.img;th.style.display='block';}else{th.style.display='none';}
+}
+function v(id){return document.getElementById(id).value;}
+function sv(id,val){document.getElementById(id).value=val;}
+
+function setLayout(l,btn){
+  cards[cur].l=l;
+  if(l==='B'&&cards[cur].bg==='oatmeal') cards[cur].bg='olive';
+  if(l==='D') cards[cur].bg='cream-alt';
+  document.querySelectorAll('.lopt').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  showTG(l); loadPanel(cards[cur]); renderCard(cur);
+}
+function showTG(l){ ['A','B','C','D'].forEach(x=>{ document.querySelector('.tg'+x).style.display=x===l?'block':'none'; }); }
+function setBg(bg,sw){
+  cards[cur].bg=bg;
+  document.querySelectorAll('.sw').forEach(s=>s.classList.remove('on')); sw.classList.add('on');
+  renderCard(cur);
+}
+
+/* ── IMAGE ─────────────────────── */
+function uploadImg(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    cards[cur].img=ev.target.result;
+    const th=document.getElementById('thumb'); th.src=ev.target.result; th.style.display='block';
+    renderCard(cur);
+  };
+  r.readAsDataURL(f);
+}
+
+/* ── RENDER ─────────────────────── */
+function render(){ savePanel(); renderCard(cur); }
+function n2b(s){ return (s||'').replace(/\n/g,'<br>'); }
+
+function imgOrPH(c, label){
+  if(c.img) return `<img src="${c.img}" alt="">`;
+  return `<div class="placeholder">${label}</div>`;
+}
+
+function buildCard(c,i){
+  const l=c.l||'A', bg=c.bg||'oatmeal';
+  let inner='';
+
+  if(l==='A'){
+    inner=`
+      <div class="hn-en">${n2b(c.hen||'No tool fits all.')}</div>
+      <div class="sh-en">${n2b(c.sen||'100 Freelancers, 100 Time Tools.')}</div>
+      <div class="sh-kr">${n2b(c.skr||'남들이 만든 시간표에 내 하루를 끼워 맞추지 마세요.')}</div>
+      <div class="frame">${imgOrPH(c,'사진을 업로드하세요\n(807 × 770 px)')}</div>`;
+  } else if(l==='B'){
+    inner=`
+      <div class="hn-ko">${n2b(c.hkb||'내 취향껏 조립하는\n나만의 시간관리 툴')}</div>
+      <div class="obj">${imgOrPH(c,'오브젝트 이미지\n(예: 타이머 렌더링)')}</div>
+      <div class="cap">${n2b(c.cb||'복잡하고 어려운 시간관리가\n나만의 즐거운 루틴이 돼요.')}</div>`;
+  } else if(l==='C'){
+    inner=`
+      <div class="bdg">${c.bdg||'모집 중'}</div>
+      <div class="hn-ko">${n2b(c.hkc||'10월 오픈 일정')}</div>
+      <div class="frame">${imgOrPH(c,'일러스트 또는 이미지')}</div>
+      <div class="cap">${n2b(c.cc||'바이브 코딩, 해본 적 없어도\n하나부터 열까지 차근차근\n쉽게 따라할 수 있어요.')}</div>`;
+  } else if(l==='D'){
+    inner=`
+      <div class="bubble">${n2b(c.bbl||'잉 ㅠ.ㅠ\n오늘도 야근각')}</div>
+      <div class="frame">${imgOrPH(c,'사진을 업로드하세요\n(807 × 820 px)')}</div>
+      <div class="cap">${n2b(c.cd||'노션, 뽀모도로, 투두리스트...\n좋다는 프로그램은 다 써봤지만\n나에게 안 맞았던 이유는 무엇일까요?')}</div>`;
+  }
+
+  return `
+    <div class="card L${l} bg-${bg}" id="card-${i}">
+      ${inner}
+      <div class="mytt-badge"><span>my</span><span>tt.</span></div>
+    </div>`;
+}
+
+function renderCard(i){
+  const v=document.getElementById(`vw-${i}`);
+  if(!v) return;
+  v.querySelector('.scaler').innerHTML=buildCard(cards[i],i);
+}
+function renderAll(){
+  const t=document.getElementById('ctrack');
+  t.innerHTML=cards.map((c,i)=>`
+    <div class="cviewer" id="vw-${i}">
+      <div class="clabel">카드 ${i+1}</div>
+      <div class="scaler">${buildCard(c,i)}</div>
+    </div>`).join('');
+}
+function renderDots(){
+  document.getElementById('dots').innerHTML=
+    cards.map((_,i)=>`<div class="dot ${i===slide?'on':''}" onclick="goSlide(${i})"></div>`).join('');
+}
+
+/* ── CAROUSEL ─────────────────── */
+function goSlide(i){
+  slide=Math.max(0,Math.min(i,cards.length-1));
+  const w=1080*sc+32;
+  document.getElementById('ctrack').style.transform=`translateX(-${slide*w}px)`;
+  document.getElementById('bprev').disabled=slide===0;
+  document.getElementById('bnext').disabled=slide===cards.length-1;
+  renderDots();
+  if(cur!==slide){ cur=slide; loadPanel(cards[cur]); renderTabs(); }
+}
+function prev(){ goSlide(slide-1); }
+function next(){ goSlide(slide+1); }
+
+/* ── DOWNLOAD ─────────────────── */
+async function dlCanvas(el,fname){
+  const orig=el.style.transform;
+  el.style.transform='scale(1)';
+  const cvs=await html2canvas(el,{width:1080,height:1350,scale:1,useCORS:true,backgroundColor:null,logging:false});
+  el.style.transform=orig;
+  const a=document.createElement('a');
+  a.download=fname; a.href=cvs.toDataURL('image/png'); a.click();
+}
+async function dlNow(){
+  const el=document.querySelector(`#vw-${cur} .card`); if(!el) return;
+  await dlCanvas(el,`mytt_card_${cur+1}_1080x1350.png`);
+}
+async function dlAll(){
+  for(let i=0;i<cards.length;i++){
+    const el=document.querySelector(`#vw-${i} .card`); if(!el) continue;
+    await dlCanvas(el,`mytt_card_${i+1}_1080x1350.png`);
+    await new Promise(r=>setTimeout(r,450));
+  }
+}
+
+/* ── INIT ─────────────────────── */
+function refresh(){ renderAll(); renderTabs(); renderDots(); loadPanel(cards[cur]); goSlide(cur); }
+refresh();
+showTG(cards[0].l);
+</script>
+</body>
+</html>
