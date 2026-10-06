@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1.0,user-scalable=no"/>
+<title>Work Receipt</title>
+
+<!-- 홈 화면 추가 시 앱처럼 전체화면(주소창 숨김)으로 열리게 설정 -->
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="영수증타이머"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#EAE6DF"/>
+
+<!-- 앱 아이콘 (영수증 전용 아이콘) -->
+<link rel="apple-touch-icon" href="receipt_icon.png"/>
+<link rel="icon" type="image/png" href="receipt_icon.png"/>
+
+<!-- PWA Manifest 파일 연결 -->
+<link rel="manifest" href="manifest.json"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=VT323&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root {
+  --desk-bg: #EAE6DF;
+  --receipt-bg: #FAF9F5;
+  --ink-main: #1C1A18;
+  --ink-sub: #6A6660;
+  --ink-light: #B4AEA4;
+  --line-main: #242220;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* 모바일 한 화면 고정 (스크롤 없음) */
+  overflow-x: hidden; /* 가로 스크롤 완벽 차단 */
+  width: 100%;
+  background-color: var(--desk-bg);
+  background-image: radial-gradient(#D6D1C7 1px, transparent 1px);
+  background-size: 14px 14px;
+  color: var(--ink-main);
+  font-family: 'Courier Prime', 'Noto Sans KR', monospace;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  height: 100dvh;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 10px) 12px env(safe-area-inset-bottom, 12px);
+  box-sizing: border-box;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+/* ── 영수증 본체 시트 ── */
+.receipt-sheet {
+  flex: 1;
+  background: var(--receipt-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 16px 14px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  min-height: 0; /* flex 자식 overflow 제어 */
+}
+
+/* 상단/하단 지그재그 절취선 */
+.receipt-sheet::before {
+  content: '';
+  position: absolute;
+  top: -6px; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--desk-bg),
+    var(--desk-bg) 4px,
+    var(--receipt-bg) 4px,
+    var(--receipt-bg) 8px
+  );
+}
+.receipt-sheet::after {
+  content: '';
+  position: absolute;
+  bottom: -6px; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--desk-bg),
+    var(--desk-bg) 4px,
+    var(--receipt-bg) 4px,
+    var(--receipt-bg) 8px
+  );
+}
+
+/* ── 헤더 ── */
+.r-header {
+  text-align: center;
+  flex-shrink: 0;
+}
+.r-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.r-store-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+.store-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--ink-light);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-main);
+  text-align: center;
+  padding: 1px 4px;
+  outline: none;
+  width: 170px;
+}
+.store-input:focus {
+  border-bottom: 1px solid var(--ink-main);
+}
+
+/* 구분선 */
+.line-solid {
+  border: none;
+  border-top: 1.5px solid var(--line-main);
+  margin: 6px 0;
+  flex-shrink: 0;
+}
+.line-dashed {
+  border: none;
+  border-top: 1px dashed var(--ink-sub);
+  margin: 6px 0;
+  flex-shrink: 0;
+}
+.line-double {
+  border: none;
+  border-top: 3px double var(--line-main);
+  margin: 6px 0;
+  flex-shrink: 0;
+}
+
+/* ── 메타 정보 ── */
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-sub);
+  flex-shrink: 0;
+}
+
+/* ── 헤더 칼럼 ── */
+.table-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 0 4px;
+  flex-shrink: 0;
+}
+
+/* ── 작업 항목 리스트 (3개 기본 + 세부 드롭다운) ── */
+.items-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.item-card {
+  border: 1px dashed var(--ink-light);
+  background: #FFF;
+  padding: 8px 10px;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+.item-card:hover {
+  background: #FCFAF7;
+  border-color: var(--ink-sub);
+}
+.item-card.measuring {
+  border: 1.5px solid var(--ink-main);
+  background: #F4EFE6;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+}
+
+.item-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* 시계 픽토그램 측정 버튼 */
+.clock-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-sub);
+  flex-shrink: 0;
+}
+.clock-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  transition: transform 0.2s ease;
+}
+.item-card.measuring .clock-btn {
+  color: var(--ink-main);
+}
+.item-card.measuring .clock-btn svg {
+  animation: pulseClock 1.2s infinite ease-in-out;
+}
+@keyframes pulseClock {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.22); stroke-width: 2.2; }
+  100% { transform: scale(1); }
+}
+
+/* 항목 이름 인풋 */
+.item-name-input {
+  flex: 1;
+  min-width: 0; /* flex 자식 줄바꿈/가로스크롤 방지 */
+  background: transparent;
+  border: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-main);
+  outline: none;
+  padding: 2px 0;
+  cursor: text;
+}
+.item-name-input::placeholder {
+  color: var(--ink-light);
+}
+.item-card.measuring .item-name-input {
+  font-weight: 700;
+}
+
+/* 시간 표시 (타이머 전/정지 상태에는 가볍게, 측정 중일 때 볼드) */
+.item-time-display {
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  font-weight: 400; /* 타이머 작동 전에는 볼드가 아니게 */
+  text-align: right;
+  flex-shrink: 0;
+  color: var(--ink-sub);
+  letter-spacing: -0.2px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.item-card.measuring .item-time-display {
+  font-weight: 700; /* 측정 중일 때 선명하게 볼드 */
+  color: var(--ink-main);
+}
+
+/* 세부 할 일 드롭다운 토글 버튼 (원래 미니멀 스타일) */
+.subtask-toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: var(--ink-sub);
+  cursor: pointer;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* ── 오늘의 할 일 추가 버튼 (+ ITEM) ── */
+.add-task-item-btn {
+  background: transparent;
+  border: 1px dashed var(--ink-light);
+  padding: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-sub);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.12s ease;
+  margin-top: 2px;
+}
+.add-task-item-btn:hover {
+  background: #F2EFE9;
+  border-color: var(--ink-main);
+  color: var(--ink-main);
+}
+
+/* ── 드롭다운 세부 할 일 영역 ── */
+.subtasks-panel {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px dotted var(--ink-light);
+  margin-top: 2px;
+}
+.subtasks-panel.open {
+  display: flex;
+}
+
+.subtask-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.subtask-chk {
+  cursor: pointer;
+  accent-color: var(--ink-main);
+}
+.subtask-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--ink-light);
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--ink-main);
+  outline: none;
+  padding: 1px 2px;
+}
+.subtask-input::placeholder { color: var(--ink-light); }
+
+/* ── 합계 영역 (컴팩트) ── */
+.r-summary {
+  flex-shrink: 0;
+}
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 0;
+}
+.total-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.total-val {
+  font-family: 'Courier Prime', monospace;
+  font-size: 18px;
+  font-weight: 700;
+}
+.distract-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-sub);
+}
+
+/* ── 메타인지 1줄 피드백 (컴팩트) ── */
+.feedback-bar {
+  border: 1px solid var(--ink-main);
+  padding: 6px 8px;
+  margin: 6px 0 4px;
+  font-size: 11px;
+  line-height: 1.35;
+  flex-shrink: 0;
+}
+.feedback-title {
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--ink-sub);
+}
+.feedback-text {
+  font-size: 11px;
+  margin-top: 1px;
+}
+
+/* ── 바코드 (슬림) ── */
+.barcode-box {
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.barcode-svg {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  letter-spacing: 3px;
+  line-height: 0.8;
+}
+.barcode-msg {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--ink-sub);
+  margin-top: 2px;
+}
+
+/* ── 하단 제어 버튼 바 (리셋 / 오늘 영수증 기록) ── */
+.actions-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+.act-btn {
+  flex: 1;
+  padding: 11px;
+  border: 1.5px solid var(--ink-main);
+  background: var(--receipt-bg);
+  color: var(--ink-main);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.12s;
+}
+.act-btn:active {
+  background: #E2DDD5;
+}
+.act-btn.primary {
+  background: var(--ink-main);
+  color: var(--receipt-bg);
+}
+
+/* ── 하단 끌올 핸들 (Weekly Archive Pull-up Indicator) ── */
+.pull-up-trigger {
+  margin-top: 6px;
+  padding: 6px 0;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink-sub);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pull-bar-indicator {
+  width: 38px;
+  height: 4px;
+  background: var(--ink-light);
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
+.pull-up-trigger:hover .pull-bar-indicator,
+.pull-up-trigger:active .pull-bar-indicator {
+  background: var(--ink-main);
+}
+.pull-up-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ── 주간 기록 바텀시트 (서랍형 피드) ── */
+.history-sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+  z-index: 1000;
+}
+.history-sheet-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.history-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 420px;
+  margin: 0 auto;
+  height: 82dvh;
+  background: var(--desk-bg);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -6px 30px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(102%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1001;
+  overflow: hidden;
+}
+.history-sheet.open {
+  transform: translateY(0);
+}
+
+.history-sheet-header {
+  padding: 12px 18px 10px;
+  background: var(--receipt-bg);
+  border-bottom: 1.5px solid var(--ink-main);
+  position: relative;
+  flex-shrink: 0;
+}
+.history-drag-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--ink-light);
+  border-radius: 2px;
+  margin: 0 auto 8px;
+  cursor: grab;
+}
+.history-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.history-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.history-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-main);
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.history-week-summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-sub);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--ink-light);
+}
+
+.history-feed-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 미니 영수증 피드 카드 */
+.feed-ticket {
+  background: var(--receipt-bg);
+  border: 1px solid var(--ink-main);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.feed-ticket::before {
+  content: '';
+  position: absolute;
+  top: -4px; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--desk-bg),
+    var(--desk-bg) 3px,
+    var(--receipt-bg) 3px,
+    var(--receipt-bg) 6px
+  );
+}
+.feed-ticket::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--receipt-bg),
+    var(--receipt-bg) 3px,
+    var(--desk-bg) 3px,
+    var(--desk-bg) 6px
+  );
+}
+
+.feed-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--ink-light);
+  padding-bottom: 5px;
+}
+.feed-ticket-date {
+  font-weight: 700;
+  font-size: 12px;
+}
+.feed-ticket-time {
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  font-size: 14px;
+}
+.feed-ticket-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+.feed-ticket-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--ink-main);
+}
+.feed-ticket-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+.feed-ticket-dur {
+  font-family: 'Courier Prime', monospace;
+  font-size: 11.5px;
+  color: var(--ink-sub);
+  flex-shrink: 0;
+}
+.feed-ticket-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+  border-top: 1px dotted var(--ink-light);
+}
+.feed-del-btn {
+  background: transparent;
+  border: none;
+  font-size: 10px;
+  color: var(--ink-light);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.feed-del-btn:hover {
+  color: #C2410C;
+}
+
+.empty-history-msg {
+  text-align: center;
+  color: var(--ink-sub);
+  font-size: 12px;
+  padding: 40px 20px;
+  line-height: 1.6;
+}
+
+/* 토스트 메시지 */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--ink-main);
+  color: var(--receipt-bg);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 2000;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- 🧾 영수증 본체 (전체 화면 높이에 맞게 완벽 핏) -->
+  <div class="receipt-sheet" id="receiptSheet">
+    
+    <!-- 1. 헤더 -->
+    <div class="r-header">
+      <div class="r-title">★ WORK RECEIPT ★</div>
+      <div class="r-store-row">
+        <span style="font-size:11px; color:var(--ink-sub);">STORE:</span>
+        <input type="text" id="studioInput" class="store-input" value="나만의 마감공방" placeholder="작업실 이름 입력"/>
+      </div>
+    </div>
+
+    <hr class="line-double"/>
+
+    <!-- 2. 메타 정보 -->
+    <div class="meta-row">
+      <span>DATE: <span id="rDate">2026-09-11</span></span>
+      <div style="display:flex; align-items:center; gap:3px;">
+        <span>NAME:</span>
+        <input type="text" id="authorInput" class="store-input" style="width:75px; text-align:left; font-size:11px;" value="꿀차" placeholder="이름 입력"/>
+      </div>
+    </div>
+
+    <hr class="line-dashed"/>
+
+    <!-- 3. 품목 헤더 -->
+    <div class="table-head">
+      <span>ITEM / SUBTASKS (시계 클릭 시 측정)</span>
+      <span>TIME</span>
+    </div>
+
+    <!-- 4. 기본 3개 항목 리스트 (직접 텍스트 작성 + 드롭다운 세부항목) -->
+    <div class="items-list" id="itemsList">
+      <!-- 3개 카드 동적 렌더링 -->
+    </div>
+
+    <hr class="line-dashed"/>
+
+    <!-- 5. 합계 섹션 -->
+    <div class="r-summary">
+      <div class="total-line">
+        <span class="total-title">TOTAL PURE WORK</span>
+        <span class="total-val" id="rTotalTime">00:00:00</span>
+      </div>
+      <div class="distract-line">
+        <span>EST. DISTRACTION (예상 딴짓)</span>
+        <span id="rDistractTime">00:00:00</span>
+      </div>
+    </div>
+
+    <!-- 6. 메타인지 피드백 (1~2줄 컴팩트) -->
+    <div class="feedback-bar">
+      <div class="feedback-title">[NOTICE] 메타인지 리포트</div>
+      <div class="feedback-text" id="feedbackText">
+        시계 아이콘을 눌러 작업 시간을 측정해보세요.
+      </div>
+    </div>
+
+    <!-- 7. 바코드 (슬림) -->
+    <div class="barcode-box">
+      <div class="barcode-svg">|| | | |||| || | || |||| | |</div>
+      <div class="barcode-msg">** THANK YOU FOR YOUR FOCUS **</div>
+    </div>
+
+  </div>
+
+  <!-- 하단 제어 버튼 (리셋 / 오늘 결산 완료!) -->
+  <div class="actions-bar">
+    <button type="button" class="act-btn" id="btnReset">
+      <span>리셋</span>
+    </button>
+    <button type="button" class="act-btn primary" id="btnArchiveToday">
+      <span>오늘 결산 완료!</span>
+    </button>
+  </div>
+
+  <!-- 하단 끌올 트리거 핸들 -->
+  <div class="pull-up-trigger" id="pullUpTrigger">
+    <div class="pull-bar-indicator"></div>
+    <div class="pull-up-label" id="pullUpLabel">주간 기록 피드 끌어올리기</div>
+  </div>
+
+</div>
+
+<!-- 주간 기록 서랍 (바텀시트) -->
+<div class="history-sheet-backdrop" id="historyBackdrop"></div>
+<div class="history-sheet" id="historySheet">
+  <div class="history-sheet-header" id="historyHeader">
+    <div class="history-drag-handle"></div>
+    <div class="history-header-top">
+      <span class="history-title">WEEKLY RECEIPT ARCHIVE</span>
+      <button type="button" class="history-close-btn" id="historyCloseBtn">&times;</button>
+    </div>
+    <div class="history-week-summary">
+      <span id="historyWeekRange">-</span>
+      <span id="historyWeekTotal">총 00:00:00 (0장)</span>
+    </div>
+  </div>
+  <div class="history-feed-list" id="historyFeedList">
+    <!-- 주간 영수증 피드 카드 동적 렌더링 -->
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── 기본 3개 항목 데이터 (작성 전에는 플레이스홀더 제공) ──
+const DEFAULT_TASKS = [
+  { 
+    id: 't1', 
+    name: '', 
+    placeholder: '오늘의 할 일 1 (예: 콘티 기획)', 
+    seconds: 0, 
+    subtasksOpen: false,
+    subtasks: [
+      { text: '', done: false, ph: '세부 할 일 1' },
+      { text: '', done: false, ph: '세부 할 일 2' }
+    ]
+  },
+  { 
+    id: 't2', 
+    name: '', 
+    placeholder: '오늘의 할 일 2 (예: 본작업 드로잉)', 
+    seconds: 0, 
+    subtasksOpen: false,
+    subtasks: [
+      { text: '', done: false, ph: '세부 할 일 1' },
+      { text: '', done: false, ph: '세부 할 일 2' }
+    ]
+  },
+  { 
+    id: 't3', 
+    name: '', 
+    placeholder: '오늘의 할 일 3 (예: 수정 및 마감)', 
+    seconds: 0, 
+    subtasksOpen: false,
+    subtasks: [
+      { text: '', done: false, ph: '세부 할 일 1' },
+      { text: '', done: false, ph: '세부 할 일 2' }
+    ]
+  }
+];
+
+let tasks = JSON.parse(localStorage.getItem('mytt_receipt_v3_tasks')) || DEFAULT_TASKS;
+let activeId = null;
+let timerInterval = null;
+let lastTick = null;
+let wakeLock = null;
+
+// 날짜 및 자동 날짜별 영수증 리셋 체크
+const now = new Date();
+const dYear = now.getFullYear();
+const dMonth = String(now.getMonth() + 1).padStart(2, '0');
+const dDate = String(now.getDate()).padStart(2, '0');
+const todayKey = `${dYear}-${dMonth}-${dDate}`;
+document.getElementById('rDate').textContent = todayKey;
+
+// 날짜가 바뀌었으면 영수증 자동 초기화
+const lastActiveDate = localStorage.getItem('mytt_receipt_v3_date');
+if (lastActiveDate && lastActiveDate !== todayKey) {
+  tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+  localStorage.setItem('mytt_receipt_v3_tasks', JSON.stringify(tasks));
+}
+localStorage.setItem('mytt_receipt_v3_date', todayKey);
+
+// 작업실 이름 저장/복원
+const studioInput = document.getElementById('studioInput');
+studioInput.value = localStorage.getItem('mytt_receipt_v3_studio') || '나만의 마감공방';
+studioInput.addEventListener('input', () => {
+  localStorage.setItem('mytt_receipt_v3_studio', studioInput.value);
+});
+
+// 작업자 이름(NAME) 저장/복원
+const authorInput = document.getElementById('authorInput');
+authorInput.value = localStorage.getItem('mytt_receipt_v3_author') || '꿀차';
+authorInput.addEventListener('input', () => {
+  localStorage.setItem('mytt_receipt_v3_author', authorInput.value);
+});
+
+function saveTasks() {
+  localStorage.setItem('mytt_receipt_v3_tasks', JSON.stringify(tasks));
+}
+
+function fmt(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function fmtShort(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  if (h === 0 && m === 0) return `${sec}초`;
+  if (h === 0) return `${m}분`;
+  return `${h}시간 ${m}분`;
+}
+
+// ── 3개 작업 카드 렌더링 ──
+function renderList() {
+  const container = document.getElementById('itemsList');
+  container.innerHTML = '';
+
+  let totalSec = 0;
+  let maxTask = null;
+
+  tasks.forEach((task, idx) => {
+    totalSec += task.seconds;
+    if (task.seconds > 0) {
+      if (!maxTask || task.seconds > maxTask.seconds) maxTask = task;
+    }
+
+    const isMeasuring = (activeId === task.id);
+    const card = document.createElement('div');
+    card.className = 'item-card' + (isMeasuring ? ' measuring' : '');
+    card.title = isMeasuring ? '클릭하여 측정 일시정지' : '클릭하여 측정 시작';
+
+    // 카드 본체 클릭 시 바로 타이머 측정 토글
+    card.onclick = (e) => {
+      // 텍스트 인풋, 세부항목 토글 버튼, 체크박스 등 내부 인터랙션 요소 클릭 시에는 타이머 토글 방지
+      if (e.target.closest('input') || e.target.closest('.subtask-toggle-btn') || e.target.closest('.subtask-chk')) {
+        return;
+      }
+      toggleTimer(task.id);
+    };
+
+    // 메인 로우
+    const mainRow = document.createElement('div');
+    mainRow.className = 'item-main-row';
+
+    // 시계 아이콘 버튼 (측정 시작/정지 & 줌인아웃 펄스 유지)
+    const clockBtn = document.createElement('button');
+    clockBtn.type = 'button';
+    clockBtn.className = 'clock-btn';
+    clockBtn.title = isMeasuring ? '측정 일시정지' : '측정 시작';
+    clockBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <polyline points="12 7 12 12 15 15"/>
+      </svg>
+    `;
+    clockBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleTimer(task.id);
+    };
+
+    // 할 일 텍스트 인풋
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'item-name-input';
+    nameInput.placeholder = task.placeholder;
+    nameInput.value = task.name;
+    nameInput.onclick = (e) => e.stopPropagation();
+    nameInput.oninput = (e) => {
+      task.name = e.target.value;
+      saveTasks();
+    };
+
+    // 드롭다운 토글 버튼
+    const subBtn = document.createElement('button');
+    subBtn.type = 'button';
+    subBtn.className = 'subtask-toggle-btn';
+    subBtn.innerHTML = `세부 ${task.subtasksOpen ? '▲' : '▼'}`;
+    subBtn.onclick = (e) => {
+      e.stopPropagation();
+      task.subtasksOpen = !task.subtasksOpen;
+      saveTasks();
+      renderList();
+    };
+
+    // 소요 시간 (각 카드 우측에 실시간으로 표시)
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'item-time-display';
+    timeSpan.textContent = fmt(task.seconds);
+
+    // [시계] -> [할 일 제목] -> [00:00:00 시간] -> [세부 ▼] 순서로 배치
+    mainRow.appendChild(clockBtn);
+    mainRow.appendChild(nameInput);
+    mainRow.appendChild(timeSpan);
+    mainRow.appendChild(subBtn);
+    card.appendChild(mainRow);
+
+    // 드롭다운 세부 할 일 패널
+    const subPanel = document.createElement('div');
+    subPanel.className = 'subtasks-panel' + (task.subtasksOpen ? ' open' : '');
+
+    const subListContainer = document.createElement('div');
+    subListContainer.className = 'subtasks-list-wrap';
+    subListContainer.style.display = 'flex';
+    subListContainer.style.flexDirection = 'column';
+    subListContainer.style.gap = '4px';
+
+    function renderSubRow(sub, sIdx) {
+      const sRow = document.createElement('div');
+      sRow.className = 'subtask-row';
+
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'subtask-chk';
+      chk.checked = sub.done;
+      chk.onchange = (e) => {
+        sub.done = e.target.checked;
+        saveTasks();
+      };
+
+      const sInp = document.createElement('input');
+      sInp.type = 'text';
+      sInp.className = 'subtask-input';
+      sInp.placeholder = sub.ph || `세부 할 일 ${sIdx + 1}`;
+      sInp.value = sub.text;
+      sInp.oninput = (e) => {
+        sub.text = e.target.value;
+        saveTasks();
+        
+        // 마지막 칸에 글자를 입력하면, DOM 전체를 날리지 않고 새 행만 쏙 추가! (타이핑 완벽 유지)
+        if (sIdx === task.subtasks.length - 1 && sub.text.trim().length > 0) {
+          const newSub = { text: '', done: false, ph: `세부 할 일 ${task.subtasks.length + 1}` };
+          task.subtasks.push(newSub);
+          saveTasks();
+          const newRow = renderSubRow(newSub, task.subtasks.length - 1);
+          subListContainer.appendChild(newRow);
+        }
+      };
+
+      sRow.appendChild(chk);
+      sRow.appendChild(sInp);
+      return sRow;
+    }
+
+    task.subtasks.forEach((sub, sIdx) => {
+      subListContainer.appendChild(renderSubRow(sub, sIdx));
+    });
+
+    subPanel.appendChild(subListContainer);
+    card.appendChild(subPanel);
+    container.appendChild(card);
+  });
+
+  // 2. 오늘의 할 일 추가 버튼 [ + 할 일 추가하기 ]
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'add-task-item-btn';
+  addBtn.textContent = `+ 할 일 추가하기`;
+  addBtn.onclick = () => {
+    const nextIdx = tasks.length + 1;
+    tasks.push({
+      id: 't_' + Date.now(),
+      name: '',
+      placeholder: `오늘의 할 일 ${nextIdx}`,
+      seconds: 0,
+      subtasksOpen: false,
+      subtasks: [
+        { text: '', done: false, ph: '세부 할 일 1' },
+        { text: '', done: false, ph: '세부 할 일 2' }
+      ]
+    });
+    saveTasks();
+    renderList();
+    showToast(`새로운 할 일 항목이 추가되었어요`);
+  };
+  container.appendChild(addBtn);
+
+  // 합계 업데이트
+  document.getElementById('rTotalTime').textContent = fmt(totalSec);
+  const distractSec = totalSec > 0 ? Math.round(totalSec * 0.25) : 0;
+  document.getElementById('rDistractTime').textContent = fmt(distractSec);
+
+  // 피드백 업데이트
+  const fbEl = document.getElementById('feedbackText');
+  if (maxTask) {
+    const taskDisplayName = maxTask.name.trim() || maxTask.placeholder.split('(')[0].trim();
+    fbEl.innerHTML = `가장 오래 걸린 작업: <b>[${taskDisplayName}]</b> (${fmtShort(maxTask.seconds)})<br/>다음엔 이 작업에 <b>+20분 여유</b>를 두고 마감을 계획하세요.`;
+  } else {
+    fbEl.textContent = '시계 아이콘을 눌러 작업 시간을 측정해보세요.';
+  }
+}
+
+// ── 타이머 작동 로직 (모바일 화면 꺼짐 방지 & 백그라운드 시간 완전 동기화) ──
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (err) {
+      // 저전력 모드 등에서 거부될 수 있음
+    }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().then(() => { wakeLock = null; }).catch(() => {});
+  }
+}
+
+function syncElapsedTime() {
+  if (!activeId || !lastTick) return;
+  const nowTime = Date.now();
+  const delta = Math.floor((nowTime - lastTick) / 1000);
+  if (delta >= 1) {
+    const t = tasks.find(x => x.id === activeId);
+    if (t) {
+      t.seconds += delta;
+      lastTick += delta * 1000;
+      localStorage.setItem('mytt_receipt_last_tick', String(lastTick));
+      saveTasks();
+      updateTimerUI(t);
+    }
+  }
+}
+
+function updateTimerUI(t) {
+  const activeCard = document.querySelector('.item-card.measuring .item-time-display');
+  if (activeCard && t) activeCard.textContent = fmt(t.seconds);
+  
+  const totalSec = tasks.reduce((sum, item) => sum + item.seconds, 0);
+  const totalEl = document.getElementById('rTotalTime');
+  if (totalEl) totalEl.textContent = fmt(totalSec);
+  
+  const distractEl = document.getElementById('rDistractTime');
+  if (distractEl) distractEl.textContent = fmt(Math.round(totalSec * 0.25));
+
+  if (t) {
+    const name = t.name.trim() || t.placeholder.split('(')[0].trim();
+    document.title = `⏱️ [${fmt(t.seconds)}] ${name} - 나만의 마감공방`;
+  }
+}
+
+function toggleTimer(id) {
+  if (activeId === id) {
+    pauseTimer();
+    showToast('측정을 멈췄습니다.');
+  } else {
+    if (activeId) {
+      syncElapsedTime();
+    }
+    activeId = id;
+    startTimer();
+    const t = tasks.find(x => x.id === id);
+    const name = t.name.trim() || t.placeholder.split('(')[0].trim();
+    showToast(`[${name}] 측정 시작 (화면이 꺼져도 계속 기록됩니다)`);
+  }
+  renderList();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  lastTick = Date.now();
+  localStorage.setItem('mytt_receipt_active_id', activeId);
+  localStorage.setItem('mytt_receipt_last_tick', String(lastTick));
+  requestWakeLock();
+  startTimerLoop();
+}
+
+function startTimerLoop() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    syncElapsedTime();
+  }, 500);
+}
+
+function pauseTimer() {
+  syncElapsedTime();
+  clearInterval(timerInterval);
+  timerInterval = null;
+  activeId = null;
+  lastTick = null;
+  localStorage.removeItem('mytt_receipt_active_id');
+  localStorage.removeItem('mytt_receipt_last_tick');
+  releaseWakeLock();
+  document.title = '나만의 마감공방 영수증';
+  saveTasks();
+  renderList();
+}
+
+// ── 영수증 초기화 리셋 ──
+document.getElementById('btnReset').addEventListener('click', () => {
+  if (confirm('오늘의 영수증(측정 시간 및 할 일)을 초기화할까요?')) {
+    pauseTimer();
+    // 기본 3개 빈 슬롯 상태의 새 영수증으로 깨끗하게 초기화
+    tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+    saveTasks();
+    renderList();
+    showToast('새 영수증으로 깨끗하게 초기화되었습니다.');
+  }
+});
+
+// ── 주간 영수증 아카이브 관리 (로컬스토리지) ──
+function getArchive() {
+  return JSON.parse(localStorage.getItem('mytt_receipt_archive')) || [];
+}
+function saveArchive(list) {
+  localStorage.setItem('mytt_receipt_archive', JSON.stringify(list));
+}
+
+// 이번 주 월~일 범위 계산
+function getWeekRangeStr(d = new Date()) {
+  const current = new Date(d);
+  const day = current.getDay(); // 0: 일, 1: 월 ...
+  const diffToMon = current.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(current.setDate(diffToMon));
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+
+  const mStr = `${mon.getMonth() + 1}.${String(mon.getDate()).padStart(2, '0')}`;
+  const sStr = `${sun.getMonth() + 1}.${String(sun.getDate()).padStart(2, '0')}`;
+  return `${mStr} ~ ${sStr}`;
+}
+
+// 오늘 영수증을 주간 기록에 저장
+document.getElementById('btnArchiveToday').addEventListener('click', () => {
+  pauseTimer();
+  const totalSec = tasks.reduce((sum, item) => sum + item.seconds, 0);
+  if (totalSec === 0 && !tasks.some(t => t.name.trim())) {
+    showToast('기록할 작업 시간이나 내용이 없습니다.');
+    return;
+  }
+
+  const archive = getArchive();
+  const todayEntry = {
+    id: 'rcpt_' + Date.now(),
+    date: todayKey,
+    timestamp: Date.now(),
+    store: studioInput.value.trim() || '나만의 마감공방',
+    author: authorInput.value.trim() || '꿀차',
+    totalSeconds: totalSec,
+    tasks: tasks.filter(t => t.seconds > 0 || t.name.trim()).map(t => ({
+      name: t.name.trim() || t.placeholder.split('(')[0].trim(),
+      seconds: t.seconds,
+      subtasks: t.subtasks.filter(s => s.text.trim())
+    }))
+  };
+
+  archive.unshift(todayEntry); // 최신순 저장
+  saveArchive(archive);
+  updatePullUpBadge();
+  showToast('오늘의 시간 결산이 완료되었습니다.');
+});
+
+// 하단 끌올 뱃지 및 주간 피드 렌더링
+function updatePullUpBadge() {
+  const archive = getArchive();
+  const label = document.getElementById('pullUpLabel');
+  if (archive.length > 0) {
+    label.textContent = `주간 기록 피드 끌어올리기 (${archive.length}장)`;
+  } else {
+    label.textContent = '주간 기록 피드 끌어올리기';
+  }
+}
+
+function renderHistoryFeed() {
+  const archive = getArchive();
+  const container = document.getElementById('historyFeedList');
+  container.innerHTML = '';
+
+  const weekRangeStr = getWeekRangeStr();
+  document.getElementById('historyWeekRange').textContent = `이번 주 (${weekRangeStr})`;
+
+  const totalSecAll = archive.reduce((s, a) => s + (a.totalSeconds || 0), 0);
+  document.getElementById('historyWeekTotal').textContent = `총 ${fmt(totalSecAll)} (${archive.length}장)`;
+
+  if (archive.length === 0) {
+    container.innerHTML = `
+      <div class="empty-history-msg">
+        아직 보관된 결산 영수증이 없습니다.<br/>
+        오늘 작업을 마치고 [오늘 결산 완료!] 버튼을 눌러보세요.
+      </div>
+    `;
+    return;
+  }
+
+  archive.forEach((entry, idx) => {
+    const card = document.createElement('div');
+    card.className = 'feed-ticket';
+
+    const header = document.createElement('div');
+    header.className = 'feed-ticket-header';
+    header.innerHTML = `
+      <span class="feed-ticket-date">${entry.date} · ${entry.store || ''}</span>
+      <span class="feed-ticket-time">${fmt(entry.totalSeconds)}</span>
+    `;
+
+    const tasksWrap = document.createElement('div');
+    tasksWrap.className = 'feed-ticket-tasks';
+    if (entry.tasks && entry.tasks.length > 0) {
+      entry.tasks.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'feed-ticket-row';
+        row.innerHTML = `
+          <span class="feed-ticket-name">• ${t.name}</span>
+          <span class="feed-ticket-dur">${fmtShort(t.seconds)}</span>
+        `;
+        tasksWrap.appendChild(row);
+      });
+    } else {
+      const row = document.createElement('div');
+      row.className = 'feed-ticket-row';
+      row.innerHTML = `<span class="feed-ticket-name">• 상세 내용 없음</span><span class="feed-ticket-dur">${fmtShort(entry.totalSeconds)}</span>`;
+      tasksWrap.appendChild(row);
+    }
+
+    const footer = document.createElement('div');
+    footer.className = 'feed-ticket-footer';
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'feed-del-btn';
+    delBtn.textContent = '삭제';
+    delBtn.onclick = () => {
+      if (confirm('이 영수증 기록을 삭제할까요?')) {
+        archive.splice(idx, 1);
+        saveArchive(archive);
+        renderHistoryFeed();
+        updatePullUpBadge();
+        showToast('기록이 삭제되었습니다.');
+      }
+    };
+    footer.appendChild(delBtn);
+
+    card.appendChild(header);
+    card.appendChild(tasksWrap);
+    card.appendChild(footer);
+    container.appendChild(card);
+  });
+}
+
+// ── 바텀시트 제스처 및 열기/닫기 인터랙션 ──
+const historySheet = document.getElementById('historySheet');
+const historyBackdrop = document.getElementById('historyBackdrop');
+const pullUpTrigger = document.getElementById('pullUpTrigger');
+const historyCloseBtn = document.getElementById('historyCloseBtn');
+
+function openHistorySheet() {
+  renderHistoryFeed();
+  historySheet.classList.add('open');
+  historyBackdrop.classList.add('open');
+}
+
+function closeHistorySheet() {
+  historySheet.classList.remove('open');
+  historyBackdrop.classList.remove('open');
+}
+
+pullUpTrigger.addEventListener('click', openHistorySheet);
+historyBackdrop.addEventListener('click', closeHistorySheet);
+historyCloseBtn.addEventListener('click', closeHistorySheet);
+
+// 터치 스와이프 제스처 (끌올 & 끌내림)
+let touchStartY = 0;
+let touchEndY = 0;
+
+// 화면 하단 영역에서 위로 스와이프하면 열기
+document.addEventListener('touchstart', (e) => {
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  touchEndY = e.changedTouches[0].clientY;
+  const diffY = touchStartY - touchEndY;
+
+  // 바텀시트가 닫힌 상태에서 하단 쪽 터치 후 위로 60px 이상 끌어올렸을 때 열기
+  if (!historySheet.classList.contains('open')) {
+    if (diffY > 60 && touchStartY > window.innerHeight * 0.7) {
+      openHistorySheet();
+    }
+  }
+}, { passive: true });
+
+// 바텀시트 헤더에서 아래로 스와이프하면 닫기
+const historyHeader = document.getElementById('historyHeader');
+let sheetTouchStartY = 0;
+historyHeader.addEventListener('touchstart', (e) => {
+  sheetTouchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+historyHeader.addEventListener('touchend', (e) => {
+  const sheetTouchEndY = e.changedTouches[0].clientY;
+  if (sheetTouchEndY - sheetTouchStartY > 50) {
+    closeHistorySheet();
+  }
+}, { passive: true });
+
+// ── 토스트 ──
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ── 백그라운드 / 화면 꺼짐 및 복귀 자동 동기화 ──
+function handleVisibilityOrResume() {
+  if (document.visibilityState === 'visible') {
+    if (activeId) {
+      syncElapsedTime();
+      requestWakeLock();
+      if (!timerInterval) {
+        startTimerLoop();
+      }
+    }
+  } else {
+    // 화면이 꺼지거나 백그라운드로 전환될 때 즉시 경과 시간 동기화 및 저장
+    if (activeId) {
+      syncElapsedTime();
+      saveTasks();
+    }
+  }
+}
+
+document.addEventListener('visibilitychange', handleVisibilityOrResume);
+window.addEventListener('focus', handleVisibilityOrResume);
+window.addEventListener('pageshow', handleVisibilityOrResume);
+
+// ── 세션 복원 (브라우저 리로드 또는 재오픈 시 측정 연속 복원) ──
+function restoreActiveSession() {
+  const savedActiveId = localStorage.getItem('mytt_receipt_active_id');
+  const savedLastTick = parseInt(localStorage.getItem('mytt_receipt_last_tick'), 10);
+  if (savedActiveId && savedLastTick && !isNaN(savedLastTick)) {
+    const t = tasks.find(x => x.id === savedActiveId);
+    if (t) {
+      activeId = savedActiveId;
+      lastTick = savedLastTick;
+      syncElapsedTime();
+      startTimer();
+      renderList();
+    }
+  }
+}
+
+// 최초 실행
+updatePullUpBadge();
+renderList();
+restoreActiveSession();
+</script>
+
+</body>
+</html>
