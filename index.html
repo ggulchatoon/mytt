@@ -32,6 +32,22 @@
   .project-name-input:focus { border-bottom-color: #fff; }
   
   .deadline { display: flex; gap: 8px; align-items: center; font-size: 16px; color: var(--ink); }
+
+  /* BGM 설정 컨트롤 */
+  .bgm-box { 
+    display: flex; align-items: center; gap: 6px; background: #000; border: 2px solid var(--line); 
+    padding: 0 8px; height: 35px; box-sizing: border-box;
+  }
+  .bgm-icon { font-size: 16px; cursor: pointer; user-select: none; transition: transform 0.15s; display: inline-block; }
+  .bgm-icon:hover { transform: scale(1.15); }
+  .bgm-icon.playing { animation: pulseIcon 1.4s infinite ease-in-out; }
+  @keyframes pulseIcon { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px var(--me)); } 50% { transform: scale(1.2); filter: drop-shadow(0 0 6px var(--me)); } }
+  .bgm-select { 
+    background: transparent; color: var(--ink); border: none; font-size: 14px; 
+    padding: 0; outline: none; cursor: pointer;
+  }
+  .bgm-select option { background: #151515; color: #fff; }
+
   
   input, select, button { 
     font: inherit; border: 2px solid var(--line); border-radius: 0; 
@@ -163,6 +179,14 @@
       <input type="text" class="project-name-input" id="projectName" placeholder="프로젝트명 (예: 기획서 작성)">
     </div>
     <div class="deadline">
+      <div class="bgm-box" title="배경음악 설정">
+        <span class="bgm-icon" id="bgmIcon" title="BGM 켜기/끄기">🔈</span>
+        <select id="bgmSelect" class="bgm-select" title="BGM 설정">
+          <option value="none">소리 없는 버전</option>
+          <option value="battle">긴박한 전투 느낌</option>
+          <option value="chill">느긋한 느낌</option>
+        </select>
+      </div>
       <span id="dlText">마감: </span>
       <input type="datetime-local" id="dl">
       <button class="btn-main" id="startRaidBtn">레이드 시작</button>
@@ -631,6 +655,256 @@
   };
 
   init();
+
+  // --- Retro Chiptune & Lo-Fi Procedural Audio Engine ---
+  class RetroAudioEngine {
+    constructor() {
+      this.ctx = null;
+      this.master = null;
+      this.mode = 'none'; // 'none', 'battle', 'chill'
+      this.lastActiveMode = 'chill';
+      this.timer = null;
+      this.step = 0;
+      this.noiseBuffer = null;
+    }
+
+    ensureContext() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioCtx();
+        this.master = this.ctx.createGain();
+        this.master.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        this.master.connect(this.ctx.destination);
+        this.createNoiseBuffer();
+      }
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+
+    createNoiseBuffer() {
+      const bufferSize = this.ctx.sampleRate * 2;
+      this.noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = this.noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+    }
+
+    m2f(midi) {
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    playNote(freq, type, duration, gainVal, when, filterFreq = null) {
+      if (!this.ctx || this.mode === 'none') return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, when);
+
+      gain.gain.setValueAtTime(gainVal, when);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+
+      if (filterFreq) {
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(filterFreq, when);
+        osc.connect(filter);
+        filter.connect(gain);
+      } else {
+        osc.connect(gain);
+      }
+
+      gain.connect(this.master);
+      osc.start(when);
+      osc.stop(when + duration);
+    }
+
+    playDrum(type, when) {
+      if (!this.ctx || this.mode === 'none') return;
+      if (type === 'kick') {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(140, when);
+        osc.frequency.exponentialRampToValueAtTime(30, when + 0.1);
+        gain.gain.setValueAtTime(0.3, when);
+        gain.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
+        osc.connect(gain);
+        gain.connect(this.master);
+        osc.start(when);
+        osc.stop(when + 0.12);
+      } else if (type === 'snare') {
+        if (!this.noiseBuffer) return;
+        const src = this.ctx.createBufferSource();
+        src.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1200, when);
+        filter.Q.setValueAtTime(1.5, when);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.2, when);
+        gain.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.master);
+        src.start(when);
+        src.stop(when + 0.12);
+      } else if (type === 'hat') {
+        if (!this.noiseBuffer) return;
+        const src = this.ctx.createBufferSource();
+        src.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(5000, when);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.04, when);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.04);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.master);
+        src.start(when);
+        src.stop(when + 0.04);
+      }
+    }
+
+    setMode(mode) {
+      this.mode = mode;
+      if (mode !== 'none') this.lastActiveMode = mode;
+      this.step = 0;
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+      this.updateUI();
+
+      if (mode === 'none') return;
+      this.ensureContext();
+
+      if (mode === 'chill') {
+        // 72 BPM: 16th note = ~208ms
+        const tickMs = 210;
+        this.timer = setInterval(() => this.tickChill(), tickMs);
+      } else if (mode === 'battle') {
+        // 138 BPM: 16th note = ~108ms
+        const tickMs = 110;
+        this.timer = setInterval(() => this.tickBattle(), tickMs);
+      }
+    }
+
+    tickChill() {
+      const now = this.ctx.currentTime + 0.02;
+      const step16 = this.step % 64; // 4 bars
+      const bar = Math.floor(step16 / 16);
+      const subStep = step16 % 16;
+
+      // Warm Lo-Fi Progression: Fmaj7 -> Em7 -> Dm7 -> Cmaj7
+      const chords = [
+        { bass: 41, notes: [53, 57, 60, 64] }, // Fmaj7
+        { bass: 40, notes: [52, 55, 59, 62] }, // Em7
+        { bass: 38, notes: [50, 53, 57, 60] }, // Dm7
+        { bass: 36, notes: [48, 52, 55, 59] }  // Cmaj7
+      ];
+      const chord = chords[bar];
+
+      // On beat 0 and beat 8: gentle warm strum
+      if (subStep === 0 || subStep === 8) {
+        chord.notes.forEach((midi, idx) => {
+          const strumDelay = idx * 0.035;
+          this.playNote(this.m2f(midi), 'triangle', 1.8, 0.12, now + strumDelay, 850);
+        });
+      }
+
+      // Bass on beat 0 and beat 10
+      if (subStep === 0 || subStep === 10) {
+        this.playNote(this.m2f(chord.bass), 'sine', 1.2, 0.22, now);
+      }
+
+      // Soft tape/hi-hat groove every 2 steps
+      if (subStep % 2 === 0) {
+        this.playDrum('hat', now);
+      }
+
+      // Occasional gentle music box bell note
+      if (subStep === 4 || subStep === 12) {
+        const bellPitches = [72, 74, 76, 79, 81];
+        const pitch = bellPitches[(bar * 2 + subStep / 4) % bellPitches.length];
+        this.playNote(this.m2f(pitch), 'sine', 1.4, 0.06, now, 2200);
+      }
+
+      this.step++;
+    }
+
+    tickBattle() {
+      const now = this.ctx.currentTime + 0.02;
+      const step16 = this.step % 64; // 4 bars
+      const bar = Math.floor(step16 / 16);
+      const subStep = step16 % 16;
+
+      // Battle Minor Progression: Dm -> Bb -> Gm -> A7
+      const progressions = [
+        { root: 38, arps: [50, 53, 57, 62, 65, 62, 57, 53] }, // Dm
+        { root: 34, arps: [46, 50, 53, 58, 62, 58, 53, 50] }, // Bb
+        { root: 31, arps: [43, 46, 50, 55, 58, 55, 50, 46] }, // Gm
+        { root: 33, arps: [45, 49, 52, 57, 61, 57, 52, 49] }  // A7
+      ];
+      const p = progressions[bar];
+
+      // Driving 8th-note Bass pulse (every 2 steps)
+      if (subStep % 2 === 0) {
+        this.playNote(this.m2f(p.root), 'sawtooth', 0.14, 0.18, now, 600);
+      }
+
+      // Fast 16th-note Chiptune Arpeggios (every step)
+      const arpNote = p.arps[subStep % p.arps.length];
+      this.playNote(this.m2f(arpNote), 'square', 0.09, 0.08, now, 1800);
+
+      // Chiptune Drums: Kick on 0, 8; Snare on 4, 12; Hat on even steps
+      if (subStep === 0 || subStep === 8) {
+        this.playDrum('kick', now);
+      } else if (subStep === 4 || subStep === 12) {
+        this.playDrum('snare', now);
+      }
+      if (subStep % 2 === 0) {
+        this.playDrum('hat', now);
+      }
+
+      this.step++;
+    }
+
+    updateUI() {
+      const icon = document.getElementById('bgmIcon');
+      const select = document.getElementById('bgmSelect');
+      if (select) select.value = this.mode;
+      if (icon) {
+        if (this.mode === 'none') {
+          icon.textContent = '🔈';
+          icon.classList.remove('playing');
+          icon.title = 'BGM 꺼짐 (클릭하여 켜기)';
+        } else {
+          icon.textContent = this.mode === 'battle' ? '⚡️' : '🎵';
+          icon.classList.add('playing');
+          icon.title = 'BGM 재생 중 (클릭하여 끄기)';
+        }
+      }
+    }
+
+    toggle() {
+      if (this.mode === 'none') {
+        this.setMode(this.lastActiveMode || 'chill');
+      } else {
+        this.setMode('none');
+      }
+    }
+  }
+
+  const bgm = new RetroAudioEngine();
+  $('bgmSelect').addEventListener('change', (e) => {
+    bgm.setMode(e.target.value);
+  });
+  $('bgmIcon').addEventListener('click', () => {
+    bgm.toggle();
+  });
+
 </script>
 </body>
 </html>
