@@ -182,11 +182,11 @@
       <div class="bgm-box" title="배경음악 설정">
         <span class="bgm-icon" id="bgmIcon" title="BGM 켜기/끄기">🔈</span>
         <select id="bgmSelect" class="bgm-select" title="BGM 설정">
-          <option value="none">소리 없는 버전</option>
-          <option value="battle1">⚡️ 긴박한 전투 1 (포켓몬 배틀)</option>
-          <option value="battle2">🔥 긴박한 전투 2 (아케이드 록)</option>
-          <option value="chill1">☕️ 느긋한 도전 1 (비 오는 로파이)</option>
-          <option value="chill2">🍃 느긋한 도전 2 (마을 산책길)</option>
+          <option value="none">🔈 소리 없음</option>
+          <option value="battle1">아드레날린 폭발</option>
+          <option value="battle2">최종 전투</option>
+          <option value="chill1">꿈꾸는 도전</option>
+          <option value="chill2">치유의 길</option>
         </select>
       </div>
       <span id="dlText">마감: </span>
@@ -1065,13 +1065,7 @@
           icon.classList.remove('playing');
           icon.title = 'BGM 꺼짐 (클릭하여 켜기)';
         } else {
-          const iconMap = {
-            battle1: '⚡️',
-            battle2: '🔥',
-            chill1: '☕️',
-            chill2: '🍃'
-          };
-          icon.textContent = iconMap[this.mode] || '🎵';
+          icon.textContent = '🔊';
           icon.classList.add('playing');
           icon.title = 'BGM 재생 중 (클릭하여 끄기)';
         }
