@@ -656,13 +656,13 @@
 
   init();
 
-  // --- Retro Chiptune & Lo-Fi Procedural Audio Engine ---
+  // --- Retro Chiptune (Pokemon Battle Motif) & Lo-Fi Procedural Audio Engine ---
   class RetroAudioEngine {
     constructor() {
       this.ctx = null;
       this.master = null;
       this.mode = 'none'; // 'none', 'battle', 'chill'
-      this.lastActiveMode = 'chill';
+      this.lastActiveMode = 'battle';
       this.timer = null;
       this.step = 0;
       this.noiseBuffer = null;
@@ -673,7 +673,7 @@
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         this.ctx = new AudioCtx();
         this.master = this.ctx.createGain();
-        this.master.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        this.master.gain.setValueAtTime(0.20, this.ctx.currentTime);
         this.master.connect(this.ctx.destination);
         this.createNoiseBuffer();
       }
@@ -695,12 +695,16 @@
       return 440 * Math.pow(2, (midi - 69) / 12);
     }
 
-    playNote(freq, type, duration, gainVal, when, filterFreq = null) {
+    playNote(freq, type, duration, gainVal, when, filterFreq = null, pitchSlide = null) {
       if (!this.ctx || this.mode === 'none') return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = type;
       osc.frequency.setValueAtTime(freq, when);
+
+      if (pitchSlide) {
+        osc.frequency.linearRampToValueAtTime(pitchSlide, when + duration);
+      }
 
       gain.gain.setValueAtTime(gainVal, when);
       gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
@@ -720,50 +724,65 @@
       osc.stop(when + duration);
     }
 
-    playDrum(type, when) {
+    playDrum(type, when, vol = 1.0) {
       if (!this.ctx || this.mode === 'none') return;
       if (type === 'kick') {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.frequency.setValueAtTime(140, when);
-        osc.frequency.exponentialRampToValueAtTime(30, when + 0.1);
-        gain.gain.setValueAtTime(0.3, when);
-        gain.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
+        osc.frequency.setValueAtTime(170, when);
+        osc.frequency.exponentialRampToValueAtTime(32, when + 0.09);
+        gain.gain.setValueAtTime(0.35 * vol, when);
+        gain.gain.exponentialRampToValueAtTime(0.001, when + 0.1);
         osc.connect(gain);
         gain.connect(this.master);
         osc.start(when);
-        osc.stop(when + 0.12);
+        osc.stop(when + 0.1);
       } else if (type === 'snare') {
         if (!this.noiseBuffer) return;
         const src = this.ctx.createBufferSource();
         src.buffer = this.noiseBuffer;
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(1200, when);
-        filter.Q.setValueAtTime(1.5, when);
+        filter.frequency.setValueAtTime(1400, when);
+        filter.Q.setValueAtTime(2.0, when);
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.2, when);
-        gain.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
+        gain.gain.setValueAtTime(0.25 * vol, when);
+        gain.gain.exponentialRampToValueAtTime(0.001, when + 0.1);
         src.connect(filter);
         filter.connect(gain);
         gain.connect(this.master);
         src.start(when);
-        src.stop(when + 0.12);
+        src.stop(when + 0.1);
       } else if (type === 'hat') {
         if (!this.noiseBuffer) return;
         const src = this.ctx.createBufferSource();
         src.buffer = this.noiseBuffer;
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'highpass';
-        filter.frequency.setValueAtTime(5000, when);
+        filter.frequency.setValueAtTime(5500, when);
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.04, when);
-        gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.04);
+        gain.gain.setValueAtTime(0.05 * vol, when);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.035);
         src.connect(filter);
         filter.connect(gain);
         gain.connect(this.master);
         src.start(when);
-        src.stop(when + 0.04);
+        src.stop(when + 0.035);
+      } else if (type === 'crash') {
+        if (!this.noiseBuffer) return;
+        const src = this.ctx.createBufferSource();
+        src.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(3200, when);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.3 * vol, when);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.45);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.master);
+        src.start(when);
+        src.stop(when + 0.45);
       }
     }
 
@@ -781,13 +800,11 @@
       this.ensureContext();
 
       if (mode === 'chill') {
-        // 72 BPM: 16th note = ~208ms
-        const tickMs = 210;
-        this.timer = setInterval(() => this.tickChill(), tickMs);
+        // Lo-Fi: 72 BPM
+        this.timer = setInterval(() => this.tickChill(), 208);
       } else if (mode === 'battle') {
-        // 138 BPM: 16th note = ~108ms
-        const tickMs = 110;
-        this.timer = setInterval(() => this.tickBattle(), tickMs);
+        // Pokemon Battle Style: 154 BPM (97.4ms per 16th note)
+        this.timer = setInterval(() => this.tickPokemonBattle(), 98);
       }
     }
 
@@ -797,7 +814,6 @@
       const bar = Math.floor(step16 / 16);
       const subStep = step16 % 16;
 
-      // Warm Lo-Fi Progression: Fmaj7 -> Em7 -> Dm7 -> Cmaj7
       const chords = [
         { bass: 41, notes: [53, 57, 60, 64] }, // Fmaj7
         { bass: 40, notes: [52, 55, 59, 62] }, // Em7
@@ -806,7 +822,6 @@
       ];
       const chord = chords[bar];
 
-      // On beat 0 and beat 8: gentle warm strum
       if (subStep === 0 || subStep === 8) {
         chord.notes.forEach((midi, idx) => {
           const strumDelay = idx * 0.035;
@@ -814,17 +829,14 @@
         });
       }
 
-      // Bass on beat 0 and beat 10
       if (subStep === 0 || subStep === 10) {
         this.playNote(this.m2f(chord.bass), 'sine', 1.2, 0.22, now);
       }
 
-      // Soft tape/hi-hat groove every 2 steps
       if (subStep % 2 === 0) {
         this.playDrum('hat', now);
       }
 
-      // Occasional gentle music box bell note
       if (subStep === 4 || subStep === 12) {
         const bellPitches = [72, 74, 76, 79, 81];
         const pitch = bellPitches[(bar * 2 + subStep / 4) % bellPitches.length];
@@ -834,38 +846,137 @@
       this.step++;
     }
 
-    tickBattle() {
+    // --- Pokemon Gym Leader / Trainer Battle Engine (16-Bar Loop) ---
+    tickPokemonBattle() {
       const now = this.ctx.currentTime + 0.02;
-      const step16 = this.step % 64; // 4 bars
-      const bar = Math.floor(step16 / 16);
-      const subStep = step16 % 16;
+      const step256 = this.step % 256; // 16 bars total
+      const bar = Math.floor(step256 / 16);
+      const subStep = step256 % 16;
 
-      // Battle Minor Progression: Dm -> Bb -> Gm -> A7
-      const progressions = [
-        { root: 38, arps: [50, 53, 57, 62, 65, 62, 57, 53] }, // Dm
-        { root: 34, arps: [46, 50, 53, 58, 62, 58, 53, 50] }, // Bb
-        { root: 31, arps: [43, 46, 50, 55, 58, 55, 50, 46] }, // Gm
-        { root: 33, arps: [45, 49, 52, 57, 61, 57, 52, 49] }  // A7
-      ];
-      const p = progressions[bar];
+      // --- 1. DRUMS & PERCUSSION ---
+      if (bar === 0) {
+        // Intro Bar: no drums until rapid snare roll build-up at steps 12-15
+        if (subStep === 0) this.playDrum('crash', now, 0.9);
+        if (subStep >= 12) this.playDrum('snare', now, 0.6 + (subStep - 12) * 0.1);
+      } else {
+        // Crash hits at key section drops
+        if (subStep === 0 && (bar === 1 || bar === 5 || bar === 9 || bar === 13)) {
+          this.playDrum('crash', now, 0.85);
+        }
 
-      // Driving 8th-note Bass pulse (every 2 steps)
-      if (subStep % 2 === 0) {
-        this.playNote(this.m2f(p.root), 'sawtooth', 0.14, 0.18, now, 600);
+        // Snare Fills at turnaround bars
+        if (bar === 7 && subStep >= 12) {
+          this.playDrum('snare', now, 0.8);
+        } else if (bar === 15 && subStep >= 8) {
+          // Final epic snare roll
+          if (subStep % 2 === 0 || subStep >= 12) {
+            this.playDrum('snare', now, 0.9);
+          }
+        } else {
+          // Standard Driving Battle Beat
+          if (subStep === 0 || subStep === 6 || subStep === 10) {
+            this.playDrum('kick', now, 0.9);
+          }
+          if (subStep === 4 || subStep === 12) {
+            this.playDrum('snare', now, 0.85);
+          }
+          if (subStep % 2 === 0) {
+            this.playDrum('hat', now, 0.7);
+          }
+        }
       }
 
-      // Fast 16th-note Chiptune Arpeggios (every step)
-      const arpNote = p.arps[subStep % p.arps.length];
-      this.playNote(this.m2f(arpNote), 'square', 0.09, 0.08, now, 1800);
+      // --- 2. GALLOPING 8-BIT BASSLINE (Channel 3 / Triangle-Saw) ---
+      if (bar > 0) {
+        // Bass roots for each bar
+        const bassRoots = [
+          null,
+          38, 38, 38, 38, // Bars 1-4: Dm
+          34, 36, 38, 45, // Bars 5-8: Bb, C, Dm, A
+          31, 33, 34, 36, // Bars 9-12: Gm, Am, Bb, C
+          38, 34, 33, 33  // Bars 13-16: Dm, Bb, A, A7
+        ];
+        const r = bassRoots[bar];
+        if (r) {
+          // Iconic Pokemon 16th-note galloping rhythm: steps 0, 1, 3, 4, 6, 7, 9, 10, 12, 14
+          let note = r;
+          let playBass = false;
 
-      // Chiptune Drums: Kick on 0, 8; Snare on 4, 12; Hat on even steps
-      if (subStep === 0 || subStep === 8) {
-        this.playDrum('kick', now);
-      } else if (subStep === 4 || subStep === 12) {
-        this.playDrum('snare', now);
+          if (subStep === 0 || subStep === 6) { note = r; playBass = true; }
+          else if (subStep === 1 || subStep === 7) { note = r; playBass = true; }
+          else if (subStep === 3 || subStep === 9) { note = r + 12; playBass = true; } // Octave bounce
+          else if (subStep === 4 || subStep === 10) { note = r; playBass = true; }
+          else if (subStep === 12) { note = r + 7; playBass = true; } // Fifth
+          else if (subStep === 14) { note = r + 10; playBass = true; } // Minor 7th / leading note
+
+          if (playBass) {
+            this.playNote(this.m2f(note), 'sawtooth', 0.08, 0.17, now, 520);
+          }
+        }
       }
-      if (subStep % 2 === 0) {
-        this.playDrum('hat', now);
+
+      // --- 3. INNER HARMONY & FAST CHIPTUNE ARPEGGIO (Channel 2) ---
+      if (bar >= 1) {
+        const arpChords = [
+          null,
+          [62, 65, 69, 74], [62, 65, 69, 74], [62, 65, 69, 74], [62, 65, 69, 74], // Dm
+          [58, 62, 65, 70], [60, 64, 67, 72], [62, 65, 69, 74], [57, 61, 64, 69], // Bb, C, Dm, A
+          [55, 58, 62, 67], [57, 60, 64, 69], [58, 62, 65, 70], [60, 64, 67, 72], // Gm, Am, Bb, C
+          [62, 65, 69, 74], [58, 62, 65, 70], [57, 61, 64, 69], [57, 61, 64, 69]  // Dm, Bb, A, A
+        ];
+        const chord = arpChords[bar];
+        if (chord) {
+          const arpNote = chord[subStep % chord.length];
+          // Light sparkly background arpeggio
+          this.playNote(this.m2f(arpNote), 'square', 0.065, 0.05, now, 1600);
+        }
+      }
+
+      // --- 4. ICONIC POKEMON BATTLE LEAD MELODY (Channel 1 - Square Wave) ---
+      // Bar 0: The Signature Rising Chromatic Encounter Intro!
+      if (bar === 0) {
+        // Fast ascending chromatic scale
+        const introPitches = [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77];
+        const p = introPitches[subStep];
+        this.playNote(this.m2f(p), 'square', 0.08, 0.13, now, 2400);
+        return;
+      }
+
+      // Composed 15-Bar Melodic Narrative (Bars 1 to 15)
+      // Notes formatted as: [startSubStep, midiNote, durationInSteps]
+      const barMelodies = {
+        1: [[0, 74, 2], [2, 74, 2], [4, 74, 2], [6, 77, 2], [8, 76, 3], [11, 74, 4]], // D5-D5-D5-F5-E5-D5
+        2: [[0, 72, 2], [2, 74, 2], [4, 77, 3], [7, 81, 3], [10, 79, 3], [13, 77, 3]], // C5-D5-F5-A5-G5-F5
+        3: [[0, 70, 3], [3, 74, 3], [6, 77, 2], [8, 79, 3], [11, 77, 2], [13, 76, 3]], // Bb4-D5-F5-G5-F5-E5
+        4: [[0, 74, 2], [2, 73, 2], [4, 74, 2], [6, 76, 2], [8, 77, 4], [12, 81, 4]], // D5-C#5-D5-E5-F5-A5
+
+        // Section 2: Gym Leader Ascent
+        5: [[0, 77, 3], [3, 79, 3], [6, 81, 2], [8, 82, 3], [11, 81, 2], [13, 79, 3]], // F5-G5-A5-Bb5-A5-G5
+        6: [[0, 81, 3], [3, 84, 3], [6, 86, 4], [10, 84, 3], [13, 81, 3]],             // A5-C6-D6 (High Peak!)-C6-A5
+        7: [[0, 82, 3], [3, 81, 3], [6, 79, 2], [8, 77, 2], [10, 79, 2], [12, 81, 4]], // Bb5-A5-G5-F5-G5-A5
+        8: [[0, 76, 2], [2, 77, 2], [4, 79, 2], [6, 81, 2], [8, 85, 4], [12, 88, 4]], // E5-F5-G5-A5-C#6-E6!
+
+        // Section 3: Intense Minor Bridge
+        9:  [[0, 79, 3], [3, 82, 3], [6, 86, 4], [10, 84, 3], [13, 82, 3]],             // Gm: G5-Bb5-D6-C6-Bb5
+        10: [[0, 81, 3], [3, 84, 3], [6, 88, 4], [10, 86, 3], [13, 84, 3]],             // Am: A5-C6-E6-D6-C6
+        11: [[0, 82, 3], [3, 86, 3], [6, 89, 4], [10, 88, 3], [13, 86, 3]],             // Bb: Bb5-D6-F6 (Apex!)-E6-D6
+        12: [[0, 85, 3], [3, 86, 3], [6, 88, 3], [9, 89, 4], [13, 91, 3]],              // C#6-D6-E6-F6-G6
+
+        // Section 4: Climax & Grand Turnaround
+        13: [[0, 91, 3], [3, 89, 3], [6, 88, 3], [9, 86, 3], [12, 85, 4]],              // G6-F6-E6-D6-C#6
+        14: [[0, 85, 2], [2, 86, 2], [4, 88, 2], [6, 89, 2], [8, 91, 4], [12, 93, 4]], // C#6-D6-E6-F6-G6-A6!!
+        15: [[0, 93, 3], [3, 91, 3], [6, 88, 3], [9, 85, 4]]                            // A6-G6-E6-C#6 (Dramatic drop!)
+      };
+
+      const notesInBar = barMelodies[bar];
+      if (notesInBar) {
+        const hit = notesInBar.find(n => n[0] === subStep);
+        if (hit) {
+          const midi = hit[1];
+          const durSec = hit[2] * 0.098;
+          // Punchy square wave with subtle attack snap
+          this.playNote(this.m2f(midi), 'square', durSec, 0.16, now, 2800);
+        }
       }
 
       this.step++;
@@ -890,14 +1001,14 @@
 
     toggle() {
       if (this.mode === 'none') {
-        this.setMode(this.lastActiveMode || 'chill');
+        this.setMode(this.lastActiveMode || 'battle');
       } else {
         this.setMode('none');
       }
     }
   }
 
-  const bgm = new RetroAudioEngine();
+    const bgm = new RetroAudioEngine();
   $('bgmSelect').addEventListener('change', (e) => {
     bgm.setMode(e.target.value);
   });
