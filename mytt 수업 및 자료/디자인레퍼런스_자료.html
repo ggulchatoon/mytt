@@ -1,0 +1,1167 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mytt 디자인 레퍼런스 작업대 — 파이널 터치 스타일 가이드</title>
+
+<!-- 디자인시스템 표준 폰트 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;600;700;800&family=Jua&family=Gowun+Batang:wght@400;700&family=Black+Han+Sans&display=swap">
+
+<!-- CDN 웹폰트 -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css" />
+
+<style>
+/* 검증된 독립 웹폰트 */
+@font-face {
+  font-family: 'GmarketSansBold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+  font-weight: 700;
+}
+@font-face {
+  font-family: 'MaruBuri-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10-21@1.0/MaruBuri-Bold.woff') format('woff');
+  font-weight: 700;
+}
+
+/* ========================================================
+   1. mytt 공식 디자인 시스템 토큰 (디자인시스템.md 준수)
+   ======================================================== */
+:root {
+  --ground: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface2: #F8F9FA;
+  --ink: #212529;
+  --ink-soft: #495057;
+  --ink-faint: #868E96;
+  --line: #E9ECEF;
+  --line-strong: #DEE2E6;
+
+  --brand: #00C471;
+  --brand-dark: #00A45E;
+  --brand-soft: #E7F9F1;
+
+  --ok: #00A45E;  --ok-milk: #E7F9F1;
+  --bad: #E5503A; --bad-milk: #FDECE9;
+  --focus: #00A45E;
+
+  --r: 4px; --r-sm: 4px; --r-xs: 4px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; font-weight: 400; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all; overflow-wrap: break-word;
+}
+p, li, td, th, summary, label, .prompt, .readout, .verdict, .why { text-wrap: pretty; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+.display { font-weight: 700; letter-spacing: -.025em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+.mono { font-family: "IBM Plex Mono", "Noto Sans KR", monospace; }
+
+/* 셸 레이아웃 */
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 24px; padding-block: 0 80px; }
+
+.masthead { padding-block: 64px 0; }
+.eyebrow {
+  display: inline-block; font-size: 12.5px; font-weight: 700; color: var(--brand-dark); background: var(--brand-soft);
+  border-radius: var(--r-xs); padding: 4px 10px; line-height: 1.5; margin: 0 0 14px; letter-spacing: -.01em;
+}
+.masthead h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.3; font-weight: 700; letter-spacing: -.03em; }
+.goals { margin: 32px 0 0; padding: 0; }
+.goals h2 { font-size: 14px; font-weight: 700; color: var(--ink-faint); margin-bottom: 14px; }
+.goals ol {
+  margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr; gap: 12px;
+  color: var(--ink-soft); font-size: 15px; counter-reset: g;
+}
+@media (min-width: 820px) { .goals ol { grid-template-columns: repeat(3, 1fr); gap: 26px; } }
+.goals ol li { counter-increment: g; padding-top: 14px; border-top: 2px solid var(--brand); }
+.goals ol li::before {
+  content: counter(g, decimal-leading-zero); display: block; font-family: "IBM Plex Mono", monospace;
+  font-size: 12px; color: var(--brand); margin-bottom: 4px; font-weight: 500;
+}
+.goals ol b { color: var(--ink); font-weight: 500; }
+
+.cols { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 56px; }
+@media (min-width: 980px) { .cols { grid-template-columns: 172px 1fr; gap: 56px; align-items: start; } }
+
+/* 목차 레일 */
+.rail {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  margin-inline: -24px; padding: 10px 24px; background: var(--ground); border-bottom: 1px solid var(--line);
+}
+.rail-title { display: none; }
+.rail ol { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.rail ol::-webkit-scrollbar { display: none; }
+.rail a { flex: 0 0 auto; text-decoration: none; color: var(--ink-faint); font-size: 14px; white-space: nowrap; padding: 4px 0; }
+.rail a:hover { color: var(--brand); }
+.rail a b { display: none; }
+@media (min-width: 980px) {
+  .rail { top: calc(env(safe-area-inset-top, 0px) + 32px); margin: 0; padding: 0; border: 0; }
+  .rail-title { display: block; font-size: 12px; font-weight: 700; color: var(--ink-faint); margin: 0 0 12px; }
+  .rail ol { flex-direction: column; gap: 0; overflow: visible; }
+  .rail li + li { border-top: 1px solid var(--line); }
+  .rail a { display: flex; align-items: baseline; gap: 8px; padding: 9px 0; color: var(--ink-soft); }
+  .rail a b { display: block; font-family: "IBM Plex Mono", monospace; font-weight: 400; color: var(--ink-faint); font-size: 11px; width: 16px; flex: 0 0 auto; }
+  .rail a:hover { color: var(--brand); }
+}
+
+/* 섹션 파트 */
+.part { padding-block: 56px; border-top: 1px solid var(--line); scroll-margin-top: 90px; }
+.part:first-child { border-top: 0; padding-top: 8px; }
+.part-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.num { font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 500; color: var(--ink-faint); }
+.part-head h2 { font-size: 26px; font-weight: 700; letter-spacing: -.03em; }
+.cat { font-size: 12px; color: var(--ink-soft); background: var(--surface2); border-radius: var(--r-xs); padding: 2px 9px; line-height: 1.7; }
+.part > .lede { color: var(--ink-soft); margin: 10px 0 0; font-size: 15.5px; max-width: 62ch; }
+
+/* 2단 작업대 벤치 */
+.bench { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 26px; }
+@media (min-width: 900px) { .bench { grid-template-columns: 1.15fr 1fr; gap: 40px; } }
+
+.stage {
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r);
+  padding: 0 20px 20px; align-self: start;
+}
+.stage::before {
+  content: "실시간 조작 및 인터랙션"; display: block; margin: 0 -20px 18px; padding: 10px 20px;
+  font-size: 12px; color: var(--ink-faint); border-bottom: 1px solid var(--line);
+  background: var(--surface2); border-radius: var(--r) var(--r) 0 0;
+}
+.readout {
+  margin: 18px -20px -20px; background: var(--surface2); border-top: 1px solid var(--line);
+  padding: 11px 20px; font-size: 12px; color: var(--ink-soft);
+  font-family: "IBM Plex Mono", monospace; min-height: 2.6em; line-height: 1.6;
+  border-radius: 0 0 var(--r) var(--r); word-break: break-all;
+}
+
+.notes { display: flex; flex-direction: column; gap: 0; align-self: start; }
+.note { padding: 0 0 20px; }
+.note-l { font-size: 13px; font-weight: 700; color: var(--ink); margin: 0 0 8px; }
+.note p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+.note strong { color: var(--ink); font-weight: 500; }
+
+details.more { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+details.more summary {
+  cursor: pointer; list-style: none; padding: 12px 0; font-size: 13.5px; color: var(--ink-soft); font-weight: 500;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+details.more summary::-webkit-details-marker { display: none; }
+details.more summary::after { content: "＋"; color: var(--ink-faint); font-size: 13px; flex: 0 0 auto; }
+details.more[open] summary::after { content: "−"; }
+.spec { list-style: none; margin: 0; padding: 0 0 16px; display: flex; flex-direction: column; gap: 9px; }
+.spec li { font-size: 14px; color: var(--ink-soft); display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: baseline; line-height: 1.6; }
+.spec li b { font-weight: 500; color: var(--ink-faint); font-size: 12.5px; }
+
+.prompt {
+  background: var(--surface2); border-left: 3px solid var(--brand); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 16px 16px 16px 17px; font-size: 13.5px; line-height: 1.7; color: var(--ink-soft);
+  white-space: pre-line; word-break: keep-all; font-family: inherit;
+}
+.copy {
+  margin-top: 10px; background: none; border: 1px solid var(--line-strong); color: var(--ink-soft);
+  border-radius: var(--r-xs); padding: 7px 15px; font-size: 13px; cursor: pointer; transition: .15s; font-weight: 500;
+}
+.copy:hover { border-color: var(--ink-faint); color: var(--ink); }
+.copy.done { border-color: var(--ok); color: var(--ok); }
+
+/* 컨트롤러 칩 & 버튼 */
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.chip {
+  background: none; border: 1px solid var(--line-strong); border-radius: var(--r-xs);
+  padding: 6px 11px; font-size: 13px; color: var(--ink-soft); cursor: pointer; transition: .15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.chip:hover { border-color: var(--brand); color: var(--brand); }
+.chip.active { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-dark); font-weight: 700; }
+.chip-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.chip-badge-rec { font-size: 10.5px; background: #e0f2fe; color: #0369a1; padding: 1px 5px; border-radius: 3px; font-weight: 700; margin-left: 2px; }
+
+.view-switcher { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.view-btn {
+  background: none; border: 1px solid var(--line-strong); border-radius: var(--r-xs);
+  padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--ink-soft); cursor: pointer; transition: .15s;
+}
+.view-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 700; }
+
+/* ========================================================
+   2. 인터랙티브 프리뷰 목업 화면 (모바일 vs 데스크톱)
+   ======================================================== */
+.preview-container {
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 16px 0; min-height: 480px; transition: .2s;
+}
+
+/* (1) 모바일 프레임 뷰 */
+.mockup-mobile {
+  width: 100%; max-width: 320px; border-radius: 28px;
+  border: 8px solid #1e293b; box-shadow: 0 16px 36px rgba(0,0,0,0.14);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: all .25s ease;
+}
+.mockup-mobile .mobile-notch {
+  height: 18px; background: #1e293b; display: flex; justify-content: center; align-items: center;
+}
+.mockup-mobile .notch-bar { width: 60px; height: 4px; background: #334155; border-radius: 999px; }
+
+/* (2) 데스크톱 dmg/exe 미니 윈도우 뷰 */
+.mockup-desktop {
+  width: 100%; max-width: 370px; border-radius: 10px;
+  border: 1px solid #cbd5e1; box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: all .25s ease;
+}
+.mockup-desktop .desktop-titlebar {
+  height: 28px; background: #e2e8f0; display: flex; align-items: center; padding: 0 10px; gap: 6px;
+  border-bottom: 1px solid #cbd5e1;
+}
+.mockup-desktop .win-btn { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.mockup-desktop .win-btn.close { background: #ff5f56; }
+.mockup-desktop .win-btn.min { background: #ffbd2e; }
+.mockup-desktop .win-btn.max { background: #27c93f; }
+.mockup-desktop .win-title { margin-left: 6px; font-size: 11px; color: #64748b; font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+
+/* 공통 목업 내부 본체 (동적 스타일 적용 영역) */
+.mockup-body {
+  padding: 18px; display: flex; flex-direction: column; gap: 14px;
+  transition: background .2s, color .2s, font-family .2s;
+}
+
+/* 목업 내부 컴포넌트 */
+.m-app-header { display: flex; justify-content: space-between; align-items: center; }
+.m-app-title { font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+.m-app-badge { font-size: 11px; padding: 2px 7px; font-weight: 600; }
+
+.m-timer-card {
+  padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+  transition: all .2s;
+}
+.m-timer-clock { font-size: 36px; font-weight: 800; line-height: 1.1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.m-timer-label { font-size: 11.5px; opacity: .8; }
+.m-timer-actions { display: flex; gap: 8px; width: 100%; margin-top: 4px; }
+.m-btn {
+  flex: 1; padding: 9px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  border: none; text-align: center; transition: all .15s;
+}
+.m-btn-secondary { opacity: .85; }
+
+.m-task-section { display: flex; flex-direction: column; gap: 6px; }
+.m-section-label { font-size: 11.5px; font-weight: 700; opacity: .7; text-transform: uppercase; }
+.m-task-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; font-size: 13px; font-weight: 500; transition: all .2s;
+}
+.m-task-left { display: flex; align-items: center; gap: 8px; }
+.m-check-box {
+  width: 15px; height: 15px; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; cursor: pointer;
+}
+.m-task-tag { font-size: 10.5px; padding: 2px 6px; font-weight: 600; }
+
+.m-progress-box { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; }
+.m-progress-bar { height: 6px; width: 100%; overflow: hidden; background: rgba(0,0,0,0.06); }
+.m-progress-fill { height: 100%; width: 75%; }
+
+/* 부가 블록 (자주 빠뜨리는 것 & 헷갈리는 짝) */
+.block { padding-block: 56px; border-top: 1px solid var(--line); }
+.block > h2 { font-size: 26px; font-weight: 700; letter-spacing: -.03em; }
+.block > p.lede { margin: 10px 0 30px; color: var(--ink-soft); font-size: 15.5px; max-width: 64ch; }
+
+.warns { display: grid; grid-template-columns: 1fr; gap: 0; }
+@media (min-width: 760px) { .warns { grid-template-columns: repeat(2, 1fr); column-gap: 48px; } }
+.warn { padding: 20px 0; border-top: 1px solid var(--line); }
+.warn .n { display: block; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--bad); margin-bottom: 6px; }
+.warn h4 { margin: 0 0 5px; font-size: 16px; font-weight: 700; line-height: 1.5; }
+.warn p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
+.pairs { display: grid; grid-template-columns: 1fr; gap: 0; }
+@media (min-width: 760px) { .pairs { grid-template-columns: repeat(2, 1fr); column-gap: 48px; } }
+.pair { padding: 16px 0; border-top: 1px solid var(--line); }
+.pair b { display: block; font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+.pair span { color: var(--ink-soft); font-size: 14px; }
+
+/* 토스트 */
+.toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+  background: var(--ink); color: var(--ground); padding: 11px 20px; border-radius: var(--r-xs); font-size: 13.5px; z-index: 90;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+footer {
+  margin-top: 0; padding-top: 24px; border-top: 1px solid var(--line);
+  color: var(--ink-faint); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- 마스트헤드 -->
+  <header class="masthead">
+    <span class="eyebrow">mytt 클래스 실전 디자인 가이드</span>
+    <h1 class="display">디자인 레퍼런스 & 커스텀 작업대</h1>
+    <div class="goals">
+      <h2>이 자료에서 얻어가는 3가지</h2>
+      <ol>
+        <li><b>6대 트렌드 룩앤필</b>을 직접 비교하고, 내 시간관리 툴(mytt)에 딱 맞는 비주얼 테마를 확정한다.</li>
+        <li><b>색감 · 라운드 · 박스 · 폰트 4대 토큰</b>을 조합하여 모바일과 데스크톱 창의 분위기를 즉시 확인한다.</li>
+        <li>내가 고른 조합 그대로 완성된 <b>바이브코딩 AI 요청문</b>을 원클릭 복사하여 10초 만에 구현한다.</li>
+      </ol>
+    </div>
+  </header>
+
+  <div class="cols">
+
+    <!-- 목차 레일 -->
+    <nav class="rail" aria-label="레퍼런스 목차">
+      <p class="rail-title">목차</p>
+      <ol id="rail">
+        <li><a href="#p01"><b>01</b>스타일 조작대</a></li>
+        <li><a href="#p02"><b>02</b>4대 토큰 규칙</a></li>
+        <li><a href="#p03"><b>03</b>컨셉별 추천표</a></li>
+        <li><a href="#p04"><b>04</b>자주 하는 실수</a></li>
+        <li><a href="#p05"><b>05</b>헷갈리는 짝</a></li>
+      </ol>
+    </nav>
+
+    <!-- 본문 영역 -->
+    <main>
+
+      <!-- 01 스타일 인터랙티브 조작대 -->
+      <section class="part" id="p01">
+        <div class="part-head">
+          <span class="num">01</span>
+          <h2>스타일 인터랙티브 조작대</h2>
+          <span class="cat">직접 맞춰보기</span>
+        </div>
+        <p class="lede">기능(투두·스케줄러·회고)이 정해졌다면 이제 옷을 입힐 차례입니다. 버튼을 눌러 모바일과 데스크톱 화면의 분위기를 실시간으로 비교해 보세요.</p>
+
+        <div class="bench">
+          <!-- 좌측: 조작 스테이지 -->
+          <div class="stage">
+            
+            <!-- 뷰 스위처 (모바일 vs 데스크톱 dmg) -->
+            <div class="view-switcher">
+              <button class="view-btn active" id="v-mobile" data-view="mobile">📱 모바일 웹앱</button>
+              <button class="view-btn" id="v-desktop" data-view="desktop">🖥️ 데스크톱 dmg 창</button>
+            </div>
+
+            <!-- 인터랙티브 미리보기 컨테이너 -->
+            <div class="preview-container">
+              <div id="mockup-frame" class="mockup-mobile">
+                
+                <!-- 데스크톱 전용 타이틀바 (JS로 제어) -->
+                <div class="desktop-titlebar" id="desktop-bar" style="display: none;">
+                  <span class="win-btn close"></span>
+                  <span class="win-btn min"></span>
+                  <span class="win-btn max"></span>
+                  <span class="win-title">mytt · focus widget</span>
+                </div>
+
+                <!-- 모바일 전용 노치 (JS로 제어) -->
+                <div class="mobile-notch" id="mobile-bar">
+                  <div class="notch-bar"></div>
+                </div>
+
+                <!-- 실시간 스타일 적용 본체 -->
+                <div class="mockup-body" id="target-mockup">
+                  
+                  <!-- 상단 앱 헤더 -->
+                  <div class="m-app-header">
+                    <div>
+                      <div class="m-app-title">나만의 시간관리</div>
+                      <span style="font-size: 11px; opacity: .7;">04/10 딥워크 세션</span>
+                    </div>
+                    <span class="m-app-badge" id="m-badge">오늘 75% 완료</span>
+                  </div>
+
+                  <!-- 중앙 타이머 카드 -->
+                  <div class="m-timer-card" id="m-card-timer">
+                    <span class="m-timer-label">CURRENT FOCUS TIME</span>
+                    <div class="m-timer-clock" id="m-clock">24:50</div>
+                    <div class="m-timer-actions">
+                      <button class="m-btn" id="m-btn-start">집중 시작</button>
+                      <button class="m-btn m-btn-secondary" id="m-btn-pause">일시정지</button>
+                    </div>
+                  </div>
+
+                  <!-- 할일 목록 섹션 -->
+                  <div class="m-task-section">
+                    <span class="m-section-label">TODAY TASKS (3)</span>
+                    <div class="m-task-item" id="m-item-1">
+                      <div class="m-task-left">
+                        <span class="m-check-box" id="m-chk-1">✓</span>
+                        <span style="text-decoration: line-through; opacity: .6;">원고 기획 2매 작성</span>
+                      </div>
+                      <span class="m-task-tag" id="m-tag-1">창작</span>
+                    </div>
+                    <div class="m-task-item" id="m-item-2">
+                      <div class="m-task-left">
+                        <span class="m-check-box" id="m-chk-2"></span>
+                        <span>외주 거래처 슬랙 회신</span>
+                      </div>
+                      <span class="m-task-tag" id="m-tag-2">업무</span>
+                    </div>
+                  </div>
+
+                  <!-- 하단 진행바 -->
+                  <div class="m-progress-box">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>주간 달성률</span>
+                      <span style="font-weight: 700;">12 / 16시간</span>
+                    </div>
+                    <div class="m-progress-bar" id="m-pbar">
+                      <div class="m-progress-fill" id="m-pfill"></div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- 하단 CSS 상태 리드아웃 바 -->
+            <p class="readout" id="r-style-status">스타일: 토스·애플 (Clean Soft) · 라운드: 18px · 박스: 에어 섀도 · 폰트: Pretendard</p>
+          </div>
+
+          <!-- 우측: 스타일 컨트롤러 및 복사용 프롬프트 -->
+          <div class="notes">
+            
+            <!-- 1. 6대 대표 템플릿 원클릭 프리셋 -->
+            <div class="note">
+              <p class="note-l">1. 6대 대표 스타일 룩앤필 (원클릭 세트)</p>
+              <div class="chip-group" id="preset-chips">
+                <button class="chip active" data-preset="toss">토스 / 애플 <span class="chip-badge-rec">추천</span></button>
+                <button class="chip" data-preset="linear">리니어 테크</button>
+                <button class="chip" data-preset="notion">노션 미니멀</button>
+                <button class="chip" data-preset="sage">킨포크 페이퍼</button>
+                <button class="chip" data-preset="cute">귀여운 젤리</button>
+                <button class="chip" data-preset="brutal">뉴-브루탈리즘</button>
+              </div>
+            </div>
+
+            <!-- 2. 색감 팔레트 -->
+            <div class="note">
+              <p class="note-l">2. 색감 팔레트 (Color Palette)</p>
+              <div class="chip-group" id="color-chips">
+                <button class="chip active" data-color="toss"><span class="chip-dot" style="background: #3182f6;"></span>토스 블루</button>
+                <button class="chip" data-color="linear"><span class="chip-dot" style="background: #10b981;"></span>옵시디언 에메랄드</button>
+                <button class="chip" data-color="notion"><span class="chip-dot" style="background: #37352f;"></span>모노크롬 슬레이트</button>
+                <button class="chip" data-color="sage"><span class="chip-dot" style="background: #556b2f;"></span>올리브 세이지</button>
+                <button class="chip" data-color="cute"><span class="chip-dot" style="background: #ec4899;"></span>베리 버터</button>
+                <button class="chip" data-color="neon"><span class="chip-dot" style="background: #a3e635;"></span>사이버 라임</button>
+              </div>
+            </div>
+
+            <!-- 3. 라운드 4단계 -->
+            <div class="note">
+              <p class="note-l">3. 라운드 강도 (Border Radius)</p>
+              <div class="chip-group" id="radius-chips">
+                <button class="chip" data-radius="sharp">샤프 (4px)</button>
+                <button class="chip" data-radius="modern">모던 (10px)</button>
+                <button class="chip active" data-radius="soft">소프트 (18px) <span class="chip-badge-rec">대세</span></button>
+                <button class="chip" data-radius="pill">알약 캡슐 (999px)</button>
+              </div>
+            </div>
+
+            <!-- 4. 박스 스타일 -->
+            <div class="note">
+              <p class="note-l">4. 박스 & 그림자 (Box & Shadow)</p>
+              <div class="chip-group" id="box-chips">
+                <button class="chip active" data-box="air-shadow">에어 소프트 섀도 <span class="chip-badge-rec">요즘 트렌드</span></button>
+                <button class="chip" data-box="subtle-border">미세 1px 보더</button>
+                <button class="chip" data-box="flat-tone">플랫 톤온톤</button>
+                <button class="chip" data-box="glass">글래스 반투명</button>
+                <button class="chip" data-box="brutal-stroke">2px 하드 스트로크</button>
+              </div>
+            </div>
+
+            <!-- 5. 폰트 카테고리 -->
+            <div class="note">
+              <p class="note-l">5. 웹폰트 (Typography)</p>
+              <div class="chip-group" id="font-chips">
+                <button class="chip active" data-font="pretendard">프리텐다드 (모던 산스) <span class="chip-badge-rec">만능</span></button>
+                <button class="chip" data-font="gmarket">G마켓 산스 (기하학 헤드라인)</button>
+                <button class="chip" data-font="maru">마루부리 (에디토리얼 명조)</button>
+                <button class="chip" data-font="d2">D2Coding (테크 모노스페이스)</button>
+                <button class="chip" data-font="jua">주아 (귀여운 캐주얼)</button>
+              </div>
+            </div>
+
+            <!-- 세부 스펙 아코디언 -->
+            <details class="more">
+              <summary>실무 디자인 원칙 3가지</summary>
+              <ul class="spec">
+                <li><b>섀도</b>짙은 검정 그림자는 2000년대 느낌을 줍니다. 옅고 넓은 소프트 섀도(rgba 0.04~0.06)를 쓰세요.</li>
+                <li><b>라운드</b>부모 컨테이너가 18px이면 자식 카드는 12px, 버튼은 8px로 안쪽으로 갈수록 작아져야 자연스럽습니다.</li>
+                <li><b>여백</b>요즘 앱이 세련되어 보이는 비밀의 80%는 폰트가 아니라 카드 안쪽 16~20px의 넉넉한 padding입니다.</li>
+              </ul>
+            </details>
+
+            <!-- AI 요청문 프롬프트 -->
+            <div class="note">
+              <p class="note-l">바이브코딩 AI 요청문</p>
+              <div class="prompt" id="prompt-output">
+웹앱의 디자인 스타일을 설정해 줘:
+- 전체 테마: 토스·애플 스타일 (Clean Soft Modern)
+- 메인 색상: 배경 #f8fafc, 카드 #ffffff, 포인트 #3182f6, 텍스트 #0f172a
+- 모서리 곡률: 부모 카드 18px, 버튼 10px, 뱃지 999px 알약
+- 박스 스타일: 보더 없이 은은하고 넓게 퍼지는 소프트 섀도 (0 6px 20px -2px rgba(0,0,0,0.06))
+- 폰트: 기본 UI 폰트로 'Pretendard' 웹폰트를 적용해서 정갈하게 잡아줘.
+              </div>
+              <button class="copy" id="btn-copy-prompt">요청문 복사</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 4대 토큰 실무 가이드 -->
+      <section class="part" id="p02">
+        <div class="part-head">
+          <span class="num">02</span>
+          <h2>4대 토큰 실무 가이드</h2>
+          <span class="cat">선택 기준</span>
+        </div>
+        <p class="lede">감각이 아니라 공식으로 고릅니다. 색감, 라운드, 박스, 폰트 4가지만 잡으면 어떤 툴이든 상용 앱 수준의 완성도가 나옵니다.</p>
+
+        <div class="bench">
+          <div class="stage">
+            <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">토큰 조합 치트시트</h4>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13.5px;">
+              <div style="background: var(--surface2); padding: 12px; border-radius: var(--r);">
+                <strong style="color: var(--ink);">① 색상 60-30-10 법칙</strong>
+                <p style="margin: 4px 0 0; color: var(--ink-soft); font-size: 13px;">배경(60%)은 흰색/미색, 카드 및 텍스트(30%)는 무채색, 브랜드 강조색(10%)은 버튼 하나에만 씁니다.</p>
+              </div>
+              <div style="background: var(--surface2); padding: 12px; border-radius: var(--r);">
+                <strong style="color: var(--ink);">② 라운드 일관성</strong>
+                <p style="margin: 4px 0 0; color: var(--ink-soft); font-size: 13px;">한 화면에서 4px(각진)와 24px(동글)을 섞지 마세요. 스케일 하나를 정해 전체 화면에 통일합니다.</p>
+              </div>
+              <div style="background: var(--surface2); padding: 12px; border-radius: var(--r);">
+                <strong style="color: var(--ink);">③ 박스는 '보더' 또는 '섀도' 중 택 1</strong>
+                <p style="margin: 4px 0 0; color: var(--ink-soft); font-size: 13px;">테두리 선과 그림자를 동시에 진하게 넣으면 화면이 무거워집니다. 둘 중 하나만 은은하게 남기세요.</p>
+              </div>
+              <div style="background: var(--surface2); padding: 12px; border-radius: var(--r);">
+                <strong style="color: var(--ink);">④ 폰트는 최대 2종</strong>
+                <p style="margin: 4px 0 0; color: var(--ink-soft); font-size: 13px;">기본 본문은 무조건 읽기 편한 Pretendard나 Inter를 두고, 제목/숫자에만 개성 폰트 1개를 섞습니다.</p>
+              </div>
+            </div>
+            <p class="readout">4가지 토큰이 정렬되면 AI가 코드를 짤 때도 스타일 혼선이 없습니다.</p>
+          </div>
+
+          <div class="notes">
+            <div class="note">
+              <p class="note-l">디바이스별 추천 폼팩터</p>
+              <p><strong>모바일 웹앱</strong>: 손가락 터치 반경을 고려해 16~20px의 넉넉한 소프트 라운드와 44px 이상 터치 영역이 잘 어울립니다.</p>
+              <p style="margin-top: 8px;"><strong>데스크톱 dmg 위젯</strong>: 화면 구석에 상시 띄워두는 툴이므로, 1px 미세 보더와 8~10px의 정돈된 모던 라운드가 최적입니다.</p>
+            </div>
+            <div class="note">
+              <p class="note-l">요청문</p>
+              <div class="prompt">모바일 화면은 전체 카드 여백 16px, 버튼 높이 48px, 라운드 16px로 잡고, 맥용 데스크톱 위젯으로 볼 때는 상단 윈도우 바를 포함한 컴팩트 창으로 패딩을 12px로 줄여줘.</div>
+              <button class="copy">요청문 복사</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 컨셉별 추천 매칭표 -->
+      <section class="part" id="p03">
+        <div class="part-head">
+          <span class="num">03</span>
+          <h2>컨셉별 추천 매칭표</h2>
+          <span class="cat">1초 선택 가이드</span>
+        </div>
+        <p class="lede">내가 기획한 시간관리 툴의 목적에 따라 가장 검증된 룩앤필 매칭표입니다.</p>
+
+        <div style="overflow-x: auto; margin-top: 20px;">
+          <table style="border-collapse: collapse; width: 100%; font-size: 14px; min-width: 580px;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--line-strong); text-align: left;">
+                <th style="padding: 10px 8px; font-size: 12.5px; color: var(--ink-faint);">내가 만든 기능 컨셉</th>
+                <th style="padding: 10px 8px; font-size: 12.5px; color: var(--ink-faint);">추천 비주얼 룩앤필</th>
+                <th style="padding: 10px 8px; font-size: 12.5px; color: var(--ink-faint);">색감 & 박스</th>
+                <th style="padding: 10px 8px; font-size: 12.5px; color: var(--ink-faint);">추천 폰트</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px; font-weight: 700;">깔끔한 투두리스트 / 포모도로</td>
+                <td style="padding: 12px 8px; color: var(--brand-dark); font-weight: 600;">토스·애플 스타일</td>
+                <td style="padding: 12px 8px; color: var(--ink-soft);">화이트 + 토스 블루 / 에어 섀도</td>
+                <td style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px;">Pretendard</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px; font-weight: 700;">개발자용 집중 터미널 / 스톱워치</td>
+                <td style="padding: 12px 8px; color: var(--brand-dark); font-weight: 600;">리니어 다크 테크</td>
+                <td style="padding: 12px 8px; color: var(--ink-soft);">옵시디언 딥블랙 + 에메랄드 / 1px 보더</td>
+                <td style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px;">D2Coding / Inter</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px; font-weight: 700;">단정한 타임블록 / 주간 일정표</td>
+                <td style="padding: 12px 8px; color: var(--brand-dark); font-weight: 600;">노션 미니멀리즘</td>
+                <td style="padding: 12px 8px; color: var(--ink-soft);">웜 그레이 + 모노크롬 / 플랫 톤온톤</td>
+                <td style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px;">Pretendard (샤프 4px)</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px; font-weight: 700;">심야 회고록 / 감정 저널</td>
+                <td style="padding: 12px 8px; color: var(--brand-dark); font-weight: 600;">킨포크 페이퍼</td>
+                <td style="padding: 12px 8px; color: var(--ink-soft);">미색 웜크림 + 올리브 / 얇은 디바이더</td>
+                <td style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px;">마루부리 / Gowun Batang</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--line);">
+                <td style="padding: 12px 8px; font-weight: 700;">루틴 스티커판 / 칭찬 도장</td>
+                <td style="padding: 12px 8px; color: var(--brand-dark); font-weight: 600;">귀여운 캐릭터 젤리</td>
+                <td style="padding: 12px 8px; color: var(--ink-soft);">베리 핑크 + 버터 크림 / 폭신한 라운드</td>
+                <td style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px;">주아 (Jua) / 개구</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 8px; font-weight: 700;">마감 카운트다운 / 긴급 타이머</td>
+                <td style="padding: 12px 8px; color: var(--brand-dark); font-weight: 600;">뉴-브루탈리즘</td>
+                <td style="padding: 12px 8px; color: var(--ink-soft);">비비드 옐로우 + 블랙 / 2px 하드 외곽선</td>
+                <td style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px;">검은고딕 / G마켓 산스</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 04 자주 하는 실수 -->
+      <section class="block" id="p04">
+        <h2 class="display">자주 하는 실수 4가지</h2>
+        <p class="lede">디자인 커스텀을 시작할 때 초보자가 가장 자주 빠지는 함정입니다.</p>
+        <div class="warns">
+          <div class="warn">
+            <span class="n">01</span>
+            <h4>섀도가 짙으면 2000년대 웹이 됩니다</h4>
+            <p>포토샵 기본 검정 그림자(opacity 0.3 이상)는 화면을 둔탁하게 만듭니다. 그림자는 보일 듯 말 듯한 0.04~0.06 투명도로 넓게 퍼뜨려야 세련됩니다.</p>
+          </div>
+          <div class="warn">
+            <span class="n">02</span>
+            <h4>라운드가 제각각이면 조잡해 보입니다</h4>
+            <p>버튼은 20px인데 인풋은 0px 각진 네모면 서로 다른 앱을 이어 붙인 것처럼 보입니다. 패밀리 라운드 규칙을 세우세요.</p>
+          </div>
+          <div class="warn">
+            <span class="n">03</span>
+            <h4>색상은 3가지 이하로 절제하세요</h4>
+            <p>포인트 컬러가 4개를 넘어가면 어디가 중요한 버튼인지 눈이 길을 잃습니다. 한 화면에 눈에 띄는 유채색은 딱 1개면 충분합니다.</p>
+          </div>
+          <div class="warn">
+            <span class="n">04</span>
+            <h4>폰트 욕심은 2개까지만 부리세요</h4>
+            <p>제목, 본문, 버튼, 타이머 숫자에 서로 다른 폰트를 쓰면 피로도가 급상승합니다. 기본 고딕 1개에 포인트 폰트 1개로 제한하세요.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 헷갈리는 짝 -->
+      <section class="block" id="p05">
+        <h2 class="display">헷갈리는 짝</h2>
+        <p class="lede">디자인 선택이 망설여질 때 기준을 세워주는 비교입니다.</p>
+        <div class="pairs">
+          <div class="pair"><b>미세 1px 보더 vs 에어 소프트 섀도</b><span>모바일에서는 소프트 섀도가 터치감을 살리고, 데스크톱 밀집 대시보드에서는 1px 보더가 시원합니다.</span></div>
+          <div class="pair"><b>올블랙(#000000) vs 딥 옵시디언(#0f172a)</b><span>진짜 순수 검정은 눈의 피로를 유발합니다. 고급 다크모드는 언제나 짙은 남색이나 차콜 그레이를 씁니다.</span></div>
+          <div class="pair"><b>모던 산스 vs 기하학 고딕</b><span>본문이 많으면 Pretendard 같은 모던 산스가 안전하고, 큰 숫자나 헤드라인엔 G마켓 산스 같은 기하학 고딕이 강렬합니다.</span></div>
+          <div class="pair"><b>소프트 라운드 vs 알약 캡슐</b><span>카드는 12~18px 소프트 라운드로 품고, 작고 누를 수 있는 뱃지나 태그만 999px 알약으로 씁니다.</span></div>
+        </div>
+      </section>
+
+      <footer>
+        <span>mytt 클래스 실무 디자인 가이드북</span>
+        <span class="mono">Design System v1.0 · mytt official material</span>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+<!-- 토스트 알림창 -->
+<div id="toast" class="toast" style="display: none;">요청문이 복사되었습니다! ✨</div>
+
+<script>
+(function() {
+  "use strict";
+
+  var $ = function(s, r) { return (r || document).querySelector(s); };
+  var $$ = function(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  // ========================================================
+  // 1. 상태 객체 (Current Design State)
+  // ========================================================
+  var state = {
+    view: 'mobile',       // 'mobile' | 'desktop'
+    preset: 'toss',
+    color: 'toss',
+    radius: 'soft',
+    box: 'air-shadow',
+    font: 'pretendard'
+  };
+
+  // 프리셋 정의 (원클릭 세트 매핑)
+  var presets = {
+    toss: {
+      name: "토스 / 애플 (Clean Soft)",
+      color: "toss",
+      radius: "soft",
+      box: "air-shadow",
+      font: "pretendard"
+    },
+    linear: {
+      name: "리니어 다크 테크 (Sleek Dark)",
+      color: "linear",
+      radius: "sharp",
+      box: "subtle-border",
+      font: "d2"
+    },
+    notion: {
+      name: "노션 미니멀 (Monochrome Minimal)",
+      color: "notion",
+      radius: "sharp",
+      box: "flat-tone",
+      font: "pretendard"
+    },
+    sage: {
+      name: "킨포크 페이퍼 (Warm Editorial)",
+      color: "sage",
+      radius: "modern",
+      box: "subtle-border",
+      font: "maru"
+    },
+    cute: {
+      name: "귀여운 캐릭터 (Chubby Pastel)",
+      color: "cute",
+      radius: "soft",
+      box: "air-shadow",
+      font: "jua"
+    },
+    brutal: {
+      name: "뉴-브루탈리즘 (Bold Y2K)",
+      color: "neon",
+      radius: "sharp",
+      box: "brutal-stroke",
+      font: "gmarket"
+    }
+  };
+
+  // 색상 팔레트 정의
+  var colorPalettes = {
+    toss: {
+      name: "토스 블루",
+      bg: "#f8fafc",
+      card: "#ffffff",
+      text: "#0f172a",
+      subText: "#64748b",
+      primary: "#3182f6",
+      primaryText: "#ffffff",
+      secondary: "#eff6ff",
+      secondaryText: "#1d4ed8",
+      border: "#e2e8f0",
+      badgeBg: "#e0f2fe",
+      badgeText: "#0369a1"
+    },
+    linear: {
+      name: "옵시디언 에메랄드",
+      bg: "#090d16",
+      card: "#111827",
+      text: "#f9fafb",
+      subText: "#9ca3af",
+      primary: "#10b981",
+      primaryText: "#ffffff",
+      secondary: "#1f2937",
+      secondaryText: "#d1d5db",
+      border: "rgba(255,255,255,0.12)",
+      badgeBg: "rgba(16,185,129,0.15)",
+      badgeText: "#34d399"
+    },
+    notion: {
+      name: "모노크롬 슬레이트",
+      bg: "#f7f6f3",
+      card: "#ffffff",
+      text: "#37352f",
+      subText: "#787774",
+      primary: "#2f2f2f",
+      primaryText: "#ffffff",
+      secondary: "#eae8e3",
+      secondaryText: "#37352f",
+      border: "#e3e2de",
+      badgeBg: "#e9e7e2",
+      badgeText: "#5a5955"
+    },
+    sage: {
+      name: "올리브 세이지",
+      bg: "#fcfbf8",
+      card: "#ffffff",
+      text: "#2c302a",
+      subText: "#656a61",
+      primary: "#4d5b43",
+      primaryText: "#ffffff",
+      secondary: "#edece6",
+      secondaryText: "#3a4433",
+      border: "#e0dec8",
+      badgeBg: "#eef2e6",
+      badgeText: "#4d5b43"
+    },
+    cute: {
+      name: "베리 버터",
+      bg: "#fffbf2",
+      card: "#ffffff",
+      text: "#43322d",
+      subText: "#8c736a",
+      primary: "#ec4899",
+      primaryText: "#ffffff",
+      secondary: "#fdf2f8",
+      secondaryText: "#be185d",
+      border: "#fed7aa",
+      badgeBg: "#fef08a",
+      badgeText: "#854d0e"
+    },
+    neon: {
+      name: "사이버 라임 (브루탈)",
+      bg: "#fef08a",
+      card: "#ffffff",
+      text: "#000000",
+      subText: "#333333",
+      primary: "#000000",
+      primaryText: "#ffffff",
+      secondary: "#ffffff",
+      secondaryText: "#000000",
+      border: "#000000",
+      badgeBg: "#000000",
+      badgeText: "#ffffff"
+    }
+  };
+
+  // 라운드 정의
+  var radiusDefs = {
+    sharp: { name: "샤프 4px", card: "4px", btn: "4px", tag: "4px" },
+    modern: { name: "모던 10px", card: "10px", btn: "8px", tag: "6px" },
+    soft: { name: "소프트 18px", card: "18px", btn: "10px", tag: "999px" },
+    pill: { name: "알약 999px", card: "24px", btn: "999px", tag: "999px" }
+  };
+
+  // 박스 & 섀도 정의
+  var boxDefs = {
+    'air-shadow': {
+      name: "에어 소프트 섀도",
+      cssBorder: "1px solid rgba(0,0,0,0.04)",
+      cssShadow: "0 8px 24px -4px rgba(0,0,0,0.06)",
+      itemBg: "rgba(0,0,0,0.02)"
+    },
+    'subtle-border': {
+      name: "미세 1px 보더",
+      cssBorder: "1px solid var(--cur-border)",
+      cssShadow: "none",
+      itemBg: "transparent"
+    },
+    'flat-tone': {
+      name: "플랫 톤온톤",
+      cssBorder: "1px solid transparent",
+      cssShadow: "none",
+      itemBg: "rgba(0,0,0,0.03)"
+    },
+    'glass': {
+      name: "글래스 반투명",
+      cssBorder: "1px solid rgba(255,255,255,0.4)",
+      cssShadow: "0 8px 20px rgba(0,0,0,0.05)",
+      itemBg: "rgba(255,255,255,0.3)"
+    },
+    'brutal-stroke': {
+      name: "2px 하드 스트로크",
+      cssBorder: "2px solid #000000",
+      cssShadow: "4px 4px 0px #000000",
+      itemBg: "#ffffff"
+    }
+  };
+
+  // 폰트 정의
+  var fontDefs = {
+    pretendard: { name: "Pretendard", family: "'Pretendard', -apple-system, sans-serif" },
+    gmarket: { name: "G마켓 산스", family: "'GmarketSansBold', sans-serif" },
+    maru: { name: "마루부리", family: "'MaruBuri-Bold', serif" },
+    d2: { name: "D2Coding", family: "'D2Coding', monospace" },
+    jua: { name: "주아", family: "'Jua', sans-serif" }
+  };
+
+  // ========================================================
+  // 2. 렌더링 함수: 목업에 스타일 적용
+  // ========================================================
+  function renderMockup() {
+    var c = colorPalettes[state.color];
+    var r = radiusDefs[state.radius];
+    var b = boxDefs[state.box];
+    var f = fontDefs[state.font];
+
+    var body = $("#target-mockup");
+    var timerCard = $("#m-card-timer");
+    var btnStart = $("#m-btn-start");
+    var btnPause = $("#m-btn-pause");
+    var badge = $("#m-badge");
+    var pBar = $("#m-pbar");
+    var pFill = $("#m-pfill");
+    var item1 = $("#m-item-1");
+    var item2 = $("#m-item-2");
+    var tag1 = $("#m-tag-1");
+    var tag2 = $("#m-tag-2");
+    var chk1 = $("#m-chk-1");
+    var chk2 = $("#m-chk-2");
+
+    // CSS 변수 주입
+    body.style.setProperty('--cur-border', c.border);
+    body.style.background = c.bg;
+    body.style.color = c.text;
+    body.style.fontFamily = f.family;
+
+    // 타이머 카드
+    timerCard.style.background = c.card;
+    timerCard.style.borderRadius = r.card;
+    timerCard.style.border = b.cssBorder;
+    timerCard.style.boxShadow = b.cssShadow;
+
+    // 버튼
+    btnStart.style.background = c.primary;
+    btnStart.style.color = c.primaryText;
+    btnStart.style.borderRadius = r.btn;
+    if (state.box === 'brutal-stroke') {
+      btnStart.style.border = "2px solid #000";
+      btnStart.style.boxShadow = "2px 2px 0 #000";
+    } else {
+      btnStart.style.border = "none";
+      btnStart.style.boxShadow = "none";
+    }
+
+    btnPause.style.background = c.secondary;
+    btnPause.style.color = c.secondaryText;
+    btnPause.style.borderRadius = r.btn;
+    if (state.box === 'brutal-stroke') {
+      btnPause.style.border = "2px solid #000";
+      btnPause.style.boxShadow = "2px 2px 0 #000";
+    } else {
+      btnPause.style.border = "none";
+      btnPause.style.boxShadow = "none";
+    }
+
+    // 뱃지
+    badge.style.background = c.badgeBg;
+    badge.style.color = c.badgeText;
+    badge.style.borderRadius = r.tag;
+
+    // 할일 아이템
+    [item1, item2].forEach(function(el) {
+      el.style.background = c.card;
+      el.style.borderRadius = r.card;
+      el.style.border = (state.box === 'brutal-stroke') ? "2px solid #000" : (state.box === 'subtle-border' ? "1px solid " + c.border : "1px solid transparent");
+      el.style.boxShadow = (state.box === 'brutal-stroke') ? "2px 2px 0 #000" : (state.box === 'air-shadow' ? "0 2px 8px rgba(0,0,0,0.04)" : "none");
+    });
+
+    // 체크박스
+    chk1.style.background = c.primary;
+    chk1.style.color = c.primaryText;
+    chk2.style.background = "transparent";
+    chk2.style.border = "1px solid " + c.subText;
+
+    // 태그
+    [tag1, tag2].forEach(function(el) {
+      el.style.background = c.secondary;
+      el.style.color = c.secondaryText;
+      el.style.borderRadius = r.tag;
+    });
+
+    // 진행바
+    pBar.style.borderRadius = r.tag;
+    pFill.style.background = c.primary;
+    pFill.style.borderRadius = r.tag;
+
+    // 하단 리드아웃 텍스트 갱신
+    $("#r-style-status").textContent = "테마: " + c.name + " · 라운드: " + r.name + " · 박스: " + b.name + " · 폰트: " + f.name;
+
+    // AI 요청문 프롬프트 생성
+    updatePromptText(c, r, b, f);
+  }
+
+  // ========================================================
+  // 3. AI 요청문 동적 갱신
+  // ========================================================
+  function updatePromptText(c, r, b, f) {
+    var pText = "웹앱의 디자인 스타일을 설정해 줘:\n" +
+      "- 비주얼 테마: " + c.name + " (" + (presets[state.preset] ? presets[state.preset].name : "커스텀 조합") + ")\n" +
+      "- 색상 팔레트: 배경 " + c.bg + ", 카드 " + c.card + ", 텍스트 " + c.text + ", 강조 포인트 " + c.primary + "\n" +
+      "- 모서리 라운드: 컨테이너 " + r.card + ", 버튼 " + r.btn + ", 뱃지/태그 " + r.tag + "\n" +
+      "- 박스 스타일: " + b.name + " (테두리: " + b.cssBorder + ", 그림자: " + b.cssShadow + ")\n" +
+      "- 타이포그래피: '" + f.name + "' 웹폰트를 불러와서 적용하고, 계층별 크기와 여백(padding 16px)을 단정하게 맞춰줘.";
+
+    $("#prompt-output").textContent = pText;
+  }
+
+  // ========================================================
+  // 4. 이벤트 핸들러 바인딩
+  // ========================================================
+
+  // (1) 뷰 스위처 (모바일 vs 데스크톱)
+  $("#v-mobile").addEventListener("click", function() {
+    this.classList.add("active");
+    $("#v-desktop").classList.remove("active");
+    state.view = 'mobile';
+    $("#mockup-frame").className = "mockup-mobile";
+    $("#desktop-bar").style.display = "none";
+    $("#mobile-bar").style.display = "flex";
+  });
+
+  $("#v-desktop").addEventListener("click", function() {
+    this.classList.add("active");
+    $("#v-mobile").classList.remove("active");
+    state.view = 'desktop';
+    $("#mockup-frame").className = "mockup-desktop";
+    $("#desktop-bar").style.display = "flex";
+    $("#mobile-bar").style.display = "none";
+  });
+
+  // (2) 대표 프리셋 칩 클릭
+  $$("#preset-chips .chip").forEach(function(chip) {
+    chip.addEventListener("click", function() {
+      $$("#preset-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+
+      var pKey = chip.dataset.preset;
+      var p = presets[pKey];
+      if (!p) return;
+
+      state.preset = pKey;
+      state.color = p.color;
+      state.radius = p.radius;
+      state.box = p.box;
+      state.font = p.font;
+
+      // 하위 칩 UI 동기화
+      syncActiveChip("#color-chips", p.color);
+      syncActiveChip("#radius-chips", p.radius);
+      syncActiveChip("#box-chips", p.box);
+      syncActiveChip("#font-chips", p.font);
+
+      renderMockup();
+    });
+  });
+
+  function syncActiveChip(containerId, activeVal) {
+    $$(containerId + " .chip").forEach(function(chip) {
+      var match = chip.dataset.color === activeVal ||
+                  chip.dataset.radius === activeVal ||
+                  chip.dataset.box === activeVal ||
+                  chip.dataset.font === activeVal;
+      chip.classList.toggle("active", match);
+    });
+  }
+
+  // (3) 개별 토큰 칩 클릭 (색상, 라운드, 박스, 폰트)
+  $$("#color-chips .chip").forEach(function(chip) {
+    chip.addEventListener("click", function() {
+      $$("#color-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+      state.color = chip.dataset.color;
+      $$("#preset-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      renderMockup();
+    });
+  });
+
+  $$("#radius-chips .chip").forEach(function(chip) {
+    chip.addEventListener("click", function() {
+      $$("#radius-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+      state.radius = chip.dataset.radius;
+      $$("#preset-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      renderMockup();
+    });
+  });
+
+  $$("#box-chips .chip").forEach(function(chip) {
+    chip.addEventListener("click", function() {
+      $$("#box-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+      state.box = chip.dataset.box;
+      $$("#preset-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      renderMockup();
+    });
+  });
+
+  $$("#font-chips .chip").forEach(function(chip) {
+    chip.addEventListener("click", function() {
+      $$("#font-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+      state.font = chip.dataset.font;
+      $$("#preset-chips .chip").forEach(function(c) { c.classList.remove("active"); });
+      renderMockup();
+    });
+  });
+
+  // (4) 요청문 복사 버튼
+  var toastTimer = null;
+  function showToast(msg) {
+    var t = $("#toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.style.display = "none"; }, 2000);
+  }
+
+  $$(".copy").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var box = btn.previousElementSibling;
+      var text = box ? box.textContent.trim() : "";
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = "복사됨";
+        btn.classList.add("done");
+        showToast("AI 요청문이 복사되었습니다! ✨");
+        setTimeout(function() { btn.textContent = "요청문 복사"; btn.classList.remove("done"); }, 1600);
+      });
+    });
+  });
+
+  // (5) 모의 인터랙션 (타이머 숫자 토글)
+  var isRunning = false;
+  var timerInterval = null;
+  var seconds = 1490; // 24:50
+
+  $("#m-btn-start").addEventListener("click", function() {
+    if (isRunning) return;
+    isRunning = true;
+    this.textContent = "집중 중…";
+    timerInterval = setInterval(function() {
+      seconds--;
+      if (seconds <= 0) seconds = 1500;
+      var m = String(Math.floor(seconds / 60)).padStart(2, "0");
+      var s = String(seconds % 60).padStart(2, "0");
+      $("#m-clock").textContent = m + ":" + s;
+    }, 1000);
+    showToast("타이머가 시작되었습니다! 몰입하세요.");
+  });
+
+  $("#m-btn-pause").addEventListener("click", function() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    $("#m-btn-start").textContent = "다시 시작";
+    showToast("일시정지되었습니다.");
+  });
+
+  // 체크박스 클릭 인터랙션
+  $("#m-chk-2").addEventListener("click", function() {
+    var isDone = this.textContent === "✓";
+    this.textContent = isDone ? "" : "✓";
+    var textSpan = this.nextElementSibling;
+    textSpan.style.textDecoration = isDone ? "none" : "line-through";
+    textSpan.style.opacity = isDone ? "1" : "0.6";
+  });
+
+  // 초기 렌더링
+  renderMockup();
+
+})();
+</script>
+</body>
+</html>

@@ -410,7 +410,7 @@
     }
     .gantt-header-row {
       display: grid;
-      grid-template-columns: 240px repeat(7, 1fr);
+      grid-template-columns: 240px repeat(8, 1fr);
       padding: 10px 0;
       border-bottom: 1px solid var(--border);
       font-size: 11.5px;
@@ -432,7 +432,7 @@
     }
     .gantt-row {
       display: grid;
-      grid-template-columns: 240px repeat(7, 1fr);
+      grid-template-columns: 240px repeat(8, 1fr);
       align-items: center;
       padding: 7px 0;
       border-bottom: 1px solid #F3F4F6;
@@ -458,7 +458,7 @@
     .gantt-bars-container {
       grid-column: 2 / -1;
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(8, 1fr);
       height: 28px;
       position: relative;
       align-items: center;
@@ -798,11 +798,11 @@
   <!-- Header -->
   <header>
     <div class="brand-area">
-      <h1>mytt 1기 런칭 WBS 마스터 대시보드 <span class="logo-tag">D-12</span></h1>
-      <div class="brand-sub">나에게 딱 맞는 시간표를, AI로 직접 만드는 한 달 · 2026.08.23 ~ 2026.10.12</div>
+      <h1>mytt 1기 런칭 WBS 마스터 대시보드 <span class="logo-tag">D-13</span></h1>
+      <div class="brand-sub">나에게 딱 맞는 시간표를, AI로 직접 만드는 한 달 · 2026.08.23 ~ 2026.10.19</div>
     </div>
     <div class="header-meta">
-      <div class="meta-pill">오늘: <strong>2026.09.30 (수)</strong></div>
+      <div class="meta-pill">오늘: <strong>2026.10.06 (화)</strong></div>
       <div class="meta-pill">팀원: <strong>꿀차</strong> (운영기획/마케팅) · <strong>깨굴</strong> (기술/개발)</div>
     </div>
   </header>
@@ -811,8 +811,8 @@
   <div class="kpi-grid">
     <div class="kpi-card">
       <div class="kpi-label">1기 개강 카운트다운</div>
-      <div class="kpi-val" id="ddayDisplay">D-12</div>
-      <div class="kpi-desc">개강일: 2026년 10월 12일 (월)</div>
+      <div class="kpi-val" id="ddayDisplay">D-13</div>
+      <div class="kpi-desc">개강일: 2026년 10월 19일 (월)</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">전체 태스크 진행률</div>
@@ -881,11 +881,11 @@
       <div id="compareSummaryBanner" class="compare-summary-banner" style="display: none;">
         <div class="compare-summary-left">
           <span class="compare-summary-pill">타임머신 비교 뷰</span>
-          <strong>🌱 최초 초안 (08.23) ➔ 🌿 현재 조정안 (09.30)</strong>
+          <strong>🌱 최초 초안 (08.23) ➔ 🌿 현재 조정안 (10.06)</strong>
         </div>
         <div class="compare-summary-right">
-          <span>총 29개 중 <strong>9개 전략적 일정 조정</strong> 🥐</span>
-          <span>1기 본 모집: <strong>10.02 오픈 ~ 10.11 마감</strong></span>
+          <span>총 29개 중 <strong>10개 전략적 버퍼 조정</strong> 🥐</span>
+          <span>1기 본 모집: <strong>10.09 오픈 ~ 10.18 마감</strong></span>
           <span>사당 리허설: <strong>10.07 (수)</strong></span>
         </div>
       </div>
@@ -919,7 +919,7 @@
         <div class="gantt-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding: 0 4px;">
             <div style="font-size:12px; color:var(--text-sub);">
-              총 7주간의 주차별 진행 바 (클릭 시 상태 토글)
+              총 8주간의 주차별 진행 바 (클릭 시 상태 토글)
             </div>
             <div style="display:flex; gap:12px; font-size:11.5px; align-items:center;">
               <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; border-radius:2px; background:#F59E0B; border:1px solid #D97706; display:inline-block;"></span> 꿀차</span>
@@ -935,8 +935,9 @@
             <div class="gantt-col-header">Week 3<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.08~</span></div>
             <div class="gantt-col-header">Week 4<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.14~</span></div>
             <div class="gantt-col-header">Week 5<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.21~</span></div>
-            <div class="gantt-col-header is-current">Week 6<br><span style="font-weight:600;font-size:10px;color:#111827;">09.28 (현재)</span></div>
-            <div class="gantt-col-header">Week 7<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">10.05~</span></div>
+            <div class="gantt-col-header">Week 6<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">09.28~</span></div>
+            <div class="gantt-col-header is-current">Week 7<br><span style="font-weight:600;font-size:10px;color:#111827;">10.05 (현재)</span></div>
+            <div class="gantt-col-header">Week 8<br><span style="font-weight:400;font-size:10px;color:var(--text-muted);">10.12~10.19</span></div>
           </div>
 
           <div class="gantt-body" id="ganttBody">
@@ -992,18 +993,25 @@
             <div class="time-bullets">• 09.21~22 mytt 브랜딩 & 기획회의 완료<br>• 09.26 결제창 & 인스타 디자인 시스템 완료<br>• 09.29 꿀차 생일 🎂</div>
           </div>
 
+          <div class="time-item">
+            <div class="time-dot"></div>
+            <div class="time-week">Week 6 (09.28 ~ 10.04)</div>
+            <div class="time-sub">프로필 일러스트 완성 & 폴더 구조 개편</div>
+            <div class="time-bullets">• 09.30 mytt 프로필 일러스트 완성<br>• 전체 파일/폴더 구조 전면 개편<br>• 10/19 런칭 일정 전략적 재정렬</div>
+          </div>
+
           <div class="time-item is-current">
             <div class="time-dot"></div>
-            <div class="time-week">Week 6 (09.28 ~ 10.04) <span class="curr-tag">현재</span></div>
-            <div class="time-sub">프로필 완성 & 결제창 구축 & 본 모집 오픈</div>
-            <div class="time-bullets">• 09.30 mytt 프로필 일러스트 완성<br>• 10.01 카드뉴스 9장 & 스토어 결제창 완성<br>• 10.02 꿀차툰 릴스 & 1기 본 모집 오픈 (얼리버드 10명)</div>
+            <div class="time-week">Week 7 (10.05 ~ 10.11) <span class="curr-tag">현재</span></div>
+            <div class="time-sub">사당 실전 리허설 & 결제창 구축 & 모집 오픈</div>
+            <div class="time-bullets">• 10.07 사당 오프라인 1기 실전 리허설 (지인 2인)<br>• 10.08~09 결제창 상세페이지 & 릴스 빌드업<br>• 10.09 1기 본 모집 오픈 (얼리버드 10명)</div>
           </div>
 
           <div class="time-item">
             <div class="time-dot"></div>
-            <div class="time-week">Week 7 (10.05 ~ 10.12)</div>
-            <div class="time-sub">사당 실전 리허설 & 최종 패키징 & 개강</div>
-            <div class="time-bullets">• 10.07 사당 오프라인 1기 실전 리허설 (지인 2인)<br>• 10.08~10.11 에셋+코드 패키징 & 디스코드 안내<br>• 10.11 자정 1기 본 모집 마감<br>• 10.12 1기 정식 개강 🚀</div>
+            <div class="time-week">Week 8 (10.12 ~ 10.19)</div>
+            <div class="time-sub">최종 패키징 & 디스코드 안내 & 10.19 정식 개강</div>
+            <div class="time-bullets">• 10.08~10.14 손그림 PNG 15종 & 교안 완성<br>• 10.15~10.18 에셋+코드 패키징 & 디스코드 안내<br>• 10.18 자정 1기 본 모집 마감<br>• 10.19 1기 정식 개강 (월 20:30~22:00) 🚀</div>
           </div>
 
         </div>
@@ -1054,7 +1062,7 @@
           <div class="milestone-item">
             <div class="milestone-header">
               <div class="milestone-title">M2. 스토어 결제창 오픈 & 릴스 빌드업</div>
-              <span class="milestone-tag">10.02 (금)</span>
+              <span class="milestone-tag">10.09 (금)</span>
             </div>
             <div class="milestone-detail">
               • <strong>달성 조건:</strong> 결제창 상세페이지 구축 완료 + 꿀차툰 본계정 공감 만화 릴스 업로드
@@ -1064,7 +1072,7 @@
           <div class="milestone-item">
             <div class="milestone-header">
               <div class="milestone-title">M3. mytt 1기 본 모집 & 슈퍼 얼리버드 완판</div>
-              <span class="milestone-tag">10.02 (금) ~ 10.11 (일)</span>
+              <span class="milestone-tag">10.09 (금) ~ 10.18 (일)</span>
             </div>
             <div class="milestone-detail">
               • <strong>달성 조건:</strong> @mytt 인스타 피드 박제 & 본 공지, 선착순 얼리버드 10명 완판 & 개강 직전 30명 마감
@@ -1074,7 +1082,7 @@
           <div class="milestone-item">
             <div class="milestone-header">
               <div class="milestone-title">M4. 사당 실전 리허설 & 스타터킷 패키징</div>
-              <span class="milestone-tag">10.07 (수) ~ 10.10 (토)</span>
+              <span class="milestone-tag">10.07 (수) ~ 10.18 (일)</span>
             </div>
             <div class="milestone-detail">
               • <strong>달성 조건:</strong> 10/7 사당 2인 리허설 완료 + 깨굴 템플릿 3종 & 꿀차 에셋 15종 최종 합체
@@ -1117,19 +1125,19 @@ const INITIAL_TASKS = [
   { no:"3.4", cat:"클래스 기획/제작", task:"1회차 워크북 디자인/코드 보강 & 진입장벽 완화", owner:"깨굴", start:"09.15", end:"09.20", status:"진행중" },
   { no:"3.5", cat:"클래스 기획/제작", task:"mytt 브랜딩 & 클래스 기획 심층 회의", owner:"공통", start:"09.21", end:"09.22", status:"완료" },
   { no:"4.0", cat:"1기 마케팅/모객", task:"mytt 쇼룸 인스타 계정 & 프로필 완성", owner:"꿀차", start:"09.17", end:"09.30", status:"완료" },
-  { no:"4.1", cat:"1기 마케팅/모객", task:"꿀차툰 본계정 시간관리 공감 만화 릴스 업로드", owner:"꿀차", start:"10.02", end:"10.02", status:"대기" },
-  { no:"4.2", cat:"1기 마케팅/모객", task:"꿀차툰스토어 1기 수강권 상품 등록 & 상세페이지", owner:"꿀차", start:"10.01", end:"10.02", status:"진행중" },
-  { no:"4.3", cat:"1기 마케팅/모객", task:"mytt 1기 본 모집 개시 (선착순 얼리버드)", owner:"꿀차", start:"10.02", end:"10.11", status:"대기" },
-  { no:"4.4", cat:"1기 마케팅/모객", task:"1기 잔여석 추가 모집 & 단톡방 사전 안내", owner:"꿀차", start:"10.08", end:"10.11", status:"대기" },
+  { no:"4.1", cat:"1기 마케팅/모객", task:"꿀차툰 본계정 시간관리 공감 만화 릴스 업로드", owner:"꿀차", start:"10.08", end:"10.09", status:"대기" },
+  { no:"4.2", cat:"1기 마케팅/모객", task:"꿀차툰스토어 1기 수강권 상품 등록 & 상세페이지", owner:"꿀차", start:"10.06", end:"10.09", status:"진행중" },
+  { no:"4.3", cat:"1기 마케팅/모객", task:"mytt 1기 본 모집 개시 (선착순 얼리버드)", owner:"꿀차", start:"10.09", end:"10.18", status:"대기" },
+  { no:"4.4", cat:"1기 마케팅/모객", task:"1기 잔여석 추가 모집 & 단톡방 사전 안내", owner:"꿀차", start:"10.15", end:"10.18", status:"대기" },
   { no:"4.5", cat:"클래스 기획/제작", task:"사당 오프라인 1기 실전 리허설 (지인 2인 테스트)", owner:"공통", start:"10.07", end:"10.07", status:"대기" },
-  { no:"5.0", cat:"자료 & 툴킷 준비", task:"안 깨지는 스타터 HTML 템플릿 3종 코드화", owner:"깨굴", start:"09.28", end:"10.04", status:"진행중" },
-  { no:"5.1", cat:"자료 & 툴킷 준비", task:"비개발자용 단계별 복붙 프롬프트 치트키 작성", owner:"깨굴", start:"10.01", end:"10.07", status:"대기" },
-  { no:"5.2", cat:"자료 & 툴킷 준비", task:"꿀차툰 손그림 PNG 15종 & 강의안 에셋 제작", owner:"꿀차", start:"10.05", end:"10.08", status:"대기" },
-  { no:"5.3", cat:"자료 & 툴킷 준비", task:"꿀차 에셋 + 깨굴 코드 합체 테스트 & 최종 리허설", owner:"공통", start:"10.08", end:"10.11", status:"대기" },
-  { no:"6.0", cat:"1기 운영", task:"1회차 줌 라이브 (시간 고해성사 & 조별 아지트)", owner:"공통", start:"10.12", end:"10.12", status:"대기" }
+  { no:"5.0", cat:"자료 & 툴킷 준비", task:"안 깨지는 스타터 HTML 템플릿 3종 코드화", owner:"깨굴", start:"09.28", end:"10.08", status:"진행중" },
+  { no:"5.1", cat:"자료 & 툴킷 준비", task:"비개발자용 단계별 복붙 프롬프트 치트키 작성", owner:"깨굴", start:"10.01", end:"10.11", status:"대기" },
+  { no:"5.2", cat:"자료 & 툴킷 준비", task:"꿀차툰 손그림 PNG 15종 & 강의안 에셋 제작", owner:"꿀차", start:"10.08", end:"10.14", status:"대기" },
+  { no:"5.3", cat:"자료 & 툴킷 준비", task:"꿀차 에셋 + 깨굴 코드 합체 테스트 & 최종 리허설", owner:"공통", start:"10.15", end:"10.18", status:"대기" },
+  { no:"6.0", cat:"1기 운영", task:"1회차 줌 라이브 (20:30~22:00, 시간 고해성사 & 조별 아지트)", owner:"공통", start:"10.19", end:"10.19", status:"대기" }
 ];
 
-const STORAGE_KEY = "mytt_wbs_tasks_minimal_v6";
+const STORAGE_KEY = "mytt_wbs_tasks_minimal_v8";
 let tasks = [];
 
 function loadTasks() {
@@ -1288,15 +1296,16 @@ function renderCurrentView() {
   else renderGantt();
 }
 
-// 7주간 기준일 (2026.08.23 ~ 2026.10.12)
+// 8주간 기준일 (2026.08.23 ~ 2026.10.19)
 const WEEKS = [
   { w: 1, start: new Date(2026, 7, 23), end: new Date(2026, 7, 31, 23, 59, 59) },
   { w: 2, start: new Date(2026, 8, 1), end: new Date(2026, 8, 7, 23, 59, 59) },
   { w: 3, start: new Date(2026, 8, 8), end: new Date(2026, 8, 13, 23, 59, 59) },
   { w: 4, start: new Date(2026, 8, 14), end: new Date(2026, 8, 20, 23, 59, 59) },
   { w: 5, start: new Date(2026, 8, 21), end: new Date(2026, 8, 27, 23, 59, 59) },
-  { w: 6, start: new Date(2026, 8, 28), end: new Date(2026, 9, 4, 23, 59, 59), current: true },
-  { w: 7, start: new Date(2026, 9, 5), end: new Date(2026, 9, 12, 23, 59, 59) }
+  { w: 6, start: new Date(2026, 8, 28), end: new Date(2026, 9, 4, 23, 59, 59) },
+  { w: 7, start: new Date(2026, 9, 5), end: new Date(2026, 9, 11, 23, 59, 59), current: true },
+  { w: 8, start: new Date(2026, 9, 12), end: new Date(2026, 9, 19, 23, 59, 59) }
 ];
 
 function getWeekIndex(dateStr) {
@@ -1316,7 +1325,7 @@ function renderTable() {
   const tbody = document.getElementById("wbsTbody");
   tbody.innerHTML = "";
 
-  const todayM = 9, todayD = 30; // 2026.09.30 기준
+  const todayM = 10, todayD = 6; // 2026.10.06 기준
 
   tasks.forEach((t, idx) => {
     if (curOwnerFilter !== "all" && t.owner !== curOwnerFilter) return;
@@ -1395,7 +1404,7 @@ function renderGantt() {
   const container = document.getElementById("ganttBody");
   container.innerHTML = "";
 
-  const colWidthPct = 100 / 7; // 14.2857%
+  const colWidthPct = 100 / 8; // 12.5%
 
   tasks.forEach((t, idx) => {
     if (curOwnerFilter !== "all" && t.owner !== curOwnerFilter) return;
@@ -1455,6 +1464,7 @@ function renderGantt() {
         <span class="gantt-title" style="cursor:pointer;" title="${t.task}" onclick="toggleStatus(${idx})">${t.task}</span>
       </div>
       <div class="gantt-bars-container ${isCompareMode ? 'is-compare' : ''}">
+        <div class="gantt-grid-col"></div>
         <div class="gantt-grid-col"></div>
         <div class="gantt-grid-col"></div>
         <div class="gantt-grid-col"></div>
