@@ -954,40 +954,140 @@
     }
 
     // ==========================================
-    // TRACK 3: 느긋한 도전 1 (비 오는 날 로파이 카페)
+    // TRACK 3: 꿈꾸는 도전 (확장 32마디 로파이 스터디 트랙 - 약 1분 46초 루프)
     // ==========================================
     tickRainyLofi() {
       const now = this.ctx.currentTime + 0.02;
-      const step64 = this.step % 64;
-      const bar = Math.floor(step64 / 16);
-      const subStep = step64 % 16;
+      const step512 = this.step % 512; // 32 bars * 16 steps = 512 steps
+      const bar = Math.floor(step512 / 16);
+      const subStep = step512 % 16;
 
-      const chords = [
-        { bass: 41, notes: [53, 57, 60, 64] }, // Fmaj7
-        { bass: 40, notes: [52, 55, 59, 62] }, // Em7
-        { bass: 38, notes: [50, 53, 57, 60] }, // Dm7
-        { bass: 36, notes: [48, 52, 55, 59] }  // Cmaj7
+      // --- 32-BAR EXTENDED JAZZ & LO-FI PROGRESSION ---
+      const lofi32Chords = [
+        // Section 1: Morning Coffee & Warm Focus (Bars 0-7)
+        { bass: 41, notes: [53, 57, 60, 64] },       // Bar 0: Fmaj7
+        { bass: 43, notes: [55, 60, 62, 65] },       // Bar 1: G7sus4
+        { bass: 40, notes: [52, 55, 59, 62] },       // Bar 2: Em7
+        { bass: 45, notes: [57, 60, 64, 67] },       // Bar 3: Am7
+        { bass: 38, notes: [50, 53, 57, 60] },       // Bar 4: Dm7
+        { bass: 43, notes: [55, 59, 62, 65] },       // Bar 5: G7
+        { bass: 36, notes: [48, 52, 55, 59] },       // Bar 6: Cmaj7
+        { bass: 48, notes: [48, 52, 55, 58] },       // Bar 7: C7
+
+        // Section 2: Bittersweet Lift (Bars 8-15)
+        { bass: 41, notes: [53, 57, 60, 64] },       // Bar 8: Fmaj7
+        { bass: 41, notes: [53, 56, 60, 62] },       // Bar 9: Fm6 (chromatic minor 4th)
+        { bass: 40, notes: [52, 55, 59, 62] },       // Bar 10: Em7
+        { bass: 45, notes: [57, 61, 64, 67] },       // Bar 11: A7
+        { bass: 38, notes: [50, 53, 57, 60, 64] },   // Bar 12: Dm9
+        { bass: 43, notes: [55, 59, 62, 65, 68] },   // Bar 13: G7b9
+        { bass: 36, notes: [48, 52, 55, 59, 62] },   // Bar 14: Cmaj9
+        { bass: 45, notes: [57, 60, 64, 67] },       // Bar 15: Am7
+
+        // Section 3: Jazz Daydream (Bars 16-23)
+        { bass: 38, notes: [50, 53, 57, 62] },       // Bar 16: Dm7
+        { bass: 43, notes: [55, 59, 64, 67] },       // Bar 17: G13
+        { bass: 40, notes: [52, 55, 59, 64] },       // Bar 18: Em7
+        { bass: 45, notes: [57, 61, 64, 69] },       // Bar 19: A7
+        { bass: 38, notes: [50, 53, 57, 60] },       // Bar 20: Dm7
+        { bass: 43, notes: [55, 59, 62, 65] },       // Bar 21: G7
+        { bass: 36, notes: [48, 52, 55, 59] },       // Bar 22: Cmaj7
+        { bass: 45, notes: [57, 60, 64, 67] },       // Bar 23: Am7
+
+        // Section 4: Chill Breakdown & Swell (Bars 24-31)
+        { bass: 41, notes: [53, 57, 60, 64] },       // Bar 24: Fmaj7
+        { bass: 40, notes: [52, 55, 59, 62] },       // Bar 25: Em7
+        { bass: 38, notes: [50, 53, 57, 60] },       // Bar 26: Dm7
+        { bass: 40, notes: [52, 55, 59, 62] },       // Bar 27: Em7
+        { bass: 41, notes: [53, 57, 60, 64] },       // Bar 28: Fmaj7
+        { bass: 43, notes: [55, 59, 62, 65] },       // Bar 29: G7
+        { bass: 43, notes: [55, 60, 62, 65] },       // Bar 30: G7sus4
+        { bass: 43, notes: [55, 59, 62, 67] }        // Bar 31: G7
       ];
-      const chord = chords[bar];
+      const chord = lofi32Chords[bar];
 
+      // --- 1. CHORD STRUMMING (Warm Rhodes Piano) ---
       if (subStep === 0 || subStep === 8) {
         chord.notes.forEach((midi, idx) => {
-          this.playNote(this.m2f(midi), 'triangle', 1.8, 0.12, now + idx * 0.035, 850);
+          this.playNote(this.m2f(midi), 'triangle', 2.0, 0.12, now + idx * 0.035, 820);
         });
       }
 
-      if (subStep === 0 || subStep === 10) {
-        this.playNote(this.m2f(chord.bass), 'sine', 1.2, 0.22, now);
+      // --- 2. DEEP SUB-BASS ---
+      if (bar < 24 || bar >= 28) {
+        if (subStep === 0) {
+          this.playNote(this.m2f(chord.bass), 'sine', 1.4, 0.22, now);
+        } else if (subStep === 10) {
+          this.playNote(this.m2f(chord.bass + 7), 'sine', 1.0, 0.16, now);
+        }
       }
 
-      if (subStep % 2 === 0) {
-        this.playDrum('hat', now, 0.5);
+      // --- 3. DYNAMIC DRUM ARRANGEMENT ---
+      if (bar < 24) {
+        // Full Lo-Fi Beat
+        if (subStep === 0 || subStep === 10) this.playDrum('kick', now, 0.65);
+        if (subStep === 4 || subStep === 12) this.playDrum('snare', now, 0.45);
+        if (subStep % 2 === 0) this.playDrum('hat', now, 0.35);
+      } else if (bar >= 24 && bar < 28) {
+        // Breakdown section: drums drop out, gentle tape hats only
+        if (subStep % 4 === 0) this.playDrum('hat', now, 0.2);
+      } else {
+        // Build-up section: kick returns softly
+        if (subStep === 0 || subStep === 8) this.playDrum('kick', now, 0.45);
+        if (subStep % 2 === 0) this.playDrum('hat', now, 0.3);
+        if (bar === 31 && subStep === 12) this.playDrum('snare', now, 0.5);
       }
 
-      if (subStep === 4 || subStep === 12) {
-        const bellPitches = [72, 74, 76, 79, 81];
-        const pitch = bellPitches[(bar * 2 + subStep / 4) % bellPitches.length];
-        this.playNote(this.m2f(pitch), 'sine', 1.4, 0.06, now, 2200);
+      // --- 4. COMPOSED 32-BAR MELODY & MUSIC BOX BELLS ---
+      const lofi32Melodies = {
+        // Section 1: Gentle Morning Opening Phrase
+        0: [[0, 76, 4], [6, 79, 3], [10, 81, 5]],
+        1: [[0, 84, 4], [6, 83, 3], [10, 79, 4]],
+        2: [[0, 76, 6], [8, 74, 3], [12, 72, 4]],
+        3: [[0, 69, 4], [6, 72, 3], [10, 76, 5]],
+        4: [[0, 74, 4], [6, 77, 3], [10, 79, 4]],
+        5: [[0, 83, 4], [6, 81, 3], [10, 79, 4]],
+        6: [[0, 76, 8], [10, 74, 4]],
+        7: [[0, 72, 4], [6, 74, 3], [10, 76, 4]],
+
+        // Section 2: Emotional Bittersweet Response
+        8:  [[0, 81, 4], [6, 84, 3], [10, 88, 5]],
+        9:  [[0, 86, 4], [6, 84, 3], [10, 81, 4]],
+        10: [[0, 79, 4], [6, 83, 3], [10, 86, 5]],
+        11: [[0, 85, 4], [6, 81, 3], [10, 79, 4]],
+        12: [[0, 77, 4], [6, 81, 3], [10, 84, 4]],
+        13: [[0, 83, 4], [6, 79, 3], [10, 76, 4]],
+        14: [[0, 72, 8], [10, 74, 4]],
+        15: [[0, 76, 4], [6, 74, 3], [10, 72, 5]],
+
+        // Section 3: Jazz Daydreaming Solos
+        16: [[2, 74, 3], [6, 77, 2], [9, 81, 4]],
+        17: [[0, 83, 3], [4, 79, 3], [8, 76, 4], [13, 74, 2]],
+        18: [[2, 76, 3], [6, 79, 2], [9, 83, 4]],
+        19: [[0, 81, 3], [4, 77, 3], [8, 74, 4], [13, 72, 2]],
+        20: [[2, 74, 3], [6, 77, 3], [10, 81, 4]],
+        21: [[0, 79, 3], [4, 83, 3], [8, 86, 4]],
+        22: [[0, 84, 6], [8, 81, 3], [12, 79, 3]],
+        23: [[0, 76, 6], [8, 72, 4], [13, 74, 2]],
+
+        // Section 4: Chill Breakdown & Ambient Bell Chimes
+        24: [[0, 84, 6], [8, 81, 6]],
+        25: [[0, 79, 6], [8, 76, 6]],
+        26: [[0, 74, 6], [8, 77, 6]],
+        27: [[0, 79, 6], [8, 83, 6]],
+        28: [[0, 81, 4], [6, 84, 4], [12, 88, 4]],
+        29: [[0, 86, 4], [6, 83, 4], [12, 79, 4]],
+        30: [[0, 77, 4], [6, 79, 4], [12, 81, 4]],
+        31: [[0, 83, 4], [6, 81, 3], [10, 76, 3], [14, 74, 2]]
+      };
+
+      const notes = lofi32Melodies[bar];
+      if (notes) {
+        const hit = notes.find(n => n[0] === subStep);
+        if (hit) {
+          // Warm sine/triangle lead with soft bell decay
+          this.playNote(this.m2f(hit[1]), 'sine', hit[2] * 0.20, 0.13, now, 1850);
+        }
       }
 
       this.step++;
