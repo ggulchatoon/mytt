@@ -4,3 +4,18 @@
 statusline.sh
 node_modules/
 scratch/
+.superpowers/
+
+# Sensitive project & business materials (local only)
+mytt 수업 및 자료/
+mytt 기획운영/
+mytt 판매마케팅/
+mytt sales/
+mytt 인스타/
+mytt 포스터/
+mytt 바이브코딩/
+mytt - md/
+mytt 0기 숙제/
+breads/
+mytt Design/
+PCV/
