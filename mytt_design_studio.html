@@ -1,0 +1,1565 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mytt 디자인 스튜디오 — 웹포토샵형 디자인 작업대</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;600;700;800&family=Jua&family=Gaegu:wght@400;700&family=Poor+Story&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Black+Han+Sans&family=Outfit:wght@400;600;800&display=swap">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css" />
+
+<style>
+@font-face { font-family: 'GmarketSansBold'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff'); font-weight: 700; }
+@font-face { font-family: 'MaruBuri-Bold'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10-21@1.0/MaruBuri-Bold.woff') format('woff'); font-weight: 700; }
+@font-face { font-family: 'DungGeunMo'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff'); font-weight: normal; }
+
+:root {
+  --surface: #FFFFFF; --surface2: #F8F9FA; --canvas-bg: #F1F5F9;
+  --ink: #212529; --ink-soft: #495057; --ink-faint: #868E96;
+  --line: #E2E8F0; --line-strong: #CBD5E1;
+  --brand: #00C471; --brand-dark: #00A45E; --brand-soft: #E7F9F1;
+  --bad: #E5503A; --focus: #00A45E; --r: 4px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100vh; overflow: hidden; background: var(--surface); color: var(--ink);
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; font-size: 13.5px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; word-break: keep-all;
+}
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+.mono { font-family: "IBM Plex Mono", monospace; }
+
+.studio-app { display: flex; flex-direction: column; width: 100vw; height: 100vh; }
+
+/* 1. 헤더 */
+.app-header {
+  height: 48px; flex: 0 0 48px; border-bottom: 1px solid var(--line); background: #fff;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 50;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.brand-badge { font-size: 11px; font-weight: 700; background: var(--brand-soft); color: var(--brand-dark); padding: 3px 8px; border-radius: var(--r); }
+.app-title { font-size: 15px; font-weight: 800; letter-spacing: -.03em; }
+.device-switcher { display: flex; background: var(--surface2); border: 1px solid var(--line); border-radius: 6px; padding: 2px; gap: 2px; }
+.dev-btn { background: none; border: none; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--ink-soft); border-radius: 4px; cursor: pointer; transition: .15s; }
+.dev-btn.active { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); font-weight: 700; }
+.btn-primary-copy {
+  background: var(--ink); color: #fff; border: 1px solid var(--ink); border-radius: var(--r);
+  padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: .15s;
+}
+.btn-primary-copy:hover { background: #000; }
+.btn-primary-copy.done { background: var(--brand-dark); border-color: var(--brand-dark); }
+
+/* 2. 룩앤필 덱 (세로로 넉넉하게) */
+.style-deck-bar {
+  flex: 0 0 auto; background: #fff; border-bottom: 1px solid var(--line);
+  padding: 10px 16px; display: flex; align-items: stretch; gap: 8px; overflow-x: auto; scrollbar-width: thin;
+}
+.deck-label { font-size: 11px; font-weight: 700; color: var(--ink-faint); white-space: nowrap; align-self: center; writing-mode: vertical-rl; letter-spacing: .1em; }
+.style-card-btn {
+  flex: 0 0 206px; background: var(--surface2); border: 1px solid var(--line); border-radius: 6px;
+  padding: 9px 12px 10px; text-align: left; cursor: pointer; transition: all .15s ease;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.style-card-btn:hover { border-color: var(--brand); background: #fff; }
+.style-card-btn.active { background: var(--brand-soft); border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.style-card-btn .btn-top { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.style-card-btn .style-title { font-size: 13px; font-weight: 800; color: var(--ink); }
+.style-card-btn .style-tag { font-size: 9.5px; font-weight: 700; background: #fff; padding: 1px 5px; border-radius: 3px; border: 1px solid var(--line); color: var(--ink-soft); white-space: nowrap; }
+.style-card-btn.active .style-tag { color: var(--brand-dark); border-color: var(--brand); }
+.style-card-btn .style-tech { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--ink-faint); line-height: 1.4; }
+.style-card-btn .style-desc { font-size: 11.5px; color: var(--ink-soft); line-height: 1.45; }
+.style-card-btn.active .style-desc { color: var(--brand-dark); font-weight: 500; }
+
+/* 3. 작업 영역 */
+.workspace { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+.canvas-panel {
+  flex: 1; min-width: 0; background: var(--canvas-bg);
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px;
+  display: flex; align-items: center; justify-content: center; padding: 16px 16px 44px; overflow: hidden; position: relative;
+}
+.canvas-status-pill {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.95); border: 1px solid var(--line-strong); padding: 4px 14px; border-radius: 999px;
+  font-size: 11px; font-family: "IBM Plex Mono", monospace; color: var(--ink-soft);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); white-space: nowrap; pointer-events: none; max-width: 94%; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 미니멀 플로팅 컨닝페이퍼 */
+.cheatsheet-card {
+  position: absolute; top: 16px; left: 16px; z-index: 40;
+  width: 142px; background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line-strong); border-radius: 7px;
+  padding: 8px 8px 9px; box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+  display: flex; flex-direction: column; gap: 6px;
+  animation: csFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes csFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cs-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 5px; border-bottom: 1px solid var(--line);
+}
+.cs-badge { font-size: 10.5px; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
+.cs-hint { font-size: 9px; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+.cs-list { display: flex; flex-direction: column; gap: 4px; }
+.cs-chip {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 1px solid var(--line); border-radius: 5px;
+  padding: 5px 7px; font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
+  cursor: pointer; transition: all .15s ease; text-align: left; width: 100%;
+}
+.cs-chip:hover {
+  background: #fff; border-color: var(--brand); color: var(--ink);
+  transform: translateX(1px);
+}
+.cs-chip.active {
+  background: var(--brand-soft); border-color: var(--brand); color: var(--brand-dark);
+  font-weight: 700; box-shadow: 0 1px 3px rgba(0, 196, 113, 0.15);
+}
+.cs-chip-color {
+  width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.15); display: inline-block;
+}
+.cs-chip-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 목업 프레임 */
+.mockup-mobile {
+  width: 300px; height: min(580px, 100%); border-radius: 38px; border: 8px solid #1e293b;
+  box-shadow: 0 20px 48px -6px rgba(0,0,0,.18); overflow: hidden; display: flex; flex-direction: column; background: #fff; flex: 0 0 auto;
+}
+.mockup-mobile .mobile-notch { height: 22px; flex: 0 0 22px; background: #1e293b; display: flex; justify-content: center; align-items: center; }
+.mockup-mobile .notch-bar { width: 64px; height: 5px; background: #334155; border-radius: 999px; }
+.mockup-desktop {
+  width: min(760px, 100%); height: min(440px, 100%); border-radius: 10px; border: 1px solid #94a3b8;
+  box-shadow: 0 24px 50px -8px rgba(0,0,0,.22); overflow: hidden; display: flex; flex-direction: column; background: #fff; flex: 0 0 auto;
+}
+.desktop-titlebar { height: 28px; flex: 0 0 28px; background: #e2e8f0; display: flex; align-items: center; padding: 0 12px; gap: 7px; border-bottom: 1px solid #cbd5e1; }
+.win-btn { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.win-btn.close { background: #ff5f56; } .win-btn.min { background: #ffbd2e; } .win-btn.max { background: #27c93f; }
+.win-title { margin-left: 6px; font-size: 11px; color: #475569; font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+
+.mockup-body { display: flex; flex-direction: column; flex: 1; overflow-y: auto; scrollbar-width: none; transition: background .2s, color .2s; }
+.mockup-body::-webkit-scrollbar { display: none; }
+.mobile-view-layout { display: flex; flex-direction: column; }
+.desktop-view-layout { display: grid; grid-template-columns: 240px 1fr; height: 100%; }
+.desktop-left-col, .desktop-right-col { display: flex; flex-direction: column; min-width: 0; }
+
+.m-app-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.m-app-title { font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+.m-app-badge { font-size: 10.5px; padding: 2px 7px; font-weight: 600; white-space: nowrap; }
+.m-card { display: flex; flex-direction: column; transition: all .2s; }
+.m-timer-card { align-items: center; text-align: center; gap: 6px; }
+.m-timer-clock { font-size: 36px; font-weight: 800; line-height: 1.1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.m-timer-label { font-size: 10.5px; opacity: .75; letter-spacing: .04em; }
+.m-timer-actions { display: flex; gap: 8px; width: 100%; margin-top: 4px; }
+.m-btn { flex: 1; padding: 9px 10px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; transition: all .15s; }
+.m-cal-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; }
+.m-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; font-size: 10px; font-family: "IBM Plex Mono", monospace; margin-top: 6px; }
+.m-cal-day { padding: 3px 0; border-radius: 3px; }
+.m-cal-day.done { opacity: .45; text-decoration: line-through; }
+.m-task-section { display: flex; flex-direction: column; gap: 6px; }
+.m-section-label { font-size: 10.5px; font-weight: 700; opacity: .65; letter-spacing: .04em; }
+.m-task-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; font-weight: 500; transition: all .2s; }
+.m-task-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.m-check-box { width: 15px; height: 15px; flex: 0 0 15px; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; cursor: pointer; }
+.m-task-tag { font-size: 10px; padding: 1px 6px; font-weight: 600; white-space: nowrap; }
+.m-progress-box { display: flex; flex-direction: column; gap: 5px; font-size: 11px; }
+.m-progress-bar { height: 6px; width: 100%; overflow: hidden; background: rgba(0,0,0,.07); }
+.m-progress-fill { height: 100%; width: 75%; }
+
+/* 4. 인스펙터 */
+.inspector-panel { width: 324px; flex: 0 0 324px; border-left: 1px solid var(--line); background: #fff; display: flex; flex-direction: column; overflow-y: auto; }
+.panel-header { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.panel-header h3 { font-size: 12px; font-weight: 800; }
+.panel-header span { font-size: 10.5px; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+.inspector-section { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.sec-title { font-size: 11.5px; font-weight: 700; color: var(--ink-soft); display: flex; justify-content: space-between; align-items: center; }
+.sec-title .en { font-size: 10px; color: var(--ink-faint); font-weight: 400; font-family: "IBM Plex Mono", monospace; }
+
+/* 색상 */
+.btn-reroll {
+  background: var(--surface2); border: 1px solid var(--line-strong); border-radius: var(--r); padding: 3px 9px;
+  font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: .15s;
+}
+.btn-reroll:hover:not(:disabled) { background: #fff; border-color: var(--brand); color: var(--brand-dark); }
+.btn-reroll:disabled { opacity: .55; cursor: wait; }
+.palette-batch-grid { display: flex; flex-direction: column; gap: 6px; }
+.palette-card-opt {
+  background: var(--surface2); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; transition: .15s;
+}
+.palette-card-opt:hover { border-color: var(--brand); background: #fff; }
+.palette-card-opt.active { background: var(--brand-soft); border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.palette-card-opt.loading { opacity: .5; pointer-events: none; }
+.pal-info { display: flex; flex-direction: column; min-width: 0; }
+.pal-name { font-size: 11.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pal-mood { font-size: 10px; color: var(--ink-faint); }
+.palette-swatches-strip { display: flex; gap: 3px; flex: 0 0 auto; }
+.pal-dot { width: 15px; height: 15px; border-radius: 3px; border: 1px solid rgba(0,0,0,.12); }
+.ai-color-box { display: flex; gap: 4px; }
+.ai-color-input { flex: 1; min-width: 0; background: var(--surface2); border: 1px solid var(--line); border-radius: var(--r); padding: 5px 8px; font-size: 11.5px; outline: none; }
+.ai-color-input:focus { border-color: var(--brand); background: #fff; }
+.btn-ai-gen { background: var(--ink); color: #fff; border: none; border-radius: var(--r); padding: 5px 10px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.btn-ai-gen:disabled { opacity: .55; cursor: wait; }
+.api-status { font-size: 10.5px; color: var(--ink-faint); display: flex; align-items: center; gap: 5px; }
+.api-dot { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; flex: 0 0 7px; }
+.api-dot.on { background: var(--brand); }
+details.api-drawer { position: relative; }
+details.api-drawer summary { list-style: none; cursor: pointer; background: var(--surface2); border: 1px solid var(--line); border-radius: var(--r); padding: 5px 10px; font-size: 11.5px; font-weight: 700; color: var(--ink-soft); display: flex; align-items: center; gap: 4px; transition: .15s; }
+details.api-drawer summary:hover { background: #fff; border-color: var(--brand); color: var(--ink); }
+details.api-drawer summary::-webkit-details-marker { display: none; }
+.api-body { position: absolute; top: calc(100% + 6px); right: 0; width: 260px; background: #fff; border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: 0 10px 24px rgba(0,0,0,.12); padding: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 100; text-align: left; }
+.api-body label { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); }
+.api-body input { width: 100%; background: var(--surface2); border: 1px solid var(--line-strong); border-radius: var(--r); padding: 6px 8px; font-size: 11.5px; outline: none; }
+.api-body input:focus { border-color: var(--brand); background: #fff; }
+.api-model-auto-notice { display: flex; align-items: flex-start; gap: 7px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 7px 9px; margin-top: 1px; }
+.auto-flash-icon { font-size: 13px; line-height: 1.3; flex-shrink: 0; }
+.auto-flash-text { display: flex; flex-direction: column; gap: 2px; }
+.auto-flash-text strong { font-size: 11px; font-weight: 700; color: #166534; }
+.auto-flash-text small { font-size: 9.5px; color: #15803d; line-height: 1.35; }
+.api-actions { display: flex; gap: 6px; margin-top: 4px; }
+.api-actions button { flex: 1; border-radius: var(--r); padding: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+.btn-api-save { background: var(--ink); color: #fff; border: 1px solid var(--ink); }
+.btn-api-save:hover { background: #000; }
+.btn-api-clear { background: #fff; color: var(--ink-soft); border: 1px solid var(--line-strong); }
+.api-hint { font-size: 10px; color: var(--ink-faint); line-height: 1.5; margin-top: 4px; }
+.api-hint a { color: var(--brand-dark); }
+
+/* 세그먼트 공통 (라운드·밀도) */
+.seg { display: grid; gap: 4px; background: var(--surface2); padding: 3px; border-radius: 6px; border: 1px solid var(--line); }
+.seg.four { grid-template-columns: repeat(4, 1fr); }
+.seg.three { grid-template-columns: repeat(3, 1fr); }
+.seg-btn { background: none; border: none; padding: 6px 3px; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: .15s; }
+.seg-btn:hover { background: rgba(0,0,0,.04); }
+.seg-btn.active { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.seg-btn.active .seg-text { color: var(--ink); font-weight: 700; }
+.r-box-icon { width: 14px; height: 14px; border: 1.5px solid var(--ink-soft); display: inline-block; }
+.seg-text { font-size: 10px; color: var(--ink-soft); }
+.d-icon { display: flex; flex-direction: column; width: 18px; }
+.d-icon i { display: block; height: 2px; background: var(--ink-soft); border-radius: 1px; }
+
+/* 박스 */
+.box-style-list { display: flex; flex-direction: column; gap: 4px; }
+.box-option { background: var(--surface2); border: 1px solid var(--line); border-radius: 5px; padding: 5px 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: .15s; }
+.box-option:hover { border-color: var(--brand); background: #fff; }
+.box-option.active { background: var(--brand-soft); border-color: var(--brand); font-weight: 700; color: var(--brand-dark); }
+.box-meta { display: flex; align-items: center; gap: 8px; }
+.box-icon-demo { width: 18px; height: 13px; border-radius: 2px; display: inline-block; background: #fff; }
+.box-name { font-size: 11.5px; }
+.rec-pill { font-size: 9.5px; color: #0284c7; background: #e0f2fe; padding: 1px 5px; border-radius: 3px; font-weight: 700; }
+
+/* 타이포 */
+.typo-field { display: flex; flex-direction: column; gap: 3px; }
+.typo-label { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); display: flex; justify-content: space-between; }
+.typo-label span:last-child { opacity: .6; font-weight: 400; }
+.typo-select { background: var(--surface2); border: 1px solid var(--line-strong); border-radius: var(--r); padding: 5px 8px; font-size: 11.5px; font-weight: 600; outline: none; cursor: pointer; }
+.typo-select:focus { border-color: var(--brand); background: #fff; }
+
+/* 프롬프트 */
+.prompt-drawer { padding: 12px 14px; background: var(--surface2); margin-top: auto; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.prompt-preview-box { background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--brand); border-radius: 0 var(--r) var(--r) 0; padding: 8px 10px; font-size: 10.5px; line-height: 1.5; color: var(--ink-soft); max-height: 92px; overflow-y: auto; white-space: pre-line; font-family: "IBM Plex Mono", monospace; }
+.btn-bottom-copy { background: var(--ink); color: #fff; border: none; border-radius: var(--r); padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: .15s; }
+.btn-bottom-copy:hover { background: #000; }
+.btn-bottom-copy.done { background: var(--brand-dark); }
+
+.toast {
+  position: fixed; top: 58px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff;
+  padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 700; z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18); opacity: 0; pointer-events: none; transition: all .2s ease;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 6px); }
+.toast.err { background: var(--bad); }
+
+@media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+
+<div class="studio-app">
+
+  <!-- 1. 헤더 -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="brand-badge">mytt DESIGN LAB</span>
+      <h1 class="app-title">디자인 스튜디오</h1>
+    </div>
+    <div class="device-switcher">
+      <button class="dev-btn active" id="btn-view-mobile">📱 모바일 웹앱</button>
+      <button class="dev-btn" id="btn-view-desktop">🖥️ 데스크톱 대시보드</button>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 8px;">
+      <details class="api-drawer" id="api-drawer">
+        <summary>🔑 Gemini API</summary>
+        <div class="api-body">
+          <label for="api-key">API 키</label>
+          <input type="password" id="api-key" placeholder="AIza…" autocomplete="off" />
+          <div class="api-model-auto-notice">
+            <span class="auto-flash-icon">⚡</span>
+            <div class="auto-flash-text">
+              <strong id="api-detected-model-label">초경량 Flash 모델 자동 매칭</strong>
+              <small id="api-detected-model-sub">호출키 입력 시 가장 빠르고 가벼운 모델로 자동 연결됩니다.</small>
+            </div>
+          </div>
+          <div class="api-actions">
+            <button class="btn-api-save" id="btn-api-save">저장하고 연결</button>
+            <button class="btn-api-clear" id="btn-api-clear">키 삭제</button>
+          </div>
+          <p class="api-hint">키는 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>에서 받을 수 있습니다. 현재 기기에만 저장됩니다.</p>
+        </div>
+      </details>
+      <button class="btn-primary-copy" id="btn-top-copy"><span>📋</span> AI 프롬프트 복사</button>
+    </div>
+  </header>
+
+  <!-- 2. 룩앤필 덱 -->
+  <section class="style-deck-bar" aria-label="대표 룩앤필 프리셋" id="style-deck">
+    <span class="deck-label">룩앤필</span>
+    <!-- JS로 생성 -->
+  </section>
+
+  <!-- 3. 작업 영역 -->
+  <main class="workspace">
+
+    <div class="canvas-panel">
+      <!-- 미니멀 컨닝페이퍼 플로팅 카드 (하위 카테고리 레퍼런스) -->
+      <div class="cheatsheet-card" id="cheatsheet-card" style="display:none;" aria-label="실전 컨닝페이퍼 레퍼런스">
+        <div class="cs-header">
+          <span class="cs-badge">💡 컨닝페이퍼</span>
+          <span class="cs-hint" id="cs-hint">실전 레퍼런스</span>
+        </div>
+        <div class="cs-list" id="cs-list">
+          <!-- JS로 동적 칩 렌더링 -->
+        </div>
+      </div>
+
+      <div id="mockup-frame" class="mockup-mobile">
+        <div class="desktop-titlebar" id="desktop-bar" style="display:none;">
+          <span class="win-btn close"></span><span class="win-btn min"></span><span class="win-btn max"></span>
+          <span class="win-title">mytt · productivity dashboard</span>
+        </div>
+        <div class="mobile-notch" id="mobile-bar"><div class="notch-bar"></div></div>
+
+        <div class="mockup-body" id="target-mockup">
+
+          <!-- 모바일: 위에서 아래로 -->
+          <div id="mobile-layout-container" class="mobile-view-layout density-gap">
+            <div class="m-app-header">
+              <div>
+                <div class="m-app-title title-font-target">나만의 시간관리</div>
+                <span style="font-size:10.5px;opacity:.7;" class="body-font-target">04/10 딥워크 세션</span>
+              </div>
+              <span class="m-app-badge badge-target">오늘 75% 달성</span>
+            </div>
+
+            <div class="m-card m-timer-card target-card">
+              <span class="m-timer-label body-font-target">CURRENT FOCUS TIME</span>
+              <div class="m-timer-clock title-font-target clock-target">24:50</div>
+              <div class="m-timer-actions">
+                <button class="m-btn btn-primary-target start-target">집중 시작</button>
+                <button class="m-btn btn-sec-target pause-target">일시정지</button>
+              </div>
+            </div>
+
+            <div class="m-task-section">
+              <span class="m-section-label">TODAY TASKS (3)</span>
+              <div class="m-task-item target-item">
+                <div class="m-task-left"><span class="m-check-box chk-box-target">✓</span><span class="body-font-target task-text" style="text-decoration:line-through;opacity:.6;">원고 기획 2매 작성</span></div>
+                <span class="m-task-tag tag-target">창작</span>
+              </div>
+              <div class="m-task-item target-item">
+                <div class="m-task-left"><span class="m-check-box chk-box-target"></span><span class="body-font-target task-text">외주 거래처 슬랙 회신</span></div>
+                <span class="m-task-tag tag-target">업무</span>
+              </div>
+              <div class="m-task-item target-item">
+                <div class="m-task-left"><span class="m-check-box chk-box-target"></span><span class="body-font-target task-text">주간 회고 20분</span></div>
+                <span class="m-task-tag tag-target">쉼</span>
+              </div>
+            </div>
+
+            <div class="m-progress-box">
+              <div style="display:flex;justify-content:space-between;">
+                <span class="body-font-target">주간 목표 달성률</span>
+                <span style="font-weight:700;" class="body-font-target">12 / 16시간</span>
+              </div>
+              <div class="m-progress-bar pbar-target"><div class="m-progress-fill pfill-target"></div></div>
+            </div>
+          </div>
+
+          <!-- 데스크톱: 벤토 대시보드 -->
+          <div id="desktop-layout-container" class="desktop-view-layout density-gap" style="display:none;">
+            <div class="desktop-left-col density-gap">
+              <div class="m-card target-card">
+                <div class="m-cal-head"><span class="title-font-target">2026.10 OCTOBER</span><span style="font-size:10px;opacity:.7;">WEEK 04</span></div>
+                <div class="m-cal-grid">
+                  <span style="opacity:.5">S</span><span style="opacity:.5">M</span><span style="opacity:.5">T</span><span style="opacity:.5">W</span><span style="opacity:.5">T</span><span style="opacity:.5">F</span><span style="opacity:.5">S</span>
+                  <span class="m-cal-day done">04</span><span class="m-cal-day done">05</span><span class="m-cal-day btn-primary-target" style="font-weight:800;">06</span><span class="m-cal-day">07</span><span class="m-cal-day">08</span><span class="m-cal-day">09</span><span class="m-cal-day">10</span>
+                  <span class="m-cal-day">11</span><span class="m-cal-day">12</span><span class="m-cal-day">13</span><span class="m-cal-day">14</span><span class="m-cal-day">15</span><span class="m-cal-day">16</span><span class="m-cal-day">17</span>
+                </div>
+              </div>
+              <div class="m-card target-card" style="gap:6px;">
+                <span class="m-section-label">FOCUS CHECKLIST</span>
+                <div class="m-task-item target-item">
+                  <div class="m-task-left"><span class="m-check-box chk-box-target">✓</span><span class="body-font-target task-text" style="text-decoration:line-through;opacity:.6;">포트폴리오 초안 완성</span></div>
+                </div>
+                <div class="m-task-item target-item">
+                  <div class="m-task-left"><span class="m-check-box chk-box-target"></span><span class="body-font-target task-text">수강생 피드백 정리</span></div>
+                </div>
+                <div class="m-task-item target-item">
+                  <div class="m-task-left"><span class="m-check-box chk-box-target"></span><span class="body-font-target task-text">다음 주 시간표 짜기</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="desktop-right-col density-gap">
+              <div class="m-app-header">
+                <div>
+                  <div class="m-app-title title-font-target" style="font-size:17px;">나만의 시간관리 대시보드</div>
+                  <span style="font-size:11px;opacity:.7;" class="body-font-target">세션 #04 몰입 중</span>
+                </div>
+                <span class="m-app-badge badge-target">생산성 94%</span>
+              </div>
+              <div class="m-card m-timer-card target-card">
+                <span class="m-timer-label body-font-target">CURRENT DEEP WORK SESSION</span>
+                <div class="m-timer-clock title-font-target clock-target" style="font-size:44px;">24:50</div>
+                <div class="m-timer-actions" style="max-width:300px;">
+                  <button class="m-btn btn-primary-target start-target">집중 시작</button>
+                  <button class="m-btn btn-sec-target pause-target">일시정지</button>
+                </div>
+              </div>
+              <div class="density-gap" style="display:grid;grid-template-columns:1fr 1fr;">
+                <div class="m-card target-card" style="gap:4px;">
+                  <span style="font-size:10px;opacity:.7;" class="body-font-target">주간 누적 시간</span>
+                  <div class="title-font-target" style="font-size:19px;font-weight:800;">12h 45m</div>
+                  <div class="m-progress-bar pbar-target" style="margin-top:4px;"><div class="m-progress-fill pfill-target"></div></div>
+                </div>
+                <div class="m-card target-card" style="gap:4px;">
+                  <span style="font-size:10px;opacity:.7;" class="body-font-target">완료된 칸</span>
+                  <div class="title-font-target" style="font-size:19px;font-weight:800;">7 / 10 단계</div>
+                  <span style="font-size:10px;opacity:.7;" class="body-font-target">남은 시간 약 54분</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="canvas-status-pill" id="canvas-status"></div>
+    </div>
+
+    <!-- 4. 인스펙터 -->
+    <aside class="inspector-panel">
+      <div class="panel-header"><h3>디자인 토큰 인스펙터</h3><span>TOKENS</span></div>
+
+      <!-- (1) 색상 -->
+      <section class="inspector-section">
+        <div class="sec-title">
+          <span>색상 팔레트</span>
+          <button class="btn-reroll" id="btn-reroll"><span>🎲</span> 다른 조합 보기</button>
+        </div>
+        <div class="palette-batch-grid" id="palette-batch"></div>
+        <div class="ai-color-box">
+          <input type="text" class="ai-color-input" id="ai-keyword" placeholder="원하는 색 조합 (예: 노랑 파랑)" />
+          <button class="btn-ai-gen" id="btn-ai-gen">생성</button>
+        </div>
+        <div class="api-status"><span class="api-dot" id="api-dot"></span><span id="api-status-text">내장 생성기 사용 중</span></div>
+      </section>
+
+      <!-- (2) 라운드 -->
+      <section class="inspector-section">
+        <div class="sec-title"><span>코너 곡률</span><span class="en">RADIUS</span></div>
+        <div class="seg four" id="radius-seg">
+          <button class="seg-btn" data-radius="sharp"><span class="r-box-icon" style="border-radius:2px;"></span><span class="seg-text">샤프 4</span></button>
+          <button class="seg-btn" data-radius="modern"><span class="r-box-icon" style="border-radius:5px;"></span><span class="seg-text">모던 10</span></button>
+          <button class="seg-btn active" data-radius="soft"><span class="r-box-icon" style="border-radius:8px;"></span><span class="seg-text">소프트 18</span></button>
+          <button class="seg-btn" data-radius="pill"><span class="r-box-icon" style="border-radius:999px;"></span><span class="seg-text">캡슐</span></button>
+        </div>
+      </section>
+
+      <!-- (3) 밀도: 여백 + 행간 -->
+      <section class="inspector-section">
+        <div class="sec-title"><span>여백 · 행간</span><span class="en">DENSITY</span></div>
+        <div class="seg three" id="density-seg">
+          <button class="seg-btn" data-density="compact"><span class="d-icon" style="gap:2px;"><i></i><i></i><i></i><i></i></span><span class="seg-text">촘촘하게</span></button>
+          <button class="seg-btn active" data-density="normal"><span class="d-icon" style="gap:4px;"><i></i><i></i><i></i></span><span class="seg-text">기본</span></button>
+          <button class="seg-btn" data-density="relaxed"><span class="d-icon" style="gap:6px;"><i></i><i></i></span><span class="seg-text">여유롭게</span></button>
+        </div>
+      </section>
+
+      <!-- (4) 박스 -->
+      <section class="inspector-section">
+        <div class="sec-title"><span>박스 스타일</span><span class="en">EFFECTS</span></div>
+        <div class="box-style-list" id="box-list">
+          <div class="box-option active" data-box="air-shadow"><div class="box-meta"><span class="box-icon-demo" style="box-shadow:0 3px 8px rgba(0,0,0,.15);"></span><span class="box-name">에어 소프트 섀도</span></div><span class="rec-pill">트렌드</span></div>
+          <div class="box-option" data-box="subtle-border"><div class="box-meta"><span class="box-icon-demo" style="border:1px solid #94a3b8;"></span><span class="box-name">미세 1px 보더</span></div></div>
+          <div class="box-option" data-box="flat-tone"><div class="box-meta"><span class="box-icon-demo" style="background:#e2e8f0;"></span><span class="box-name">플랫 톤온톤</span></div></div>
+          <div class="box-option" data-box="glass"><div class="box-meta"><span class="box-icon-demo" style="border:1px solid #cbd5e1;background:rgba(255,255,255,.6);"></span><span class="box-name">글래스 반투명 블러</span></div></div>
+          <div class="box-option" data-box="neumorph"><div class="box-meta"><span class="box-icon-demo" style="background:#e2e8f0;box-shadow:2px 2px 4px #b8c2d0,-2px -2px 4px #fff;"></span><span class="box-name">뉴모픽 엠보싱 음영</span></div></div>
+          <div class="box-option" data-box="brutal-stroke"><div class="box-meta"><span class="box-icon-demo" style="border:1.5px solid #000;box-shadow:2px 2px 0 #000;"></span><span class="box-name">2px 하드 스트로크</span></div></div>
+        </div>
+      </section>
+
+      <!-- (5) 타이포 -->
+      <section class="inspector-section">
+        <div class="sec-title"><span>타이포그래피</span><span class="en">FONTS</span></div>
+        <div class="typo-field">
+          <div class="typo-label"><span>제목 · 큰 숫자</span><span>분위기 결정</span></div>
+          <select class="typo-select" id="select-title-font">
+            <optgroup label="모던 산스">
+              <option value="pretendard">Pretendard (만능 모던)</option>
+              <option value="inter">Inter (실리콘밸리 UI)</option>
+              <option value="outfit">Outfit (슬릭 기하학)</option>
+            </optgroup>
+            <optgroup label="볼드 · 헤드라인">
+              <option value="gmarket">G마켓 산스 (자신감 기하학)</option>
+              <option value="blackhan">검은고딕 (꽉 찬 브루탈)</option>
+            </optgroup>
+            <optgroup label="에디토리얼 명조">
+              <option value="maru">마루부리 (고급 잡지)</option>
+              <option value="gowun-batang">고운바탕 (단아한 그림책)</option>
+            </optgroup>
+            <optgroup label="귀여운 · 손글씨">
+              <option value="jua">주아 (동글 찹쌀떡)</option>
+              <option value="gaegu">개구 (일기장 손글씨)</option>
+              <option value="poorstory">푸어스토리 (동화 라운드)</option>
+            </optgroup>
+            <optgroup label="레트로 · 테크">
+              <option value="dunggeunmo">둥근모 (도트 픽셀)</option>
+              <option value="d2">D2Coding (터미널 고정폭)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="typo-field">
+          <div class="typo-label"><span>본문 · 리스트</span><span>가독성 우선</span></div>
+          <select class="typo-select" id="select-body-font">
+            <optgroup label="읽기 편한 고딕 (추천)">
+              <option value="pretendard">Pretendard (완벽한 가독성)</option>
+              <option value="inter">Inter (선명한 UI)</option>
+              <option value="noto">Noto Sans KR (표준 고딕)</option>
+              <option value="gowun-dodum">고운돋움 (따스한 소프트)</option>
+            </optgroup>
+            <optgroup label="감성 (짧은 글에만)">
+              <option value="poorstory">푸어스토리 (둥근 동화체)</option>
+              <option value="gaegu">개구 (손글씨)</option>
+            </optgroup>
+            <optgroup label="테크">
+              <option value="d2">D2Coding (로그 · 숫자)</option>
+            </optgroup>
+          </select>
+        </div>
+      </section>
+
+      <!-- (6) 프롬프트 -->
+      <div class="prompt-drawer">
+        <span style="font-size:10.5px;font-weight:700;color:var(--ink-faint);">PROMPT EXPORT</span>
+        <div class="prompt-preview-box" id="prompt-box"></div>
+        <button class="btn-bottom-copy" id="btn-bottom-copy">📋 AI 프롬프트 원클릭 복사</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- 단일 색상 변경 팝오버 -->
+<div id="color-popover" style="display:none; position:absolute; background:#fff; border:1px solid var(--line-strong); border-radius:6px; padding:6px; box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:200; gap:6px; align-items:center;">
+  <input type="color" id="popover-color" style="width:24px; height:24px; padding:0; border:none; border-radius:3px; cursor:pointer;" />
+  <input type="text" id="popover-hex" style="width:64px; border:1px solid var(--line); border-radius:4px; padding:4px; font-size:11px; font-family:monospace; outline:none;" />
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* ======================================================
+     데이터 정의
+     ====================================================== */
+  var presets = [
+    { key: "toss", title: "토스 / 애플", tag: "대세", tech: "Clean Soft · 18px 라운드 · 에어 섀도", desc: "맑고 신뢰감을 주는 모던 금융 스타트업",
+      palette: "toss", radius: "soft", box: "air-shadow", density: "normal", titleFont: "pretendard", bodyFont: "pretendard" },
+    { key: "linear", title: "리니어 다크", tag: "개발자", tech: "Sleek Dark · 4px 샤프 · 1px 미세 보더", desc: "딥블랙과 네온 에메랄드의 밤샘 집중실",
+      palette: "linear", radius: "sharp", box: "subtle-border", density: "compact", titleFont: "d2", bodyFont: "pretendard" },
+    { key: "glass", title: "글래스모피즘", tag: "트렌디", tech: "Glassmorphism · 반투명 블러 · 오로라 배경", desc: "유리처럼 맑고 가볍게 비치는 반투명 아크릴",
+      palette: "glass", radius: "soft", box: "glass", density: "normal", titleFont: "outfit", bodyFont: "pretendard" },
+    { key: "mesh", title: "그라디언트 메시", tag: "오로라", tech: "Gradient Mesh · 파스텔 블렌딩 · 소프트 섀도", desc: "물감처럼 부드럽게 번진 수채화빛 몽환미",
+      palette: "mesh", radius: "soft", box: "air-shadow", density: "relaxed", titleFont: "pretendard", bodyFont: "inter" },
+    { key: "notion", title: "노션 미니멀", tag: "절제미", tech: "Monochrome · 4px 샤프 · 플랫 톤온톤", desc: "잡생각을 지워주는 담백한 흑백과 큰 여백",
+      palette: "notion", radius: "sharp", box: "flat-tone", density: "relaxed", titleFont: "inter", bodyFont: "pretendard" },
+    { key: "sage", title: "킨포크 페이퍼", tag: "매거진", tech: "Warm Editorial · 웜크림 · 명조 제목", desc: "종이 냄새가 날 것 같은 차분한 지적 기록장",
+      palette: "sage", radius: "modern", box: "subtle-border", density: "relaxed", titleFont: "maru", bodyFont: "gowun-dodum" },
+    { key: "cute", title: "귀여운 젤리", tag: "힐링", tech: "Chubby Pastel · 캡슐 라운드 · 손글씨 제목", desc: "동글동글 말랑한 젤리처럼 포근한 파스텔",
+      palette: "cute", radius: "pill", box: "air-shadow", density: "normal", titleFont: "jua", bodyFont: "poorstory" },
+    { key: "brutal", title: "뉴-브루탈리즘", tag: "마감", tech: "Neo-Brutalism · 2px 하드 스트로크 · 원색", desc: "두꺼운 외곽선과 원색으로 '지금 해!'라는 힘",
+      palette: "brutal", radius: "sharp", box: "brutal-stroke", density: "normal", titleFont: "blackhan", bodyFont: "pretendard" },
+    { key: "neumorph", title: "소프트 뉴모피즘", tag: "입체감", tech: "Neumorphism · 엠보싱 음영 · 단색 배경", desc: "조약돌처럼 부드럽게 튀어나온 폭신한 음영",
+      palette: "neumorph", radius: "soft", box: "neumorph", density: "relaxed", titleFont: "pretendard", bodyFont: "pretendard" },
+    { key: "y2k", title: "레트로 Y2K", tag: "픽셀", tech: "Retro Y2K · 4px 샤프 · 도트 픽셀 폰트", desc: "2000년대 윈도우 창과 도트 게임의 유쾌한 복고",
+      palette: "y2k", radius: "sharp", box: "subtle-border", density: "compact", titleFont: "dunggeunmo", bodyFont: "pretendard" }
+  ];
+
+  var basePalettes = {
+    toss:     { name: "토스 블루", mood: "신뢰 · 산뜻함", bg: "#f8fafc", card: "#ffffff", text: "#0f172a", subText: "#64748b", primary: "#3182f6", primaryText: "#ffffff", secondary: "#eff6ff", secondaryText: "#1d4ed8", border: "#e2e8f0" },
+    linear:   { name: "옵시디언 에메랄드", mood: "다크 · 테크", bg: "#090d16", card: "#111827", text: "#f9fafb", subText: "#9ca3af", primary: "#10b981", primaryText: "#04140d", secondary: "#1f2937", secondaryText: "#a7f3d0", border: "#263042" },
+    glass:    { name: "오로라 퍼플", mood: "몽환 · 투명함", bg: "linear-gradient(135deg,#c7d2fe 0%,#f5d0fe 50%,#fbcfe8 100%)", card: "rgba(255,255,255,0.55)", text: "#1e1b4b", subText: "#475569", primary: "#6366f1", primaryText: "#ffffff", secondary: "rgba(255,255,255,0.6)", secondaryText: "#4338ca", border: "rgba(255,255,255,0.7)" },
+    mesh:     { name: "피치 라일락 메시", mood: "수채화 · 파스텔", bg: "radial-gradient(at 0% 0%,#fbcfe8 0,transparent 55%),radial-gradient(at 100% 0%,#fed7aa 0,transparent 55%),radial-gradient(at 50% 100%,#ddd6fe 0,transparent 60%),#fff7fb", card: "#ffffff", text: "#3b0764", subText: "#6b7280", primary: "#db2777", primaryText: "#ffffff", secondary: "#fdf2f8", secondaryText: "#be185d", border: "#fbcfe8" },
+    notion:   { name: "모노크롬 슬레이트", mood: "담백 · 미니멀", bg: "#f7f6f3", card: "#ffffff", text: "#37352f", subText: "#787774", primary: "#2f2f2f", primaryText: "#ffffff", secondary: "#eae8e3", secondaryText: "#37352f", border: "#e3e2de" },
+    sage:     { name: "올리브 세이지", mood: "차분 · 킨포크", bg: "#fcfbf8", card: "#ffffff", text: "#2c302a", subText: "#656a61", primary: "#4d5b43", primaryText: "#ffffff", secondary: "#edece6", secondaryText: "#3a4433", border: "#e0dec8" },
+    cute:     { name: "베리 버터", mood: "귀여움 · 힐링", bg: "#fffbf2", card: "#ffffff", text: "#43322d", subText: "#8c736a", primary: "#ec4899", primaryText: "#ffffff", secondary: "#fef3c7", secondaryText: "#92400e", border: "#fed7aa" },
+    brutal:   { name: "사이버 옐로우", mood: "강렬 · 포스터", bg: "#fef08a", card: "#ffffff", text: "#000000", subText: "#333333", primary: "#000000", primaryText: "#ffffff", secondary: "#ffffff", secondaryText: "#000000", border: "#000000" },
+    neumorph: { name: "소프트 웜그레이", mood: "입체 · 조약돌", bg: "#e2e8f0", card: "#e2e8f0", text: "#1e293b", subText: "#64748b", primary: "#3b82f6", primaryText: "#ffffff", secondary: "#e2e8f0", secondaryText: "#1e293b", border: "#e2e8f0" },
+    y2k:      { name: "윈도우 98 핑크", mood: "복고 · 유쾌함", bg: "#dfe6f5", card: "#ffffff", text: "#101030", subText: "#4b5280", primary: "#ff4fa3", primaryText: "#ffffff", secondary: "#c9f2ff", secondaryText: "#0b4a6b", border: "#101030" }
+  };
+
+  var radiusDefs = {
+    sharp:  { name: "샤프 4px",   card: "4px",  btn: "4px",   tag: "4px" },
+    modern: { name: "모던 10px",  card: "10px", btn: "8px",   tag: "6px" },
+    soft:   { name: "소프트 18px", card: "18px", btn: "10px",  tag: "999px" },
+    pill:   { name: "캡슐",       card: "24px", btn: "999px", tag: "999px" }
+  };
+
+  var densityDefs = {
+    compact: { name: "촘촘하게", pad: "10px", gap: "8px",  item: "6px 9px",   lh: 1.35 },
+    normal:  { name: "기본",     pad: "14px", gap: "12px", item: "8px 10px",  lh: 1.5 },
+    relaxed: { name: "여유롭게", pad: "20px", gap: "16px", item: "11px 13px", lh: 1.7 }
+  };
+
+  var boxDefs = {
+    "air-shadow":    { name: "에어 소프트 섀도",   border: "1px solid rgba(0,0,0,0.04)", shadow: "0 8px 24px -4px rgba(0,0,0,0.08)", blur: "none" },
+    "subtle-border": { name: "미세 1px 보더",      border: "1px solid {border}", shadow: "none", blur: "none" },
+    "flat-tone":     { name: "플랫 톤온톤",        border: "1px solid transparent", shadow: "none", blur: "none", tone: true },
+    "glass":         { name: "글래스 반투명 블러",  border: "1px solid rgba(255,255,255,0.6)", shadow: "0 8px 24px rgba(31,38,135,0.08)", blur: "blur(14px)" },
+    "neumorph":      { name: "뉴모픽 엠보싱 음영",  border: "1px solid transparent", shadow: "6px 6px 14px rgba(0,0,0,0.12), -6px -6px 14px rgba(255,255,255,0.85)", blur: "none" },
+    "brutal-stroke": { name: "2px 하드 스트로크",   border: "2px solid {text}", shadow: "3px 3px 0 {text}", blur: "none" }
+  };
+
+  var fontMap = {
+    pretendard:     { name: "Pretendard",   family: "'Pretendard', sans-serif" },
+    inter:          { name: "Inter",        family: "'Inter', 'Pretendard', sans-serif" },
+    outfit:         { name: "Outfit",       family: "'Outfit', 'Pretendard', sans-serif" },
+    gmarket:        { name: "G마켓 산스",    family: "'GmarketSansBold', sans-serif" },
+    blackhan:       { name: "검은고딕",      family: "'Black Han Sans', sans-serif" },
+    maru:           { name: "마루부리",      family: "'MaruBuri-Bold', serif" },
+    "gowun-batang": { name: "고운바탕",      family: "'Gowun Batang', serif" },
+    "gowun-dodum":  { name: "고운돋움",      family: "'Gowun Dodum', sans-serif" },
+    noto:           { name: "Noto Sans KR", family: "'Noto Sans KR', sans-serif" },
+    jua:            { name: "주아",          family: "'Jua', sans-serif" },
+    gaegu:          { name: "개구",          family: "'Gaegu', cursive" },
+    poorstory:      { name: "푸어스토리",    family: "'Poor Story', cursive" },
+    dunggeunmo:     { name: "둥근모",        family: "'DungGeunMo', monospace" },
+    d2:             { name: "D2Coding",     family: "'D2Coding', monospace" }
+  };
+
+  /* ======================================================
+     상태
+     ====================================================== */
+  var state = {
+    view: "mobile", preset: "toss",
+    palette: basePalettes.toss, batch: [],
+    radius: "soft", box: "air-shadow", density: "normal",
+    titleFont: "pretendard", bodyFont: "pretendard",
+    shownNames: [],
+    activeCheatSheet: null,
+    customPalette: null
+  };
+
+  /* ======================================================
+     실전 컨닝페이퍼 (룩앤필별 하위 레퍼런스 데이터)
+     ====================================================== */
+  var cheatSheets = {
+    toss: [
+      { id: "toss", name: "토스", color: "#3182f6", bg: "#f8fafc", card: "#ffffff", text: "#0f172a", subText: "#64748b", primary: "#3182f6", primaryText: "#ffffff", secondary: "#eff6ff", secondaryText: "#1d4ed8", border: "#e2e8f0", titleFont: "pretendard", bodyFont: "pretendard", radius: "soft", box: "air-shadow", appTitle: "토스 머니 타이머", badge: "신뢰도 100%", tasks: ["송금 내역 확인", "비상금 이자 받기", "소비 리포트 점검"], promptMood: "토스 — 맑고 신뢰감을 주는 모던 금융 스타트업 (토스 블루 #3182F6, 여백과 에어 섀도)" },
+      { id: "apple", name: "애플", color: "#000000", bg: "#f5f5f7", card: "#ffffff", text: "#1d1d1f", subText: "#86868b", primary: "#000000", primaryText: "#ffffff", secondary: "#e8e8ed", secondaryText: "#1d1d1f", border: "#d2d2d7", titleFont: "pretendard", bodyFont: "pretendard", radius: "soft", box: "air-shadow", appTitle: "집중 모드", badge: "Apple Focus", tasks: ["키노트 슬라이드 마감", "WWDC 세션 시청", "디자인 가이드라인 정독"], promptMood: "애플 — 극도의 절제미와 프리미엄 하이엔드 모노톤 (SF 산스, 세련된 블랙 포인트)" },
+      { id: "things3", name: "띵스 3", color: "#2b88d9", bg: "#f4f5f7", card: "#ffffff", text: "#2c3e50", subText: "#7f8c8d", primary: "#2b88d9", primaryText: "#ffffff", secondary: "#eaf2f8", secondaryText: "#2980b9", border: "#dfe6e9", titleFont: "pretendard", bodyFont: "pretendard", radius: "modern", box: "subtle-border", appTitle: "오늘 할 일", badge: "Things 3 뷰", tasks: ["주간 스프린트 계획", "인박스 제로(Inbox Zero)", "자료실 아카이빙"], promptMood: "Things 3 — 단정한 할 일 체크리스트와 은은한 라이트 블루 악센트" }
+    ],
+    cute: [
+      { id: "animalcrossing", name: "동물의 숲", color: "#47b385", bg: "#f4faf2", card: "#ffffff", text: "#3d4a3e", subText: "#728c74", primary: "#47b385", primaryText: "#ffffff", secondary: "#e2f3e0", secondaryText: "#2e6931", border: "#c8e6c5", titleFont: "jua", bodyFont: "poorstory", radius: "pill", box: "air-shadow", appTitle: "모동숲 섬 라이프", badge: "마일리지 적립", tasks: ["너굴 상점 세일 확인", "화석 4개 발굴하기", "꽃밭에 물주기"], promptMood: "동물의 숲 — 몽실몽실 파스텔 크림/연두와 동글동글 찹쌀떡 손글씨 힐링 UI" },
+      { id: "karrot", name: "당근마켓", color: "#ff6f0f", bg: "#fff9f5", card: "#ffffff", text: "#212124", subText: "#767676", primary: "#ff6f0f", primaryText: "#ffffff", secondary: "#fff0e6", secondaryText: "#e8590c", border: "#ffd8a8", titleFont: "pretendard", bodyFont: "pretendard", radius: "soft", box: "air-shadow", appTitle: "우리동네 타이머", badge: "매너온도 41.2°", tasks: ["이웃과 나눔 약속", "당근페이 머니 충전", "동네생활 질문 답변"], promptMood: "당근마켓 — 따뜻한 웜 오렌지(#FF6F0F)와 둥글둥글한 이웃 감성 UI" },
+      { id: "baemin", name: "배달의민족", color: "#2ac1bc", bg: "#f2fbfb", card: "#ffffff", text: "#1e272e", subText: "#57606f", primary: "#2ac1bc", primaryText: "#ffffff", secondary: "#e0f7f6", secondaryText: "#009688", border: "#b2dfdb", titleFont: "gmarket", bodyFont: "pretendard", radius: "modern", box: "air-shadow", appTitle: "배민 타이머", badge: "배민클럽 무료배달", tasks: ["단골 맛집 리뷰 쓰기", "할인 쿠폰 다운로드", "점심 메뉴 룰렛 돌리기"], promptMood: "배달의민족 — 유쾌한 배민 민트(#2AC1BC)와 볼드한 한나체 키치 감성 UI" }
+    ],
+    notion: [
+      { id: "notion", name: "노션", color: "#2f2f2f", bg: "#f7f6f3", card: "#ffffff", text: "#37352f", subText: "#787774", primary: "#2f2f2f", primaryText: "#ffffff", secondary: "#eae8e3", secondaryText: "#37352f", border: "#e3e2de", titleFont: "inter", bodyFont: "pretendard", radius: "sharp", box: "flat-tone", appTitle: "My Workspace", badge: "Personal Pro", tasks: ["스프린트 백로그 정리", "분기 목표(OKR) 점검", "주간 회고 문서 발행"], promptMood: "노션 — 담백한 모노크롬, 토글/블록 기반 미니멀 생산성 흑백 UI" },
+      { id: "threads", name: "스레드", color: "#111111", bg: "#fafafa", card: "#ffffff", text: "#000000", subText: "#777777", primary: "#000000", primaryText: "#ffffff", secondary: "#f0f0f0", secondaryText: "#111111", border: "#e5e5e5", titleFont: "pretendard", bodyFont: "pretendard", radius: "soft", box: "subtle-border", appTitle: "Threads Focus", badge: "@mytt_daily", tasks: ["오늘의 마이크로 회고 포스팅", "답글 스레드 5개 읽기", "팔로워 질문에 답하기"], promptMood: "스레드 — 볼드한 타이포그래피와 모던 블랙 텍스트 마이크로 인터페이스" }
+    ],
+    linear: [
+      { id: "linear", name: "리니어", color: "#10b981", bg: "#090d16", card: "#111827", text: "#f9fafb", subText: "#9ca3af", primary: "#10b981", primaryText: "#04140d", secondary: "#1f2937", secondaryText: "#a7f3d0", border: "#263042", titleFont: "d2", bodyFont: "pretendard", radius: "sharp", box: "subtle-border", appTitle: "ENG-SPRINT-04", badge: "IN PROGRESS", tasks: ["PR #104 코드리뷰 완료", "API 응답 레이턴시 튜닝", "스테이징 핫픽스 배포"], promptMood: "리니어 — 다크 테크 감성, 딥블랙과 네온 에메랄드, 1px 샤프 테두리" },
+      { id: "discord", name: "디스코드", color: "#5865f2", bg: "#313338", card: "#2b2d31", text: "#f2f3f5", subText: "#949ba4", primary: "#5865f2", primaryText: "#ffffff", secondary: "#383a40", secondaryText: "#c4b5fd", border: "#3f4147", titleFont: "pretendard", bodyFont: "pretendard", radius: "modern", box: "subtle-border", appTitle: "#집중-음성채널", badge: "ONLINE · 12", tasks: ["보이스 채널 마이크 체크", "스터디 봇 뽀모도로 시작", "일일 퀘스트 결과 공유"], promptMood: "디스코드 — 딥퍼플 블러플(#5865F2)과 게이머 길드 채널 다크 UI" },
+      { id: "cyberpunk", name: "사이버펑크", color: "#00ffcc", bg: "#0d0221", card: "#19053b", text: "#00ffcc", subText: "#ff007f", primary: "#ff007f", primaryText: "#ffffff", secondary: "#261447", secondaryText: "#00ffcc", border: "#00ffcc", titleFont: "d2", bodyFont: "d2", radius: "sharp", box: "subtle-border", appTitle: "CYBER_CORE // v2.0", badge: "HUD OVERCLOCK", tasks: ["방화벽 침투 프로토콜 가동", "서브넷 패킷 분석", "뉴럴 링크 신경망 동기화"], promptMood: "사이버펑크 — 칠흑 배경에 발광 네온 시안/마젠타 헤드업 디스플레이(HUD) UI" }
+    ],
+    sage: [
+      { id: "bakery", name: "동네 빵집", color: "#b8860b", bg: "#fcfbf8", card: "#ffffff", text: "#2c302a", subText: "#656a61", primary: "#b8860b", primaryText: "#ffffff", secondary: "#f5f0e6", secondaryText: "#8c6b1b", border: "#e5ded3", titleFont: "gowun-batang", bodyFont: "gowun-dodum", radius: "modern", box: "subtle-border", appTitle: "작은 빵집 오븐 시계", badge: "갓 구운 소금빵", tasks: ["소금빵 2차 발효 점검", "바게트 칼집 내기", "구움과자 선물박스 포장"], promptMood: "동네 빵집 — 따뜻한 크라프트지/버터 컬러와 단아한 바탕체 아날로그 감성" },
+      { id: "bullet", name: "불렛저널", color: "#3e2723", bg: "#fbf9f5", card: "#ffffff", text: "#2d2424", subText: "#6b5b5b", primary: "#3e2723", primaryText: "#ffffff", secondary: "#f0ebe1", secondaryText: "#4a3b32", border: "#dcd3c5", titleFont: "maru", bodyFont: "gowun-dodum", radius: "sharp", box: "subtle-border", appTitle: "Monthly Diary", badge: "OCTOBER LOG", tasks: ["해빗 트래커 물 2L 체크", "독서 30페이지 기록", "취침 전 감사 일기 3줄"], promptMood: "불렛저널 — 모눈종이(그리드) 질감과 만년필 잉크 체크박스 수기 다이어리 감성" }
+    ],
+    y2k: [
+      { id: "rpg", name: "8비트 RPG", color: "#ff0055", bg: "#0f172a", card: "#1e293b", text: "#f8fafc", subText: "#94a3b8", primary: "#ff0055", primaryText: "#ffffff", secondary: "#334155", secondaryText: "#f43f5e", border: "#ff0055", titleFont: "dunggeunmo", bodyFont: "dunggeunmo", radius: "sharp", box: "subtle-border", appTitle: "QUEST LOG LV.99", badge: "EXP +150", tasks: ["슬라임 10마리 토벌", "상점 주인과 대화하기", "던전 보스 포션 챙기기"], promptMood: "8비트 레트로 RPG — 도트 픽셀 둥근모 폰트, HP 게이지 바와 퀘스트 클리어 감성" },
+      { id: "receipt", name: "영수증", color: "#424242", bg: "#f5f5f0", card: "#ffffff", text: "#1a1a1a", subText: "#555555", primary: "#212121", primaryText: "#ffffff", secondary: "#eaeae5", secondaryText: "#222222", border: "#424242", titleFont: "d2", bodyFont: "d2", radius: "sharp", box: "subtle-border", appTitle: "ORDER // #0842", badge: "THANK YOU", tasks: ["아이스 아메리카노 1잔", "휘낭시에 포장 주문", "모바일 영수증 보관"], promptMood: "영수증 티켓 — 모노스페이스 타자기 폰트, 지그재그 절취선과 바코드 감성" }
+    ],
+    brutal: [
+      { id: "figma", name: "피그마 / 검로드", color: "#ffe600", bg: "#fef08a", card: "#ffffff", text: "#000000", subText: "#333333", primary: "#000000", primaryText: "#ffffff", secondary: "#ffffff", secondaryText: "#000000", border: "#000000", titleFont: "blackhan", bodyFont: "pretendard", radius: "sharp", box: "brutal-stroke", appTitle: "DO IT NOW!", badge: "CRUNCH TIME", tasks: ["랜딩페이지 지금 런칭하기", "결제 링크 공유하기", "첫 고객 피드백 확인"], promptMood: "뉴 브루탈리즘 — 팝 옐로우 원색, 2px 두꺼운 외곽선과 엣지 있는 오프셋 그림자" }
+    ],
+    glass: [
+      { id: "macos", name: "macOS 서리유리", color: "#6366f1", bg: "linear-gradient(135deg,#c7d2fe 0%,#f5d0fe 50%,#fbcfe8 100%)", card: "rgba(255,255,255,0.55)", text: "#1e1b4b", subText: "#475569", primary: "#6366f1", primaryText: "#ffffff", secondary: "rgba(255,255,255,0.6)", secondaryText: "#4338ca", border: "rgba(255,255,255,0.7)", titleFont: "outfit", bodyFont: "pretendard", radius: "soft", box: "glass", appTitle: "Control Center", badge: "AirDrop Ready", tasks: ["디스플레이 나이트시프트 켜기", "디자인 파일 에어드롭 전송", "오디오 에어팟 연결"], promptMood: "글래스모피즘 — 반투명 아크릴 서리 유리창과 오로라 그라디언트 배경" }
+    ],
+    mesh: [
+      { id: "insta", name: "인스타그램", color: "#db2777", bg: "radial-gradient(at 0% 0%,#fbcfe8 0,transparent 55%),radial-gradient(at 100% 0%,#fed7aa 0,transparent 55%),#fff7fb", card: "#ffffff", text: "#3b0764", subText: "#6b7280", primary: "#db2777", primaryText: "#ffffff", secondary: "#fdf2f8", secondaryText: "#be185d", border: "#fbcfe8", titleFont: "pretendard", bodyFont: "inter", radius: "soft", box: "air-shadow", appTitle: "Daily Story", badge: "New Filter ✨", tasks: ["오늘의 무드 사진 업로드", "릴스 배경음악 선정", "스토리 투표 스티커 올리기"], promptMood: "그라디언트 메시 — 핑크/라일락/오렌지가 몽환적으로 번지는 감성 SNS UI" }
+    ],
+    neumorph: [
+      { id: "pebble", name: "조약돌 리모컨", color: "#3b82f6", bg: "#e2e8f0", card: "#e2e8f0", text: "#1e293b", subText: "#64748b", primary: "#3b82f6", primaryText: "#ffffff", secondary: "#e2e8f0", secondaryText: "#1e293b", border: "#e2e8f0", titleFont: "pretendard", bodyFont: "pretendard", radius: "soft", box: "neumorph", appTitle: "Audio Remote", badge: "ANC ON", tasks: ["로파이 플레이리스트 재생", "베이스 부스트 볼륨 조절", "노이즈 캔슬링 활성화"], promptMood: "소프트 뉴모피즘 — 조약돌처럼 부드럽게 튀어나온 폭신한 엠보싱 음영 UI" }
+    ]
+  };
+
+  /* ======================================================
+     색상 유틸 & 내장 팔레트 생성기 (키 없이도 무한 리롤)
+     ====================================================== */
+  function hsl(h, s, l) {
+    h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
+    var k = function (n) { return (n + h / 30) % 12; };
+    var a = s * Math.min(l, 1 - l);
+    var f = function (n) { return l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); };
+    var hex = function (x) { return Math.round(x * 255).toString(16).padStart(2, "0"); };
+    return "#" + hex(f(0)) + hex(f(8)) + hex(f(4));
+  }
+
+  var hueWords = [
+    { w: ["빨강", "레드", "red", "빨간"], h: 2, ko: "레드" },
+    { w: ["주황", "오렌지", "orange", "코랄"], h: 22, ko: "오렌지" },
+    { w: ["노랑", "노란", "옐로", "yellow", "머스터드"], h: 46, ko: "옐로" },
+    { w: ["연두", "라임", "lime"], h: 85, ko: "라임" },
+    { w: ["초록", "녹색", "그린", "green", "올리브", "숲"], h: 140, ko: "그린" },
+    { w: ["민트", "mint", "청록", "틸"], h: 168, ko: "민트" },
+    { w: ["하늘", "스카이", "sky"], h: 198, ko: "스카이" },
+    { w: ["파랑", "파란", "블루", "blue", "남색", "네이비"], h: 222, ko: "블루" },
+    { w: ["보라", "퍼플", "purple", "라벤더", "바이올렛"], h: 268, ko: "퍼플" },
+    { w: ["분홍", "핑크", "pink", "베리"], h: 330, ko: "핑크" },
+    { w: ["갈색", "브라운", "brown", "커피", "모카"], h: 28, ko: "브라운" }
+  ];
+  var moodWords = { vintage: ["빈티지", "레트로", "복고", "아날로그"], vivid: ["쨍", "비비드", "선명", "원색", "강렬"], pastel: ["파스텔", "말랑", "귀여", "부드"], dark: ["다크", "어두", "밤", "검정", "블랙", "네온"], minimal: ["미니멀", "차분", "모노", "심플"] };
+  var moodLabel = { vintage: "빈티지 · 따뜻함", vivid: "쨍한 · 비비드", pastel: "파스텔 · 말랑", dark: "다크 · 네온", minimal: "미니멀 · 차분" };
+  var moodPrefix = { vintage: "빈티지", vivid: "비비드", pastel: "파스텔", dark: "미드나잇", minimal: "모노" };
+
+  function parseKeyword(kw) {
+    var hues = [], moods = [];
+    kw = (kw || "").toLowerCase();
+    hueWords.forEach(function (x) { if (x.w.some(function (w) { return kw.indexOf(w) !== -1; })) hues.push(x); });
+    Object.keys(moodWords).forEach(function (m) { if (moodWords[m].some(function (w) { return kw.indexOf(w) !== -1; })) moods.push(m); });
+    return { hues: hues, moods: moods };
+  }
+
+  function makePalette(h1, h2, mood, label) {
+    var j = function (n) { return n + Math.round((Math.random() - 0.5) * 8); }; // 살짝 흔들어 매번 다르게
+    var p;
+    if (mood === "vintage") p = { bg: hsl(42, 35, 94), card: "#fffdf8", text: hsl(h1, 30, 16), subText: hsl(h1, 12, 42), primary: hsl(j(h1), 42, 40), primaryText: "#fffdf8", secondary: hsl(j(h2), 55, 86), secondaryText: hsl(h2, 45, 28), border: hsl(40, 22, 84) };
+    else if (mood === "vivid") p = { bg: hsl(h2, 90, 96), card: "#ffffff", text: hsl(h1, 45, 11), subText: hsl(h1, 15, 40), primary: hsl(j(h1), 88, 50), primaryText: "#ffffff", secondary: hsl(j(h2), 92, 86), secondaryText: hsl(h2, 75, 26), border: hsl(h2, 60, 86) };
+    else if (mood === "pastel") p = { bg: hsl(h1, 65, 96), card: "#ffffff", text: hsl(h1, 28, 22), subText: hsl(h1, 14, 48), primary: hsl(j(h1), 62, 62), primaryText: "#ffffff", secondary: hsl(j(h2), 75, 91), secondaryText: hsl(h2, 45, 32), border: hsl(h1, 50, 90) };
+    else if (mood === "dark") p = { bg: hsl(h1, 28, 7), card: hsl(h1, 22, 12), text: "#f5f5f4", subText: hsl(h1, 10, 66), primary: hsl(j(h1), 85, 60), primaryText: hsl(h1, 50, 8), secondary: hsl(h2, 30, 20), secondaryText: hsl(h2, 75, 78), border: hsl(h1, 18, 20) };
+    else p = { bg: "#f7f7f5", card: "#ffffff", text: "#1f1f1f", subText: "#6b6b6b", primary: hsl(j(h1), 65, 42), primaryText: "#ffffff", secondary: hsl(j(h2), 30, 92), secondaryText: hsl(h2, 35, 30), border: "#e6e6e3" };
+    p.name = moodPrefix[mood] + " " + label;
+    p.mood = moodLabel[mood];
+    return p;
+  }
+
+  function localBatch(kw) {
+    var parsed = parseKeyword(kw);
+    var allMoods = ["vintage", "vivid", "pastel", "dark", "minimal"];
+    var moods = parsed.moods.length ? parsed.moods.slice() : [];
+    // 3개가 서로 다른 무드가 되도록 채우기
+    var pool = allMoods.filter(function (m) { return moods.indexOf(m) === -1; }).sort(function () { return Math.random() - 0.5; });
+    while (moods.length < 3) moods.push(pool.shift());
+    if (parsed.moods.length === 1) moods = [moods[0], moods[1], moods[2]];
+    return moods.slice(0, 3).map(function (mood) {
+      var a, b;
+      if (parsed.hues.length >= 2) { a = parsed.hues[0]; b = parsed.hues[1]; if (Math.random() < 0.5) { var t = a; a = b; b = t; } }
+      else if (parsed.hues.length === 1) { a = parsed.hues[0]; b = { h: a.h + 150 + Math.random() * 60, ko: "" }; }
+      else { var r = Math.random() * 360; a = { h: r, ko: "" }; b = { h: r + 120 + Math.random() * 120, ko: "" }; }
+      var label = a.ko && b.ko ? a.ko + "×" + b.ko : (a.ko ? a.ko + " 포인트" : ["선셋", "오션", "포레스트", "캔디", "모닝", "시티"][Math.floor(Math.random() * 6)]);
+      return makePalette(a.h, b.h, mood, label);
+    });
+  }
+
+  /* ======================================================
+     Gemini API 연동
+     ====================================================== */
+  var LS_KEY = "mytt_gemini_key", LS_MODEL = "mytt_gemini_model";
+  function getKey() { try { return localStorage.getItem(LS_KEY) || ""; } catch (e) { return ""; } }
+  function getModel() { 
+    try { 
+      var m = localStorage.getItem(LS_MODEL) || ""; 
+      // flash 모델이 아니거나 구형/무거운 모델(2.5, pro 등)인 경우 초경량 최신 Flash-Lite로 자동 갱신
+      if (!m || m.indexOf("flash") === -1 || m.indexOf("2.5") !== -1 || m.indexOf("pro") !== -1) {
+        m = "gemini-flash-lite-latest";
+        localStorage.setItem(LS_MODEL, m);
+      }
+      return m; 
+    } catch (e) { 
+      return "gemini-flash-lite-latest"; 
+    } 
+  }
+
+  // Google API로부터 사용 가능한 모델 목록을 확인하여 가장 최신의 빠르고 가벼운 Flash 모델을 자동 선별
+  function autoDetectFlashModel(key) {
+    var candidates = [
+      "gemini-flash-lite-latest", // 1순위: 가장 빠르고 가벼운 Flash-Lite (Google 공식 최신 에일리어스)
+      "gemini-flash-latest",      // 2순위: 최신 Flash 표준 (Google 공식 최신 에일리어스)
+      "gemini-3.8-flash",         // 3순위: Gemini 3.8 Flash
+      "gemini-3.5-flash",         // 4순위: Gemini 3.5 Flash
+      "gemini-2.0-flash-lite",    // 5순위: 2.0 Flash Lite
+      "gemini-1.5-flash"          // 6순위: 레거시 안정 Flash
+    ];
+
+    var endpoint = "https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(key);
+    return fetch(endpoint).then(function (res) {
+      if (!res.ok) {
+        return res.json().then(function (errData) {
+          var msg = (errData.error && errData.error.message) || ("HTTP " + res.status);
+          throw new Error(msg);
+        }).catch(function (e) {
+          throw new Error("HTTP " + res.status);
+        });
+      }
+      return res.json().then(function (data) {
+        var available = (data.models || [])
+          .map(function (m) { return (m.name || "").replace(/^models\//, ""); })
+          .filter(function (name) { return name.indexOf("flash") !== -1; });
+
+        for (var i = 0; i < candidates.length; i++) {
+          if (available.indexOf(candidates[i]) !== -1) {
+            return candidates[i];
+          }
+        }
+        if (available.length > 0) return available[0];
+        return "gemini-flash-lite-latest";
+      });
+    }).catch(function (err) {
+      var msg = (err && err.message) || "";
+      if (msg.indexOf("API_KEY_INVALID") !== -1 || msg.indexOf("key not valid") !== -1) {
+        throw err;
+      }
+      return "gemini-flash-lite-latest";
+    });
+  }
+
+  function refreshApiStatus() {
+    var on = !!getKey();
+    var currentModel = getModel();
+    $("#api-dot").classList.toggle("on", on);
+    $("#api-status-text").textContent = on ? "⚡ Gemini Flash 연결됨 (" + currentModel + ") · 직접 입력 시 AI 동작" : "내장 생성기 사용 중 (키 입력 시 초경량 Flash 자동 연결)";
+    $("#api-key").value = on ? getKey() : "";
+
+    var labelEl = $("#api-detected-model-label");
+    var subEl = $("#api-detected-model-sub");
+    if (labelEl) {
+      labelEl.textContent = on ? "⚡ " + currentModel + " 자동 등록됨" : "초경량 Flash 모델 자동 매칭";
+    }
+    if (subEl) {
+      subEl.textContent = on ? "직접 키워드 입력 생성 시 Flash AI가 맞춤 생성하며, 🎲 리롤은 즉각적인 내장 셔플로 가볍게 동작합니다." : "호출키 입력 시 가장 빠르고 가벼운 Flash 모델로 자동 연결됩니다.";
+    }
+  }
+
+  var HEX = /^#[0-9a-fA-F]{6}$/;
+  function normalize(p) {
+    var need = ["bg", "card", "text", "subText", "primary", "primaryText", "secondary", "secondaryText", "border"];
+    for (var i = 0; i < need.length; i++) { if (!HEX.test(String(p[need[i]] || "").trim())) return null; p[need[i]] = p[need[i]].trim(); }
+    p.name = String(p.name || "AI 팔레트").slice(0, 16);
+    p.mood = String(p.mood || "AI 추천").slice(0, 16);
+    return p;
+  }
+
+  function geminiBatch(kw) {
+    var prompt =
+      "너는 UI 컬러 디자이너야. 1인 창작자용 시간관리 웹앱(타이머·할일·진행바)에 쓸 색상 팔레트 3개를 만들어줘.\n" +
+      "사용자 요청 키워드: \"" + (kw || "자유롭게, 요즘 감성에 맞는 예쁜 조합") + "\"\n" +
+      "조건:\n" +
+      "- 3개는 서로 무드가 확실히 달라야 해 (예: 빈티지 / 쨍한 비비드 / 파스텔 / 다크 / 미니멀 중 3가지).\n" +
+      "- 키워드에 색이 있으면 그 색을 primary 또는 secondary로 꼭 써.\n" +
+      "- 앞에서 이미 보여준 조합과 겹치지 마: " + (state.shownNames.slice(-9).join(", ") || "없음") + "\n" +
+      "- text와 bg, primaryText와 primary의 명도 대비는 4.5:1 이상.\n" +
+      "- name은 한국어 10자 이내 (예: '빈티지 머스터드 데님'), mood는 '빈티지 · 따뜻함' 같은 두 단어.\n" +
+      "JSON 배열만 출력해. 각 객체 필드: name, mood, bg, card, text, subText, primary, primaryText, secondary, secondaryText, border (색상은 모두 #RRGGBB).";
+
+    var key = getKey();
+    var currentModel = getModel();
+
+    // 호출 우선순위: 현재 선택 모델 -> 공식 최신 Flash-Lite -> 최신 Flash -> 3.8 Flash -> 3.5 Flash
+    var candidateModels = [
+      currentModel,
+      "gemini-flash-lite-latest",
+      "gemini-flash-latest",
+      "gemini-3.8-flash",
+      "gemini-3.5-flash"
+    ].filter(function (v, idx, arr) { return v && arr.indexOf(v) === idx; });
+
+    function tryCall(idx) {
+      if (idx >= candidateModels.length) {
+        throw new Error("모든 Flash 모델이 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해 주세요.");
+      }
+      var targetModel = candidateModels[idx];
+      var endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(targetModel) + ":generateContent?key=" + encodeURIComponent(key);
+
+      return fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 1.1 }
+        })
+      }).then(function (res) {
+        return res.json().then(function (data) {
+          if (!res.ok) {
+            var errDetail = (data.error && data.error.message) || ("HTTP " + res.status);
+            throw new Error(errDetail);
+          }
+          var txt = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text;
+          if (!txt) throw new Error("Gemini에서 빈 응답이 반환되었습니다");
+          
+          var jsonMatch = txt.match(/\[\s*\{[\s\S]*\}\s*\]/);
+          var jsonStr = jsonMatch ? jsonMatch[0] : txt.replace(/```json|```/gi, "").trim();
+          var arr = JSON.parse(jsonStr);
+          if (!Array.isArray(arr)) arr = arr.palettes || [];
+          var out = arr.map(normalize).filter(Boolean).slice(0, 3);
+          if (out.length < 3) throw new Error("팔레트 3개 생성 형식이 올바르지 않습니다");
+
+          // 성공한 최적 모델로 상태 갱신
+          if (targetModel !== currentModel) {
+            try { localStorage.setItem(LS_MODEL, targetModel); } catch (e) {}
+            refreshApiStatus();
+          }
+          return out;
+        });
+      }).catch(function (err) {
+        console.warn(targetModel + " 호출 실패 (" + err.message + "), 다음 가용 Flash 모델로 즉시 연결합니다.");
+        return tryCall(idx + 1);
+      });
+    }
+
+    return tryCall(0);
+  }
+
+  var busy = false;
+  function generate(kw, forceLocal) {
+    if (busy) return;
+    
+    // 키워드가 없을 때 현재 프리셋 무드 추가 (유사한 무드 추천 유지)
+    if (!kw && state.preset) {
+      var kmap = { toss: "minimal", linear: "dark", glass: "pastel", mesh: "pastel", notion: "minimal", sage: "vintage", cute: "pastel", brutal: "vivid", neumorph: "minimal", y2k: "vivid" };
+      kw = kmap[state.preset] || "";
+    }
+    
+    // 리롤(forceLocal === true)일 때는 API 호출 없이 언제나 내장 시스템으로 즉시 셔플
+    var useApi = !forceLocal && !!getKey();
+
+    busy = true;
+    $("#btn-reroll").disabled = true; $("#btn-ai-gen").disabled = true;
+    if (useApi) $("#btn-ai-gen").textContent = "AI 생성 중…";
+    $$(".palette-card-opt").forEach(function (el) { el.classList.add("loading"); });
+
+    var job = useApi ? geminiBatch(kw) : Promise.resolve(localBatch(kw));
+    job.then(function (batch) {
+      setBatch(batch);
+      if (forceLocal) {
+        toast("🎲 내장 시스템으로 새 조합 3개를 섞었어요");
+      } else if (useApi) {
+        toast("✨ Gemini AI가 맞춤 색상 3개를 생성했어요!");
+      } else {
+        toast("내장 생성기로 조합 3개를 불러왔어요 (API 키 연결 시 Gemini가 직접 생성)");
+      }
+    }).catch(function (err) {
+      setBatch(localBatch(kw));
+      var raw = (err && err.message) || "";
+      var friendly = raw;
+      if (raw.indexOf("API_KEY_INVALID") !== -1 || raw.indexOf("not valid") !== -1 || raw.indexOf("400") !== -1) {
+        friendly = "API 키 오류 (Google AI Studio 키를 다시 확인해 주세요)";
+      } else if (raw.indexOf("404") !== -1 || raw.indexOf("not found") !== -1) {
+        friendly = "지원되지 않는 모델 (" + getModel() + ")";
+      } else if (raw.indexOf("RESOURCE_EXHAUSTED") !== -1 || raw.indexOf("quota") !== -1) {
+        friendly = "사용량(Quota) 초과 — 잠시 후 다시 시도해 주세요";
+      }
+      toast("Gemini 호출 실패: " + friendly + " — 내장 생성기로 대체", true);
+      console.error("Gemini API Error:", err);
+    }).then(function () {
+      busy = false;
+      $("#btn-reroll").disabled = false; $("#btn-ai-gen").disabled = false;
+      $("#btn-ai-gen").textContent = "생성";
+    });
+  }
+
+  function setBatch(batch) {
+    if (state.customPalette) {
+      batch.unshift(state.customPalette);
+    } else if (state.batch[0] && state.batch[0].name === "내 커스텀 팔레트") {
+      state.customPalette = state.batch[0];
+      batch.unshift(state.batch[0]);
+    }
+    state.batch = batch;
+    batch.forEach(function (p) { state.shownNames.push(p.name); });
+    renderBatch();
+  }
+
+  function hexToRgbStr(h) {
+    if (h.length === 4) h = "#" + h[1] + h[1] + h[2] + h[2] + h[3] + h[3];
+    var r = parseInt(h.slice(1,3), 16), g = parseInt(h.slice(3,5), 16), b = parseInt(h.slice(5,7), 16);
+    return isNaN(r) ? null : r+","+g+","+b;
+  }
+  function isLight(h) {
+    var rgb = hexToRgbStr(h); if(!rgb) return true;
+    var a = rgb.split(",").map(Number);
+    return (a[0]*299 + a[1]*587 + a[2]*114)/1000 > 128;
+  }
+
+  var popoverTarget = null;
+
+  function initPopover() {
+    var pop = $("#color-popover");
+    var cp = $("#popover-color");
+    var tx = $("#popover-hex");
+    
+    function applyColor(val) {
+      tx.value = val;
+      if (val.startsWith("#") && (val.length === 4 || val.length === 7)) {
+        cp.value = val.length === 4 ? "#"+val[1]+val[1]+val[2]+val[2]+val[3]+val[3] : val;
+        if (!popoverTarget) return;
+        var p = popoverTarget.palette;
+        var key = popoverTarget.key;
+        
+        var newPal;
+        if (p.name === "내 커스텀 팔레트") {
+          newPal = p;
+        } else {
+          newPal = JSON.parse(JSON.stringify(p));
+          newPal.name = "내 커스텀 팔레트";
+          newPal.mood = "나만의 색상";
+        }
+        
+        newPal[key] = val;
+        if (key === "primary") newPal.primaryText = isLight(val) ? "#1e293b" : "#ffffff";
+        if (key === "secondary") newPal.secondaryText = isLight(val) ? "#1e293b" : "#ffffff";
+        if (key === "bg") newPal.card = val; // 편의상 배경색 변경시 카드색도 맞춤
+        
+        // '내 커스텀 팔레트'는 언제나 최상단(0번 인덱스)에 배치
+        var rest = state.batch.filter(function (b) { return b !== p && b.name !== "내 커스텀 팔레트"; });
+        state.batch = [newPal].concat(rest);
+        
+        state.customPalette = newPal; // 상단 고정용 커스텀 팔레트 영구 보존
+        state.palette = newPal;
+        popoverTarget.palette = newPal; // update target so further edits apply to new pal
+        renderBatch();
+        render();
+      }
+    }
+    
+    cp.addEventListener("input", function() { applyColor(this.value); });
+    tx.addEventListener("input", function() { applyColor(this.value); });
+    
+    document.addEventListener("click", function(e) {
+      if (!pop.contains(e.target) && !e.target.classList.contains("pal-dot")) {
+        pop.style.display = "none";
+      }
+    });
+  }
+
+  function renderBatch() {
+    var box = $("#palette-batch");
+    box.innerHTML = "";
+    state.batch.forEach(function (p) {
+      var el = document.createElement("div");
+      el.className = "palette-card-opt" + (p === state.palette ? " active" : "");
+      el.setAttribute("role", "button"); el.tabIndex = 0;
+
+      function makeSwatch(key, colorStr) {
+        return '<span class="pal-dot" data-key="' + key + '" data-color="' + colorStr + '" style="background:' + colorStr + ';" title="클릭하여 색상 변경"></span>';
+      }
+
+      el.innerHTML =
+        '<div class="pal-info"><span class="pal-name"></span><span class="pal-mood"></span></div>' +
+        '<div class="palette-swatches-strip">' +
+        makeSwatch("bg", p.bg) + makeSwatch("card", p.card) + makeSwatch("secondary", p.secondary) + makeSwatch("primary", p.primary) +
+        '</div>';
+      
+      el.querySelector(".pal-name").textContent = p.name;
+      el.querySelector(".pal-mood").textContent = p.mood;
+      var pick = function () { state.palette = p; clearPreset(); renderBatch(); render(); };
+      el.addEventListener("click", pick);
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+      
+      var dots = Array.prototype.slice.call(el.querySelectorAll(".pal-dot"));
+      dots.forEach(function(dot) {
+        dot.addEventListener("click", function(e) {
+          e.stopPropagation();
+          var rect = dot.getBoundingClientRect(); // DOM 삭제 전에 위치 계산
+          pick(); // select palette first
+          
+          var pop = $("#color-popover");
+          pop.style.display = "flex";
+          var left = rect.left - 40;
+          if (left + 110 > window.innerWidth) left = window.innerWidth - 116; // 화면 밖으로 나가지 않게
+          pop.style.left = left + "px";
+          pop.style.top = (rect.top - 46) + "px";
+          
+          var colorStr = dot.dataset.color;
+          var isGradient = colorStr.indexOf("gradient") !== -1 || colorStr.indexOf("rgba") !== -1;
+          var hex = isGradient ? "#ffffff" : colorStr;
+          if (hex.length === 4 && hex[0] === '#') hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+          
+          $("#popover-color").value = hex;
+          $("#popover-hex").value = hex;
+          
+          popoverTarget = { palette: p, key: dot.dataset.key };
+        });
+      });
+      
+      box.appendChild(el);
+    });
+  }
+
+  /* ======================================================
+     목업 렌더링
+     ====================================================== */
+  function fill(str, c) { return str.replace("{border}", c.border).replace(/\{text\}/g, c.text); }
+
+  function render() {
+    var c = state.palette, r = radiusDefs[state.radius], b = boxDefs[state.box], d = densityDefs[state.density];
+    var tf = fontMap[state.titleFont] || fontMap.pretendard, bf = fontMap[state.bodyFont] || fontMap.pretendard;
+    var body = $("#target-mockup");
+    var isNeu = state.box === "neumorph", isBrutal = state.box === "brutal-stroke";
+
+    body.style.background = c.bg;
+    body.style.color = c.text;
+    body.style.fontFamily = bf.family;
+    body.style.padding = d.pad;
+    body.style.lineHeight = d.lh;
+    $$(".density-gap").forEach(function (el) { el.style.gap = d.gap; });
+
+    $$(".title-font-target").forEach(function (el) { el.style.fontFamily = tf.family; });
+    $$(".body-font-target").forEach(function (el) { el.style.fontFamily = bf.family; });
+
+    var cardBg = b.tone ? mix(c) : (isNeu ? c.bg : c.card);
+    $$(".target-card").forEach(function (el) {
+      el.style.background = cardBg;
+      el.style.borderRadius = r.card;
+      el.style.border = fill(b.border, c);
+      el.style.boxShadow = fill(b.shadow, c);
+      el.style.backdropFilter = b.blur; el.style.webkitBackdropFilter = b.blur;
+      el.style.padding = d.pad;
+    });
+
+    $$(".target-item").forEach(function (el) {
+      el.style.padding = d.item;
+      el.style.borderRadius = r.btn === "999px" ? "14px" : r.btn;
+      el.style.background = isNeu ? c.bg : (b.tone ? c.card : (state.box === "glass" ? "rgba(255,255,255,0.35)" : c.card));
+      el.style.border = isBrutal ? "1.5px solid " + c.text : (state.box === "subtle-border" ? "1px solid " + c.border : "1px solid transparent");
+      el.style.boxShadow = isNeu ? "inset 2px 2px 5px rgba(0,0,0,0.08), inset -2px -2px 5px rgba(255,255,255,0.8)" : (isBrutal ? "2px 2px 0 " + c.text : "none");
+    });
+
+    $$(".btn-primary-target").forEach(function (el) {
+      el.style.background = c.primary; el.style.color = c.primaryText; el.style.borderRadius = r.btn;
+      el.style.border = isBrutal ? "2px solid " + c.text : "none";
+      el.style.boxShadow = isBrutal ? "2px 2px 0 " + c.text : (isNeu ? "4px 4px 10px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8)" : "none");
+    });
+    $$(".btn-sec-target").forEach(function (el) {
+      el.style.background = c.secondary; el.style.color = c.secondaryText; el.style.borderRadius = r.btn;
+      el.style.border = isBrutal ? "2px solid " + c.text : "none";
+      el.style.boxShadow = isBrutal ? "2px 2px 0 " + c.text : (isNeu ? "4px 4px 10px rgba(0,0,0,0.12), -4px -4px 10px rgba(255,255,255,0.8)" : "none");
+    });
+
+    $$(".tag-target, .badge-target").forEach(function (el) {
+      el.style.background = c.secondary; el.style.color = c.secondaryText; el.style.borderRadius = r.tag;
+      el.style.border = isBrutal ? "1.5px solid " + c.text : "none";
+    });
+
+    $$(".chk-box-target").forEach(function (el) {
+      var done = el.textContent === "✓";
+      el.style.background = done ? c.primary : "transparent";
+      el.style.color = c.primaryText;
+      el.style.border = done ? "1px solid " + c.primary : "1.5px solid " + c.subText;
+      el.style.borderRadius = state.radius === "sharp" ? "2px" : (state.radius === "pill" ? "50%" : "4px");
+    });
+
+    $$(".pbar-target").forEach(function (el) { el.style.borderRadius = r.tag; });
+    $$(".pfill-target").forEach(function (el) { el.style.background = c.primary; el.style.borderRadius = r.tag; });
+
+    var preset = presets.filter(function (p) { return p.key === state.preset; })[0];
+    $("#canvas-status").textContent = (preset ? preset.title : "커스텀") + " · " + c.name + " · " + r.name + " · " + d.name + " · " + b.name + " · " + tf.name + "+" + bf.name;
+    $("#prompt-box").textContent = buildPrompt();
+  }
+
+  // 플랫 톤온톤: 배경보다 한 톤 진한 카드색
+  function mix(c) {
+    if (!HEX.test(c.bg)) return "rgba(0,0,0,0.04)";
+    var n = parseInt(c.bg.slice(1), 16), rr = n >> 16, gg = (n >> 8) & 255, bb = n & 255;
+    var lum = (rr * 299 + gg * 587 + bb * 114) / 1000;
+    var k = lum > 128 ? -10 : 14;
+    var cl = function (v) { return Math.max(0, Math.min(255, v + k)).toString(16).padStart(2, "0"); };
+    return "#" + cl(rr) + cl(gg) + cl(bb);
+  }
+
+  function buildPrompt() {
+    var c = state.palette, r = radiusDefs[state.radius], b = boxDefs[state.box], d = densityDefs[state.density];
+    var tf = fontMap[state.titleFont], bf = fontMap[state.bodyFont];
+    var preset = presets.filter(function (p) { return p.key === state.preset; })[0];
+    var moodText = state.activeCheatSheet 
+      ? state.activeCheatSheet.promptMood 
+      : (preset ? preset.title + " — " + preset.desc : "커스텀 — " + c.mood);
+
+    return "내 웹앱 디자인을 아래 스타일로 바꿔줘. 기능과 화면 구성은 그대로 두고 스타일만.\n" +
+      "- 분위기: " + moodText + "\n" +
+      "- 색상: 배경 " + c.bg + " / 카드 " + c.card + " / 글자 " + c.text + " / 보조 글자 " + c.subText + "\n" +
+      "  강조(주 버튼) " + c.primary + " 위 글자 " + c.primaryText + " / 보조(태그·보조 버튼) " + c.secondary + " 위 글자 " + c.secondaryText + "\n" +
+      "- 모서리: 카드 " + r.card + ", 버튼 " + r.btn + ", 태그 " + r.tag + "\n" +
+      "- 여백·행간(" + d.name + "): 카드 안쪽 " + d.pad + ", 요소 사이 " + d.gap + ", 줄 간격 " + d.lh + "\n" +
+      "- 박스: " + b.name + " (테두리 " + fill(b.border, c) + ", 그림자 " + fill(b.shadow, c) + (b.blur !== "none" ? ", 배경 흐림 " + b.blur : "") + ")\n" +
+      "- 폰트: 제목·큰 숫자는 '" + tf.name + "', 본문·리스트는 '" + bf.name + "' 웹폰트로.";
+  }
+
+  /* ======================================================
+     UI 바인딩
+     ====================================================== */
+  function clearPreset() { 
+    state.preset = null; 
+    state.activeCheatSheet = null;
+    $$(".style-card-btn").forEach(function (el) { el.classList.remove("active"); }); 
+    var card = $("#cheatsheet-card");
+    if (card) card.style.display = "none";
+  }
+  function syncControls() {
+    $$("#radius-seg .seg-btn").forEach(function (el) { el.classList.toggle("active", el.dataset.radius === state.radius); });
+    $$("#density-seg .seg-btn").forEach(function (el) { el.classList.toggle("active", el.dataset.density === state.density); });
+    $$("#box-list .box-option").forEach(function (el) { el.classList.toggle("active", el.dataset.box === state.box); });
+    $("#select-title-font").value = state.titleFont;
+    $("#select-body-font").value = state.bodyFont;
+  }
+
+  /* ======================================================
+     실전 컨닝페이퍼 제어기
+     ====================================================== */
+  function renderCheatSheet(presetKey) {
+    var card = $("#cheatsheet-card");
+    var list = $("#cs-list");
+    var hint = $("#cs-hint");
+    if (!card || !list) return;
+
+    var items = cheatSheets[presetKey] || [];
+    if (!items || items.length === 0) {
+      card.style.display = "none";
+      state.activeCheatSheet = null;
+      return;
+    }
+
+    card.style.display = "flex";
+    if (hint) hint.textContent = items.length + "개 레퍼런스";
+    list.innerHTML = "";
+
+    items.forEach(function (item) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      var isActive = state.activeCheatSheet && state.activeCheatSheet.id === item.id;
+      btn.className = "cs-chip" + (isActive ? " active" : "");
+      btn.setAttribute("title", item.name + " (" + item.desc + ")");
+      btn.innerHTML =
+        '<span class="cs-chip-color" style="background:' + item.color + ';"></span>' +
+        '<span class="cs-chip-name">' + item.name + '</span>';
+
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        applyCheatSheet(item);
+      });
+
+      list.appendChild(btn);
+    });
+  }
+
+  function applyCheatSheet(item) {
+    state.activeCheatSheet = item;
+    
+    // 1. 활성 칩 UI 하이라이트
+    $$(".cs-chip").forEach(function (el) {
+      var nameEl = el.querySelector(".cs-chip-name");
+      el.classList.toggle("active", !!(nameEl && nameEl.textContent === item.name));
+    });
+
+    // 2. 색상 팔레트 생성 (제목에 색상 코드 없이 깔끔하게 브랜드명만 표시)
+    var p = {
+      name: item.name,
+      mood: item.desc || "실전 레퍼런스",
+      bg: item.bg,
+      card: item.card,
+      text: item.text,
+      subText: item.subText,
+      primary: item.primary,
+      primaryText: item.primaryText,
+      secondary: item.secondary,
+      secondaryText: item.secondaryText,
+      border: item.border,
+      isCheatSheet: true
+    };
+
+    // '내 커스텀 팔레트'는 언제나 최상위(0번 인덱스) 고정 유지!
+    var custom = state.customPalette || (state.batch.find(function (b) { return b && b.name === "내 커스텀 팔레트"; }));
+    if (custom) {
+      // 1번: 내 커스텀 팔레트 (최상위 고정!)
+      // 2번: 컨닝페이퍼 레퍼런스 (다른 컨닝페이퍼 클릭 시 이 위치에서 교체)
+      // 3번~: 룩앤필 추천 팔레트들
+      var rest = state.batch.filter(function (b) {
+        return b !== custom && b.name !== "내 커스텀 팔레트" && !b.isCheatSheet;
+      });
+      state.batch = [custom, p].concat(rest);
+    } else {
+      // 내 커스텀 팔레트가 아직 없을 때: 1번에 컨닝페이퍼 배치 (다른 칩 클릭 시 교체)
+      var rest = state.batch.filter(function (b) {
+        return !b.isCheatSheet;
+      });
+      state.batch = [p].concat(rest);
+    }
+    state.palette = p;
+
+    // 3. 곡률, 박스, 폰트 갱신
+    if (item.radius) state.radius = item.radius;
+    if (item.box) state.box = item.box;
+    if (item.titleFont) state.titleFont = item.titleFont;
+    if (item.bodyFont) state.bodyFont = item.bodyFont;
+
+    // 4. 목업 텍스트를 해당 브랜드 맞춤형으로 교체
+    if (item.appTitle) {
+      $$(".m-app-title").forEach(function (el) { el.textContent = item.appTitle; });
+    }
+    if (item.badge) {
+      $$(".m-app-badge").forEach(function (el) { el.textContent = item.badge; });
+    }
+    if (item.tasks && item.tasks.length >= 3) {
+      var taskEls = $$("#mobile-layout-container .task-text");
+      if (taskEls[0]) taskEls[0].textContent = item.tasks[0];
+      if (taskEls[1]) taskEls[1].textContent = item.tasks[1];
+      if (taskEls[2]) taskEls[2].textContent = item.tasks[2];
+      
+      var dTaskEls = $$("#desktop-layout-container .task-text");
+      if (dTaskEls[0]) dTaskEls[0].textContent = item.tasks[0];
+      if (dTaskEls[1]) dTaskEls[1].textContent = item.tasks[1];
+      if (dTaskEls[2]) dTaskEls[2].textContent = item.tasks[2];
+    }
+
+    renderBatch();
+    syncControls();
+    render();
+
+    toast("💡 '" + item.name + "' 컨닝페이퍼 레퍼런스가 적용되었습니다!");
+  }
+
+  // 룩앤필 카드 생성
+  var deck = $("#style-deck");
+  presets.forEach(function (p) {
+    var btn = document.createElement("button");
+    btn.className = "style-card-btn" + (p.key === state.preset ? " active" : "");
+    btn.dataset.preset = p.key;
+    btn.innerHTML = '<div class="btn-top"><span class="style-title"></span><span class="style-tag"></span></div><span class="style-tech"></span><span class="style-desc"></span>';
+    btn.querySelector(".style-title").textContent = p.title;
+    btn.querySelector(".style-tag").textContent = p.tag;
+    btn.querySelector(".style-tech").textContent = p.tech;
+    btn.querySelector(".style-desc").textContent = p.desc;
+    btn.addEventListener("click", function () {
+      $$(".style-card-btn").forEach(function (el) { el.classList.remove("active"); });
+      btn.classList.add("active");
+      state.preset = p.key;
+
+      // 다른 룩앤필 클릭 시: 컨닝페이퍼 초기화 및 팔레트 목록에서 제거 (원래 3개 카드로 복원)
+      state.activeCheatSheet = null;
+      renderCheatSheet(p.key);
+
+      state.radius = p.radius; state.box = p.box; state.density = p.density;
+      state.titleFont = p.titleFont; state.bodyFont = p.bodyFont;
+      var base = basePalettes[p.palette];
+      
+      var keywordMap = {
+        toss: { mood: "minimal", h1: 215, h2: 200, label: "블루" },
+        linear: { mood: "dark", h1: 160, h2: 180, label: "에메랄드" },
+        glass: { mood: "pastel", h1: 270, h2: 300, label: "퍼플" },
+        mesh: { mood: "pastel", h1: 330, h2: 270, label: "피치 라일락" },
+        notion: { mood: "minimal", h1: 0, h2: 0, label: "슬레이트" },
+        sage: { mood: "vintage", h1: 80, h2: 60, label: "올리브" },
+        cute: { mood: "pastel", h1: 330, h2: 40, label: "베리 핑크" },
+        brutal: { mood: "vivid", h1: 50, h2: 10, label: "옐로우 원색" },
+        neumorph: { mood: "minimal", h1: 210, h2: 0, label: "웜그레이" },
+        y2k: { mood: "vivid", h1: 330, h2: 190, label: "사이버 핑크" }
+      };
+      
+      var km = keywordMap[p.key];
+      var variants = km ? [
+        makePalette((km.h1 + 30) % 360, (km.h2 + 30) % 360, km.mood, km.label + " 쿨"),
+        makePalette((km.h1 + 330) % 360, (km.h2 + 330) % 360, km.mood, km.label + " 웜")
+      ] : localBatch("").slice(0, 2);
+      
+      // '내 커스텀 팔레트'가 있다면 4개 팔레트 중 최상단 고정 유지!
+      var customPalette = state.customPalette;
+      if (!customPalette && state.batch[0] && state.batch[0].name === "내 커스텀 팔레트" && !state.batch[0].isCheatSheet) {
+        customPalette = state.batch[0];
+        state.customPalette = customPalette;
+      }
+
+      if (customPalette) {
+        state.batch = [customPalette, base].concat(variants);
+      } else {
+        state.batch = [base].concat(variants);
+      }
+      state.palette = base; // 새로 선택한 룩앤필의 추천 대표 색상(2번)을 목업에 기본 적용!
+      
+      renderBatch(); syncControls(); render();
+    });
+    deck.appendChild(btn);
+  });
+
+  $$("#radius-seg .seg-btn").forEach(function (el) { el.addEventListener("click", function () { state.radius = el.dataset.radius; clearPreset(); syncControls(); render(); }); });
+  $$("#density-seg .seg-btn").forEach(function (el) { el.addEventListener("click", function () { state.density = el.dataset.density; clearPreset(); syncControls(); render(); }); });
+  $$("#box-list .box-option").forEach(function (el) { el.addEventListener("click", function () { state.box = el.dataset.box; clearPreset(); syncControls(); render(); }); });
+  $("#select-title-font").addEventListener("change", function () { state.titleFont = this.value; clearPreset(); render(); });
+  $("#select-body-font").addEventListener("change", function () { state.bodyFont = this.value; clearPreset(); render(); });
+
+  // 🎲 리롤 클릭: 언제나 내장 시스템으로 즉시 셔플
+  $("#btn-reroll").addEventListener("click", function () { 
+    generate($("#ai-keyword").value.trim(), true); 
+  });
+
+  // ✨ 입력 생성 클릭: API 키가 있으면 Gemini API 호출, 없으면 내장 시스템 호출
+  $("#btn-ai-gen").addEventListener("click", function () {
+    var kw = $("#ai-keyword").value.trim();
+    if (!kw) { toast("원하는 색이나 느낌을 적어주세요 (예: 노랑 파랑, 빈티지 민트)", true); $("#ai-keyword").focus(); return; }
+    generate(kw, false);
+  });
+  $("#ai-keyword").addEventListener("keydown", function (e) { if (e.key === "Enter") $("#btn-ai-gen").click(); });
+
+  $("#btn-api-save").addEventListener("click", function () {
+    var k = $("#api-key").value.trim();
+    if (!k) { toast("API 키를 입력해 주세요", true); return; }
+    
+    var btn = $("#btn-api-save");
+    var originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Flash 모델 매칭 중...";
+
+    autoDetectFlashModel(k).then(function (bestModel) {
+      try {
+        localStorage.setItem(LS_KEY, k);
+        localStorage.setItem(LS_MODEL, bestModel);
+      } catch (e) {}
+      refreshApiStatus();
+      $("#api-drawer").open = false;
+      toast("⚡ 초경량 Flash 모델(" + bestModel + ")로 자동 등록되었습니다!");
+    }).catch(function (err) {
+      var msg = (err && err.message) || "";
+      if (msg.indexOf("API_KEY_INVALID") !== -1 || msg.indexOf("key not valid") !== -1) {
+        toast("❌ API 키가 유효하지 않습니다. AI Studio에서 확인해 주세요.", true);
+      } else {
+        // 네트워크 또는 권한 조회 오류 시 기본 표준 gemini-1.5-flash로 즉시 연결
+        try {
+          localStorage.setItem(LS_KEY, k);
+          localStorage.setItem(LS_MODEL, "gemini-1.5-flash");
+        } catch (e) {}
+        refreshApiStatus();
+        $("#api-drawer").open = false;
+        toast("⚡ 초경량 Flash 모델(gemini-1.5-flash)로 자동 등록되었습니다!");
+      }
+    }).finally(function () {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    });
+  });
+
+  $("#btn-api-clear").addEventListener("click", function () {
+    try { 
+      localStorage.removeItem(LS_KEY); 
+      localStorage.removeItem(LS_MODEL);
+    } catch (e) {}
+    refreshApiStatus();
+    toast("키를 삭제했어요. 내장 생성기로 돌아갑니다");
+  });
+
+  // 디바이스 전환
+  function setView(v) {
+    state.view = v;
+    $("#btn-view-mobile").classList.toggle("active", v === "mobile");
+    $("#btn-view-desktop").classList.toggle("active", v === "desktop");
+    $("#mockup-frame").className = v === "mobile" ? "mockup-mobile" : "mockup-desktop";
+    $("#desktop-bar").style.display = v === "desktop" ? "flex" : "none";
+    $("#mobile-bar").style.display = v === "mobile" ? "flex" : "none";
+    $("#mobile-layout-container").style.display = v === "mobile" ? "flex" : "none";
+    $("#desktop-layout-container").style.display = v === "desktop" ? "grid" : "none";
+  }
+  $("#btn-view-mobile").addEventListener("click", function () { setView("mobile"); });
+  $("#btn-view-desktop").addEventListener("click", function () { setView("desktop"); });
+
+  // 복사 & 토스트
+  var toastTimer = null;
+  function toast(msg, isErr) {
+    var t = $("#toast");
+    t.textContent = msg; t.classList.toggle("err", !!isErr); t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2600);
+  }
+  function copyPrompt() {
+    var text = buildPrompt();
+    var done = function () {
+      toast("AI 프롬프트가 복사되었어요 ✨");
+      $("#btn-top-copy").classList.add("done"); $("#btn-bottom-copy").classList.add("done");
+      $("#btn-bottom-copy").textContent = "✓ 복사 완료!";
+      setTimeout(function () {
+        $("#btn-top-copy").classList.remove("done"); $("#btn-bottom-copy").classList.remove("done");
+        $("#btn-bottom-copy").textContent = "📋 AI 프롬프트 원클릭 복사";
+      }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+    } else { fallbackCopy(text, done); }
+  }
+  function fallbackCopy(text, done) {
+    var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("복사가 막혀 있어요 — 프롬프트 칸을 직접 복사해 주세요", true); }
+    ta.remove();
+  }
+  $("#btn-top-copy").addEventListener("click", copyPrompt);
+  $("#btn-bottom-copy").addEventListener("click", copyPrompt);
+
+  // 목업 인터랙션: 타이머
+  var running = false, timer = null, sec = 1490;
+  function tick() {
+    sec = sec <= 0 ? 1500 : sec - 1;
+    var t = String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
+    $$(".clock-target").forEach(function (el) { el.textContent = t; });
+  }
+  $$(".start-target").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (running) return;
+      running = true; timer = setInterval(tick, 1000);
+      $$(".start-target").forEach(function (b) { b.textContent = "집중 중…"; });
+    });
+  });
+  $$(".pause-target").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      running = false; clearInterval(timer);
+      $$(".start-target").forEach(function (b) { b.textContent = "다시 시작"; });
+    });
+  });
+  // 체크박스
+  $$(".chk-box-target").forEach(function (box) {
+    box.addEventListener("click", function () {
+      var done = box.textContent === "✓";
+      box.textContent = done ? "" : "✓";
+      var txt = box.parentNode.querySelector(".task-text");
+      if (txt) { txt.style.textDecoration = done ? "none" : "line-through"; txt.style.opacity = done ? "1" : ".6"; }
+      render();
+    });
+  });
+
+  // 초기화
+  state.batch = [basePalettes.toss, basePalettes.sage, basePalettes.cute];
+  refreshApiStatus();
+  initPopover();
+  renderCheatSheet(state.preset);
+  renderBatch(); syncControls(); render();
+})();
+</script>
+</body>
+</html>
